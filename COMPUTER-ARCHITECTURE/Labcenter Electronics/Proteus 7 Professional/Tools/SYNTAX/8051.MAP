@@ -1,0 +1,6 @@
+#Syntax Highlight Extension Mappings for 8051
+SDI=8051.SYN
+ASM=8051.SYN
+A51=8051.SYN
+H=C.SYN
+C=C.SYN

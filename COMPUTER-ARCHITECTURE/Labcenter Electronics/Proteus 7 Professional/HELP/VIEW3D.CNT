@@ -1,0 +1,17 @@
+:Base VIEW3D.HLP
+1 3D VISUALISATION TOOL
+2 Overview=3dIntro
+2 Navigation with the 3D Viewer=3D_Navigation
+2 Board Customisation=3D_Board_Customisation
+2 Height Plane Clearance=3D_Height_Plane_Clearance
+2 3D Printing and Output=3D_Printing_and_Output
+2 Applying 3D Data to Existing Designs=3D_Existing_Layouts
+2 Importing 3D Models from another package=3D_Importing_Models_from_another_package
+2 Troubleshooting=3D_Troubleshooting
+2 Creating 3D Models in ARES
+3 Overview=3D_Creating_Models_In_ARES
+3 Body Type EXTRUDED=Body_Type_Extruded
+3 Body Type NONE=Body_Type_None
+3 Body Type CUBOID=Body_Type_Cuboid
+3 Body Type AXIALCYLINDER=Body_Type_AxialCylinder
+3 Pin Types=Pin_Types

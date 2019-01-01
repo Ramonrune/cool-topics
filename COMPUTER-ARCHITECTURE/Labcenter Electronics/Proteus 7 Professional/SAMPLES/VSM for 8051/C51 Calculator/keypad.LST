@@ -1,0 +1,131 @@
+A51 MACRO ASSEMBLER  KEYPAD                                                               11/03/2000 12:22:31 PAGE     1
+
+
+MACRO ASSEMBLER A51 V6.02
+OBJECT MODULE PLACED IN .\keypad.OBJ
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE .\keypad.asm SET(SMALL) DEBUG EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     
+                       2     
+                       3     
+                       4     
+                       5     
+                       6     
+                       7     
+                       8     NAME    KEYPAD
+                       9     ; This routine will read a character press from the keypad and return it in R7.
+                      10     
+                      11     
+                      12     ;Set up Segments for the Input Routine - No parameters.
+                      13     ?PR?input?KEYPAD               SEGMENT CODE
+                      14             PUBLIC  input
+                      15     ?DT?input?KEYPAD               SEGMENT DATA
+                      16     
+----                  17     RSEG  ?DT?input?KEYPAD                          ; Local Variable Segment for Output Routine
+                             .
+                      18     
+  00EF                19     KEY_ROW1        equ     0EFh
+  00DF                20     KEY_ROW2        equ     0DFh
+  00BF                21     KEY_ROW3        equ     0BFh
+  007F                22     KEY_ROW4        equ     07Fh
+                      23     
+0000                  24     keyflags:       ds      16
+                      25     
+                      26     
+                      27     
+----                  28     RSEG  ?PR?input?KEYPAD                          ; Code Segment for Output Routine.
+0000                  29     input:
+                      30     
+                      31     
+                      32     
+                      33     
+0000 C083             34     keyscan:        push DPH
+0002 C082             35                     push DPL
+                      36                     
+0004 7800     F       37                     mov R0,#keyflags                ; R0 addresses the key toggle bytes
+0006 79EF             38                     mov R1,#KEY_ROW1                ; R1 address the keyboard row address
+0008 7A04             39                     mov R2,#4                       ; R2 counts rows
+000A 89A0             40     ksrow:          mov P2,R1                       ; Set row address to port P2
+000C 00               41                     nop
+000D E590             42                     mov A,P1                        ; Read column data from port P1
+000F 7B04             43                     mov R3,#4                       ; R3 counts keys per row
+0011 543F             44                     anl A,#3Fh
+0013 13               45     ks0:            rrc A                           ; Move next bit into carry
+0014 FC               46                     mov R4,A                        ; R4 preserves the row data
+0015 4007             47                     jc ks1                          ; Jump if key not pressed
+0017 E6               48                     mov A,@R0                       ; Test if key already pressed
+0018 7601             49                     mov @R0,#1                      ; Flag pressed anyway
+001A 6011             50                     jz ksnew                        ; Jump if key newly pressed
+001C 8002             51                     jmp ks2
+001E 7600             52     ks1:            mov @R0,#0                      ; Flag key as not pressed
+0020 08               53     ks2:            inc R0                          ; Loop for next key in this row
+0021 EC               54                     mov A,R4
+0022 DBEF             55                     djnz R3,ks0
+                      56     
+0024 E9               57                     mov A,R1                        ; Jiggle R1 to address next row
+A51 MACRO ASSEMBLER  KEYPAD                                                               11/03/2000 12:22:31 PAGE     2
+
+0025 23               58                     rl A 
+0026 F9               59                     mov R1,A
+0027 DAE1             60                     djnz R2,ksrow
+                      61     
+0029 E4               62                     clr A                           
+002A FF               63                     mov R7,A                        ; Return zero - no (new) key press.     
+002B 8009             64                     jmp ksend
+                      65     
+                      66                                                     
+002D 900000   F       67     ksnew:          mov DPTR,#keycodes              ; We've found a new key since last time:
+0030 E8               68                     mov A,R0                        ; The key flag address (ordinal) is in R0
+0031 C3               69                     clr C
+0032 9400     F       70                     subb A,#keyflags
+0034 93               71                     movc A,@A+DPTR
+0035 FF               72                     mov R7,A                        ; Move the Key into R7 to be returned.
+0036 75A0FF           73     ksend:          mov P2,#0FFh
+0039 D082             74                     pop DPL
+003B D083             75                     pop DPH
+003D 22               76                     ret
+                      77     
+                      78     ;Data tables for returned row bits
+003E 3738392F         79     keycodes:       db      '7','8','9', '/'
+0042 3435362A         80                     db      '4','5','6', '*'
+0046 3132332D         81                     db      '1','2','3', '-'
+004A 43303D2B         82                     db      'C','0','=', '+'
+                      83     
+                      84                     END
+A51 MACRO ASSEMBLER  KEYPAD                                                               11/03/2000 12:22:31 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+?DT?INPUT?KEYPAD .  D SEG    0010H       REL=UNIT
+?PR?INPUT?KEYPAD .  C SEG    004EH       REL=UNIT
+DPH. . . . . . . .  D ADDR   0083H   A   
+DPL. . . . . . . .  D ADDR   0082H   A   
+INPUT. . . . . . .  C ADDR   0000H   R   SEG=?PR?INPUT?KEYPAD
+KEYCODES . . . . .  C ADDR   003EH   R   SEG=?PR?INPUT?KEYPAD
+KEYFLAGS . . . . .  D ADDR   0000H   R   SEG=?DT?INPUT?KEYPAD
+KEYPAD . . . . . .  N NUMB   -----       
+KEYSCAN. . . . . .  C ADDR   0000H   R   SEG=?PR?INPUT?KEYPAD
+KEY_ROW1 . . . . .  N NUMB   00EFH   A   
+KEY_ROW2 . . . . .  N NUMB   00DFH   A   
+KEY_ROW3 . . . . .  N NUMB   00BFH   A   
+KEY_ROW4 . . . . .  N NUMB   007FH   A   
+KS0. . . . . . . .  C ADDR   0013H   R   SEG=?PR?INPUT?KEYPAD
+KS1. . . . . . . .  C ADDR   001EH   R   SEG=?PR?INPUT?KEYPAD
+KS2. . . . . . . .  C ADDR   0020H   R   SEG=?PR?INPUT?KEYPAD
+KSEND. . . . . . .  C ADDR   0036H   R   SEG=?PR?INPUT?KEYPAD
+KSNEW. . . . . . .  C ADDR   002DH   R   SEG=?PR?INPUT?KEYPAD
+KSROW. . . . . . .  C ADDR   000AH   R   SEG=?PR?INPUT?KEYPAD
+P1 . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

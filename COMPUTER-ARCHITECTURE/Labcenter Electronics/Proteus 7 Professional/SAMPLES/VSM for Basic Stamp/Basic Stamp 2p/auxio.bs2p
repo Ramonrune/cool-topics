@@ -1,0 +1,35 @@
+'{$STAMP BS2p}
+
+
+mainCtr     var     word
+auxCtr      var     word  
+resetA      var     byte
+resetB      var     byte
+  
+  
+init:
+    dirs = $7fff
+    auxio
+    dirs = $7fff
+    mainio
+  
+loop:
+    mainCtr = mainCtr + 1
+    auxCtr = auxCtr - 1
+
+    mainio
+    button 15,1,0,0,resetA,0,loop_1
+    mainCtr = 0    
+
+loop_1:
+    outs = mainCtr
+
+    auxio
+    button 15,1,0,0,resetB,0,loop_2
+    auxCtr = 0
+
+loop_2:
+    outs = auxCtr
+
+    pause   5
+    goto    loop

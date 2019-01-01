@@ -1,0 +1,506 @@
+,,,                 LIST    p=16F877
+,,,                 #include "P16F877.INC"
+,,,
+,,,SDO              EQU 7
+,,,CLK              EQU 6
+,,,
+,,,                 ORG   0
+0000,291F,entrypoint,entrypoint       goto  start
+,,,
+,,,                 ORG   4
+0004,2804,intvector,intvector        goto    intvector
+,,,
+,,,                 CBLOCK 0x30
+,,,                    address, value, byte, bit, ack
+,,,                    lc1, lc2, lc3
+,,,                 ENDC
+,,,
+,,,
+0005,1283,set_sdo_high,set_sdo_high     bcf    STATUS,RP0
+0006,1387,,                 bcf    PORTC,SDO
+0007,1683,,                 bsf    STATUS,RP0
+0008,1787,,                 bsf    TRISC,SDO
+0009,1283,,                 bcf    STATUS,RP0
+000A,0008,,                 return
+,,,
+000B,1283,set_sdo_low,set_sdo_low      bcf    STATUS,RP0
+000C,1387,,                 bcf    PORTC,SDO
+000D,1683,,                 bsf    STATUS,RP0
+000E,1387,,                 bcf    TRISC,SDO
+000F,1283,,                 bcf    STATUS,RP0
+0010,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+0011,1283,set_clk_high,set_clk_high     bcf    STATUS,RP0
+0012,1707,,                 bsf    PORTC,CLK
+0013,1683,,                 bsf    STATUS,RP0
+0014,1307,,                 bcf    TRISC,CLK
+0015,1283,,                 bcf    STATUS,RP0
+0016,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+0017,1283,set_clk_low,set_clk_low      bcf    STATUS,RP0
+0018,1307,,                 bcf    PORTC,CLK
+0019,1683,,                 bsf    STATUS,RP0
+001A,1307,,                 bcf    TRISC,CLK
+001B,1283,,                 bcf    STATUS,RP0
+001C,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+001D,3006,wait_quarter_bit,wait_quarter_bit movlw  0x06
+001E,00B5,,                 movwf  lc1
+001F,0BB5,wqb0:,wqb0:            decfsz lc1,F
+0020,281F,,                 goto   wqb0
+0021,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+0022,3010,wait_half_bit,wait_half_bit    movlw  0x10
+0023,00B5,,                 movwf  lc1
+0024,0BB5,whb0:,whb0:            decfsz lc1,F
+0025,281F,,                 goto   wqb0
+0026,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+0027,30FF,init,init             movlw 0xFF
+0028,0087,,                 movwf PORTC
+0029,3000,,                 movlw 0x00
+002A,1683,,                 bsf   STATUS,RP0
+002B,0087,,                 movwf TRISC
+002C,1283,,                 bcf   STATUS,RP0
+002D,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+002E,2011,wr_start,wr_start         call  set_clk_high
+002F,2022,,                 call  wait_half_bit
+0030,200B,,                 call  set_sdo_low
+0031,2022,,                 call  wait_half_bit
+0032,2017,,                 call  set_clk_low
+0033,2022,,                 call  wait_half_bit
+0034,2022,,                 call  wait_half_bit
+0035,2022,,                 call  wait_half_bit
+0036,0008,,                 return
+,,,;-----------------------------------------------------------
+0037,2022,wr_stop,wr_stop          call  wait_half_bit
+0038,2017,,                 call  set_clk_low
+0039,2022,,                 call  wait_half_bit
+003A,200B,,                 call  set_sdo_low
+003B,2022,,                 call  wait_half_bit
+003C,2011,,                 call  set_clk_high
+003D,2022,,                 call  wait_half_bit
+003E,2005,,                 call  set_sdo_high
+003F,2022,,                 call  wait_half_bit
+0040,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+0041,2017,wr_restart,wr_restart       call   set_clk_low
+0042,2022,,                 call   wait_half_bit
+0043,2005,,                 call   set_sdo_high
+0044,2022,,                 call   wait_half_bit
+0045,2011,,                 call   set_clk_high
+0046,2022,,                 call   wait_half_bit
+0047,200B,,                 call   set_sdo_low
+0048,2022,,                 call   wait_half_bit
+0049,2017,,                 call   set_clk_low
+004A,2022,,                 call   wait_half_bit
+004B,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+004C,2017,wr_ack,wr_ack           call   set_clk_low
+004D,2022,,                 call   wait_half_bit
+004E,200B,,                 call   set_sdo_low
+004F,2022,,                 call   wait_half_bit
+0050,2011,,                 call   set_clk_high
+0051,2022,,                 call   wait_half_bit
+0052,2017,,                 call   set_clk_low
+0053,2022,,                 call   wait_half_bit
+0054,2005,,                 call   set_sdo_high
+0055,2022,,                 call   wait_half_bit
+0056,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+0057,2017,wr_no_ack,wr_no_ack        call   set_clk_low
+0058,2022,,                 call   wait_half_bit
+0059,2005,,                 call   set_sdo_high
+005A,2022,,                 call   wait_half_bit
+005B,2011,,                 call   set_clk_high
+005C,2022,,                 call   wait_half_bit
+005D,2017,,                 call   set_clk_low
+005E,2022,,                 call   wait_half_bit
+005F,2022,,                 call   wait_half_bit
+0060,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+,,,; Generate a reset by generating a stop followed by at least
+,,,; eight clock pulses.
+0061,2022,wr_reset,wr_reset         call   wait_half_bit
+0062,2017,,                 call   set_clk_low
+0063,2022,,                 call   wait_half_bit
+0064,200B,,                 call   set_sdo_low
+0065,2022,,                 call   wait_half_bit
+0066,2011,,                 call   set_clk_high
+,,,
+0067,3040,,                 movlw  0x40
+0068,00B5,,                 movwf  lc1
+0069,0BB5,wrr0:,wrr0:            decfsz lc1,F
+006A,2869,,                 goto   wrr0
+,,,
+006B,2005,,                 call   set_sdo_high
+,,,
+006C,3040,,                 movlw  0x40
+006D,00B5,,                 movwf  lc1
+006E,0BB5,wrr1:,wrr1:            decfsz lc1,F
+006F,286E,,                 goto   wrr1
+,,,
+0070,2017,,                 call   set_clk_low             ; clk 0
+0071,2022,,                 call   wait_half_bit
+0072,2011,,                 call   set_clk_high
+0073,2022,,                 call   wait_half_bit
+0074,2017,,                 call   set_clk_low             ; clk 1
+0075,2022,,                 call   wait_half_bit
+0076,2011,,                 call   set_clk_high
+0077,2022,,                 call   wait_half_bit
+0078,2017,,                 call   set_clk_low             ; clk 2
+0079,2022,,                 call   wait_half_bit
+007A,2011,,                 call   set_clk_high
+007B,2022,,                 call   wait_half_bit
+007C,2017,,                 call   set_clk_low             ; clk 3
+007D,2022,,                 call   wait_half_bit
+007E,2011,,                 call   set_clk_high
+007F,2022,,                 call   wait_half_bit
+0080,2017,,                 call   set_clk_low             ; clk 4
+0081,2022,,                 call   wait_half_bit
+0082,2011,,                 call   set_clk_high
+0083,2022,,                 call   wait_half_bit
+0084,2017,,                 call   set_clk_low             ; clk 5
+0085,2022,,                 call   wait_half_bit
+0086,2011,,                 call   set_clk_high
+0087,2022,,                 call   wait_half_bit
+0088,2017,,                 call   set_clk_low             ; clk 6
+0089,2022,,                 call   wait_half_bit
+008A,2011,,                 call   set_clk_high
+008B,2022,,                 call   wait_half_bit
+008C,2017,,                 call   set_clk_low             ; clk 7
+008D,2022,,                 call   wait_half_bit
+008E,2011,,                 call   set_clk_high
+008F,2022,,                 call   wait_half_bit
+0090,2017,,                 call   set_clk_low             ; clk 8
+0091,2022,,                 call   wait_half_bit
+0092,2011,,                 call   set_clk_high
+0093,2022,,                 call   wait_half_bit
+,,,
+0094,0008,,                 return
+,,,
+,,,
+,,,;-----------------------------------------------------------
+0095,1283,wr_bit,wr_bit           bcf   STATUS,RP0
+0096,201D,,                 call  wait_quarter_bit
+0097,0833,,                 movf  bit,w
+0098,0532,,                 andwf byte,w
+0099,1903,,                 btfsc STATUS,Z
+009A,289D,,                 goto  bit_is_0
+,,,
+009B,2005,bit_is_1,bit_is_1         call  set_sdo_high
+009C,289F,,                 goto  wbit0
+,,,
+009D,200B,bit_is_0,bit_is_0         call  set_sdo_low
+009E,289F,,                 goto  wbit0
+,,,
+,,,
+009F,1283,wbit0,wbit0            bcf   STATUS,RP0
+00A0,201D,,                 call  wait_quarter_bit
+00A1,2011,,                 call  set_clk_high
+00A2,2022,,                 call  wait_half_bit
+00A3,2017,,                 call  set_clk_low
+00A4,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+00A5,00B2,wr_byte,wr_byte          movwf byte
+00A6,3080,,                 movlw 0x80
+00A7,00B3,,                 movwf bit
+,,,
+00A8,2095,wbyte0,wbyte0           call  wr_bit
+00A9,1003,,                 bcf   STATUS,C
+00AA,0CB3,,                 rrf   bit,F
+00AB,08B3,,                 movf  bit,F
+00AC,1D03,,                 btfss STATUS,Z
+00AD,28A8,,                 goto  wbyte0
+,,,
+00AE,201D,,                 call  wait_quarter_bit
+00AF,2005,,                 call  set_sdo_high
+00B0,201D,,                 call  wait_quarter_bit
+00B1,2011,,                 call  set_clk_high
+00B2,201D,,                 call  wait_quarter_bit
+00B3,0807,,                 movf  PORTC,W
+00B4,3980,,                 andlw (1<<SDO)
+00B5,3A80,,                 xorlw (1<<SDO)
+00B6,00B4,,                 movwf ack
+00B7,201D,,                 call  wait_quarter_bit
+00B8,2017,,                 call  set_clk_low
+00B9,201D,,                 call  wait_quarter_bit
+00BA,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+00BB,00B2,wr_halfbyte,wr_halfbyte      movwf byte
+00BC,3008,,                 movlw 0x08
+00BD,00B3,,                 movwf bit
+,,,
+00BE,2095,whbyte0,whbyte0          call  wr_bit
+00BF,1003,,                 bcf   STATUS,C
+00C0,0CB3,,                 rrf   bit,F
+00C1,08B3,,                 movf  bit,F
+00C2,1D03,,                 btfss STATUS,Z
+00C3,28BE,,                 goto  whbyte0
+,,,
+00C4,201D,,                 call  wait_quarter_bit
+00C5,2005,,                 call  set_sdo_high
+00C6,201D,,                 call  wait_quarter_bit
+00C7,2011,,                 call  set_clk_high
+00C8,201D,,                 call  wait_quarter_bit
+00C9,0807,,                 movf  PORTC,W
+00CA,3980,,                 andlw (1<<SDO)
+00CB,3A80,,                 xorlw (1<<SDO)
+00CC,00B4,,                 movwf ack
+00CD,201D,,                 call  wait_quarter_bit
+00CE,2017,,                 call  set_clk_low
+00CF,201D,,                 call  wait_quarter_bit
+00D0,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+00D1,1283,rd_bit,rd_bit           bcf    STATUS,RP0
+00D2,2005,,                 call   set_sdo_high
+00D3,2017,,                 call   set_clk_low
+00D4,2022,,                 call   wait_half_bit
+00D5,2011,,                 call   set_clk_high
+00D6,201D,,                 call   wait_quarter_bit
+00D7,0807,,                 movf   PORTC,W
+00D8,3980,,                 andlw  (1<<SDO)
+00D9,1903,,                 btfsc  STATUS,Z
+00DA,28DD,,                 goto   rd_bit_clear
+00DB,0833,,                 movf   bit,W
+00DC,04B2,,                 iorwf  byte,F
+00DD,201D,rd_bit_clear,rd_bit_clear     call   wait_quarter_bit
+00DE,2017,,                 call   set_clk_low
+00DF,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+00E0,3000,rd_byte,rd_byte          movlw  0x00
+00E1,00B2,,                 movwf  byte
+00E2,3080,,                 movlw  0x80
+00E3,00B3,,                 movwf  bit
+,,,
+00E4,20D1,rbyte0,rbyte0           call   rd_bit
+00E5,1003,,                 bcf    STATUS,C
+00E6,0CB3,,                 rrf    bit,F
+00E7,08B3,,                 movf   bit,F
+00E8,1D03,,                 btfss  STATUS,Z
+00E9,28E4,,                 goto   rbyte0
+00EA,0832,,                 movf   byte,W
+00EB,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+,,,; Write W register to PORTD and hang.
+00EC,1283,wr_error,wr_error         bcf   STATUS,RP0
+00ED,0088,,                 movwf PORTD
+00EE,1683,,                 bsf   STATUS,RP0
+00EF,0188,,                 clrf  TRISD
+00F0,1283,,                 bcf   STATUS,RP0
+,,,
+00F1,1405,wre_flash,wre_flash        bsf    PORTA,0
+00F2,30FF,,                 movlw  0xFF
+00F3,2116,,                 call   longwait
+00F4,30FF,,                 movlw  0xFF
+00F5,2116,,                 call   longwait
+00F6,1005,,                 bcf    PORTA,0
+00F7,30FF,,                 movlw  0xFF
+00F8,2116,,                 call   longwait
+00F9,30FF,,                 movlw  0xFF
+00FA,2116,,                 call   longwait
+00FB,28F1,,                 goto   wre_flash
+00FC,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+,,,; Write W register to PORTD and hang.
+00FD,1283,wr_result,wr_result        bcf   STATUS,RP0
+00FE,0088,,                 movwf PORTD
+00FF,1683,,                 bsf   STATUS,RP0
+0100,0188,,                 clrf  TRISD
+0101,1283,,                 bcf   STATUS,RP0
+,,,
+0102,1405,wrr_flash,wrr_flash        bsf    PORTA,0
+0103,3030,,                 movlw  0x30
+0104,210A,,                 call   vlongwait
+0105,1005,,                 bcf    PORTA,0
+0106,3003,,                 movlw  0x03
+0107,210A,,                 call   vlongwait
+0108,2902,,                 goto   wrr_flash
+0109,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+010A,00B5,vlongwait,vlongwait        movwf  lc1
+010B,30FF,vlw1,vlw1             movlw  0xFF
+010C,00B6,,                 movwf  lc2
+010D,30FF,vlw2,vlw2             movlw  0xFF
+010E,00B7,,                 movwf  lc3
+010F,0BB7,vlw3,vlw3             decfsz lc3,F
+0110,290F,,                 goto   vlw3
+0111,0BB6,,                 decfsz lc2,F
+0112,290D,,                 goto   vlw2
+0113,0BB5,,                 decfsz lc1,F
+0114,290B,,                 goto   vlw1
+0115,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+0116,00B5,longwait,longwait         movwf  lc1
+0117,30FF,lw1,lw1              movlw  0xFF
+0118,00B6,,                 movwf  lc2
+0119,0BB6,lw2,lw2              decfsz lc2,F
+011A,2919,,                 goto   lw2
+011B,0BB5,,                 decfsz lc1,F
+011C,2917,,                 goto   lw1
+011D,0008,,                 return
+,,,
+,,,;-----------------------------------------------------------
+011E,291E,hang,hang             goto  hang
+,,,
+,,,
+,,,;===========================================================
+011F,2027,start,start            call  init
+0120,2061,,                 call  wr_reset
+,,,
+,,,
+0121,1283,,                 bcf   STATUS,RP0
+0122,0185,,                 clrf  PORTA
+0123,0188,,                 clrf  PORTD
+,,,
+0124,1683,,                 bsf   STATUS,RP0
+0125,3006,,                 movlw 0x06
+0126,009F,,                 movwf ADCON1
+0127,3020,,                 movlw 0x20
+0128,0085,,                 movwf TRISA
+0129,0188,,                 clrf  TRISD
+,,,
+012A,1283,,                 bcf   STATUS,RP0
+012B,0185,,                 clrf  PORTA
+012C,01B0,,                 clrf  address
+012D,01B1,,                 clrf  value
+,,,
+,,,                 ; Test RA5 to see if we do writes:
+012E,1E85,,                 btfss PORTA,5
+012F,2952,,                 goto  reset_addr
+,,,
+,,,                 ; Do start condition:
+0130,202E,main_wr_loop:,main_wr_loop:    call   wr_start
+,,,
+,,,                 ; Send write command:
+0131,30A6,,                 movlw  0xA6
+0132,20A5,,                 call   wr_byte
+0133,3001,,                 movlw  0x01
+0134,08B4,,                 movf   ack,F
+0135,1903,,                 btfsc  STATUS,Z
+0136,20EC,,                 call   wr_error
+,,,
+,,,                 ; Send address:
+0137,0830,,                 movf   address,W
+0138,20A5,,                 call   wr_byte
+0139,3002,,                 movlw  0x02
+013A,08B4,,                 movf   ack,F
+013B,1903,,                 btfsc  STATUS,Z
+013C,20EC,,                 call   wr_error
+,,,
+,,,                 ; Send value:
+013D,0831,,                 movf   value,W
+013E,20A5,,                 call   wr_byte
+013F,3003,,                 movlw  0x03
+0140,08B4,,                 movf   ack,F
+0141,1903,,                 btfsc  STATUS,Z
+0142,20EC,,                 call   wr_error
+,,,
+,,,                 ; Do stop. This starts the write cycle.
+0143,2037,,                 call   wr_stop
+,,,
+,,,                 ; Now poll for acknowledge:
+0144,202E,poll_for_ack,poll_for_ack     call   wr_start
+0145,30A6,,                 movlw  0xA6
+0146,20A5,,                 call   wr_byte
+0147,3004,,                 movlw  0x04
+0148,08B4,,                 movf   ack,F
+0149,1903,,                 btfsc  STATUS,Z
+014A,2944,,                 goto   poll_for_ack
+,,,
+,,,                 ; Increment address/data and loop round:
+014B,0AB0,,                 incf   address
+014C,0AB1,,                 incf   value
+014D,1E30,,                 btfss  address,4
+014E,2930,,                 goto   main_wr_loop
+,,,
+,,,                 ; Cancel sucessful poll command:
+014F,2037,,                 call   wr_stop
+,,,
+0150,3010,wait,wait             movlw  0x10
+0151,2116,,                 call   longwait
+,,,
+0152,,reset_addr,reset_addr       ; Generate start condition...
+0152,202E,,                 call   wr_start
+,,,
+,,,                 ; Write command:
+0153,30A6,,                 movlw  0xA6
+0154,20A5,,                 call   wr_byte
+0155,3005,,                 movlw  0x05
+0156,08B4,,                 movf   ack,F
+0157,1903,,                 btfsc  STATUS,Z
+0158,20EC,,                 call   wr_error
+,,,
+,,,                 ; Send address:
+0159,01B0,,                 clrf   address
+015A,0830,,                 movf   address,W
+015B,20A5,,                 call   wr_byte
+015C,3006,,                 movlw  0x06
+015D,08B4,,                 movf   ack,F
+015E,1903,,                 btfsc  STATUS,Z
+015F,20EC,,                 call   wr_error
+,,,
+,,,                 ; Send stop:
+0160,2037,,                 call   wr_stop
+,,,
+0161,202E,read_bytes,read_bytes       call  wr_start
+0162,30A7,,                 movlw  0xA7
+0163,20A5,,                 call   wr_byte
+0164,3007,,                 movlw  0x07
+0165,08B4,,                 movf   ack,F
+0166,1903,,                 btfsc  STATUS,Z
+0167,20EC,,                 call   wr_error
+,,,
+0168,1485,,                 bsf    PORTA,1
+0169,0000,,                 nop
+016A,0000,,                 nop
+016B,0000,,                 nop
+016C,1085,,                 bcf    PORTA,1
+,,,
+,,,                 ; Do read:
+016D,20E0,main_rd_loop,main_rd_loop     call   rd_byte
+,,,
+,,,                 ; Is this the value we expected?
+016E,0830,,                 movf   address,W
+016F,0232,,                 subwf  byte,W
+0170,3008,,                 movlw  0x08
+0171,1D03,,                 btfss  STATUS,Z
+0172,20EC,,                 call   wr_error
+,,,
+,,,                 ; Increment address/data and loop round:
+0173,0AB0,,                 incf   address
+0174,1A30,,                 btfsc  address,4
+0175,2978,,                 goto   done
+,,,
+,,,                 ; Not done yet so acknowledge byte and read next one:
+0176,204C,,                 call   wr_ack
+0177,296D,,                 goto   main_rd_loop
+,,,
+,,,
+,,,                 ; Stop condition marks end of sequential read:
+0178,2057,done,done             call   wr_no_ack
+0179,2037,,                 call   wr_stop
+,,,
+,,,                 ; End of test:
+017A,211E,,                 call hang
+,,,
+,,,                 END

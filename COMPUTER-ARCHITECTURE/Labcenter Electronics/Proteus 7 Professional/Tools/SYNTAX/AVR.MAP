@@ -1,0 +1,5 @@
+#Syntax Highlight Extension Mappings for AVR
+SDI=AVR.SYN
+ASM=AVR.SYN
+H=C.SYN
+C=C.SYN

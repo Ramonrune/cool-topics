@@ -1,0 +1,547 @@
+BL51 BANKED LINKER/LOCATER V4.02                                                        11/03/2000  12:23:09  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V4.02, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE calc.obj, keypad.obj, lcd.obj TO calc
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  calc.obj (CALC)
+  keypad.obj (KEYPAD)
+  lcd.obj (LCD)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?CLDPTR)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?CLDOPTR)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?LMUL)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?SLDIV)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?SLCMP)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?ULDIV)
+
+
+LINK MAP OF MODULE:  calc (CALC)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0013H     UNIT         _DATA_GROUP_
+            DATA    001BH     0010H     UNIT         ?DT?INPUT?KEYPAD
+            DATA    002BH     000BH     UNIT         ?DT?CALC
+            IDATA   0036H     0001H     UNIT         ?STACK
+
+            * * * * * * *  X D A T A   M E M O R Y  * * * * * * *
+            XDATA   0000H     0009H     UNIT         ?XD?CALC
+            XDATA   0009H     0009H     UNIT         _XDATA_GROUP_
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     3FFDH                  *** GAP ***
+            CODE    4000H     0179H     UNIT         ?C?LIB_CODE
+            CODE    4179H     0153H     UNIT         ?PR?_CALC_OPFUNCTIONS?CALC
+            CODE    42CCH     00FDH     UNIT         ?PR?_CALC_DECASCII?CALC
+            CODE    43C9H     00EBH     UNIT         ?PR?CALC_EVALUATE?CALC
+            CODE    44B4H     0076H     UNIT         ?PR?_CALC_ASCIIDEC?CALC
+            CODE    452AH     004EH     UNIT         ?PR?INPUT?KEYPAD
+            CODE    4578H     0044H     UNIT         ?C?LDIV
+            CODE    45BCH     0043H     UNIT         ?PR?_CALC_DISPLAY?CALC
+            CODE    45FFH     0041H     UNIT         ?PR?_CALC_CHKERROR?CALC
+            CODE    4640H     003BH     UNIT         LCD
+            CODE    467BH     0023H     UNIT         ?PR?MAIN?CALC
+            CODE    469EH     0023H     UNIT         ?PR?_CALC_OUTPUT?CALC
+            CODE    46C1H     0016H     UNIT         ?PR?_CALC_TESTKEY?CALC
+            CODE    46D7H     000CH     UNIT         ?C_C51STARTUP
+            CODE    46E3H     000BH     UNIT         ?CO?CALC
+            CODE    46EEH     0007H     UNIT         ?PR?CALC_GETKEY?CALC
+
+
+BL51 BANKED LINKER/LOCATER V4.02                                                      11/03/2000  12:23:09  PAGE 2
+
+
+
+OVERLAY MAP OF MODULE:   calc (CALC)
+
+
+SEGMENT                              DATA_GROUP          XDATA_GROUP
+  +--> CALLED SEGMENT              START    LENGTH     START    LENGTH
+----------------------------------------------------------------------
+?C_C51STARTUP                      -----    -----      -----    -----
+  +--> ?PR?MAIN?CALC
+
+?PR?MAIN?CALC                      -----    -----      -----    -----
+  +--> ?PR?_CALC_OUTPUT?CALC
+  +--> ?PR?CALC_EVALUATE?CALC
+
+?PR?_CALC_OUTPUT?CALC              -----    -----      -----    -----
+  +--> ?PR?_CALC_DECASCII?CALC
+  +--> ?PR?_CALC_DISPLAY?CALC
+
+?PR?_CALC_DECASCII?CALC            000EH    000DH      -----    -----
+
+?PR?_CALC_DISPLAY?CALC             000EH    0005H      -----    -----
+  +--> ?CO?CALC
+
+?PR?CALC_EVALUATE?CALC             0008H    0005H      0009H    0009H
+  +--> ?PR?CALC_GETKEY?CALC
+  +--> ?PR?_CALC_TESTKEY?CALC
+  +--> ?PR?_CALC_DISPLAY?CALC
+  +--> ?PR?_CALC_ASCIIDEC?CALC
+  +--> ?PR?_CALC_OPFUNCTIONS?CALC
+
+?PR?CALC_GETKEY?CALC               -----    -----      -----    -----
+  +--> ?PR?INPUT?KEYPAD
+
+?PR?_CALC_ASCIIDEC?CALC            000DH    000BH      -----    -----
+
+?PR?_CALC_OPFUNCTIONS?CALC         000DH    0001H      -----    -----
+  +--> ?PR?_CALC_CHKERROR?CALC
+  +--> ?PR?_CALC_OUTPUT?CALC
+
+?PR?_CALC_CHKERROR?CALC            000EH    0004H      -----    -----
+
+
+
+SYMBOL TABLE OF MODULE:  calc (CALC)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        CALC
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  C:46EEH         PUBLIC        calc_getkey
+  B:00B0H.4       PUBLIC        T0
+  B:00D0H.6       PUBLIC        AC
+  B:00B0H.5       PUBLIC        T1
+  B:00A8H.7       PUBLIC        EA
+  C:469EH         PUBLIC        _calc_output
+  D:002BH         SYMBOL        lvalue
+BL51 BANKED LINKER/LOCATER V4.02                                                      11/03/2000  12:23:09  PAGE 3
+
+
+  C:42CCH         PUBLIC        _calc_decascii
+  C:44BAH         PUBLIC        _calc_asciidec
+  D:002FH         SYMBOL        rvalue
+  C:4179H         PUBLIC        _calc_opfunctions
+  B:00B0H.7       PUBLIC        RD
+  B:00A8H.4       PUBLIC        ES
+  B:0098H.0       PUBLIC        RI
+  B:00B0H.2       PUBLIC        INT0
+  B:00D0H.7       PUBLIC        CY
+  B:0098H.1       PUBLIC        TI
+  B:00B0H.3       PUBLIC        INT1
+  B:00B8H.4       PUBLIC        PS
+  B:00D0H.2       PUBLIC        OV
+  C:467BH         PUBLIC        main
+  B:00B0H.6       PUBLIC        WR
+  X:0000H         SYMBOL        outputbuffer
+  C:4608H         PUBLIC        _calc_chkerror
+  B:0088H.1       PUBLIC        IE0
+  B:0088H.3       PUBLIC        IE1
+  B:00A8H.1       PUBLIC        ET0
+  B:00A8H.3       PUBLIC        ET1
+  B:0088H.5       PUBLIC        TF0
+  B:0088H.7       PUBLIC        TF1
+  B:0098H.2       PUBLIC        RB8
+  B:00A8H.0       PUBLIC        EX0
+  B:0088H.0       PUBLIC        IT0
+  B:0098H.3       PUBLIC        TB8
+  B:00A8H.2       PUBLIC        EX1
+  B:0088H.2       PUBLIC        IT1
+  B:00D0H.0       PUBLIC        P
+  C:45C2H         PUBLIC        _calc_display
+  B:0098H.7       PUBLIC        SM0
+  B:0098H.6       PUBLIC        SM1
+  C:43C9H         PUBLIC        calc_evaluate
+  B:0098H.5       PUBLIC        SM2
+  B:00B8H.1       PUBLIC        PT0
+  B:00B8H.3       PUBLIC        PT1
+  B:00D0H.3       PUBLIC        RS0
+  B:0088H.4       PUBLIC        TR0
+  B:00D0H.4       PUBLIC        RS1
+  B:0088H.6       PUBLIC        TR1
+  B:00B8H.0       PUBLIC        PX0
+  B:00B8H.2       PUBLIC        PX1
+  D:0033H         SYMBOL        lasttoken
+  D:0034H         SYMBOL        currtoken
+  C:46C1H         PUBLIC        _calc_testkey
+  B:0098H.4       PUBLIC        REN
+  D:0035H         SYMBOL        lastpress
+  B:00B0H.0       PUBLIC        RXD
+  B:00B0H.1       PUBLIC        TXD
+  B:00D0H.5       PUBLIC        F0
+  -------         PROC          MAIN
+  C:467BH         LINE#         20
+  C:467BH         LINE#         23
+  C:4684H         LINE#         24
+  C:468CH         LINE#         25
+  C:468FH         LINE#         26
+BL51 BANKED LINKER/LOCATER V4.02                                                      11/03/2000  12:23:09  PAGE 4
+
+
+  C:4692H         LINE#         27
+  C:4695H         LINE#         28
+  C:469BH         LINE#         29
+  -------         ENDPROC       MAIN
+  -------         PROC          CALC_EVALUATE
+  -------         DO            CALC_EVALUATE
+  D:0008H         SYMBOL        key
+  D:0009H         SYMBOL        i
+  X:0009H         SYMBOL        number
+  D:000BH         SYMBOL        bufferptr
+  -------         ENDDO         bufferptr
+  C:43C9H         LINE#         32
+  C:43C9H         LINE#         33
+  C:43C9H         LINE#         39
+  C:43CEH         LINE#         40
+  C:43DCH         LINE#         41
+  C:43EAH         LINE#         42
+  C:43F0H         LINE#         44
+  C:43F0H         LINE#         45
+  C:43F5H         LINE#         46
+  C:43FBH         LINE#         51
+  C:440AH         LINE#         52
+  C:4413H         LINE#         53
+  C:441CH         LINE#         54
+  C:4424H         LINE#         55
+  C:4424H         LINE#         56
+  C:4427H         LINE#         62
+  C:4427H         LINE#         64
+  C:442CH         LINE#         65
+  C:4439H         LINE#         67
+  C:4444H         LINE#         70
+  C:444AH         LINE#         71
+  C:444FH         LINE#         72
+  C:446BH         LINE#         75
+  C:446EH         LINE#         76
+  C:4473H         LINE#         77
+  C:4479H         LINE#         79
+  C:447EH         LINE#         82
+  C:4483H         LINE#         83
+  C:449FH         LINE#         85
+  C:44A5H         LINE#         89
+  C:44AEH         LINE#         91
+  C:44AEH         LINE#         92
+  C:44B1H         LINE#         93
+  -------         ENDPROC       CALC_EVALUATE
+  -------         PROC          _CALC_OPFUNCTIONS
+  D:0007H         SYMBOL        token
+  -------         DO            token
+  D:000DH         SYMBOL        result
+  -------         ENDDO         result
+  C:4179H         LINE#         96
+  C:4179H         LINE#         99
+  C:4179H         LINE#         100
+  C:419AH         LINE#         102
+  C:41B2H         LINE#         103
+  C:41C8H         LINE#         104
+  C:41CDH         LINE#         105
+BL51 BANKED LINKER/LOCATER V4.02                                                      11/03/2000  12:23:09  PAGE 5
+
+
+  C:41D0H         LINE#         107
+  C:41D6H         LINE#         109
+  C:41EEH         LINE#         110
+  C:4205H         LINE#         111
+  C:420AH         LINE#         112
+  C:420DH         LINE#         114
+  C:4213H         LINE#         116
+  C:422BH         LINE#         117
+  C:4246H         LINE#         118
+  C:424BH         LINE#         119
+  C:424DH         LINE#         121
+  C:4252H         LINE#         123
+  C:426AH         LINE#         124
+  C:4278H         LINE#         125
+  C:4293H         LINE#         126
+  C:4298H         LINE#         127
+  C:429AH         LINE#         129
+  C:429DH         LINE#         130
+  C:429FH         LINE#         132
+  C:42A4H         LINE#         134
+  C:42ADH         LINE#         135
+  C:42B5H         LINE#         136
+  C:42B8H         LINE#         137
+  C:42BBH         LINE#         138
+  C:42BFH         LINE#         140
+  C:42C2H         LINE#         142
+  C:42C2H         LINE#         143
+  -------         ENDPROC       _CALC_OPFUNCTIONS
+  -------         PROC          L?0087
+  -------         ENDPROC       L?0087
+  -------         PROC          _CALC_CHKERROR
+  D:000EH         SYMBOL        num
+  C:4608H         LINE#         151
+  C:4610H         LINE#         154
+  C:4636H         LINE#         155
+  C:463BH         LINE#         157
+  C:463FH         LINE#         158
+  -------         ENDPROC       _CALC_CHKERROR
+  -------         PROC          _CALC_OUTPUT
+  D:0006H         SYMBOL        status
+  C:469EH         LINE#         161
+  C:469EH         LINE#         166
+  C:46ACH         LINE#         167
+  C:46BAH         LINE#         168
+  C:46BAH         LINE#         169
+  C:46BDH         LINE#         170
+  C:46C0H         LINE#         171
+  C:46C0H         LINE#         172
+  -------         ENDPROC       _CALC_OUTPUT
+  -------         PROC          L?0088
+  -------         ENDPROC       L?0088
+  -------         PROC          _CALC_ASCIIDEC
+  D:000DH         SYMBOL        buffer
+  -------         DO            buffer
+  D:0010H         SYMBOL        value
+  D:0014H         SYMBOL        digit
+  -------         ENDDO         digit
+BL51 BANKED LINKER/LOCATER V4.02                                                      11/03/2000  12:23:09  PAGE 6
+
+
+  C:44BAH         LINE#         175
+  C:44C0H         LINE#         177
+  C:44C0H         LINE#         179
+  C:44C9H         LINE#         180
+  C:44D7H         LINE#         181
+  C:44EFH         LINE#         182
+  C:4514H         LINE#         183
+  C:451FH         LINE#         184
+  C:4521H         LINE#         185
+  C:4529H         LINE#         186
+  -------         ENDPROC       _CALC_ASCIIDEC
+  -------         PROC          _CALC_DECASCII
+  D:0004H         SYMBOL        num
+  -------         DO            num
+  D:000EH         SYMBOL        temp
+  D:0012H         SYMBOL        arrayptr
+  D:0014H         SYMBOL        divisor
+  D:0004H         SYMBOL        result
+  D:0018H         SYMBOL        remainder
+  D:0007H         SYMBOL        asciival
+  D:0019H         SYMBOL        i
+  C:43C2H         SYMBOL        done
+  -------         ENDDO         done
+  C:42CCH         LINE#         188
+  C:42CCH         LINE#         191
+  C:42D4H         LINE#         192
+  C:42DAH         LINE#         193
+  C:42E4H         LINE#         200
+  C:42EAH         LINE#         201
+  C:42F3H         LINE#         202
+  C:42F6H         LINE#         203
+  C:42F6H         LINE#         205
+  C:4309H         LINE#         206
+  C:430FH         LINE#         207
+  C:4335H         LINE#         208
+  C:4335H         LINE#         210
+  C:433AH         LINE#         211
+  C:4351H         LINE#         212
+  C:4364H         LINE#         216
+  C:436EH         LINE#         217
+  C:4379H         LINE#         222
+  C:437DH         LINE#         223
+  C:4384H         LINE#         224
+  C:4384H         LINE#         226
+  C:439DH         LINE#         228
+  C:43B1H         LINE#         229
+  C:43C2H         LINE#         230
+  C:43C8H         LINE#         231
+  -------         ENDPROC       _CALC_DECASCII
+  -------         PROC          _CALC_TESTKEY
+  D:0007H         SYMBOL        key
+  C:46C1H         LINE#         234
+  C:46C1H         LINE#         236
+  C:46D1H         LINE#         237
+  C:46D4H         LINE#         239
+  C:46D6H         LINE#         240
+  -------         ENDPROC       _CALC_TESTKEY
+BL51 BANKED LINKER/LOCATER V4.02                                                      11/03/2000  12:23:09  PAGE 7
+
+
+  -------         PROC          CALC_GETKEY
+  -------         DO            CALC_GETKEY
+  D:0007H         SYMBOL        mykey
+  -------         ENDDO         mykey
+  C:46EEH         LINE#         246
+  C:46EEH         LINE#         249
+  C:46EEH         LINE#         250
+  C:46F1H         LINE#         251
+  C:46F4H         LINE#         252
+  C:46F4H         LINE#         253
+  -------         ENDPROC       CALC_GETKEY
+  -------         PROC          L?0089
+  -------         ENDPROC       L?0089
+  -------         PROC          _CALC_DISPLAY
+  D:000EH         SYMBOL        buf
+  -------         DO            buf
+  D:0011H         SYMBOL        i
+  -------         ENDDO         i
+  C:45C2H         LINE#         255
+  C:45C8H         LINE#         258
+  C:45CDH         LINE#         259
+  C:45D0H         LINE#         260
+  C:45DDH         LINE#         261
+  C:45F1H         LINE#         262
+  C:45F4H         LINE#         263
+  C:45FEH         LINE#         264
+  -------         ENDPROC       _CALC_DISPLAY
+  -------         ENDMOD        CALC
+
+  -------         MODULE        KEYPAD
+  C:452AH         SEGMENT       ?PR?INPUT?KEYPAD
+  D:001BH         SEGMENT       ?DT?INPUT?KEYPAD
+  C:452AH         PUBLIC        INPUT
+  D:0083H         SYMBOL        DPH
+  D:0082H         SYMBOL        DPL
+  C:4568H         SYMBOL        KEYCODES
+  D:001BH         SYMBOL        KEYFLAGS
+  N:0000H         SYMBOL        KEYPAD
+  C:452AH         SYMBOL        KEYSCAN
+  N:00EFH         SYMBOL        KEY_ROW1
+  N:00DFH         SYMBOL        KEY_ROW2
+  N:00BFH         SYMBOL        KEY_ROW3
+  N:007FH         SYMBOL        KEY_ROW4
+  C:453DH         SYMBOL        KS0
+  C:4548H         SYMBOL        KS1
+  C:454AH         SYMBOL        KS2
+  C:4560H         SYMBOL        KSEND
+  C:4557H         SYMBOL        KSNEW
+  C:4534H         SYMBOL        KSROW
+  D:0090H         SYMBOL        P1
+  D:00A0H         SYMBOL        P2
+  C:452AH         LINE#         34
+  C:452CH         LINE#         35
+  C:452EH         LINE#         37
+  C:4530H         LINE#         38
+  C:4532H         LINE#         39
+  C:4534H         LINE#         40
+BL51 BANKED LINKER/LOCATER V4.02                                                      11/03/2000  12:23:09  PAGE 8
+
+
+  C:4536H         LINE#         41
+  C:4537H         LINE#         42
+  C:4539H         LINE#         43
+  C:453BH         LINE#         44
+  C:453DH         LINE#         45
+  C:453EH         LINE#         46
+  C:453FH         LINE#         47
+  C:4541H         LINE#         48
+  C:4542H         LINE#         49
+  C:4544H         LINE#         50
+  C:4546H         LINE#         51
+  C:4548H         LINE#         52
+  C:454AH         LINE#         53
+  C:454BH         LINE#         54
+  C:454CH         LINE#         55
+  C:454EH         LINE#         57
+  C:454FH         LINE#         58
+  C:4550H         LINE#         59
+  C:4551H         LINE#         60
+  C:4553H         LINE#         62
+  C:4554H         LINE#         63
+  C:4555H         LINE#         64
+  C:4557H         LINE#         67
+  C:455AH         LINE#         68
+  C:455BH         LINE#         69
+  C:455CH         LINE#         70
+  C:455EH         LINE#         71
+  C:455FH         LINE#         72
+  C:4560H         LINE#         73
+  C:4563H         LINE#         74
+  C:4565H         LINE#         75
+  C:4567H         LINE#         76
+  -------         ENDMOD        KEYPAD
+
+  -------         MODULE        LCD
+  C:4640H         SEGMENT       LCD
+  C:465AH         PUBLIC        CLEARSCREEN
+  C:4640H         PUBLIC        INITIALISE
+  C:4655H         PUBLIC        _OUTPUT
+  D:00E0H         SYMBOL        ACC
+  N:0002H         SYMBOL        LCD_BUSY_RD
+  N:0001H         SYMBOL        LCD_CLS
+  N:0000H         SYMBOL        LCD_CMD_WR
+  N:0003H         SYMBOL        LCD_DATA_RD
+  N:0001H         SYMBOL        LCD_DATA_WR
+  N:0002H         SYMBOL        LCD_HOME
+  N:0080H         SYMBOL        LCD_PAGE
+  N:0040H         SYMBOL        LCD_SETCGADDR
+  N:0080H         SYMBOL        LCD_SETDDADDR
+  N:0020H         SYMBOL        LCD_SETFUNCTION
+  N:0004H         SYMBOL        LCD_SETMODE
+  N:0008H         SYMBOL        LCD_SETVISIBLE
+  N:0010H         SYMBOL        LCD_SHIFT
+  D:00A0H         SYMBOL        P2
+  C:4665H         SYMBOL        WRCMD
+  C:466DH         SYMBOL        WRDATA
+  C:4674H         SYMBOL        WTBUSY
+BL51 BANKED LINKER/LOCATER V4.02                                                      11/03/2000  12:23:09  PAGE 9
+
+
+  C:4640H         LINE#         41
+  C:4642H         LINE#         42
+  C:4645H         LINE#         43
+  C:4647H         LINE#         44
+  C:464AH         LINE#         45
+  C:464CH         LINE#         46
+  C:464FH         LINE#         47
+  C:4651H         LINE#         48
+  C:4654H         LINE#         49
+  C:4655H         LINE#         52
+  C:4656H         LINE#         53
+  C:4659H         LINE#         54
+  C:465AH         LINE#         58
+  C:465CH         LINE#         59
+  C:465FH         LINE#         60
+  C:4661H         LINE#         61
+  C:4664H         LINE#         62
+  C:4665H         LINE#         71
+  C:4668H         LINE#         72
+  C:466AH         LINE#         73
+  C:466BH         LINE#         74
+  C:466DH         LINE#         77
+  C:4670H         LINE#         78
+  C:4672H         LINE#         79
+  C:4673H         LINE#         80
+  C:4674H         LINE#         84
+  C:4676H         LINE#         85
+  C:4677H         LINE#         86
+  C:467AH         LINE#         87
+  -------         ENDMOD        LCD
+
+  -------         MODULE        ?C?CLDPTR
+  C:4000H         PUBLIC        ?C?CLDPTR
+  -------         ENDMOD        ?C?CLDPTR
+
+  -------         MODULE        ?C?CLDOPTR
+  C:4019H         PUBLIC        ?C?CLDOPTR
+  -------         ENDMOD        ?C?CLDOPTR
+
+  -------         MODULE        ?C?LMUL
+  C:4046H         PUBLIC        ?C?LMUL
+  -------         ENDMOD        ?C?LMUL
+
+  -------         MODULE        ?C?SLDIV
+  C:4578H         PUBLIC        ?C?SLDIV
+  -------         ENDMOD        ?C?SLDIV
+
+  -------         MODULE        ?C?SLCMP
+  C:4095H         PUBLIC        ?C?SLCMP
+  -------         ENDMOD        ?C?SLCMP
+
+  -------         MODULE        ?C?ULDIV
+  C:40E7H         PUBLIC        ?C?ULDIV
+  -------         ENDMOD        ?C?ULDIV
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 052CH BYTE (64%) *
+BL51 BANKED LINKER/LOCATER V4.02                                                      11/03/2000  12:23:09  PAGE 10
+
+
+******************************************************************************
+
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,1905 @@
+,,,; CONVERTED TASM PIC16F877 C:\PIC\GEPE456.ASM TO MPASM C:\ASMCNV\GEPE456.ASM 01-22-2001 22:15:32
+,,,
+,,,        list p=16F877,r=dec
+,,,                            ;GEPE456.ASM 07SEP00 - JOHN BECKER - EPE LCD GRAPH DEMO 2 (MAIN DEMOS)
+,,,
+,,,#DEFINE   PAGE0 BCF H'03',5;STATUS bit 5
+,,,#DEFINE   PAGE1 BSF H'03',5;STATUS bit 5
+,,,
+,,,INDF      EQU H'00'         ;page 0, 1, 2, 3
+,,,OPSHUN    EQU H'01'         ;page 1, 3
+,,,PCL       EQU H'02'         ;page 0, 1, 2, 3
+,,,STATUS    EQU H'03'         ;page 0, 1, 2, 3
+,,,FSR       EQU H'04'         ;page 0, 1, 2, 3
+,,,
+,,,PORTA     EQU H'05'         ;page 0
+,,,TRISA     EQU H'05'         ;page 1
+,,,PORTB     EQU H'06'         ;page 0, 2
+,,,TRISB     EQU H'06'         ;page 1, 3
+,,,PORTC     EQU H'07'         ;page 0
+,,,TRISC     EQU H'07'         ;page 1
+,,,PORTD     EQU H'08'         ;page 0
+,,,TRISD     EQU H'08'         ;page 1
+,,,PORTE     EQU H'09'         ;page 0
+,,,TRISE     EQU H'09'         ;page 1
+,,,INTCON    EQU H'0B'         ;page 0, 1, 2, 3
+,,,EEDATA    EQU H'0C'         ;page 2
+,,,EECON1    EQU H'0C'         ;page 3
+,,,EEADR     EQU H'0D'         ;page 2
+,,,
+,,,LOOPB     EQU H'20'         ; general loop
+,,,LOOPC     EQU H'21'         ; general loop
+,,,LOOPD     EQU H'22'         ; general loop
+,,,LOOPE     EQU H'23'         ; general loop
+,,,STORE1    EQU H'24'         ; temp store
+,,,TEMPA     EQU H'25'         ; temp store
+,,,CLKCNT    EQU H'26'         ; counter for PAUSE val
+,,,ADRLSB    EQU H'27'         ; low address
+,,,ADRMSB    EQU H'28'         ; high address
+,,,ATTRIB    EQU H'29'         ; ATTRIBUTE value
+,,,BITVAL    EQU H'2A'         ; val of bit to be set/reset
+,,,RDBYTE    EQU H'2B'         ; byte read from screen
+,,,COUNT     EQU H'2C'         ; counter for BIRD loop, used also for waveform
+,,,COLUMN    EQU H'2D'         ; column length holder
+,,,QCKCOL    EQU H'2E'         ; quack bill column
+,,,PEAKLO    EQU H'2F'         ; waveform peak lo (demo 11)
+,,,PEAKHI    EQU H'30'         ; waveform peak hi (demo 11)
+,,,LOBIT     EQU H'31'         ; waveform section (demo 11)
+,,,LOOPLO    EQU H'32'         ; waveform section (demo 11)
+,,,
+,,,JOIN00    EQU H'34'         ; 1st store for BIRD roll-over join (right-hand edge bit)
+,,,                            ; extends to $50 for JOIN32, used also for waveforms
+,,,                            ; (64 for scope style)
+,,,
+,,,                            ;........FIXED VALUES FOR COMMANDS
+,,,
+,,,TXHOME    EQU H'40'         ; text home address command
+,,,TXAREA    EQU H'41'         ; text area (columns) address command
+,,,GRHOME    EQU H'42'         ; graphics home address command
+,,,GRAREA    EQU H'43'         ; graphic area (columns) address command
+,,,AWRON     EQU H'B0'         ; autowrite on command
+,,,AWROFF    EQU H'B2'         ; autowrite off command
+,,,OFFSET    EQU H'22'         ; offset command
+,,,ADPSET    EQU H'24'         ; address set command
+,,,PEEK      EQU H'E0'         ; screen peek command
+,,,CSRPOS    EQU H'21'         ; set cursor position ommand
+,,,
+,,,                            ;........BIT VALUES
+,,,
+,,,W         EQU 0             ; working reg
+,,,F         EQU 1             ; file reg
+,,,Z         EQU 2             ; zero status
+,,,C         EQU 0             ; CARRY status
+,,,RP0       EQU 5             ; STATUS bank reg
+,,,RP1       EQU 6             ; STATUS bank reg
+,,,RD        EQU 0             ; EEPROM read flag
+,,,EEPGD     EQU 7             ; EECON1 reg
+,,,FS        EQU B'00000000'   ;FS mode set by bit 5: 1 = 6x8, 0 = 8x8
+,,,                            ;8x8 needed for EPE demos
+,,,
+,,,                            ;..........
+,,,
+,,,          ORG 0
+0000,2805,,          GOTO 5
+,,,
+,,,          ORG 5
+,,,
+0005,1283,,          BCF STATUS,RP0
+0006,1303,,          BCF STATUS,RP1
+0007,0185,,          CLRF PORTA
+0008,0186,,          CLRF PORTB
+0009,300F,,          MOVLW B'00001111' ; FS low, RST low, CD CE RD WR high
+000A,0087,,          MOVWF PORTC
+000B,0188,,          CLRF PORTD
+000C,0189,,          CLRF PORTE
+000D,1683,,          PAGE1
+000E,30FF,,          MOVLW 255
+000F,0085,,          MOVWF TRISA       ; PORTA as input
+0010,0186,,          CLRF TRISB        ; PORTB as output
+0011,3000,,          MOVLW FS
+0012,0087,,          MOVWF TRISC       ; PORTC as output GRAPHIC LCD control/FS
+0013,0188,,          CLRF TRISD        ; PORTD as output GRAPHIC LCD D0-D7
+0014,0189,,          CLRF TRISE        ; PORTE as output
+0015,3086,,          MOVLW B'10000110' ; pull-up Rs off (bit 7 hi), timer 1/25 sec
+0016,0081,,          MOVWF OPSHUN      ; (for 3.2768MHz xtal)
+0017,1283,,          PAGE0
+0018,301F,,          MOVLW B'00011111' ; FS low, RST CD CE RD WR high
+0019,0087,,          MOVWF PORTC
+,,,
+001A,256D,,          CALL PAUSIT
+001B,28F0,,          GOTO GRAPHIC
+,,,
+001C,0782,TABLE1,TABLE1    ADDWF PCL,F
+001D,3447,,          RETLW 'G'
+001E,3452,,          RETLW 'R'
+001F,3441,,          RETLW 'A'
+0020,3450,,          RETLW 'P'
+0021,3448,,          RETLW 'H'
+0022,3449,,          RETLW 'I'
+0023,3443,,          RETLW 'C'
+0024,3420,,          RETLW ' '
+0025,344C,,          RETLW 'L'
+0026,3443,,          RETLW 'C'
+0027,3444,,          RETLW 'D'
+0028,3420,,          RETLW ' '
+0029,3444,,          RETLW 'D'
+002A,3445,,          RETLW 'E'
+002B,344D,,          RETLW 'M'
+002C,344F,,          RETLW 'O'
+,,,
+002D,3445,,          RETLW 'E'
+002E,3450,,          RETLW 'P'
+002F,3445,,          RETLW 'E'
+0030,3420,,          RETLW ' '
+0031,3453,,          RETLW 'S'
+0032,3448,,          RETLW 'H'
+0033,344F,,          RETLW 'O'
+0034,3457,,          RETLW 'W'
+0035,3453,,          RETLW 'S'
+0036,3420,,          RETLW ' '
+0037,3459,,          RETLW 'Y'
+0038,344F,,          RETLW 'O'
+0039,3455,,          RETLW 'U'
+003A,3420,,          RETLW ' '
+003B,3448,,          RETLW 'H'
+003C,344F,,          RETLW 'O'
+003D,3457,,          RETLW 'W'
+003E,3421,,          RETLW '!'
+,,,
+003F,3454,,          RETLW 'T'
+0040,3448,,          RETLW 'H'
+0041,3449,,          RETLW 'I'
+0042,3453,,          RETLW 'S'
+0043,3420,,          RETLW ' '
+0044,3449,,          RETLW 'I'
+0045,3453,,          RETLW 'S'
+0046,3420,,          RETLW ' '
+0047,3450,,          RETLW 'P'
+0048,3441,,          RETLW 'A'
+0049,3447,,          RETLW 'G'
+004A,3445,,          RETLW 'E'
+004B,3420,,          RETLW ' '
+004C,3432,,          RETLW '2'
+,,,
+004D,3451,,          RETLW 'Q'
+004E,3455,,          RETLW 'U'
+004F,3441,,          RETLW 'A'
+0050,3443,,          RETLW 'C'
+0051,344B,,          RETLW 'K'
+,,,
+0052,0782,AMPLIFIER,AMPLIFIER ADDWF PCL,F
+0053,3480,,          RETLW H'80'       ; amp top left + first slope down (1
+,,,
+0054,3483,,          RETLW H'83'       ;amp input (2
+0055,3486,,          RETLW H'86'       ;cap top
+0056,3483,,          RETLW H'83'       ;amp input
+0057,3483,,          RETLW H'83'       ;amp input
+0058,3481,,          RETLW H'81'       ;amp left
+0059,3482,,          RETLW H'82'       ;amp slope down
+005A,3483,,          RETLW H'83'       ;amp output
+005B,3486,,          RETLW H'86'       ;cap top
+005C,3483,,          RETLW H'83'       ;amp output
+,,,
+005D,348B,,          RETLW H'8B'       ;word IN (3
+005E,3487,,          RETLW H'87'       ;cap bot
+005F,3489,,          RETLW H'89'       ;resistor top
+0060,3400,,          RETLW H'00'
+0061,3481,,          RETLW H'81'       ;amp left
+0062,3484,,          RETLW H'84'       ;amp slope up
+0063,3400,,          RETLW H'00'
+0064,3487,,          RETLW H'87'       ;cap bot
+0065,348C,,          RETLW H'8C'       ;1st part OUT
+0066,348D,,          RETLW H'8D'       ;2nd part OUT
+,,,
+0067,3488,,          RETLW H'88'       ;resistor (4
+0068,3400,,          RETLW H'00'
+0069,3485,,          RETLW H'85'       ;amp bot left + first slope up
+,,,
+006A,3488,,          RETLW H'88'       ;resistor (5
+006B,348A,,          RETLW H'8A'       ;resistor bot (6
+006C,348E,,          RETLW H'8E'       ;0V (7
+,,,
+006D,0782,CGTABLE,CGTABLE   ADDWF PCL,F       ; EXTERNAL CG FONT DATA
+,,,
+006E,3480,,          RETLW B'10000000' ; CHARACTER $80
+006F,34C0,,          RETLW B'11000000' ; amp top left + first slope down
+0070,34A0,,          RETLW B'10100000'
+0071,3490,,          RETLW B'10010000'
+0072,3488,,          RETLW B'10001000'
+0073,3484,,          RETLW B'10000100'
+0074,3482,,          RETLW B'10000010'
+0075,3481,,          RETLW B'10000001'
+,,,
+0076,3480,,          RETLW B'10000000' ; CHARACTER $81
+0077,3480,,          RETLW B'10000000' ; amp left
+0078,3480,,          RETLW B'10000000'
+0079,3480,,          RETLW B'10000000'
+007A,3480,,          RETLW B'10000000'
+007B,3480,,          RETLW B'10000000'
+007C,3480,,          RETLW B'10000000'
+007D,3480,,          RETLW B'10000000'
+,,,
+007E,3480,,          RETLW B'10000000' ; CHARACTER $82
+007F,3440,,          RETLW B'01000000' ; amp slope down
+0080,3420,,          RETLW B'00100000'
+0081,3410,,          RETLW B'00010000'
+0082,3408,,          RETLW B'00001000'
+0083,3404,,          RETLW B'00000100'
+0084,3402,,          RETLW B'00000010'
+0085,3401,,          RETLW B'00000001'
+,,,
+0086,3400,,          RETLW B'00000000' ; CHARACTER $83
+0087,3400,,          RETLW B'00000000' ; amp output
+0088,3400,,          RETLW B'00000000'
+0089,3400,,          RETLW B'00000000'
+008A,3400,,          RETLW B'00000000'
+008B,3400,,          RETLW B'00000000'
+008C,3400,,          RETLW B'00000000'
+008D,34FF,,          RETLW B'11111111'
+,,,
+008E,3401,,          RETLW B'00000001' ; CHARACTER $84
+008F,3402,,          RETLW B'00000010' ; amp slope up
+0090,3404,,          RETLW B'00000100'
+0091,3408,,          RETLW B'00001000'
+0092,3410,,          RETLW B'00010000'
+0093,3420,,          RETLW B'00100000'
+0094,3440,,          RETLW B'01000000'
+0095,3480,,          RETLW B'10000000'
+,,,
+0096,3481,,          RETLW B'10000001' ; CHARACTER $85
+0097,3482,,          RETLW B'10000010' ; amp bot left + first slope up
+0098,3484,,          RETLW B'10000100'
+0099,3488,,          RETLW B'10001000'
+009A,3490,,          RETLW B'10010000'
+009B,34A0,,          RETLW B'10100000'
+009C,34C0,,          RETLW B'11000000'
+009D,3480,,          RETLW B'10000000'
+,,,
+009E,3400,,          RETLW B'00000000' ; CHARACTER $86
+009F,3400,,          RETLW B'00000000' ; capacitor top
+00A0,347A,,          RETLW B'01111010'
+00A1,344A,,          RETLW B'01001010'
+00A2,344A,,          RETLW B'01001010'
+00A3,344A,,          RETLW B'01001010'
+00A4,344A,,          RETLW B'01001010'
+00A5,34CB,,          RETLW B'11001011'
+,,,
+00A6,344A,,          RETLW B'01001010' ; CHARACTER $87
+00A7,344A,,          RETLW B'01001010' ; capacitor bot
+00A8,344A,,          RETLW B'01001010'
+00A9,344A,,          RETLW B'01001010'
+00AA,344A,,          RETLW B'01001010'
+00AB,347A,,          RETLW B'01111010'
+00AC,3400,,          RETLW B'00000000'
+00AD,3400,,          RETLW B'00000000'
+,,,
+00AE,3408,,          RETLW B'00001000' ; CHARACTER $88
+00AF,3404,,          RETLW B'00000100' ; resistor
+00B0,3402,,          RETLW B'00000010'
+00B1,3401,,          RETLW B'00000001'
+00B2,3402,,          RETLW B'00000010'
+00B3,3404,,          RETLW B'00000100'
+00B4,3408,,          RETLW B'00001000'
+00B5,3410,,          RETLW B'00010000'
+,,,
+00B6,3402,,          RETLW B'00000010' ; CHARACTER $89
+00B7,3402,,          RETLW B'00000010' ; resistor top
+00B8,3402,,          RETLW B'00000010'
+00B9,3402,,          RETLW B'00000010'
+00BA,3402,,          RETLW B'00000010'
+00BB,3404,,          RETLW B'00000100'
+00BC,3408,,          RETLW B'00001000'
+00BD,3410,,          RETLW B'00010000'
+,,,
+00BE,3408,,          RETLW B'00001000' ; CHARACTER $8A
+00BF,3404,,          RETLW B'00000100' ; resistor bot
+00C0,3402,,          RETLW B'00000010'
+00C1,3402,,          RETLW B'00000010'
+00C2,3402,,          RETLW B'00000010'
+00C3,3402,,          RETLW B'00000010'
+00C4,3402,,          RETLW B'00000010'
+00C5,3400,,          RETLW B'00000000'
+,,,
+00C6,3400,,          RETLW B'00000000' ; CHARACTER $8B
+00C7,3400,,          RETLW B'00000000' ; word IN
+00C8,3492,,          RETLW B'10010010'
+00C9,349A,,          RETLW B'10011010'
+00CA,3496,,          RETLW B'10010110'
+00CB,3492,,          RETLW B'10010010'
+00CC,3400,,          RETLW B'00000000'
+00CD,3400,,          RETLW B'00000000'
+,,,
+00CE,3400,,          RETLW B'00000000' ; CHARACTER $8C
+00CF,3400,,          RETLW B'00000000' ; 1st half word OUT
+00D0,3432,,          RETLW B'00110010'
+00D1,344A,,          RETLW B'01001010'
+00D2,344A,,          RETLW B'01001010'
+00D3,3431,,          RETLW B'00110001'
+00D4,3400,,          RETLW B'00000000'
+00D5,3400,,          RETLW B'00000000'
+,,,
+00D6,3400,,          RETLW B'00000000' ; CHARACTER $8D
+00D7,3400,,          RETLW B'00000000' ; 2nd half word OUT
+00D8,345F,,          RETLW B'01011111'
+00D9,3444,,          RETLW B'01000100'
+00DA,3444,,          RETLW B'01000100'
+00DB,3484,,          RETLW B'10000100'
+00DC,3400,,          RETLW B'00000000'
+00DD,3400,,          RETLW B'00000000'
+,,,
+00DE,3400,,          RETLW B'00000000' ; CHARACTER $8E
+00DF,3465,,          RETLW B'01100101' ; word 0V
+00E0,3495,,          RETLW B'10010101'
+00E1,3495,,          RETLW B'10010101'
+00E2,3462,,          RETLW B'01100010'
+00E3,3400,,          RETLW B'00000000'
+00E4,3400,,          RETLW B'00000000'
+00E5,3400,,          RETLW B'00000000'
+,,,
+00E6,3907,BITSLO,BITSLO    ANDLW 7
+00E7,0782,,          ADDWF PCL,F
+00E8,3480,,          RETLW B'10000000'
+00E9,3440,,          RETLW B'01000000'
+00EA,3420,,          RETLW B'00100000'
+00EB,3410,,          RETLW B'00010000'
+00EC,3408,,          RETLW B'00001000'
+00ED,3404,,          RETLW B'00000100'
+00EE,3402,,          RETLW B'00000010'
+00EF,3401,,          RETLW B'00000001'
+,,,
+,,,                            ;.............
+,,,
+00F0,3022,GRAPHIC,GRAPHIC   MOVLW 34
+00F1,00AD,,          MOVWF COLUMN      ;set column length
+00F2,257F,,          CALL SETUP
+,,,
+00F3,210C,DEM1,DEM1      CALL DEMO1        ; basic circuit diagram
+00F4,2566,,          CALL WAITSW       ; wait until switch pressed
+,,,
+00F5,2156,DEM2,DEM2      CALL DEMO2        ; bit set/clear - square
+00F6,2569,,          CALL WAITOFF      ; wait until switch released
+,,,
+00F7,21C5,DEM3,DEM3      CALL DEMO3        ; text highlight
+00F8,2566,,          CALL WAITSW       ; wait until switch pressed
+,,,
+00F9,21E5,DEM4,DEM4      CALL DEMO4        ; cursor use
+00FA,2566,,          CALL WAITSW       ; wait until switch pressed
+,,,
+00FB,21EE,DEM5,DEM5      CALL DEMO5        ; pan between pages
+00FC,2569,,          CALL WAITOFF      ; wait until switch released
+,,,
+00FD,2213,DEM6,DEM6      CALL DEMO6        ; switch between pages
+00FE,2569,,          CALL WAITOFF      ; wait until switch released
+,,,
+00FF,2229,DEM7,DEM7      CALL DEMO7        ; setting AND-OR-XOR modes (superimpose)
+0100,2566,,          CALL WAITSW       ; wait until switch pressed
+,,,
+0101,2268,DEM8,DEM8      CALL DEMO8        ; bird - data from EEPROM, slow travel right
+0102,2569,,          CALL WAITOFF      ; wait until switch released
+,,,
+0103,2316,DEM9,DEM9      CALL DEMO9        ; full text character set
+0104,2566,,          CALL WAITSW       ; wait until switch pressed
+,,,
+0105,2326,DEM10,DEM10     CALL DEMO10       ; full graphics character set
+0106,2566,,          CALL WAITSW       ; wait until switch pressed
+,,,
+0107,2349,DEM11,DEM11     CALL DEMO11       ; shifting waveform demo - horizontal
+0108,2569,,          CALL WAITOFF      ; wait until switch released
+,,,
+0109,23C7,DEM12,DEM12     CALL DEMO12       ; shifting waveform demo - scope style
+010A,2569,,          CALL WAITOFF      ; wait until switch released
+,,,
+010B,28F0,,          GOTO GRAPHIC      ; end of demo, restart from beginning
+,,,
+,,,                            ;****** DEMO 1 CREATE & SHOW SYMBOLS AS TEXT CHARACTERS **********
+,,,
+010C,3094,DEMO1,DEMO1     MOVLW B'10010100' ; text on, graphic off, cursor & blink off
+010D,2514,,          CALL SENDCMD      ; send command
+,,,
+,,,                            ; SETUP USER CG RAM
+010E,3078,,          MOVLW 120         ; 15 char x 8 byte = 120
+010F,00A1,,          MOVWF LOOPC       ;
+0110,24A2,,          CALL SETCG        ;
+,,,
+0111,01A8,CIRCUIT,CIRCUIT   CLRF ADRMSB       ; SHOW SYMBOLS
+0112,3005,,          MOVLW 5           ; set column
+0113,254A,,          CALL LINE1        ; set cell number for line stated
+0114,3001,,          MOVLW 1           ; character quantity
+0115,00A1,,          MOVWF LOOPC       ;
+0116,01A0,,          CLRF LOOPB        ;
+0117,24C9,,          CALL SHOWCG       ;
+,,,
+0118,01A8,,          CLRF ADRMSB
+0119,3001,,          MOVLW 1           ; set column
+011A,2547,,          CALL LINE2        ; set cell number for line stated
+011B,3009,,          MOVLW 9           ; character quantity
+011C,00A1,,          MOVWF LOOPC       ;
+011D,24C9,,          CALL SHOWCG       ;
+,,,
+011E,01A8,,          CLRF ADRMSB
+011F,3001,,          MOVLW 1           ; set column
+0120,2544,,          CALL LINE3        ; set cell number for line stated
+0121,300A,,          MOVLW 10          ; character quantity
+0122,00A1,,          MOVWF LOOPC       ;
+0123,24C9,,          CALL SHOWCG       ;
+,,,
+0124,01A8,,          CLRF ADRMSB
+0125,3003,,          MOVLW 3           ; set column
+0126,2541,,          CALL LINE4        ; set cell number for line stated
+0127,3003,,          MOVLW 3           ; character quantity
+0128,00A1,,          MOVWF LOOPC       ;
+0129,24C9,,          CALL SHOWCG       ;
+,,,
+012A,01A8,,          CLRF ADRMSB
+012B,3003,,          MOVLW 3           ; set column
+012C,253E,,          CALL LINE5        ; set cell number for line stated
+012D,3001,,          MOVLW 1           ; character quantity
+012E,00A1,,          MOVWF LOOPC       ;
+012F,24C9,,          CALL SHOWCG       ;
+,,,
+0130,01A8,,          CLRF ADRMSB
+0131,3003,,          MOVLW 3           ; set column
+0132,253B,,          CALL LINE6        ; set cell number for line stated
+0133,3001,,          MOVLW 1           ; character quantity
+0134,00A1,,          MOVWF LOOPC       ;
+0135,24C9,,          CALL SHOWCG       ;
+,,,
+0136,01A8,,          CLRF ADRMSB
+0137,3003,,          MOVLW 3           ; set column
+0138,2538,,          CALL LINE7        ; set cell number for line stated
+0139,3001,,          MOVLW 1           ; character quantity
+013A,00A1,,          MOVWF LOOPC       ;
+013B,24C9,,          CALL SHOWCG       ;
+,,,
+013C,,WORDS,WORDS                       ; SHOW TEXT
+013C,01A8,,          CLRF ADRMSB
+013D,3000,,          MOVLW 0           ; set column
+013E,254D,,          CALL LINE0        ; set cell number for line stated
+013F,3010,,          MOVLW 16          ; character quantity
+0140,00A1,,          MOVWF LOOPC       ;
+0141,01A0,,          CLRF LOOPB        ; clear table loop counter
+0142,24B2,,          CALL SHWTXT       ;
+,,,
+0143,01A8,,          CLRF ADRMSB
+0144,3006,,          MOVLW 6           ; set column
+0145,253B,,          CALL LINE6        ; set cell number for line stated
+0146,300A,,          MOVLW 10          ; character quantity
+0147,00A1,,          MOVWF LOOPC       ; table loop counter remains at last call val
+0148,24B2,,          CALL SHWTXT       ;
+,,,
+0149,01A8,,          CLRF ADRMSB
+014A,3006,,          MOVLW 6           ; set column
+014B,2538,,          CALL LINE7        ; set cell number for line stated
+014C,3008,,          MOVLW 8           ; character quantity
+014D,00A1,,          MOVWF LOOPC       ; table loop counter remains at last call val
+014E,24B2,,          CALL SHWTXT       ;
+,,,
+014F,01A8,,          CLRF ADRMSB       ; THIS GOES INTO PAGE 2
+0150,3011,,          MOVLW 17          ; set column
+0151,2544,,          CALL LINE3        ; set cell number for line stated
+0152,300E,,          MOVLW 14          ; character quantity
+0153,00A1,,          MOVWF LOOPC       ; table loop counter remains at last call val
+0154,24B2,,          CALL SHWTXT       ;
+0155,0008,,          RETURN
+,,,
+,,,                            ;********** DEMO 2 BIT SETTING/CLEARING DEMO ****************
+,,,
+0156,3080,DEMO2,DEMO2     MOVLW B'10000000' ; internal CG RAM mode, OR mode
+0157,2514,,          CALL SENDCMD      ; send command
+,,,
+0158,01A8,,          CLRF ADRMSB       ; TEXT HOME ADDRESS $00xx
+0159,01A7,,          CLRF ADRLSB       ; set for PAGE 1
+015A,242B,,          CALL CMDADR       ; send command address
+015B,3040,,          MOVLW TXHOME      ;
+015C,2514,,          CALL SENDCMD      ; send command
+,,,
+015D,309C,,          MOVLW B'10011100' ; text & graphic on, cursor & blink off
+015E,2514,,          CALL SENDCMD      ; send command
+,,,
+,,,                            ; ** SET SINGLE CENTRE BIT **
+015F,300C,,          MOVLW 12          ; set column number
+0160,00A7,,          MOVWF ADRLSB
+0161,3017,,          MOVLW 23          ; set graph line
+0162,254F,,          CALL GLINE        ; multiply by line length to get address
+0163,30F8,,          MOVLW B'11111000' ; set bit 0
+0164,2417,,          CALL BITWRITE
+,,,
+0165,30F8,,          MOVLW B'11111000' ; bits 0-2 indicate bit affected
+0166,00A4,,          MOVWF STORE1      ; bit 3 high set, low = clear
+,,,
+,,,                            ; ** DRAW SQUARE **
+0167,300B,SQUARE,SQUARE    MOVLW 11          ; set column number
+0168,00A7,,          MOVWF ADRLSB
+0169,301E,,          MOVLW 30          ; set graph line
+016A,254F,,          CALL GLINE        ; multiply by line length to get address
+,,,
+016B,3010,,          MOVLW 16
+016C,00A1,,          MOVWF LOOPC
+016D,0824,SQ1,SQ1       MOVF STORE1,W     ; draw up
+016E,2417,,          CALL BITWRITE
+016F,1E05,,          BTFSS PORTA,4     ; check switch
+0170,29C4,,          GOTO ENDDEMO2
+,,,
+0171,2576,,          CALL PAUSE2
+0172,082D,,          MOVF COLUMN,W
+0173,02A7,,          SUBWF ADRLSB,F
+0174,1C03,,          BTFSS STATUS,C
+0175,03A8,,          DECF ADRMSB,F
+0176,0BA1,,          DECFSZ LOOPC,F
+0177,296D,,          GOTO SQ1
+,,,
+0178,1E05,,          BTFSS PORTA,4     ; check switch
+0179,29C4,,          GOTO ENDDEMO2
+,,,
+017A,082D,SQ1A,SQ1A      MOVF COLUMN,W     ; draw right
+017B,3E01,,          ADDLW 1
+017C,07A7,,          ADDWF ADRLSB,F
+017D,1803,,          BTFSC STATUS,C
+017E,0AA8,,          INCF ADRMSB,F
+,,,
+017F,3008,,          MOVLW 8
+0180,00A1,,          MOVWF LOOPC
+0181,0321,SQ2,SQ2       DECF LOOPC,W
+0182,0424,,          IORWF STORE1,W
+0183,2417,,          CALL BITWRITE
+0184,1E05,,          BTFSS PORTA,4     ; check switch
+0185,29C4,,          GOTO ENDDEMO2
+,,,
+0186,2576,,          CALL PAUSE2
+0187,0BA1,,          DECFSZ LOOPC,F
+0188,2981,,          GOTO SQ2
+,,,
+0189,0AA7,,          INCF ADRLSB,F
+018A,3008,,          MOVLW 8
+018B,00A1,,          MOVWF LOOPC
+018C,0321,SQ3,SQ3       DECF LOOPC,W
+018D,0424,,          IORWF STORE1,W
+018E,2417,,          CALL BITWRITE
+018F,1E05,,          BTFSS PORTA,4     ; check switch
+0190,29C4,,          GOTO ENDDEMO2
+,,,
+0191,2576,,          CALL PAUSE2
+0192,0BA1,,          DECFSZ LOOPC,F
+0193,298C,,          GOTO SQ3
+,,,
+0194,1E05,,          BTFSS PORTA,4     ; check switch
+0195,29C4,,          GOTO ENDDEMO2
+,,,
+0196,3010,SQ3A,SQ3A      MOVLW 16          ; draw down
+0197,00A1,,          MOVWF LOOPC
+0198,0824,SQ4,SQ4       MOVF STORE1,W
+0199,2417,,          CALL BITWRITE
+019A,1E05,,          BTFSS PORTA,4     ; check switch
+019B,29C4,,          GOTO ENDDEMO2
+,,,
+019C,2576,,          CALL PAUSE2
+019D,082D,,          MOVF COLUMN,W
+019E,07A7,,          ADDWF ADRLSB,F
+019F,1803,,          BTFSC STATUS,C
+01A0,0AA8,,          INCF ADRMSB,F
+01A1,0BA1,,          DECFSZ LOOPC,F
+01A2,2998,,          GOTO SQ4
+,,,
+01A3,1E05,,          BTFSS PORTA,4     ; check switch
+01A4,29C4,,          GOTO ENDDEMO2
+,,,
+01A5,082D,SQ4A,SQ4A      MOVF COLUMN,W     ; draw left
+01A6,02A7,,          SUBWF ADRLSB,F
+01A7,1C03,,          BTFSS STATUS,C
+01A8,03A8,,          DECF ADRMSB,F
+,,,
+01A9,01A1,,          CLRF LOOPC
+01AA,0821,SQ5,SQ5       MOVF LOOPC,W
+01AB,0424,,          IORWF STORE1,W
+01AC,2417,,          CALL BITWRITE
+01AD,1E05,,          BTFSS PORTA,4     ; check switch
+01AE,29C4,,          GOTO ENDDEMO2
+,,,
+01AF,2576,,          CALL PAUSE2
+01B0,0AA1,,          INCF LOOPC,F
+01B1,1DA1,,          BTFSS LOOPC,3
+01B2,29AA,,          GOTO SQ5
+,,,
+01B3,03A7,,          DECF ADRLSB,F
+01B4,01A1,,          CLRF LOOPC
+01B5,0821,SQ6,SQ6       MOVF LOOPC,W
+01B6,0424,,          IORWF STORE1,W
+01B7,2417,,          CALL BITWRITE
+01B8,1E05,,          BTFSS PORTA,4     ; check switch
+01B9,29C4,,          GOTO ENDDEMO2
+,,,
+01BA,2576,,          CALL PAUSE2
+01BB,0AA1,,          INCF LOOPC,F
+01BC,1DA1,,          BTFSS LOOPC,3
+01BD,29B5,,          GOTO SQ6
+,,,
+01BE,3008,,          MOVLW B'00001000' ; toggle between set/clear by bit 3
+01BF,0724,,          ADDWF STORE1,W
+01C0,38F0,,          IORLW B'11110000'
+01C1,00A4,,          MOVWF STORE1
+,,,
+01C2,1A05,,          BTFSC PORTA,4     ; check switch
+01C3,2967,,          GOTO SQUARE
+,,,
+01C4,0008,ENDDEMO2,ENDDEMO2  RETURN
+,,,
+,,,                            ;************* DEMO 3 HOW TO HIGHLIGHT TEXT ****************
+,,,
+01C5,,DEMO3,DEMO3                       ; ** FILL SELECTED GRAPHIC AREA WITH SELECTED ATTRIBUTE VALUE **
+,,,
+01C5,3002,,          MOVLW 2           ; set graphic address ($02xx)
+01C6,00A8,,          MOVWF ADRMSB
+01C7,3000,,          MOVLW 0           ; set column
+01C8,254D,,          CALL LINE0        ; set cell number for line stated
+01C9,3010,,          MOVLW 16          ; character quantity to be affected
+01CA,00A1,,          MOVWF LOOPC       ;
+01CB,30F5,,          MOVLW B'11110101' ; attribute reverse *
+01CC,00A9,,          MOVWF ATTRIB
+01CD,24BF,,          CALL SETATTR      ;
+,,,                            ; * TRY THESE ATTRIBUTE OPTIONS:
+,,,                            ; movlw %00000000 ; attribute normal
+,,,                            ; movlw %11110101 ; attribute reverse
+,,,                            ; movlw %00001000 ; attribute blink normal
+,,,                            ; movlw %00001101 ; attribute blink reverse
+,,,
+01CE,3002,,          MOVLW 2           ; set graphic address ($02xx)
+01CF,00A8,,          MOVWF ADRMSB
+01D0,3006,,          MOVLW 6           ; set column
+01D1,253B,,          CALL LINE6        ; set cell number for line stated
+01D2,3009,,          MOVLW 9           ; character quantity
+01D3,00A1,,          MOVWF LOOPC       ;
+01D4,300D,,          MOVLW B'00001101' ; attribute blink reverse
+01D5,00A9,,          MOVWF ATTRIB
+01D6,24BF,,          CALL SETATTR      ;
+,,,
+01D7,3002,,          MOVLW 2           ; set graphic address ($02xx)
+01D8,00A8,,          MOVWF ADRMSB
+01D9,3006,,          MOVLW 6           ; set column
+01DA,2538,,          CALL LINE7        ; set cell number for line stated
+01DB,3009,,          MOVLW 9           ; character quantity
+01DC,00A1,,          MOVWF LOOPC       ;
+01DD,300D,,          MOVLW B'00001101' ; attribute blink reverse
+01DE,00A9,,          MOVWF ATTRIB
+01DF,24BF,,          CALL SETATTR      ;
+,,,
+,,,                            ; ** SET FOR TEXT ATTRIBUTE MODE **
+01E0,3084,,          MOVLW B'10000100' ; text attribute mode
+01E1,2514,,          CALL SENDCMD      ; send command
+01E2,309C,,          MOVLW B'10011100' ; text & graphic on, cursor & blink off
+01E3,2514,,          CALL SENDCMD      ; send command
+01E4,0008,,          RETURN
+,,,
+,,,                            ;*********** DEMO 4 SETTING CURSOR ************
+,,,
+01E5,3097,DEMO4,DEMO4     MOVLW B'10010111' ; text on, graphic off, cursor & blink on
+01E6,2514,,          CALL SENDCMD      ; send command
+,,,
+,,,                            ; set cursor position + type
+01E7,300F,,          MOVLW 15          ; set column
+01E8,00A7,,          MOVWF ADRLSB
+01E9,3003,,          MOVLW 3           ; set line
+01EA,00A8,,          MOVWF ADRMSB
+01EB,2456,,          CALL CSRADR
+01EC,245A,,          CALL CSRTYP       ;set type (specified in sub-routine)
+01ED,0008,,          RETURN            ; (from 1 to 8 lines high)
+,,,
+,,,                            ;*********** DEMO 5 PANNING BETWEEN PAGES ************
+,,,
+01EE,,DEMO5,DEMO5                       ; ** SHIFT PAGE 1 LEFT TO REVEAL PAGE 2
+,,,
+01EE,01A8,,          CLRF ADRMSB       ; TEXT HOME ADDRESS $00xx
+01EF,3001,,          MOVLW 1
+01F0,00A7,,          MOVWF ADRLSB      ; set for PAGE 1 col 1
+,,,
+01F1,3010,,          MOVLW 16          ;
+01F2,00A1,,          MOVWF LOOPC
+01F3,242B,SL2,SL2       CALL CMDADR       ; send command address
+01F4,3040,,          MOVLW TXHOME      ;
+01F5,2514,,          CALL SENDCMD      ; send command
+,,,
+01F6,3005,SL2A,SL2A      MOVLW 5           ; short pause
+01F7,00A0,,          MOVWF LOOPB
+01F8,1E05,WAIT2,WAIT2     BTFSS PORTA,4
+01F9,2A12,,          GOTO ENDDEMO5
+01FA,256D,,          CALL PAUSIT
+01FB,0BA0,,          DECFSZ LOOPB,F
+01FC,29F8,,          GOTO WAIT2
+,,,
+01FD,0AA7,,          INCF ADRLSB,F
+01FE,0BA1,,          DECFSZ LOOPC,F
+01FF,29F3,,          GOTO SL2
+,,,
+0200,3011,,          MOVLW 17          ; ** SHIFT PAGE 2 RIGHT TO REVEAL PAGE 1
+0201,00A1,,          MOVWF LOOPC
+0202,3010,,          MOVLW 16
+0203,00A7,,          MOVWF ADRLSB      ; set for PAGE 2
+0204,242B,SL3,SL3       CALL CMDADR       ; send command address
+0205,3040,,          MOVLW TXHOME      ;
+0206,2514,,          CALL SENDCMD      ; send command
+,,,
+0207,3005,SL3A,SL3A      MOVLW 5           ; short pause
+0208,00A0,,          MOVWF LOOPB
+0209,1E05,WAIT3,WAIT3     BTFSS PORTA,4
+020A,2A12,,          GOTO ENDDEMO5
+020B,256D,,          CALL PAUSIT
+020C,0BA0,,          DECFSZ LOOPB,F
+020D,2A09,,          GOTO WAIT3
+,,,
+020E,03A7,,          DECF ADRLSB,F
+020F,0BA1,,          DECFSZ LOOPC,F
+0210,2A04,,          GOTO SL3
+0211,29EE,,          GOTO DEMO5
+,,,
+0212,0008,ENDDEMO5,ENDDEMO5  RETURN
+,,,
+,,,                            ;*********** DEMO 6 SWITCHING BETWEEN PAGES ************
+,,,
+0213,3080,DEMO6,DEMO6     MOVLW B'10000000' ; (OR mode, Internal CG mode)
+0214,2514,,          CALL SENDCMD      ; send command
+,,,
+0215,,DEMO6A,DEMO6A                      ;** CHANGE PAGE **
+0215,01A8,,          CLRF ADRMSB       ; TEXT HOME ADDRESS $00xx
+0216,3011,,          MOVLW 17          ; set for PAGE 2
+0217,00A7,,          MOVWF ADRLSB
+0218,01A1,,          CLRF LOOPC
+0219,242B,SL1,SL1       CALL CMDADR       ; send command address
+021A,3040,,          MOVLW TXHOME      ;
+021B,2514,,          CALL SENDCMD      ; send command
+,,,
+021C,3005,SL1A,SL1A      MOVLW 5           ; short pause
+021D,00A0,,          MOVWF LOOPB
+021E,1E05,WAIT,WAIT      BTFSS PORTA,4     ; check switch press
+021F,2A28,,          GOTO ENDDEMO6
+0220,256D,,          CALL PAUSIT
+0221,0BA0,,          DECFSZ LOOPB,F
+0222,2A1E,,          GOTO WAIT
+,,,
+0223,0AA1,,          INCF LOOPC,F
+0224,01A7,,          CLRF ADRLSB       ; set for PAGE 1
+0225,1CA1,,          BTFSS LOOPC,1
+0226,2A19,,          GOTO SL1
+0227,2A15,,          GOTO DEMO6A
+,,,
+0228,0008,ENDDEMO6,ENDDEMO6  RETURN
+,,,
+,,,                            ;*********** DEMO 7 SETTING AND-OR-XOR MODES ***************
+,,,
+0229,,DEMO7,DEMO7                       ; ** FILL SELECTED GRAPHIC SCREEN AREA WITH VALUES FOR AND-OR-XOR **
+,,,
+,,,                            ; first clear attribute data for text lines 0, 6 & 7 set in DEMO3
+,,,                            ; but graphic data set in DEMO2 (SQUARE) not cleared
+,,,
+0229,3080,,          MOVLW B'10000000' ; clear text attribute mode
+022A,2514,,          CALL SENDCMD      ; send command
+,,,
+022B,309C,,          MOVLW B'10011100' ; text & graphic on, cursor & blink off
+022C,2514,,          CALL SENDCMD      ; send command
+,,,
+022D,01A8,,          CLRF ADRMSB       ; TEXT HOME ADDRESS $00xx
+022E,3000,,          MOVLW 0
+022F,00A7,,          MOVWF ADRLSB
+0230,242B,,          CALL CMDADR       ; send command address
+0231,3040,,          MOVLW TXHOME      ;
+0232,2514,,          CALL SENDCMD      ; send command
+,,,
+0233,3002,,          MOVLW 2           ; set graphic address ($02xx)
+0234,00A8,,          MOVWF ADRMSB
+0235,3000,,          MOVLW 0           ; set column
+0236,254D,,          CALL LINE0        ; set cell number for line stated
+0237,3010,,          MOVLW 16          ; character quantity to be affected
+0238,00A1,,          MOVWF LOOPC       ;
+0239,01A9,,          CLRF ATTRIB
+023A,24BF,,          CALL SETATTR
+,,,
+023B,3002,,          MOVLW 2           ; set graphic address ($02xx)
+023C,00A8,,          MOVWF ADRMSB
+023D,3006,,          MOVLW 6           ; set column
+023E,253B,,          CALL LINE6        ; set cell number for line stated
+023F,3009,,          MOVLW 9           ; character quantity
+0240,00A1,,          MOVWF LOOPC       ;
+0241,01A9,,          CLRF ATTRIB
+0242,24BF,,          CALL SETATTR      ;
+,,,
+0243,3002,,          MOVLW 2           ; set graphic address ($02xx)
+0244,00A8,,          MOVWF ADRMSB
+0245,3006,,          MOVLW 6           ; set column
+0246,2538,,          CALL LINE7        ; set cell number for line stated
+0247,3009,,          MOVLW 9           ; character quantity
+0248,00A1,,          MOVWF LOOPC       ;
+0249,01A9,,          CLRF ATTRIB
+024A,24BF,,          CALL SETATTR      ;
+,,,
+,,,                            ; ** start of AND-OR XOR mode proper **
+,,,
+024B,01A8,,          CLRF ADRMSB       ; TEXT HOME ADDRESS $00xx
+024C,3000,,          MOVLW 0
+024D,00A7,,          MOVWF ADRLSB
+024E,242B,,          CALL CMDADR       ; send command address
+024F,3040,,          MOVLW TXHOME      ;
+0250,2514,,          CALL SENDCMD      ; send command
+,,,
+0251,300F,,          MOVLW 15          ;
+0252,00A2,,          MOVWF LOOPD       ; set line start
+0253,3001,AND2,AND2      MOVLW 1           ; set column number
+0254,00A7,,          MOVWF ADRLSB
+0255,0822,,          MOVF LOOPD,W      ; set graph line
+0256,254F,,          CALL GLINE        ; multiply by line length
+0257,300A,,          MOVLW 10          ; character quantity
+0258,00A1,,          MOVWF LOOPC       ;
+0259,30AA,,          MOVLW B'10101010' ; fill graphic with val shown
+025A,1C22,,          BTFSS LOOPD,0
+025B,3055,,          MOVLW B'01010101' ; fill graphic with val shown
+025C,00A9,,          MOVWF ATTRIB
+025D,24BF,,          CALL SETATTR      ; send value
+025E,0AA2,,          INCF LOOPD,F      ; inc line count
+025F,0822,,          MOVF LOOPD,W
+0260,3A21,,          XORLW 33          ; has line count reached max?
+0261,1D03,,          BTFSS STATUS,Z
+0262,2A53,,          GOTO AND2
+,,,
+0263,,SETAND,SETAND                      ; ** SET AND-OR-XOR MODE ** TRY ANY OF THESE OPTIONS:
+0263,3081,,          MOVLW B'10000001' ; internal CG RAM mode, XOR
+,,,                            ; movlw %10000000 ; internal CG RAM mode, OR
+,,,                            ; movlw %10000011 ; internal CG RAM mode, AND
+0264,2514,,          CALL SENDCMD      ; send command
+,,,
+,,,                            ; ** CHANGE DISPLAY MODE ** TRY ANY OF THESE OPTIONS:
+0265,309C,,          MOVLW B'10011100' ; text & graphic on, cursor & blink off
+,,,                            ; movlw %10010100 ; text on, graphic off, cursor & blink off
+,,,                            ; movlw %10011000 ; text off, graphic on, cursor & blink off
+0266,2514,,          CALL SENDCMD      ; send command
+0267,0008,,          RETURN
+,,,
+,,,                            ;******* DEMO 8 GET GRAPHICS (BIRD) FROM EEPROM, DRAW & REPEAT SHIFT RIGHT ***
+,,,
+0268,246A,DEMO8,DEMO8     CALL CLRTXT
+0269,247C,,          CALL CLRGRAPH
+,,,
+026A,3010,,          MOVLW 16          ; change column length to 16
+026B,00AD,,          MOVWF COLUMN
+026C,2448,,          CALL TEXTAREA     ; SET TEXT AREA
+026D,244F,,          CALL GRAPHAREA    ; SET GRAPHIC AREA
+,,,
+026E,3080,,          MOVLW B'10000000' ; internal CG RAM mode, OR
+026F,2514,,          CALL SENDCMD      ; send command
+0270,309C,,          MOVLW B'10011100' ; text & graphic on, cursor & blink off
+0271,2514,,          CALL SENDCMD      ; send command
+,,,
+0272,01A8,EPE,EPE       CLRF ADRMSB       ; show EPE text PT1
+0273,3001,,          MOVLW 1           ; set column
+0274,00A7,,          MOVWF ADRLSB
+0275,254D,,          CALL LINE0        ; set line
+0276,3009,,          MOVLW 9           ; character quantity
+0277,00A1,,          MOVWF LOOPC       ;
+0278,3010,,          MOVLW 16          ; position in table
+0279,00A0,,          MOVWF LOOPB       ; set table loop counter
+027A,24B2,,          CALL SHWTXT       ;
+,,,
+027B,01A8,,          CLRF ADRMSB       ; set and show EPE text PT2
+027C,300B,,          MOVLW 11          ; set column
+027D,00A7,,          MOVWF ADRLSB
+027E,254D,,          CALL LINE0        ; set line
+027F,3004,,          MOVLW 4           ; character quantity
+0280,00A1,,          MOVWF LOOPC       ;
+0281,301E,,          MOVLW 30          ; position in table
+0282,00A0,,          MOVWF LOOPB       ; set table loop counter
+0283,24B2,,          CALL SHWTXT       ;
+,,,
+0284,1703,,          BSF STATUS,RP1    ; set PIC's Page 2 and EEPROM reading address
+0285,018D,,          CLRF EEADR
+0286,1303,,          BCF STATUS,RP1
+,,,
+0287,01A2,,          CLRF LOOPD
+0288,01A3,,          CLRF LOOPE
+,,,
+0289,0823,BIRDX,BIRDX     MOVF LOOPE,W
+028A,00A7,,          MOVWF ADRLSB      ; set column
+028B,3014,,          MOVLW 20          ; set line
+028C,254F,,          CALL GLINE        ; multiply by line length to get address
+,,,
+028D,3020,BIRD2,BIRD2     MOVLW 32          ; get & show BIRD details from EEPROM
+028E,00A0,,          MOVWF LOOPB
+028F,255D,BIRD2A,BIRD2A    CALL PRMGET
+0290,241C,,          CALL ONEWRITE
+0291,082D,,          MOVF COLUMN,W
+0292,07A7,,          ADDWF ADRLSB,F
+0293,1803,,          BTFSC STATUS,C
+0294,0AA8,,          INCF ADRMSB,F
+0295,0BA0,,          DECFSZ LOOPB,F
+0296,2A8F,,          GOTO BIRD2A
+0297,0AA3,,          INCF LOOPE,F
+0298,1E23,,          BTFSS LOOPE,4
+0299,2A89,,          GOTO BIRDX
+,,,
+029A,1703,BEAK1,BEAK1     BSF STATUS,RP1
+029B,30CA,,          MOVLW 202         ; set for reading from EEPROM byte 202
+029C,008D,,          MOVWF EEADR
+029D,1303,,          BCF STATUS,RP1
+029E,3003,,          MOVLW 3           ;
+029F,00A1,,          MOVWF LOOPC
+,,,
+02A0,3014,,          MOVLW H'14'       ; CG RAM start address $1400 + 128
+02A1,00A8,,          MOVWF ADRMSB      ; (character code $90)
+02A2,3080,,          MOVLW 128         ;
+02A3,00A7,,          MOVWF ADRLSB      ;
+02A4,2432,,          CALL SCREENADR    ; set screen write address
+02A5,30B0,,          MOVLW AWRON       ; AUTO WRITE ON
+02A6,2514,,          CALL SENDCMD      ; send command
+,,,
+02A7,255D,BK2,BK2       CALL PRMGET       ; get BIRD beak details from EEPROM
+02A8,2426,,          CALL AUTOWRITE    ; auto write beak as character $90
+02A9,0A8D,,          INCF EEADR,F      ; just 3 lines of eeprom taken as $90
+02AA,0BA1,,          DECFSZ LOOPC,F    ; is assumed to have been cleared earlier
+02AB,2AA7,,          GOTO BK2
+02AC,30B2,,          MOVLW AWROFF      ; AUTO WRITE OFF
+02AD,2514,,          CALL SENDCMD      ; send command
+,,,
+02AE,3033,,          MOVLW 51          ; start line for water
+02AF,00A3,,          MOVWF LOOPE
+02B0,300C,,          MOVLW 12          ; number of lines to be filled
+02B1,00A2,,          MOVWF LOOPD
+,,,
+02B2,3000,WATER,WATER     MOVLW 0           ; draw "WATER"
+02B3,00A7,,          MOVWF ADRLSB      ; set column
+02B4,0823,,          MOVF LOOPE,W      ; set line
+02B5,254F,,          CALL GLINE        ; multiply by line length
+02B6,3010,,          MOVLW 16          ; character quantity
+02B7,00A1,,          MOVWF LOOPC
+02B8,30AA,,          MOVLW B'10101010' ; "WATER" pattern - try changing this value
+02B9,00A9,,          MOVWF ATTRIB
+02BA,24BF,,          CALL SETATTR
+02BB,0AA3,,          INCF LOOPE,F
+02BC,0BA2,,          DECFSZ LOOPD,F
+02BD,2AB2,,          GOTO WATER
+,,,
+02BE,301C,,          MOVLW 28
+02BF,00A3,,          MOVWF LOOPE
+02C0,3034,,          MOVLW JOIN00      ; clear JOIN variables
+02C1,0084,,          MOVWF FSR
+02C2,0180,CLRJOIN,CLRJOIN   CLRF INDF         ;JKJ: removed ',F'
+02C3,0A84,,          INCF FSR,F
+02C4,0BA3,,          DECFSZ LOOPE,F
+02C5,2AC2,,          GOTO CLRJOIN
+02C6,3006,,          MOVLW 6
+02C7,00AE,,          MOVWF QCKCOL      ; set quack bill column
+02C8,3001,,          MOVLW 1           ; loop period before next quack
+02C9,00AC,,          MOVWF COUNT
+,,,
+02CA,3017,BIRDZ,BIRDZ     MOVLW 23          ; set start line for shift right of display
+02CB,00A3,,          MOVWF LOOPE
+02CC,01A7,,          CLRF ADRLSB       ; set column
+02CD,0823,,          MOVF LOOPE,W      ; set line
+02CE,254F,,          CALL GLINE        ; multiply by line length
+02CF,2432,,          CALL SCREENADR    ; set screen write address
+02D0,3034,,          MOVLW JOIN00      ; set join variable for right-hand line bit
+02D1,0084,,          MOVWF FSR
+,,,
+02D2,3010,BIRDY,BIRDY     MOVLW 16          ;
+02D3,00A2,,          MOVWF LOOPD       ; set loop val (number of columns to be shifted)
+,,,
+02D4,251F,BIRDY2,BIRDY2    CALL DATAREAD     ; read screen, returns with val held in RDBYTE
+02D5,0D80,,          RLF INDF,F        ; rotate STORE into CARRY
+02D6,0CAB,,          RRF RDBYTE,F      ; rotate RDBYTE and bring in CARRY bit
+02D7,0C80,,          RRF INDF,F        ; shift CARRY into STORE
+02D8,30B0,,          MOVLW AWRON       ; AUTO WRITE ON
+02D9,2514,,          CALL SENDCMD      ; send command
+02DA,24D5,,          CALL CHECK3       ; read status for DA0/DA1 = 3
+02DB,082B,,          MOVF RDBYTE,W     ; re-store RDBYTE on screen
+02DC,2505,,          CALL OUTDATA      ;
+02DD,30B2,,          MOVLW AWROFF      ; AUTO WRITE OFF
+02DE,2514,,          CALL SENDCMD      ; send command
+02DF,0BA2,,          DECFSZ LOOPD,F
+02E0,2AD4,,          GOTO BIRDY2       ; repeat until done
+,,,
+02E1,1E05,,          BTFSS PORTA,4     ; check switch
+02E2,0008,,          RETURN
+,,,
+02E3,0A84,,          INCF FSR,F        ; inc JOIN store address
+02E4,0AA3,,          INCF LOOPE,F      ; inc line number
+02E5,0823,,          MOVF LOOPE,W
+02E6,3A33,,          XORLW 51
+02E7,1D03,,          BTFSS STATUS,Z    ; has line limit been reached?
+02E8,2AD2,,          GOTO BIRDY        ; no, so repeat for next line
+,,,
+02E9,03AC,,          DECF COUNT,F      ; dec counter
+02EA,1D03,,          BTFSS STATUS,Z    ; is it zero?
+02EB,2ACA,,          GOTO BIRDZ        ; no, so start again
+,,,
+02EC,,QUACK,QUACK
+02EC,01A8,,          CLRF ADRMSB       ; show beak
+02ED,082E,,          MOVF QCKCOL,W     ; set column
+02EE,2541,,          CALL LINE4        ; set line
+02EF,3090,,          MOVLW H'90'       ; beak symbol
+02F0,241C,,          CALL ONEWRITE
+,,,
+02F1,01A8,,          CLRF ADRMSB       ; show QUACK text
+02F2,3005,,          MOVLW 5           ; set column
+02F3,00A7,,          MOVWF ADRLSB
+02F4,254A,,          CALL LINE1        ; set line
+02F5,3005,,          MOVLW 5           ; character quantity
+02F6,00A1,,          MOVWF LOOPC       ;
+02F7,3030,,          MOVLW 48
+02F8,00A0,,          MOVWF LOOPB       ; set table loop counter
+02F9,24B2,,          CALL SHWTXT       ;
+,,,
+02FA,3003,,          MOVLW 3           ; short pause
+02FB,00A0,,          MOVWF LOOPB
+02FC,256D,QK2,QK2       CALL PAUSIT
+02FD,0BA0,,          DECFSZ LOOPB,F
+02FE,2AFC,,          GOTO QK2
+,,,
+02FF,01A8,,          CLRF ADRMSB       ; clear QUACK text
+0300,3005,,          MOVLW 5           ; set column
+0301,00A7,,          MOVWF ADRLSB
+0302,254A,,          CALL LINE1        ; set line
+0303,3005,,          MOVLW 5           ; character quantity
+0304,00A1,,          MOVWF LOOPC
+0305,3000,,          MOVLW 0           ; clear QUACK
+0306,00A9,,          MOVWF ATTRIB
+0307,24BF,,          CALL SETATTR
+,,,
+0308,01A8,,          CLRF ADRMSB       ; clear QUACK bill
+0309,082E,,          MOVF QCKCOL,W     ; set column
+030A,00A7,,          MOVWF ADRLSB
+030B,2541,,          CALL LINE4        ; set line
+030C,3000,,          MOVLW 0
+030D,241C,,          CALL ONEWRITE
+030E,0AAE,,          INCF QCKCOL,F
+030F,122E,,          BCF QCKCOL,4
+,,,
+0310,3008,,          MOVLW 8           ; set QUACK period loop count
+0311,00AC,,          MOVWF COUNT
+0312,082E,,          MOVF QCKCOL,W
+0313,1903,,          BTFSC STATUS,Z
+0314,0AAC,,          INCF COUNT,F
+0315,2ACA,,          GOTO BIRDZ
+,,,
+,,,                            ;******* DEMO 9 SHOW FULL ALPHANUMERIC TEXT SET ***
+,,,
+0316,,DEMO9,DEMO9                       ; ** WRITE FULL ASCII TEXT **
+0316,3094,,          MOVLW B'10010100' ; text on, graphic off, cursor & blink off
+0317,2514,,          CALL SENDCMD      ; send command
+,,,
+0318,01A8,,          CLRF ADRMSB       ;
+0319,01A7,,          CLRF ADRLSB       ;
+031A,2432,,          CALL SCREENADR    ; set screen write address
+031B,30B0,,          MOVLW AWRON       ; AUTO WRITE ON
+031C,2514,,          CALL SENDCMD      ; send command
+031D,01A0,,          CLRF LOOPB
+031E,0820,DM9,DM9       MOVF LOOPB,W      ;
+031F,2426,,          CALL AUTOWRITE    ; auto write and increment
+0320,0AA0,,          INCF LOOPB,F      ;
+0321,1FA0,,          BTFSS LOOPB,7
+0322,2B1E,,          GOTO DM9          ;
+0323,30B2,,          MOVLW AWROFF      ; AUTO WRITE OFF
+0324,2514,,          CALL SENDCMD      ; send command
+0325,0008,,          RETURN
+,,,
+,,,                            ;******* DEMO 10 SHOW CHARACTER GEN SYMBOL TEXT SET ***
+,,,
+0326,,DEMO10,DEMO10                      ; ** FIRST COPY EEPROM INTO CG RAM **
+,,,
+0326,1703,,          BSF STATUS,RP1    ; set for PIC its Page 2 for EEPROM reading
+0327,018D,,          CLRF EEADR
+0328,1303,,          BCF STATUS,RP1
+,,,
+0329,3014,,          MOVLW H'14'       ; CG RAM start address $1400 + 136
+032A,00A8,,          MOVWF ADRMSB      ;
+032B,3088,,          MOVLW 136
+032C,00A7,,          MOVWF ADRLSB      ;
+032D,2432,,          CALL SCREENADR    ; set screen write address
+032E,30B0,,          MOVLW AWRON       ; SET DATA AUTO WRITE ON
+032F,2514,,          CALL SENDCMD      ; send command
+0330,01A0,,          CLRF LOOPB        ;
+0331,30E0,,          MOVLW 224
+0332,00A1,,          MOVWF LOOPC
+,,,
+0333,0820,SETEG2,SETEG2    MOVF LOOPB,W      ; WRITE TO EXTERNAL RAM
+0334,255D,,          CALL PRMGET
+0335,2426,,          CALL AUTOWRITE    ; auto write and increment
+0336,0AA0,,          INCF LOOPB,F      ;
+0337,0BA1,,          DECFSZ LOOPC,F    ; LOOPC val specified by calling routine
+0338,2B33,,          GOTO SETEG2       ;
+0339,30B2,,          MOVLW AWROFF      ; AUTO WRITE OFF
+033A,2514,,          CALL SENDCMD      ; send command
+,,,
+,,,                            ; ** WRITE FULL NON-ASCII TEXT AS HELD IN CG RAM **
+033B,01A8,,          CLRF ADRMSB       ;
+033C,01A7,,          CLRF ADRLSB       ;
+033D,2432,,          CALL SCREENADR    ; set screen write address
+033E,30B0,,          MOVLW AWRON       ; AUTO WRITE ON
+033F,2514,,          CALL SENDCMD      ; send command
+0340,3080,,          MOVLW 128         ; first CG RAM character $80 = 128
+0341,00A0,,          MOVWF LOOPB
+0342,0820,DM10,DM10      MOVF LOOPB,W      ;
+0343,2426,,          CALL AUTOWRITE    ; auto write and increment
+0344,0FA0,,          INCFSZ LOOPB,F    ;
+0345,2B42,,          GOTO DM10         ;
+0346,30B2,,          MOVLW AWROFF      ; AUTO WRITE OFF
+0347,2514,,          CALL SENDCMD      ; send command
+0348,0008,,          RETURN
+,,,
+,,,                            ;******** DEMO 11 CREATE MOVING WAVEFORM - HORIZONTAL *************
+,,,
+0349,246A,DEMO11,DEMO11    CALL CLRTXT
+034A,309C,,          MOVLW B'10011100' ; text on, graphic on, cursor & blink off
+034B,2514,,          CALL SENDCMD      ; send command
+,,,
+034C,01A8,,          CLRF ADRMSB       ; show EPE text PT1
+034D,3001,,          MOVLW 1           ; set column
+034E,00A7,,          MOVWF ADRLSB
+034F,254D,,          CALL LINE0        ; set line
+0350,3009,,          MOVLW 9           ; character quantity
+0351,00A1,,          MOVWF LOOPC       ;
+0352,3010,,          MOVLW 16          ; position in table
+0353,00A0,,          MOVWF LOOPB       ; set table loop counter
+0354,24B2,,          CALL SHWTXT       ;
+,,,
+0355,01A8,,          CLRF ADRMSB       ; set and show EPE text PT2
+0356,300B,,          MOVLW 11          ; set column
+0357,00A7,,          MOVWF ADRLSB
+0358,254D,,          CALL LINE0        ; set line
+0359,3004,,          MOVLW 4           ; character quantity
+035A,00A1,,          MOVWF LOOPC       ;
+035B,301E,,          MOVLW 30          ; position in table
+035C,00A0,,          MOVWF LOOPB       ; set table loop counter
+035D,24B2,,          CALL SHWTXT       ;
+,,,
+035E,3010,,          MOVLW 16          ; clear temp storage memory
+035F,00A2,,          MOVWF LOOPD
+0360,3034,,          MOVLW JOIN00
+0361,0084,,          MOVWF FSR
+0362,0180,CLRMEM,CLRMEM    CLRF INDF
+0363,0A84,,          INCF FSR,F
+0364,0BA2,,          DECFSZ LOOPD,F
+0365,2B62,,          GOTO CLRMEM
+,,,
+0366,01AC,,          CLRF COUNT        ; volts simulator counter
+0367,01AF,,          CLRF PEAKLO
+,,,
+0368,01A3,WAVE0,WAVE0     CLRF LOOPE        ; set start line
+0369,01A8,WAVE1,WAVE1     CLRF ADRMSB
+036A,01A7,,          CLRF ADRLSB
+,,,
+036B,082C,,          MOVF COUNT,W      ; copy loop val into PEAKHI
+036C,00B0,,          MOVWF PEAKHI
+,,,
+036D,022F,,          SUBWF PEAKLO,W    ; is PEAKHI > PEAKLO ?
+036E,1C03,,          BTFSS STATUS,C    ; is there a borrow?
+036F,2B74,,          GOTO WAVE2        ; yes
+,,,
+0370,082F,,          MOVF PEAKLO,W     ; no, so swap lo & hi
+0371,00B0,,          MOVWF PEAKHI
+0372,082C,,          MOVF COUNT,W
+0373,00AF,,          MOVWF PEAKLO
+,,,
+0374,082F,WAVE2,WAVE2     MOVF PEAKLO,W     ; get LO remainder less than 8
+0375,20E6,,          CALL BITSLO
+0376,00B1,,          MOVWF LOBIT
+,,,
+0377,0D2F,,          RLF PEAKLO,W      ; get LO integer (i.e. divide by 8)
+0378,00B2,,          MOVWF LOOPLO
+0379,0E32,,          SWAPF LOOPLO,W
+037A,390F,,          ANDLW 15
+037B,00B2,,          MOVWF LOOPLO
+,,,
+037C,0832,,          MOVF LOOPLO,W     ; set address for 1st temp store memory
+037D,3E34,,          ADDLW JOIN00
+037E,0084,,          MOVWF FSR
+,,,
+037F,1003,,          BCF STATUS,C
+0380,082F,,          MOVF PEAKLO,W
+0381,00A2,,          MOVWF LOOPD
+,,,
+0382,0822,WAVE3,WAVE3     MOVF LOOPD,W
+0383,062F,,          XORWF PEAKLO,W
+0384,1903,,          BTFSC STATUS,Z
+0385,2B93,,          GOTO WAVE4
+0386,0831,,          MOVF LOBIT,W
+0387,0480,,          IORWF INDF,F
+0388,0AA2,,          INCF LOOPD,F
+0389,1BA2,,          BTFSC LOOPD,7
+038A,2BA4,,          GOTO WAVE5
+038B,1003,,          BCF STATUS,C
+038C,0CB1,,          RRF LOBIT,F
+038D,1C03,,          BTFSS STATUS,C
+038E,2B82,,          GOTO WAVE3
+038F,0A84,,          INCF FSR,F
+0390,17B1,,          BSF LOBIT,7
+0391,1003,,          BCF STATUS,C
+0392,2B82,,          GOTO WAVE3
+,,,
+0393,0822,WAVE4,WAVE4     MOVF LOOPD,W
+0394,0630,,          XORWF PEAKHI,W
+0395,1903,,          BTFSC STATUS,Z
+0396,2BA4,,          GOTO WAVE5
+0397,0831,,          MOVF LOBIT,W
+0398,0480,,          IORWF INDF,F
+0399,0AA2,,          INCF LOOPD,F
+039A,1BA2,,          BTFSC LOOPD,7
+039B,2BA4,,          GOTO WAVE5
+039C,1003,,          BCF STATUS,C
+039D,0CB1,,          RRF LOBIT,F
+039E,1C03,,          BTFSS STATUS,C
+039F,2B93,,          GOTO WAVE4
+03A0,0A84,,          INCF FSR,F
+03A1,17B1,,          BSF LOBIT,7
+03A2,1003,,          BCF STATUS,C
+03A3,2B93,,          GOTO WAVE4
+,,,
+03A4,3034,WAVE5,WAVE5     MOVLW JOIN00
+03A5,0084,,          MOVWF FSR
+03A6,01A2,,          CLRF LOOPD
+03A7,01A7,,          CLRF ADRLSB       ; set column
+03A8,0823,,          MOVF LOOPE,W      ; set line
+03A9,254F,,          CALL GLINE        ; multiply by line length
+03AA,2432,,          CALL SCREENADR    ; set screen write address
+,,,
+03AB,30B0,,          MOVLW AWRON       ; AUTO WRITE ON
+03AC,2514,,          CALL SENDCMD      ; send command
+,,,
+03AD,0800,WAVE6,WAVE6     MOVF INDF,W       ; send data to LCD
+03AE,2505,,          CALL OUTDATA
+03AF,0180,,          CLRF INDF         ; JKJ: removed ',F'
+03B0,0A84,,          INCF FSR,F
+03B1,0AA2,,          INCF LOOPD,F
+03B2,1E22,,          BTFSS LOOPD,4
+03B3,2BAD,,          GOTO WAVE6
+03B4,082C,,          MOVF COUNT,W
+03B5,00AF,,          MOVWF PEAKLO
+03B6,30B2,,          MOVLW AWROFF      ; AUTO WRITE OFF
+03B7,2514,,          CALL SENDCMD      ; send command
+,,,
+03B8,3004,WAVE7,WAVE7     MOVLW 4
+03B9,07AC,,          ADDWF COUNT,F     ; add to volts loop
+03BA,13AC,,          BCF COUNT,7
+03BB,1E05,,          BTFSS PORTA,4     ; is switch on?
+03BC,0008,,          RETURN            ; yes
+03BD,0AA3,,          INCF LOOPE,F      ; no, inc line number
+03BE,0823,,          MOVF LOOPE,W
+03BF,3A40,,          XORLW 64
+03C0,1D03,,          BTFSS STATUS,Z    ; has line limit been reached?
+03C1,2B69,,          GOTO WAVE1        ; no, so repeat for next line
+03C2,03AC,,          DECF COUNT,F      ; introduce a displacement to uniform count
+03C3,03AC,,          DECF COUNT,F      ; JKJ: taking off 4 makes it smoother.
+03C4,03AC,,          DECF COUNT,F      ;
+03C5,03AC,,          DECF COUNT,F      ;
+03C6,2B68,,          GOTO WAVE0        ; yes so start again
+,,,
+,,,                            ;******** DEMO 12 CREATE MOVING WAVEFORM - SCOPE STYLE *************
+,,,
+03C7,309C,DEMO12,DEMO12    MOVLW B'10011100' ; text on, graphic on, cursor & blink off
+03C8,2514,,          CALL SENDCMD      ; send command
+03C9,01AC,,          CLRF COUNT        ; volts simulator counter
+03CA,01AF,,          CLRF PEAKLO
+03CB,01A2,,          CLRF LOOPD
+,,,
+03CC,3080,SCOPE0,SCOPE0    MOVLW B'10000000' ; indicates which bit of column is affected
+03CD,00B1,,          MOVWF LOBIT
+,,,
+03CE,082C,SCOPE1,SCOPE1    MOVF COUNT,W      ; copy loop val into PEAKHI
+03CF,00B0,,          MOVWF PEAKHI
+03D0,022F,,          SUBWF PEAKLO,W    ; is PEAKHI > PEAKLO ? (subtract hi from lo)
+03D1,1C03,,          BTFSS STATUS,C    ; is there a borrow?
+03D2,2BD7,,          GOTO SCOPE2       ; yes
+,,,
+03D3,082F,,          MOVF PEAKLO,W     ; no, so swap lo & hi
+03D4,00B0,,          MOVWF PEAKHI
+03D5,082C,,          MOVF COUNT,W
+03D6,00AF,,          MOVWF PEAKLO
+,,,
+03D7,3034,SCOPE2,SCOPE2    MOVLW JOIN00      ; set address for 1st affected temp store memory
+03D8,072F,,          ADDWF PEAKLO,W
+03D9,0084,,          MOVWF FSR
+03DA,082F,,          MOVF PEAKLO,W     ; set loop to val of PEAKLO
+03DB,00A3,,          MOVWF LOOPE
+03DC,0831,,          MOVF LOBIT,W
+03DD,0480,,          IORWF INDF,F      ; set new bit
+,,,
+03DE,0823,SCOPE3,SCOPE3    MOVF LOOPE,W      ; is loop = peakhi?
+03DF,0630,,          XORWF PEAKHI,W
+03E0,1903,,          BTFSC STATUS,Z
+03E1,2BE9,,          GOTO SCOPE4       ; yes
+03E2,0831,,          MOVF LOBIT,W      ; no
+03E3,0480,,          IORWF INDF,F      ; set new bit
+03E4,0AA3,,          INCF LOOPE,F
+03E5,1B23,,          BTFSC LOOPE,6
+03E6,2BE9,,          GOTO SCOPE4
+03E7,0A84,,          INCF FSR,F
+03E8,2BDE,,          GOTO SCOPE3
+,,,
+03E9,082C,SCOPE4,SCOPE4    MOVF COUNT,W
+03EA,00AF,,          MOVWF PEAKLO
+03EB,3002,,          MOVLW 2
+03EC,07AC,,          ADDWF COUNT,F     ; inc wavform counter
+03ED,132C,,          BCF COUNT,6       ; limit to 63 max
+03EE,1003,,          BCF STATUS,C
+03EF,0CB1,,          RRF LOBIT,F       ; shift right bitting setting val
+03F0,1C03,,          BTFSS STATUS,C    ; is CARRY set? (stating all 8 bits of col done)
+03F1,2BCE,,          GOTO SCOPE1       ; no
+,,,
+03F2,3034,,          MOVLW JOIN00      ; send 8-bit column to screen
+03F3,0084,,          MOVWF FSR
+03F4,3040,,          MOVLW 64
+03F5,00A3,,          MOVWF LOOPE       ; set loop val (number of columns)
+03F6,3002,,          MOVLW 2           ; set graphic base address ($02xx)
+03F7,00A8,,          MOVWF ADRMSB
+03F8,0822,,          MOVF LOOPD,W      ; set column
+03F9,00A7,,          MOVWF ADRLSB
+,,,
+03FA,2432,SCOPE5,SCOPE5    CALL SCREENADR    ; set screen write address
+03FB,30B0,,          MOVLW AWRON       ; AUTO WRITE ON
+03FC,2514,,          CALL SENDCMD      ; send command
+03FD,24D5,,          CALL CHECK3       ; read status for DA0/DA1 = 3
+03FE,0800,,          MOVF INDF,W       ; get val from STORE
+03FF,2505,,          CALL OUTDATA      ;
+0400,0180,,          CLRF INDF         ; JKJ: removed ',F'
+0401,30B2,,          MOVLW AWROFF      ; AUTO WRITE OFF
+0402,2514,,          CALL SENDCMD      ; send command
+0403,0A84,,          INCF FSR,F
+0404,03A3,,          DECF LOOPE,F
+0405,1903,,          BTFSC STATUS,Z
+0406,2C0C,,          GOTO SCOPE6
+0407,082D,,          MOVF COLUMN,W     ; set for next line
+0408,07A7,,          ADDWF ADRLSB,F
+0409,1803,,          BTFSC STATUS,0    ; add CARRY (if any) to MSB
+040A,0AA8,,          INCF ADRMSB,F
+040B,2BFA,,          GOTO SCOPE5       ; repeat until done
+,,,
+040C,0AA2,SCOPE6,SCOPE6    INCF LOOPD,F      ; inc to next column
+040D,1E22,,          BTFSS LOOPD,4
+040E,2BCC,,          GOTO SCOPE0
+,,,
+040F,01A2,,          CLRF LOOPD        ; start again at screen left
+0410,3003,,          MOVLW 3           ; add displacement factor to waveform loop
+0411,022C,,          SUBWF COUNT,W
+,,,
+0412,393F,,          ANDLW B'00111111'
+0413,00AC,,          MOVWF COUNT
+0414,1A05,,          BTFSC PORTA,4     ; is switch on?
+0415,2BCC,,          GOTO SCOPE0       ; no, so repeat
+0416,0008,,          RETURN            ; yes
+,,,
+,,,                            ;********** END DEMOS - START OF SUB-ROUTINES ***************
+,,,
+0417,,BITWRITE,BITWRITE                    ; ** WRITE SINGLE SINGLE BIT DATA ROUTINE **
+0417,00AA,,          MOVWF BITVAL
+0418,2432,,          CALL SCREENADR    ; set screen write address
+0419,082A,,          MOVF BITVAL,W
+041A,2514,,          CALL SENDCMD      ; send command
+041B,0008,,          RETURN            ;
+,,,
+,,,                            ;.........
+,,,
+041C,,ONEWRITE,ONEWRITE                    ; ** WRITE SINGLE BYTE **
+041C,00A9,,          MOVWF ATTRIB      ; temp store val brought in on W
+041D,2432,,          CALL SCREENADR    ; set screen write address - vals preset at call
+041E,30B0,,          MOVLW AWRON       ; AUTO WRITE ON
+041F,2514,,          CALL SENDCMD      ; send command
+0420,24D5,,          CALL CHECK3       ; read status for DA0/DA1 = 3
+0421,0829,,          MOVF ATTRIB,W
+0422,2505,,          CALL OUTDATA      ;
+0423,30B2,,          MOVLW AWROFF      ; AUTO WRITE OFF
+0424,2514,,          CALL SENDCMD      ; send command
+0425,0008,,          RETURN
+,,,                            ;............
+,,,
+0426,,AUTOWRITE,AUTOWRITE                   ; ** AUTO WRITE ROUTINE **
+0426,00A5,,          MOVWF TEMPA       ; temp store value brought in on W
+0427,24F6,,          CALL CHECK8       ; read status for DA3 = 8
+0428,0825,,          MOVF TEMPA,W      ; WRITE DATA
+0429,2505,,          CALL OUTDATA      ;
+042A,0008,,          RETURN            ;
+,,,
+,,,                            ;..............
+,,,
+042B,,CMDADR,CMDADR                      ; ** SET ADDRESS FOR COMMAND SENDING **
+042B,24D5,,          CALL CHECK3       ; read status for DA0/DA1 = 3
+042C,0827,,          MOVF ADRLSB,W     ; WRITE DATA D1
+042D,2505,,          CALL OUTDATA      ;
+042E,24D5,,          CALL CHECK3       ; read status for DA0/DA1 = 3
+042F,0828,,          MOVF ADRMSB,W     ; WRITE DATA D2
+0430,2505,,          CALL OUTDATA      ;
+0431,0008,,          RETURN            ;
+,,,
+,,,                            ;.........
+,,,
+0432,,SCREENADR,SCREENADR                   ; ** SET ADDRESS FOR WRITE/READ TO/FROM SCREEN
+0432,24D5,,          CALL CHECK3       ; read status for DA0/DA1 = 3
+0433,0827,,          MOVF ADRLSB,W     ; WRITE ADDRESS LSB
+0434,2505,,          CALL OUTDATA      ;
+0435,24D5,,          CALL CHECK3       ; read status for DA0/DA1 = 3
+0436,0828,,          MOVF ADRMSB,W     ; WRITE ADDRESS MSB
+0437,2505,,          CALL OUTDATA      ;
+0438,3024,,          MOVLW ADPSET      ; SET ADDRESS POINTER
+0439,2514,,          CALL SENDCMD      ; send command
+043A,0008,,          RETURN            ;
+,,,
+,,,                            ;.............
+,,,
+043B,,TEXTHOME,TEXTHOME                    ; ** SET TEXT HOME ADDRESS **
+043B,01A8,,          CLRF ADRMSB       ; TEXT HOME ADDRESS $0000
+043C,01A7,,          CLRF ADRLSB       ;
+043D,242B,,          CALL CMDADR       ; send command address
+043E,3040,,          MOVLW TXHOME      ;
+043F,2514,,          CALL SENDCMD      ; send command
+0440,0008,,          RETURN
+,,,
+,,,                            ;...........
+,,,
+0441,,GRAPHHOME,GRAPHHOME                   ; ** SET GRAPHIC HOME ADDRESS **
+0441,3002,,          MOVLW H'02'       ; GRAPHIC HOME ADDRESS $0200
+0442,00A8,,          MOVWF ADRMSB
+0443,01A7,,          CLRF ADRLSB
+0444,242B,,          CALL CMDADR       ; send command address
+0445,3042,,          MOVLW GRHOME      ;
+0446,2514,,          CALL SENDCMD      ; send command
+0447,0008,,          RETURN
+,,,
+,,,                            ;...........
+,,,
+0448,,TEXTAREA,TEXTAREA                    ; ** SET TEXT AREA **
+0448,01A8,,          CLRF ADRMSB       ;
+0449,082D,,          MOVF COLUMN,W     ; columns length
+044A,00A7,,          MOVWF ADRLSB      ;
+044B,242B,,          CALL CMDADR       ; send command address
+044C,3041,,          MOVLW TXAREA      ; text area command
+044D,2514,,          CALL SENDCMD      ; send command
+044E,0008,,          RETURN
+,,,
+,,,                            ;...........
+,,,
+044F,,GRAPHAREA,GRAPHAREA                   ; ** SET GRAPHIC AREA **
+044F,01A8,,          CLRF ADRMSB       ;
+0450,082D,,          MOVF COLUMN,W     ; columns length
+0451,00A7,,          MOVWF ADRLSB      ;
+0452,242B,,          CALL CMDADR       ; send command address
+0453,3043,,          MOVLW GRAREA      ; graphic area command
+0454,2514,,          CALL SENDCMD      ; send command
+0455,0008,,          RETURN
+,,,
+,,,                            ;...........
+,,,
+0456,,CSRADR,CSRADR                      ; ** SET CURSOR POSITION **
+0456,242B,,          CALL CMDADR       ; send command address
+0457,3021,,          MOVLW CSRPOS      ; cursor position command
+0458,2514,,          CALL SENDCMD      ; send command
+0459,0008,,          RETURN
+,,,
+,,,                            ;...........
+,,,
+045A,,CSRTYP,CSRTYP                      ; ** SET CURSOR TYPE **
+045A,30A7,,          MOVLW B'10100111' ; 8-line
+045B,2514,,          CALL SENDCMD      ; send command
+045C,0008,,          RETURN            ; OPTIONS:
+,,,                            ; %10100000 ; 1-line
+,,,                            ; %10100001 ; 2-line
+,,,                            ; %10100010 ; 3-line
+,,,                            ; %10100011 ; 4-line
+,,,                            ; %10100100 ; 5-line
+,,,                            ; %10100101 ; 6-line
+,,,                            ; %10100110 ; 7-line
+,,,                            ; %10100111 ; 8-line
+,,,                            ;...........
+,,,
+045D,,SETMODE,SETMODE                     ; ** SET MODE - MANY OPTIONS, see EPE text **
+045D,3080,,          MOVLW B'10000000' ; (OR mode, Internal CG mode)
+,,,                            ; movlw %10000000 ; External CG RAM mode, OR
+,,,                            ; movlw %10000011 ; External CG RAM mode, AND
+,,,                            ; movlw %10000001 ; External CG RAM mode, XOR
+,,,                            ; movlw %10000100 ; text attribute mode
+045E,2514,,          CALL SENDCMD      ; send command
+045F,0008,,          RETURN
+,,,                            ; %1000x000 ; OR mode
+,,,                            ; %1000x001 ; XOR mode
+,,,                            ; %1000x011 ; AND mode
+,,,                            ; %1000x100 ; Text Attribute mode
+,,,                            ; %10000xxx ; Internal CG ROM mode
+,,,                            ; %10001xxx ; External CG RAM mode
+,,,
+,,,                            ;...........
+,,,
+0460,,SETOFFSET,SETOFFSET                   ; ** SET OFFSET REGISTER **
+,,,                            ; setting OFFSET address at 2 selects
+,,,                            ; CG RAM START ADDRESS = $1400 where
+,,,                            ; $80 is character number of 1st graphic byte
+,,,                            ; values below that call ASCII text characters
+0460,01A8,,          CLRF ADRMSB       ;
+0461,3002,,          MOVLW 2           ;
+0462,00A7,,          MOVWF ADRLSB      ;
+0463,242B,,          CALL CMDADR       ; send command address
+0464,3022,,          MOVLW OFFSET      ;
+0465,2514,,          CALL SENDCMD      ; send command
+0466,0008,,          RETURN
+,,,
+,,,                            ;...........
+,,,
+0467,,SETDISPLAY,SETDISPLAY                  ; ** DISPLAY MODE ** SOME OPTIONS:
+0467,3094,,          MOVLW B'10010100' ; text on, graphic off, cursor & blink off
+,,,                            ; movlw %10011100 ; text on, graphic on, cursor & blink off
+,,,                            ; movlw %10011000 ; text off, graphic on, cursor & blink off
+0468,2514,,          CALL SENDCMD      ; send command
+0469,0008,,          RETURN            ; OTHER OPTIONS:
+,,,                            ; %10010000 display off
+,,,                            ; %1001xx10 cursor on, blink off
+,,,                            ; %1001xx11 cursor on, blink on
+,,,                            ; %100101xx text on, graphic off
+,,,                            ; %100110xx text off, graphic on
+,,,                            ; %100111xx text on, graphic on
+,,,
+,,,                            ;...........
+,,,
+046A,,CLRTXT,CLRTXT                      ; ** CLEAR TEXT AREA ($0000) **
+046A,01A8,,          CLRF ADRMSB       ; clear all text screen lines, length as set
+046B,01A7,,          CLRF ADRLSB       ;
+046C,2432,,          CALL SCREENADR    ; set screen write address
+046D,30B0,,          MOVLW AWRON       ; AUTO WRITE ON
+046E,2514,,          CALL SENDCMD      ; send command
+046F,3008,,          MOVLW 8           ; number of lines
+0470,00A1,,          MOVWF LOOPC
+0471,082D,CLR2,CLR2      MOVF COLUMN,W     ; column length
+0472,00A0,,          MOVWF LOOPB       ;
+0473,3000,CLR3,CLR3      MOVLW 0           ; write 0
+0474,2426,,          CALL AUTOWRITE    ; auto write and increment
+0475,0BA0,,          DECFSZ LOOPB,F    ;
+0476,2C73,,          GOTO CLR3         ;
+0477,0BA1,,          DECFSZ LOOPC,F    ;
+0478,2C71,,          GOTO CLR2         ;
+0479,30B2,,          MOVLW AWROFF      ; AUTO WRITE OFF
+047A,2514,,          CALL SENDCMD      ; send command
+047B,0008,,          RETURN
+,,,
+,,,                            ;............
+,,,
+047C,,CLRGRAPH,CLRGRAPH                    ; ** CLEAR GRAPH AREA ($0200) **
+047C,3002,,          MOVLW H'02'
+047D,00A8,,          MOVWF ADRMSB      ;
+047E,01A7,,          CLRF ADRLSB       ;
+047F,2432,,          CALL SCREENADR    ; set screen write address
+0480,30B0,,          MOVLW AWRON       ; AUTO WRITE ON
+0481,2514,,          CALL SENDCMD      ; send command
+0482,3040,,          MOVLW 64          ; number of lines
+0483,00A1,,          MOVWF LOOPC
+0484,082D,CLRG2,CLRG2     MOVF COLUMN,W     ; column length
+0485,00A0,,          MOVWF LOOPB       ;
+0486,3000,CLRG3,CLRG3     MOVLW 0           ; write 0
+0487,2426,,          CALL AUTOWRITE    ; auto write and increment
+0488,0BA0,,          DECFSZ LOOPB,F    ;
+0489,2C86,,          GOTO CLRG3        ;
+048A,0BA1,,          DECFSZ LOOPC,F    ;
+048B,2C84,,          GOTO CLRG2        ;
+048C,30B2,,          MOVLW AWROFF      ; AUTO RESET OFF
+048D,2514,,          CALL SENDCMD      ; send command
+048E,0008,,          RETURN
+,,,
+,,,                            ;..............
+,,,
+048F,,CLRCG,CLRCG                       ; ** CLEAR CG RAM AREA ($1400) **
+048F,3014,,          MOVLW H'14'
+0490,00A8,,          MOVWF ADRMSB      ;
+0491,01A7,,          CLRF ADRLSB       ;
+0492,2432,,          CALL SCREENADR    ; set screen write address
+0493,30B0,,          MOVLW AWRON       ; AUTO WRITE ON
+0494,2514,,          CALL SENDCMD      ; send command
+0495,3040,,          MOVLW 64          ; number of lines
+0496,00A1,,          MOVWF LOOPC
+0497,082D,CLRCG2,CLRCG2    MOVF COLUMN,W     ; column length
+0498,00A0,,          MOVWF LOOPB       ;
+0499,3000,CLRCG3,CLRCG3    MOVLW 0           ; write 0
+049A,2426,,          CALL AUTOWRITE    ; auto write and increment
+049B,0BA0,,          DECFSZ LOOPB,F    ;
+049C,2C99,,          GOTO CLRCG3       ;
+049D,0BA1,,          DECFSZ LOOPC,F    ;
+049E,2C97,,          GOTO CLRCG2       ;
+049F,30B2,,          MOVLW AWROFF      ; AUTO RESET OFF
+04A0,2514,,          CALL SENDCMD      ; send command
+04A1,0008,,          RETURN
+,,,
+,,,                            ;............
+,,,
+04A2,,SETCG,SETCG                       ; ** SETUP USER CG RAM **
+04A2,3014,,          MOVLW H'14'       ; CG RAM start address 1400H
+04A3,00A8,,          MOVWF ADRMSB      ;
+04A4,01A7,,          CLRF ADRLSB       ;
+04A5,2432,,          CALL SCREENADR    ; set screen write address
+04A6,30B0,,          MOVLW AWRON       ; SET DATA AUTO WRITE ON
+04A7,2514,,          CALL SENDCMD      ; send command
+04A8,01A0,,          CLRF LOOPB        ;
+,,,
+04A9,0820,SETCG2,SETCG2    MOVF LOOPB,W      ; WRITE TO EXTERNAL RAM
+04AA,206D,,          CALL CGTABLE      ; get table data
+04AB,2426,,          CALL AUTOWRITE    ; auto write and increment
+04AC,0AA0,,          INCF LOOPB,F      ;
+04AD,0BA1,,          DECFSZ LOOPC,F    ; LOOPC val specified by calling routine
+04AE,2CA9,,          GOTO SETCG2       ;
+04AF,30B2,,          MOVLW AWROFF      ; AUTO WRITE OFF
+04B0,2514,,          CALL SENDCMD      ; send command
+04B1,0008,,          RETURN
+,,,
+,,,                            ;..............
+,,,
+04B2,,SHWTXT,SHWTXT                      ; ** SHOW TEXT HELD IN TABLE **
+04B2,2432,,          CALL SCREENADR    ; set screen write address - vals preset at call
+04B3,30B0,,          MOVLW AWRON       ; SET AUTO WRITE ON
+04B4,2514,,          CALL SENDCMD      ; send command
+04B5,0820,SHTXT1,SHTXT1    MOVF LOOPB,W      ; LOOPB val specified by calling routine
+04B6,201C,,          CALL TABLE1       ; get table data and convert to graphic LCD val
+04B7,3EE0,,          ADDLW 224         ; +224 is same as -32 for conversion from ASCII
+04B8,2426,,          CALL AUTOWRITE    ; auto write and increment
+04B9,0AA0,,          INCF LOOPB,F      ;
+04BA,0BA1,,          DECFSZ LOOPC,F    ; LOOPC val specified by calling routine
+04BB,2CB5,,          GOTO SHTXT1       ;
+04BC,30B2,,          MOVLW AWROFF      ; AUTO WRITE OFF
+04BD,2514,,          CALL SENDCMD      ; send command
+04BE,0008,,          RETURN
+,,,
+,,,                            ;..............
+,,,
+04BF,,SETATTR,SETATTR                     ; ** SEND ATTRIBUTE & OTHER DATA TO SCREEN AS 1 CHARACTER, LOOPED
+04BF,2432,,          CALL SCREENADR    ; set screen write address - vals preset at call
+04C0,30B0,,          MOVLW AWRON       ; AUTO WRITE ON
+04C1,2514,,          CALL SENDCMD      ; send command
+04C2,0829,SETAT,SETAT     MOVF ATTRIB,W     ; val to be sent preset at call
+04C3,2426,,          CALL AUTOWRITE    ; auto write and increment
+04C4,0BA1,,          DECFSZ LOOPC,F    ; LOOPC val specified by calling routine
+04C5,2CC2,,          GOTO SETAT        ;
+04C6,30B2,,          MOVLW AWROFF      ; AUTO WRITE OFF
+04C7,2514,,          CALL SENDCMD      ; send command
+04C8,0008,,          RETURN
+,,,
+,,,                            ;............
+,,,
+04C9,,SHOWCG,SHOWCG                      ; ** SHOW USER CG RAM IN ORDER HELD BY TABLE **
+04C9,2432,,          CALL SCREENADR    ; set screen write address - vals preset at call
+04CA,30B0,,          MOVLW AWRON       ; AUTO WRITE ON
+04CB,2514,,          CALL SENDCMD      ; send command
+04CC,0820,SHWCG2,SHWCG2    MOVF LOOPB,W      ;
+04CD,2052,,          CALL AMPLIFIER    ; get table data
+04CE,2426,,          CALL AUTOWRITE    ; auto write and increment
+04CF,0AA0,,          INCF LOOPB,F      ;
+04D0,0BA1,,          DECFSZ LOOPC,F    ; LOOPC val specified by calling routine
+04D1,2CCC,,          GOTO SHWCG2       ;
+04D2,30B2,,          MOVLW AWROFF      ; AUTO WRITE OFF
+04D3,2514,,          CALL SENDCMD      ; send command
+04D4,0008,,          RETURN
+,,,
+,,,                            ;.........
+,,,
+04D5,1683,CHECK3,CHECK3    PAGE1             ; STATUS CHECK for DA0/DA1 = 3
+04D6,30FF,,          MOVLW 255         ;
+04D7,0088,,          MOVWF TRISD       ; set PORTD as inputs
+04D8,1283,,          PAGE0             ; RST CD CE RD WR
+04D9,3019,,          MOVLW B'00011001' ; 1 1 0 0 1
+04DA,0087,,          MOVWF PORTC       ; set CE, RD low
+04DB,0000,,          NOP
+04DC,1C08,CK3,CK3       BTFSS PORTD,0     ; PORTD bit 0 set?
+04DD,2CDC,,          GOTO CK3          ; no
+04DE,1C88,CK3A,CK3A      BTFSS PORTD,1     ; PORTD bit 1 set?
+04DF,2CDE,,          GOTO CK3A         ; no RST CD CE RD WR
+04E0,301F,,          MOVLW B'00011111' ; 1 1 1 1 1
+04E1,0087,,          MOVWF PORTC       ; set controls
+04E2,0000,,          NOP
+04E3,1683,,          PAGE1             ;
+04E4,0188,,          CLRF TRISD        ; set PORTD as outputs
+04E5,1283,,          PAGE0             ;
+04E6,0008,,          RETURN
+,,,
+,,,                            ;............
+,,,
+04E7,1683,CHECK6,CHECK6    PAGE1             ; STATUS CHECK for DA6 low
+04E8,1708,,          BSF TRISD,6       ; set PORTD bit as input
+04E9,1283,,          PAGE0             ; RST CD CE RD WR
+04EA,3019,,          MOVLW B'00011001' ; 1 1 0 0 1
+04EB,0087,,          MOVWF PORTC       ; set CE, RD low
+04EC,0000,,          NOP
+04ED,1B08,CK6,CK6       BTFSC PORTD,6     ; is PORTD bit 6 low?
+04EE,2CED,,          GOTO CK6          ; no RST CD CE RD WR
+04EF,301F,,          MOVLW B'00011111' ; 1 1 1 1 1
+04F0,0087,,          MOVWF PORTC       ; set controls
+04F1,0000,,          NOP
+04F2,1683,,          PAGE1             ;
+04F3,1308,,          BCF TRISD,6       ; set PORTD bit 6 as output
+04F4,1283,,          PAGE0             ;
+04F5,0008,,          RETURN
+,,,
+,,,                            ;............
+,,,
+04F6,1683,CHECK8,CHECK8    PAGE1             ; STATUS CHECK for DA3 = 8
+04F7,1588,,          BSF PORTD,3       ; set PORTD bit 3 as input
+04F8,1283,,          PAGE0             ; RST CD CE RD WR
+04F9,3019,,          MOVLW B'00011001' ; 1 1 0 0 1
+04FA,0087,,          MOVWF PORTC       ; set CE, RD low
+04FB,0000,,          NOP
+04FC,1D88,CK8,CK8       BTFSS PORTD,3     ; is PORTD,3 high?
+04FD,2CFC,,          GOTO CK8          ; no RST CD CE RD WR
+04FE,301F,,          MOVLW B'00011111' ; 1 1 1 1 1
+04FF,0087,,          MOVWF PORTC       ; set controls
+0500,0000,,          NOP
+0501,1683,,          PAGE1             ;
+0502,1188,,          BCF TRISD,3       ; set PORTD bit 3 as output
+0503,1283,,          PAGE0             ;
+0504,0008,,          RETURN
+,,,
+,,,                            ;........
+,,,
+0505,,OUTDATA,OUTDATA                     ; ** SEND DATA ROUTINE **
+0505,00A5,,          MOVWF TEMPA       ; temp store val brought in on W
+,,,                            ; RST CD CE RD WR
+0506,3017,,          MOVLW B'00010111' ; 1 0 1 1 1
+0507,0087,,          MOVWF PORTC       ; set CD low
+0508,0825,,          MOVF TEMPA,W      ; get stored data
+0509,0088,,          MOVWF PORTD       ; send data
+050A,0000,,          NOP               ; RST CD CE RD WR
+050B,3012,,          MOVLW B'00010010' ; 1 0 0 1 0
+050C,0087,,          MOVWF PORTC       ; set CD, CE, WR low
+050D,0000,,          NOP               ; RST CD CE RD WR
+050E,3017,,          MOVLW B'00010111' ; 1 0 1 1 1
+050F,0087,,          MOVWF PORTC       ; set CE, WR high
+0510,0000,,          NOP               ; RST CD CE RD WR
+0511,301F,,          MOVLW B'00011111' ; 1 1 1 1 1
+0512,0087,,          MOVWF PORTC       ; set CD high
+0513,0008,,          RETURN
+,,,
+,,,                            ;..........
+,,,
+0514,,SENDCMD,SENDCMD                     ; ** COMMAND WRITE ROUTINE **
+0514,00A5,,          MOVWF TEMPA       ; temp store val brought in on W
+0515,24D5,,          CALL CHECK3       ; read status for DA0/DA1 = 3
+0516,0825,,          MOVF TEMPA,W      ; WRITE COMMAND
+0517,0088,,          MOVWF PORTD       ; send stored data
+0518,0000,,          NOP               ; RST CD CE RD WR
+0519,301A,,          MOVLW B'00011010' ; 1 1 0 1 0
+051A,0087,,          MOVWF PORTC       ; set CE, WR low
+051B,0000,,          NOP               ; RST CD CE RD WR
+051C,301F,,          MOVLW B'00011111' ; 1 1 1 1 1
+051D,0087,,          MOVWF PORTC       ; set all high
+051E,0008,,          RETURN
+,,,
+,,,                            ;.............
+,,,
+051F,,DATAREAD,DATAREAD                    ; ** DATA READ ROUTINE **
+051F,30E0,,          MOVLW PEEK        ; screen peek command
+0520,2514,,          CALL SENDCMD      ; send command
+0521,1683,,          PAGE1             ;
+0522,30FF,,          MOVLW 255         ;
+0523,0088,,          MOVWF TRISD       ; set PORTD as inputs
+0524,1283,,          PAGE0             ; RST CD CE RD WR
+0525,3019,,          MOVLW B'00011001' ; 1 1 0 0 1
+0526,0087,,          MOVWF PORTC       ; set CE, RD low
+0527,0000,,          NOP
+,,,
+0528,1B08,DR1,DR1       BTFSC PORTD,6     ; is PORTD STATUS bit 6 low?
+0529,2D28,,          GOTO DR1          ; no
+052A,1C08,DR2,DR2       BTFSS PORTD,0     ; is PORTD STATUS bit 0 high?
+052B,2D2A,,          GOTO DR2          ; no
+052C,1C88,DR3,DR3       BTFSS PORTD,1     ; is PORTD STATUS bit 1 high?
+052D,2D2C,,          GOTO DR3          ; no
+052E,1187,,          BCF PORTC,3       ; set CD low
+052F,0000,,          NOP
+0530,0808,,          MOVF PORTD,W      ; read data value
+0531,00AB,,          MOVWF RDBYTE      ; store read value
+,,,
+,,,                            ; RST CD CE RD WR
+0532,301F,,          MOVLW B'00011111' ; 1 1 1 1 1
+0533,0087,,          MOVWF PORTC       ; set controls
+0534,1683,,          PAGE1             ;
+0535,0188,,          CLRF TRISD        ; set PORTD as outputs
+0536,1283,,          PAGE0             ;
+0537,0008,,          RETURN
+,,,
+,,,                            ;...........
+,,,
+0538,072D,LINE7,LINE7     ADDWF COLUMN,W    ; sets line addresses for text screen
+0539,1803,,          BTFSC STATUS,C
+053A,0AA8,,          INCF ADRMSB,F
+053B,072D,LINE6,LINE6     ADDWF COLUMN,W
+053C,1803,,          BTFSC STATUS,C
+053D,0AA8,,          INCF ADRMSB,F
+053E,072D,LINE5,LINE5     ADDWF COLUMN,W
+053F,1803,,          BTFSC STATUS,C
+0540,0AA8,,          INCF ADRMSB,F
+0541,072D,LINE4,LINE4     ADDWF COLUMN,W
+0542,1803,,          BTFSC STATUS,C
+0543,0AA8,,          INCF ADRMSB,F
+0544,072D,LINE3,LINE3     ADDWF COLUMN,W
+0545,1803,,          BTFSC STATUS,C
+0546,0AA8,,          INCF ADRMSB,F
+0547,072D,LINE2,LINE2     ADDWF COLUMN,W
+0548,1803,,          BTFSC STATUS,C
+0549,0AA8,,          INCF ADRMSB,F
+054A,072D,LINE1,LINE1     ADDWF COLUMN,W
+054B,1803,,          BTFSC STATUS,C
+054C,0AA8,,          INCF ADRMSB,F
+054D,00A7,LINE0,LINE0     MOVWF ADRLSB      ; COLUMN sets number of cells per line
+054E,0008,,          RETURN            ; ADRMSB is set/cleared before routine called
+,,,
+,,,                            ;..............
+,,,
+054F,,GLINE,GLINE                       ;** GET GRAPHIC LINE ADDRESS **
+054F,00A0,,          MOVWF LOOPB       ; store line val
+0550,3002,,          MOVLW 2           ; set graphic base address ($02xx)
+0551,00A8,,          MOVWF ADRMSB
+0552,0820,,          MOVF LOOPB,W      ; line val = 0?
+0553,1903,,          BTFSC STATUS,Z
+0554,0008,,          RETURN            ; yes
+0555,082D,GLIN2,GLIN2     MOVF COLUMN,W     ; no, multiply line length by line val
+0556,07A7,,          ADDWF ADRLSB,F
+0557,3001,,          MOVLW 1
+0558,0503,,          ANDWF STATUS,W    ; extract and add CARRY (if any) to MSB
+0559,07A8,,          ADDWF ADRMSB,F
+055A,0BA0,,          DECFSZ LOOPB,F
+055B,2D55,,          GOTO GLIN2
+055C,0008,,          RETURN
+,,,
+,,,                            ;............
+,,,
+,,,                            ;READ DATA FROM EEPROM ROUTINE modified for PIC16F87x devices
+,,,                            ; according to data sheet DS30292A page 43
+,,,                            ; Routine entered with eeprom byte address preset
+,,,
+055D,1703,PRMGET,PRMGET    BSF STATUS,RP1    ; set for Page 2
+055E,1683,,          BSF STATUS,RP0    ; set for Page 3
+055F,138C,,          BCF EECON1,EEPGD  ; point to data memory
+0560,140C,,          BSF EECON1,RD     ; enable read flag
+0561,1283,,          BCF STATUS,RP0    ; set for Page 2
+0562,080C,,          MOVF EEDATA,W     ; read eeprom data into W
+0563,0A8D,,          INCF EEADR,F      ; inc address
+0564,1303,,          BCF STATUS,RP1    ; set for Page 0
+0565,0008,,          RETURN
+,,,
+,,,                            ;.........
+,,,
+0566,1A05,WAITSW,WAITSW    BTFSC PORTA,4     ; wait for switch press
+0567,2D66,,          GOTO WAITSW
+0568,256D,,          CALL PAUSIT       ; allow for switch bounce, then wait switch release
+,,,
+0569,,WAITOFF,WAITOFF                     ; wait for switch release
+0569,1E05,WT2,WT2       BTFSS PORTA,4
+056A,2D69,,          GOTO WT2
+056B,256D,,          CALL PAUSIT       ; allow for switch bounce
+056C,0008,,          RETURN
+,,,
+,,,                            ;................
+,,,
+056D,3005,PAUSIT,PAUSIT    MOVLW 5           ; pause routine, 1/5th sec
+056E,00A6,,          MOVWF CLKCNT
+056F,018B,,          CLRF INTCON
+0570,1D0B,PAUSE,PAUSE     BTFSS INTCON,2
+0571,2D70,,          GOTO PAUSE
+0572,110B,,          BCF INTCON,2
+0573,0BA6,,          DECFSZ CLKCNT,F
+0574,2D70,,          GOTO PAUSE
+0575,0008,,          RETURN
+,,,
+,,,                            ;................
+,,,
+0576,3001,PAUSE2,PAUSE2    MOVLW 1           ; pause routine, 1/25th sec
+0577,00A6,,          MOVWF CLKCNT
+0578,018B,,          CLRF INTCON
+0579,1D0B,PAUS2,PAUS2     BTFSS INTCON,2
+057A,2D70,,          GOTO PAUSE
+057B,110B,,          BCF INTCON,2
+057C,0BA6,,          DECFSZ CLKCNT,F
+057D,2D79,,          GOTO PAUS2
+057E,0008,,          RETURN
+,,,
+,,,                            ;..............
+,,,
+057F,,SETUP,SETUP                       ; RST CD CE RD WR GENERAL SETUP
+057F,301F,,          MOVLW B'00011111' ; 1 1 1 1 1
+0580,0087,,          MOVWF PORTC       ; set controls high (off)
+0581,243B,,          CALL TEXTHOME     ; SET TEXT HOME ADDRESS
+0582,2441,,          CALL GRAPHHOME    ; SET GRAPHIC HOME ADDRESS
+0583,2448,,          CALL TEXTAREA     ; SET TEXT AREA
+0584,244F,,          CALL GRAPHAREA    ; SET GRAPHIC AREA
+0585,245D,,          CALL SETMODE      ; SET MODE (INT/EXT/AND-OR-XOR etc)
+0586,2460,,          CALL SETOFFSET    ; SET OFFSET (see EPE text)
+0587,2467,,          CALL SETDISPLAY   ; DISPLAY MODE (text, graph on/off etc)
+0588,246A,,          CALL CLRTXT       ; WRITE TEXT BLANK CODE $0000
+0589,247C,,          CALL CLRGRAPH     ; WRITE GRAPH BLANK CODE $0200
+058A,248F,,          CALL CLRCG        ; WRITE CGRAM BLANK CODE $1400
+058B,0008,,          RETURN
+,,,
+,,,                            ;..............
+,,,
+,,,          END

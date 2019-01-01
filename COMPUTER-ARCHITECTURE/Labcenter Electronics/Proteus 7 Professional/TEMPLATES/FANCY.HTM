@@ -1,0 +1,599 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<TITLE>Bill Of Materials For {{DTITLE}}</TITLE>
+<STYLE TYPE="text/css">
+<!--
+.horzline
+ { border-top-width: medium;
+    border-right-width: medium;
+    border-bottom-width: medium;
+    border-left-width: medium;
+    border-bottom-style: solid;
+    border-top-color: #000099;
+    border-right-color: #000099;
+    border-bottom-color: #000099;
+    border-left-color: #000099;
+    color: #000099;
+ }
+.logo
+ {
+    border-top-width: medium;
+    border-right-width: medium;
+    border-bottom-width: medium;
+    border-left-width: medium;
+    border-bottom-style: solid;
+    border-top-style: solid;
+    border-left-style: solid;
+    border-right-style: solid;
+    border-top-color: #000099;
+    border-right-color: #000099;
+    border-bottom-color: #000099;
+    border-left-color: #000099;
+    background-color: #FFFFE7;
+    padding: 10px;
+ }
+.address
+ {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    font-weight: bold;
+    color: #000099;
+    font-style: italic;
+    padding: 10px;
+ }
+.mainheading
+ {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: x-large;
+    font-weight: bold;
+    text-transform: capitalize;
+    text-decoration: underline;
+    color: #000099;
+    font-style: italic;
+    padding-top: 5pt;
+    padding-bottom: 5px;
+ }
+.designtitle
+ {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: medium;
+    font-weight: bold;
+    color: #000099;
+ }
+.designvalue
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: medium;
+ }
+.categoryheading
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: medium;
+    color: #000099;
+    border-top-width: medium;
+    border-right-width: medium;
+    border-bottom-width: medium;
+    border-left-width: medium;
+    border-bottom-style: solid;
+    border-top-color: #000099;
+    border-right-color: #000099;
+    border-bottom-color: #000099;
+    border-left-color: #000099;
+    border-top-style: solid;
+    background-color: #FFFFE0;
+ }
+.fieldheading
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    color: #000099;
+    text-decoration: underline;
+ }
+.oddfield
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+ }
+.evenfield
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+ }
+.subtotal
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    color: #000099;
+ }
+.total
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    color: #000099;
+ }
+.footer
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: x-small;
+    font-style: italic;
+ }
+.notes
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    color: #000000;
+    font-weight: normal;
+ }
+.designnotes
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+ }
+samp
+ {
+    color: #000099;
+ }
+li
+ { font-family: Arial, Helvetica, sans-serif;
+    padding: 5px 0px 0px;
+ }
+.tagname {
+    font-family: "Courier New", Courier, mono;
+    font-size: small;
+    font-weight: bold;
+}
+.tagexpansion {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+}
+-->
+</STYLE>
+</HEAD>
+<BODY>
+<TABLE>
+   <TR>
+      <TD COLSPAN="30">
+         <P CLASS="notes">This is an example BOM template that incorporates an image (the Labcenter Electronics logo) at the top of the page as well as a small bullet image to the left of the field lines. The page is constructed as a standard HTML document with the two images being local to the document.</P>
+         <P CLASS="notes">When used as the template for the Bill Of Materials, ISIS will automatically produce a output in Internet Explorer's &quot;Multipurpose Internet Mail Extension HTML (MHTML)&quot; format which contains both the BOM output as well as the images. This means that you only have a single (.MHT) file to file, print, e-mail, and so on.</P>
+         <P CLASS="notes">As with all BOM templates, ths file has HTML comments embedded in the source HTML between the rows that mark which parts of the document are duplicated for each section of the BOM output. The comment tags required (in this order) are:</P>
+         <P CLASS="notes"><SAMP>&lt;!--START CATEGORY ROW--&gt;<BR>
+            &lt;!--START ODD FIELD ROW--&gt;<BR>
+            &lt;!--START EVEN FIELD ROW--&gt;<BR>
+            &lt;!--START SUBTOTAL ROW--&gt;<BR>
+            &lt;!--START TOTAL ROW--&gt;<BR>
+            &lt;!--START END CATEGORY ROW--&gt;<BR>
+            &lt;!--START NOTES ROW--&gt;<BR>
+            </SAMP><SAMP> &lt;!--START FOOTER--&gt;</SAMP></P>
+         <P CLASS="notes">The BOM generator generates the BOM output document by copying the source template as follows:</P>
+         <OL>
+            <LI>The HTML in the source template is copied to the output from the start of the file up to the<SAMP> &lt;!--START CATEGORY ROW--&gt;</SAMP> marker.</LI>
+            <LI>For each category that contains parts (empty catgegories are not output), the HTML between the <SAMP>&lt;!--START CATEGORY ROW--&gt;</SAMP> and the <SAMP>&lt;!--START ODD FIELD ROW--&gt;</SAMP> is copied.</LI>
+            <LI>For each row within a category the HTML between <SAMP>&lt;!--START ODD FIELD ROW--&gt;</SAMP> and <SAMP>&lt;!--START ODD FIELD ROW--&gt;</SAMP> (row numbers 1,3,5,7 etc.) or between <SAMP>&lt;!--START EVEN FIELD ROW--&gt;</SAMP>and <SAMP>&lt;!--START SUBTOTAL ROW--&gt;</SAMP>(row numbers 2,4,6,8, etc.) is copied.</LI>
+            <LI>After the final row of components has been output within category, if there are subtotals to be output, the HTML between <SAMP>&lt;!--START SUBTOTAL ROW--&gt;</SAMP> and <SAMP>&lt;!--START END CATEGORY ROW--&gt;</SAMP> is output.</LI>
+            <LI>The HTML between <SAMP>&lt;!--START END CATEGORY ROW--&gt;</SAMP> and <SAMP>&lt;!--START TOTAL ROW--&gt;</SAMP> is now output. </LI>
+            <LI>Stages 2, 3, 4 and 5 are repeated for each category to be output.</LI>
+            <LI>After all categories have been output, if totals are required, the HTML between the <SAMP>&lt;!--START TOTAL ROW--&gt;</SAMP> and <SAMP>&lt;!--START NOTES ROW--&gt;</SAMP> is output.</LI>
+            <LI>If there are any <EM>Procurment Notes</EM> defined for the design (see {{NOTES}} below) then the HTML beween <SAMP>&lt;!--START NOTES ROW--&gt;</SAMP> and d <SAMP>&lt;!--START FOOTER--&gt;</SAMP> is output. If there are no notes, then this HTML is skipped.</LI>
+            <LI>Finally, the HTML between <SAMP>&lt;!--START FOOTER--&gt;</SAMP> and the end of the template file is copied to the output.</LI>
+         </OL>
+         <P CLASS="notes">At each stage of the copying process the BOM generator will replace any text marked with double curly braces (e.g. <SAMP>{<DUMMY TO STOP THIS BEING EXPANDED>{DTITLE}}</SAMP>) with a value as indicated in the table below. Note that the text can occur anywhere in the HTML document including, for example, within the <SAMP>&lt;TITLE&gt;&lt;/TITLE&gt;</SAMP> tags that define the document title.</P>
+         <TABLE CLASS="tags" WIDTH="100%" BORDER="0">
+            <TR> 
+               <TD WIDTH="10" ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">DTITLE</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The design title (or the design filename if there is no title) taken from the <EM>Edit Design Properties</EM> dialogue form (<EM>Design</EM> menu in ISIS).</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">DOCNO</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The document number taken from the <EM>Edit Design Properties</EM> dialogue form (<EM>Design</EM> menu in ISIS).</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">AUTHOR</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The design author taken from the <EM>Edit Design Properties</EM> dialogue form (<EM>Design</EM> menu in ISIS).</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">REV</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The design revision number taken from the <EM>Edit Design Properties</EM> dialogue form (<EM>Design</EM> menu in ISIS).</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">PATHNAME</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The full design file name <EM>including</EM> the directory/folder path.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">FILENAME</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The design file name <EM>excluding</EM> the directory/folder path.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">PAGECOUNT</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The number of (root) sheets in the design,</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">WL_CDATE</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The design <EM>creation</EM> date formatted in the 'long' style as configured through Windows Control Panel.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">WS_CDATE</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion"> 
+                  <P>The design <EM>creation</EM> date formatted in the 'short' style as configured through Windows Control Panel.</P>
+               </TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">CTIME</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The design <EM>creation</EM> time. The time format is as configured through Windows Control Panel.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">WL_MDATE</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The design <EM>modification</EM> date formatted in the 'long' style as configured through Windows Control Panel.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">WS_MDATE</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The design <EM>modification</EM> date formatted in the 'short'' style as configured through Windows Control Panel.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">MTIME</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The design <EM>modification </EM>time. The time format is as configured through Windows Control Panel.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">NPARTS</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The total number of parts (components) listed in the report.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">WL_TDATE</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The current date (at time of generating the BOM) in the 'long' style as configured through Windows Control Panel.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD HEIGHT="26" ALIGN="RIGHT" NOWRAP CLASS="tagname">WS_TDATE</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The current date (at time of generating the BOM) in the 'short' style as configured through Windows Control Panel.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">TIME</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The current time (at time of generating the BOM). The time format is as configured through Windows Control Panel.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">CATNUM</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The category ordinal number (the first category is number one, and so on).</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">CATQTY</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The number of parts (components) in the category.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">CATNAME</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The category name (Resistors, Capacitors, etc.).</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">ROWNUM</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The current components row number within a category (the first row is numbered one).</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">QUANTITY</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The number of parts (components) for a group of components in the current category.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">REFS</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The part (component) references for a group of components in the current category.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">Hn</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The column heading for a component property being output in column 'n'.</TD>
+            </TR>
+            <TR> 
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">Vn</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The component property value (when a category is being output), sub-total (when sub-totals are being output) or total (when totals are being output) for column 'n'. </TD>
+            </TR>
+            <TR>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">&nbsp;</TD>
+               <TD ALIGN="RIGHT" NOWRAP CLASS="tagname">NOTES</TD>
+               <TD CLASS="tagname">:</TD>
+               <TD CLASS="tagexpansion">The <EM>Procurment Notes </EM>text as specified via <EM>Edit Design Notes</EM> command on the <EM>Design</EM> menu in ISIS.</TD>
+            </TR>
+         </TABLE>
+
+      </TD>
+   </TR> <TR><TD COLSPAN="30" HEIGHT="10"></TD></TR>
+    <TR>
+      <TD COLSPAN="31">
+         <TABLE WIDTH="100%" BORDER="0" CELLPADDING="0" CELLSPACING="0"  CLASS="logo">
+            <TR>
+               <TD WIDTH="84%" ALIGN="CENTER">
+                  <P CLASS="address"><IMG SRC="lxlogos.gif" WIDTH="189" HEIGHT="49" VSPACE="5"><BR>
+                     53-55 Main Street, Grassington, North Yorkshire, BD23 5AA<BR>
+                     Tel: +44 (0)1756 753440&nbsp;&nbsp;&nbsp;&nbsp;Fax: +44 (0)1756 752857</P>
+               </TD>
+            </TR>
+         </TABLE>
+      </TD>
+   </TR>
+   <TR ALIGN="CENTER">
+      <TD COLSPAN="31" CLASS="mainheading"> Bill Of Materials For {{DTITLE}} </TD>
+   </TR>
+   <TR>
+      <TD COLSPAN="31">
+         <TABLE WIDTH="100%" BORDER="0">
+            <TR>
+               <TD WIDTH="48%" ALIGN="RIGHT">
+                  <TABLE BORDER="0">
+                     <TR VALIGN="BASELINE">
+                        <TD ALIGN="RIGHT" CLASS="designtitle">Design Title</TD>
+                        <TD>:</TD>
+                        <TD CLASS="designvalue">{{DTITLE}}</TD>
+                     </TR>
+                     <TR VALIGN="BASELINE">
+                        <TD ALIGN="RIGHT" CLASS="designtitle">Design Author</TD>
+                        <TD>:</TD>
+                        <TD CLASS="designvalue">{{AUTHOR}}</TD>
+                     </TR>
+                     <TR VALIGN="BASELINE">
+                        <TD ALIGN="RIGHT" CLASS="designtitle">Design Revision</TD>
+                        <TD>:</TD>
+                        <TD CLASS="designvalue">{{REV}}</TD>
+                     </TR>
+                  </TABLE>
+               </TD>
+               <TD WIDTH="4%">&nbsp;</TD>
+               <TD WIDTH="48%">
+                  <TABLE BORDER="0">
+                     <TR VALIGN="BASELINE">
+                        <TD ALIGN="RIGHT" CLASS="designtitle">Design Created</TD>
+                        <TD>:</TD>
+                        <TD CLASS="designvalue">{{WL_CDATE}}</TD>
+                     </TR>
+                     <TR VALIGN="BASELINE">
+                        <TD ALIGN="RIGHT" CLASS="designtitle">DesignModified</TD>
+                        <TD>:</TD>
+                        <TD CLASS="designvalue">{{WL_MDATE}}</TD>
+                     </TR>
+                     <TR VALIGN="BASELINE">
+                        <TD ALIGN="RIGHT" CLASS="designtitle">Total Parts</TD>
+                        <TD>:</TD>
+                        <TD CLASS="designvalue">{{NPARTS}}</TD>
+                     </TR>
+                  </TABLE>
+               </TD>
+            </TR>
+         </TABLE>
+      </TD>
+   </TR>
+   <TR>
+      <TD COLSPAN="31">&nbsp; </TD>
+   </TR>
+   <!--START CATEGORY ROW-->
+   <TR>
+      <TD HEIGHT="10" COLSPAN="31"></TD>
+   </TR>
+   <TR>
+      <TD COLSPAN="31" CLASS="categoryheading">{{CATQTY}}&nbsp;{{CATNAME}}</TD>
+   </TR>
+   <TR>
+      <TD HEIGHT="5" COLSPAN="31"></TD>
+   </TR>
+   <TR CLASS="fieldheading">
+      <TD WIDTH="10"></TD>
+      <TD COLSPAN="2">Quantity:</TD>
+      <TD WIDTH="10"></TD>
+      <TD>References</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H1}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H2}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H3}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H4}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H5}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H6}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H7}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H8}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H9}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H10}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H11}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H12}}</TD>
+      <!--END OF FIELDS-->
+      <TD WIDTH="10"></TD>
+   </TR>
+   <!--START ODD FIELD ROW-->
+   <TR CLASS="oddfield">
+      <TD WIDTH="10"></TD>
+      <TD WIDTH="10"><IMG SRC="bullet.gif" WIDTH="9" HEIGHT="10"></TD>
+      <TD VALIGN="BASELINE">{{QUANTITY}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE">{{REFS}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V1}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V2}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V3}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V4}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V5}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V6}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V7}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V8}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V9}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V10}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V11}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V12}}</TD>
+      <!--END OF FIELDS-->
+      <TD WIDTH="10"></TD>
+   </TR>
+   <!--START EVEN FIELD ROW-->
+   <TR CLASS="evenfield">
+      <TD WIDTH="10"></TD>
+      <TD WIDTH="10"><IMG SRC="bullet.gif" WIDTH="9" HEIGHT="10"></TD>
+      <TD VALIGN="BASELINE">{{QUANTITY}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE">{{REFS}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V1}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V2}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V3}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V4}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V5}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V6}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V7}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V8}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V9}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V10}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V11}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V12}}</TD>
+      <!--END OF FIELDS-->
+      <TD WIDTH="10"></TD>
+   </TR>
+   <!--START SUBTOTAL ROW-->
+   <TR>
+      <TD HEIGHT="5" COLSPAN="31"></TD>
+   </TR>
+   <TR CLASS="subtotal">
+      <TD WIDTH="10"></TD>
+      <TD WIDTH="10"></TD>
+      <TD COLSPAN="3">Sub-totals:</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V1}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V2}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V3}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V4}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V5}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V6}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V7}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V8}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V9}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V10}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V11}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V12}}</TD>
+      <!--END OF FIELDS-->
+      <TD WIDTH="10"></TD>
+   </TR>
+   <!--START END CATEGORY ROW-->
+    <!--START TOTAL ROW-->
+   <TR>
+      <TD COLSPAN="31" CLASS="horzline">&nbsp; </TD>
+   </TR>
+   <TR CLASS="total">
+      <TD WIDTH="10"></TD>
+      <TD WIDTH="10"></TD>
+      <TD COLSPAN="3">Totals:</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V1}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V2}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V3}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V4}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V5}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V6}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V7}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V8}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V9}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V10}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V11}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V12}}</TD>
+      <!--END OF FIELDS-->
+      <TD WIDTH="10"></TD>
+   </TR>
+   <!--START NOTES ROW-->
+   <TR>
+      <TD COLSPAN="31">&nbsp; </TD>
+   </TR>
+   <TR CLASS="designnotes">
+      <TD COLSPAN="31"><u>Notes:</u><BR>{{NOTES}}</TD>
+   </TR>
+   <!--START FOOTER-->
+   <TR>
+      <TD COLSPAN="31">&nbsp; </TD>
+   </TR>
+   <TR ALIGN="RIGHT" CLASS="footer">
+      <TD COLSPAN="31">{{{WL_TDATE}}&nbsp;&nbsp;{{TIME}}</TD>
+   </TR>
+</TABLE>
+<P CLASS="notes">&nbsp;</P>
+</BODY>
+</HTML>

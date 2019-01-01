@@ -1,0 +1,29 @@
+'{$STAMP BS2}
+
+
+counter     var     byte
+workA       var     byte
+workB       var     byte
+
+init:
+    dirs    = $00FF
+    counter = 0
+
+loop:
+    outs    = counter
+    button 14,1,254,50,workA,1,increment
+    button 15,1,254,10,workB,1,decrement
+
+loop_1:
+    pause   1
+    goto    loop
+           
+
+increment:
+    counter = counter + 1
+    goto    loop_1
+
+
+decrement:
+    counter = counter - 1
+    goto    loop_1

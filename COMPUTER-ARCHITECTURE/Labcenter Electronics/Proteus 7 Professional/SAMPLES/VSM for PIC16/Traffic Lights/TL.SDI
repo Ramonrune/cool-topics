@@ -1,0 +1,61 @@
+,,,           LIST    p=16F84 ; PIC16F844 is the target processor
+,,,
+,,,           #include "P16F84.INC" ; Include header file
+,,,
+,,,           CBLOCK 0x10   ; Temporary storage
+,,,              state
+,,,              l1,l2
+,,,           ENDC
+,,,
+,,,           org     0               ; Start up vector.
+0000,2805,,           goto    setports        ; Go to start up code.
+,,,
+,,,           org     4               ; Interrupt vector.
+0004,0061,halt,halt       goto    halt            ; Sit in endless loop and do nothing.
+,,,
+0005,0103,setports,setports   clrw                    ; Zero in to W.
+0006,0085,,           movwf   PORTA           ; Ensure PORTA is zero before we enable it.
+0007,0086,,           movwf   PORTB           ; Ensure PORTB is zero before we enable it.
+0008,1683,,           bsf     STATUS,RP0      ; Select Bank 1
+0009,0103,,           clrw                    ; Mask for all bits as outputs.
+000A,0086,,           movwf   TRISB           ; Set TRISB register.
+000B,1283,,           bcf     STATUS,RP0      ; Reselect Bank 0.
+,,,
+000C,0103,initialise,initialise clrw                    ; Initial state.
+000D,0090,,           movwf   state           ; Set it.
+,,,
+000E,2015,loop,loop       call    getmask         ; Convert state to bitmask.
+000F,0086,,           movwf   PORTB           ; Write it to port.
+0010,0A10,,           incf    state,W         ; Increment state in to W.
+0011,3903,,           andlw   0x03            ; Wrap it around.
+0012,0090,,           movwf   state           ; Put it back in to memory.
+0013,201B,,           call    wait            ; Wait :-)
+0014,280E,,           goto    loop            ; And loop :-)
+,,,
+,,,           ; Function to return bitmask for output port for current state.
+,,,           ; The top nibble contains the bits for one set of lights and the
+,,,           ; lower nibble the bits for the other set. Bit 1 is red, 2 is amber
+,,,           ; and bit three is green. Bit four is not used.
+0015,0810,getmask,getmask    movf    state,W         ; Get state in to W.
+0016,0782,,           addwf   PCL,F           ; Add offset in W to PCL to calc. goto.
+0017,3441,,           retlw   0x41            ; state==0 is Green and Red.
+0018,3423,,           retlw   0x23            ; state==1 is Amber and Red/Amber
+0019,3414,,           retlw   0x14            ; state==3 is Red   and Green
+001A,3432,,           retlw   0x32            ; state==4 is Red/Amber and Amber.
+,,,
+,,,           ; Function using two loops to achieve a delay.
+001B,3005,wait,wait       movlw   5
+001C,0091,,           movwf   l1
+,,,
+001D,2021,w1,w1         call    wait2
+001E,0B91,,           decfsz  l1
+001F,281D,,           goto    w1
+,,,
+0020,0008,,           return
+,,,
+,,,
+0021,0192,wait2,wait2      clrf    l2
+0022,0B92,w2,w2         decfsz  l2
+0023,2822,,           goto    w2
+0024,0008,,           return
+,,,           END

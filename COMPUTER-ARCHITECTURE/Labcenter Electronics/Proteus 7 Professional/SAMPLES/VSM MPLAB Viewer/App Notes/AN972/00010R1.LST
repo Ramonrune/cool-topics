@@ -1,0 +1,1122 @@
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;Software License Agreement                                         
+                      00002 ;                                                                    
+                      00003 ;The software supplied herewith by Microchip Technology             
+                      00004 ;Incorporated (the "Company") is intended and supplied to you, the  
+                      00005 ;Company’s customer, for use solely and exclusively on Microchip    
+                      00006 ;products. The software is owned by the Company and/or its supplier,
+                      00007 ;and is protected under applicable copyright laws. All rights are   
+                      00008 ;reserved. Any use in violation of the foregoing restrictions may   
+                      00009 ;subject the user to criminal sanctions under applicable laws, as   
+                      00010 ;well as to civil liability for the breach of the terms and         
+                      00011 ;conditions of this license.                                        
+                      00012 ;                                                                    
+                      00013 ;THIS SOFTWARE IS PROVIDED IN AN "AS IS" CONDITION. NO WARRANTIES,  
+                      00014 ;WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT NOT LIMITED  
+                      00015 ;TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A       
+                      00016 ;PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. THE COMPANY SHALL NOT,  
+                      00017 ;IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL OR         
+                      00018 ;CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.   
+                      00019 ;**********************************************************************
+                      00020 ;
+                      00021 ;       Filename:       00010R1.asm
+                      00022 ;       Date:             12/23/2004 day, 2004
+                      00023 ;       Version:        1.0
+                      00024 ;
+                      00025 ;       Author:         Pat Richards
+                      00026 ;       Company:        Microchip Technology Inc.
+                      00027 ;                                                                     
+                      00028 ;                                                                     
+                      00029 ;**********************************************************************
+                      00030 ;       Description:
+                      00031 ;       This is the source code for AN972
+                      00032 ; Refer to 00010R1.lkr for details on the linker script  
+                      00033 ;       
+                      00034 ;**********************************************************************
+                      00035 ;       Revision History: none
+                      00036 ;
+                      00037 ;**********************************************************************
+                      00038 
+                      00039         #include <p10F202.inc>        ; processor specific variable definitions
+                      00001         LIST
+                      00002 ; P10F202.INC  Standard Header File, Version 1.01    Microchip Technology, Inc.
+                      00125         LIST
+                      00040 ;       #include <p10F206.inc>        ; processor specific variable definitions
+                      00041 
+0FFF   0FEF           00042         __CONFIG   _MCLRE_OFF & _WDT_ON & _IntRC_OSC 
+                      00043 
+                      00044 ; '__CONFIG' directive is used to embed configuration word within .asm file.
+                      00045 ; The lables following the directive are located in the respective .inc file.
+                      00046 ; See data sheet for additional information on configuration word settings.
+                      00047 
+                      00048 ;************************** VARIABLE DEFINITIONS ******************************
+                      00049   UDATA
+0000                  00050 Addr        RES   1 ;
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0001                  00051 DataByte    RES   1 ;
+0002                  00052 BitCount    RES   1 ;
+0003                  00053 TempData    RES   1 ;
+0004                  00054 SerOutData  RES   1 ;
+0005                  00055 ReadData    RES   1 ; Used to hold serial out data (and can be used to test ACK)
+0006                  00056 ACKStat     RES   1 ; Holds ACK status. 0 = NACK, 1 = ACK
+0007                  00057 OldSwitch   RES   1 ; Serial mode 1 = SPI, 0 = I2C
+0008                  00058 NewSwitch   RES   1 ; Serial mode 1 = SPI, 0 = I2C
+0009                  00059 n           RES   1 ;
+000A                  00060 RAMTRIS                 RES   1 ; this is a baseline part so have to create
+                      00061                                             ; own tris register in RAM to keep track of
+                      00062                                             ; input and output pins (very important!)
+                      00063 
+                      00064 ;*************************** DEFINE STATEMENTS ********************************
+                      00065 
+                      00066 ;; Flag Bit (FlagReg) definitions
+                      00067 #define SerMode   0x00
+                      00068 
+                      00069 ;; pin definitions
+                      00070 #define SCL GPIO,0
+                      00071 #define SCK GPIO,0
+                      00072 #define nCS GPIO,1    ; Note: will drive both states of nCS
+                      00073 #define SDA GPIO,2
+                      00074 #define SI  GPIO,2
+                      00075 #define SO  GPIO,3
+                      00076 
+                      00077 ;; MCP23x08 registers
+                      00078 #define IODIR   0x00
+                      00079 #define IPOL    0x01
+                      00080 #define GPINTEN 0x02
+                      00081 #define DEFVAL  0x03
+                      00082 #define INTCON  0x04
+                      00083 #define IOCON   0x05
+                      00084 #define GPPU    0x06
+                      00085 #define INTF    0x07
+                      00086 #define INTCAP  0x08
+                      00087 #define MCPGPIO 0x09
+                      00088 #define OLAT    0x0A
+                      00089 
+                      00090 
+                      00091 ;; GP3 = SI, GP2 = SDA/SO, GP1 = CS, GP0 = SCL/SCK
+                      00092 ;; Will modify TRIS register and not GPIO directly
+                      00093 #define SCL_L           b'11111110'     ; AND with this to make SCL an output
+                      00094 #define SCL_H           b'00000001'     ; IOR with this to make SCL an input
+                      00095 #define SDA_L   b'11111011'     ; AND with this to make SDA an output
+                      00096 #define SDA_H   b'00000100'     ; IOR with this to make SDA an input
+                      00097 
+                      00098 #define SCK_L           b'11111110'     ; AND with this to make SCK an output
+                      00099 #define SCK_H           b'00000001'     ; IOR with this to make SCK an input
+                      00100 #define SI_L    b'11111011'     ; AND with this to make SI an output
+                      00101 #define SI_H    b'00000100'     ; IOR with this to make SI an input
+                      00102 
+                      00103 #define CS_OUT  b'11111101'     ; AND with this to make CS an output
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00104 #define CS_IN   b'00000010'     ; IOR with this to make CS an input
+                      00105 
+                      00106 ;; I2C Commands/Opcodes
+                      00107 #define OPCODE    0x40
+                      00108 #define WRITECMD  0
+                      00109 #define READCMD   1
+                      00110 #define AnPINS    b'0000'  ; A2, A1, A0 pins (Shift left by one. A2,A1,A0,X)
+                      00111 
+                      00112 ;****************************** START OF CODE *********************************
+                      00113 RESET_VECTOR CODE
+0000   0A??           00114         goto  Start
+                      00115 
+                      00116 ;******************************************************************************
+                      00117 ;*************************** MAIN  CODE ***************************************
+                      00118 ;******************************************************************************
+                      00119 MAIN  CODE
+                      00120 ;******************************************************************************
+                      00121 ; Start - 
+                      00122 ; InitPIC
+                      00123 ; Set Mode to I2C
+                      00124 ; Init23008
+                      00125 ; Set Mode to SPI
+                      00126 ; Init23S08
+                      00127 ; Check toggle switch
+                      00128 ;   Set proper serial mode
+                      00129 ;   Make other device all inputs
+                      00130 ; Read GP inputs
+                      00131 ; Drive outputs to match inputs
+                      00132 ; goto Check Toggle Switch
+                      00133 ;****************************************************************************** 
+0000                  00134 Start
+                      00135 ;       movlw   0x40    
+0000   0025           00136         movwf OSCCAL            ; load the factory oscillator calibration value
+                      00137 
+                      00138 ;******************************************************************************
+                      00139 ; InitPIC - Initialize PIC
+                      00140 ;
+                      00141 ;******************************************************************************
+0001                  00142 InitPIC
+                      00143 ;Remove next two lines for PIC10F202 (uncomment for PIC10F206)
+                      00144 ;  movlw 0xF1
+                      00145 ;  movwf CMCON0
+0001   0C02           00146   movlw 0x02          ; Note: CS (GP1) needs to drive H and L due to selector switch resistors
+0002   0026           00147   movwf GPIO          ; Clear latches.. will operate on tris for I2C and SPI (except nCS pin)
+0003   0C0D           00148   movlw b'00001101'       ; SI, SDA/SO, CS, SCL/SCK
+0004   00??           00149   movwf RAMTRIS
+0005   0006           00150   tris  GPIO
+0006   0CCD           00151   movlw b'11001101'   ; 1:64TMR0 prescaler: 1E-6 x 256 x 64 = 16.38 ms, weak pullups disabled
+0007   0002           00152   option
+0008   0004           00153   clrwdt              ; Clear the watchdog timer
+                      00154 
+                      00155   ;*** Init23008
+                      00156         ;*** First clock out 8-bits, No ACK, and then stop to make sure device
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00157         ;    is not locked up
+0009   0CFF           00158   movlw 0xFF            ; Set TempData all '1's to make SDA an input
+000A   00??           00159   movwf TempData        ; so can read the data
+000B   09??           00160   call  I2CClockByte    ; Data is now in ReadData variable
+000C   09??           00161   call  NoACK
+000D   09??           00162   call  I2CStop
+                      00163   
+000E                  00164 I2CWriteIODIR
+000E   0C00           00165   movlw IODIR             ; Load Addr
+000F   00??           00166   movwf Addr
+0010   0CFF           00167   movlw 0xFF              ; Initially make all inputs (which is default anyway)
+0011   00??           00168   movwf DataByte
+0012   09??           00169   call  I2CByteWrite      ; Call I2C Byte Write
+                      00170 
+                      00171   ;*** Now verify that the register was correctly written
+0013   0C00           00172   movlw IODIR             ; Load Addr
+0014   00??           00173   movwf Addr
+0015   09??           00174   call  I2CByteRead
+0016   02??           00175   movf  DataByte,w        ; Load data written to be
+0017   01??           00176   xorwf ReadData,w        ; compared to data read
+0018   0743           00177   btfss STATUS,Z          ; If the same, skip
+0019   0A??           00178   goto  I2CWriteIODIR     ; Otherwise, try again
+                      00179 
+                      00180   ;*** Init23S08
+001A                  00181 SPIWriteIODIR
+001A   0C00           00182   movlw IODIR             ; Load Addr
+001B   00??           00183   movwf Addr
+001C   0CFF           00184   movlw 0xFF              ; Make all inputs
+001D   00??           00185   movwf DataByte
+001E   09??           00186   call  SPIByteWrite      ; Write byte
+                      00187 
+                      00188   ;*** Now verify that the register was correctly written
+001F   09??           00189   call  SPIByteRead       ; Read byte
+0020   02??           00190   movf  DataByte,w        ; Load data written to be
+0021   01??           00191   xorwf ReadData,w        ; compared to data read
+0022   0743           00192   btfss STATUS,Z          ; If the same, skip
+0023   0A??           00193   goto  SPIWriteIODIR
+                      00194 
+0024                  00195 CheckToggleSwitch
+0024   0004           00196   clrwdt                  ; Clear the watchdog timer
+                      00197   ;*** Set CS = Input (will pull to switch value) (0 = SPI, 1 = I2C)
+0025   02??           00198   movf  RAMTRIS,w
+0026   0D02           00199   iorlw CS_IN             ; make an input 
+0027   00??           00200   movwf RAMTRIS
+0028   0006           00201   tris  GPIO
+0029   0000           00202   nop
+002A   0000           00203   nop
+002B   0000           00204   nop
+002C   0000           00205   nop
+                      00206 
+002D   02??           00207   movf  NewSwitch,w       ; Move to OldSwitch
+002E   00??           00208   movwf OldSwitch
+                      00209   
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+002F   0726           00210   btfss nCS               ; I2C mode if SET, SPI mode if CLEAR
+0030   0A??           00211   goto  SetSwitchSPI
+0031   0A??           00212   goto  SetSwitchI2C
+                      00213 
+0032                  00214 SetSwitchSPI
+                      00215   ;*** Set CS = HIGH
+0032   02??           00216   movf  RAMTRIS,w
+0033   0EFD           00217   andlw CS_OUT            ; make an output
+0034   00??           00218   movwf RAMTRIS
+0035   0006           00219   tris  GPIO
+0036   0C02           00220   movlw 0x02              ; Need to drive nCS high
+0037   0026           00221   movwf GPIO              ;
+                      00222 
+0038   0C00           00223   movlw 0x00
+0039   00??           00224   movwf NewSwitch
+003A   01??           00225   xorwf OldSwitch,w       ;
+003B   0743           00226   btfss STATUS,Z          ; Skip if switches differ
+003C   0A??           00227   goto  SetSPIMode        ; Need to make I2C device all inputs first
+003D   0A??           00228   goto  SPILoop           ; Can jump straight to SPI routines
+                      00229   
+003E                  00230 SetSwitchI2C
+                      00231   ;*** Set CS = HIGH so SPI device is not disturbed if switch is flipped
+                      00232   ;    during I2C operation
+003E   02??           00233   movf  RAMTRIS,w
+003F   0EFD           00234   andlw CS_OUT            ; make an output
+0040   00??           00235   movwf RAMTRIS
+0041   0006           00236   tris  GPIO
+0042   0C02           00237   movlw 0x02              ; Need to drive nCS high
+0043   0026           00238   movwf GPIO              ;
+                      00239 
+0044   0C01           00240   movlw 0x01
+0045   00??           00241   movwf NewSwitch
+0046   01??           00242   xorwf OldSwitch,w       ;
+0047   0743           00243   btfss STATUS,Z          ; Skip if switches differ
+0048   0A??           00244   goto  SetI2CMode        ; Need to make SPI device all inputs first
+0049   0A??           00245   goto  I2CLoop           ; Can jump straight to I2C routines
+                      00246 
+                      00247 ;*** IF SWITCHED TO I2C MODE ***
+                      00248 ;*******************************
+004A                  00249 SetI2CMode
+                      00250   ;*** First make the other device all inputs
+004A                  00251 SPIWriteIODIR_1
+004A   0C00           00252   movlw IODIR             ; Load Addr
+004B   00??           00253   movwf Addr
+004C   0CFF           00254   movlw 0xFF              ; Make all inputs
+004D   00??           00255   movwf DataByte
+004E   09??           00256   call  SPIByteWrite      ; Write byte
+                      00257 
+                      00258   ;*** Now verify that the register was correctly written
+004F   09??           00259   call  SPIByteRead       ; Read byte
+0050   02??           00260   movf  DataByte,w        ; Load data written to be
+0051   01??           00261   xorwf ReadData,w        ; compared to data read
+0052   0743           00262   btfss STATUS,Z          ; If the same, skip
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0053   0A??           00263   goto  SPIWriteIODIR_1
+                      00264 
+                      00265   ;***Now configure the I/O
+0054                  00266 I2CLoop
+0054                  00267 I2CWriteIODIR_2
+0054   0C00           00268   movlw IODIR             ; Load Addr
+0055   00??           00269   movwf Addr
+0056   0CF0           00270   movlw 0xF0              ; GP7:4 = Inputs; GP3:0 = Outputs
+0057   00??           00271   movwf DataByte
+0058   09??           00272   call  I2CByteWrite      ; Call I2C Byte Write
+                      00273 
+                      00274   ;*** Now verify that the register was correctly written
+0059   09??           00275   call  I2CByteRead
+005A   02??           00276   movf  DataByte,w        ; Load data written to be
+005B   01??           00277   xorwf ReadData,w        ; compared to data read
+005C   0743           00278   btfss STATUS,Z          ; If the same, skip
+005D   0A??           00279   goto  I2CWriteIODIR_2   ; Otherwise, try again
+                      00280   
+                      00281   ;*** Read Inputs (I2C)
+005E   0C09           00282   movlw MCPGPIO           ; Load Addr
+005F   00??           00283   movwf Addr
+0060   09??           00284   call  I2CByteRead       ; Data will be stored in "ReadData"
+0061   02??           00285   movf  ReadData,w        ; Move Read data...
+0062   00??           00286   movwf DataByte          ; into the write data
+                      00287 
+                      00288   ;*** Set outputs to match inputs
+0063   03??           00289   swapf DataByte,f        ; Swap nibbles so switch data can be written to LEDs
+0064   0C0A           00290   movlw OLAT              ; Load Addr
+0065   00??           00291   movwf Addr
+0066   09??           00292   call  I2CByteWrite      ; Call I2C Byte Write ("DataByte" is already loaded);
+                      00293 
+                      00294   ;*** Start Over
+0067   0A??           00295   goto  CheckToggleSwitch ; Start over
+                      00296   
+                      00297 
+                      00298 ;*** ELSE IF SWITCHED TO SPI MODE ***
+                      00299 ;************************************
+0068                  00300 SetSPIMode  
+                      00301 ;*** First make the other device all inputs
+0068                  00302 I2CWriteIODIR_1
+0068   0C00           00303   movlw IODIR             ; Load Addr
+0069   00??           00304   movwf Addr
+006A   0CFF           00305   movlw 0xFF              ; Initially make all inputs (which is default anyway)
+006B   00??           00306   movwf DataByte
+006C   09??           00307   call  I2CByteWrite      ; Call I2C Byte Write
+                      00308 
+006D   09??           00309   call  I2CByteRead
+006E   02??           00310   movf  DataByte,w        ; Load data written to be
+006F   01??           00311   xorwf ReadData,w        ; compared to data read
+0070   0743           00312   btfss STATUS,Z          ; If the same, skip
+0071   0A??           00313   goto  I2CWriteIODIR_1   ; Otherwise, try again
+                      00314   
+0072                  00315 SPILoop
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00316   ;*** Now configure the I/O
+0072                  00317 SPIWriteIODIR_2
+0072   0C00           00318   movlw IODIR             ; Load Addr
+0073   00??           00319   movwf Addr
+0074   0CF0           00320   movlw 0xF0              ; GP7:4 = Inputs; GP3:0 = Outputs
+0075   00??           00321   movwf DataByte
+0076   09??           00322   call  SPIByteWrite      ; Write byte
+                      00323 
+0077   09??           00324   call  SPIByteRead       ; Read byte
+0078   02??           00325   movf  DataByte,w        ; Load data written to be
+0079   01??           00326   xorwf ReadData,w        ; compared to data read
+007A   0743           00327   btfss STATUS,Z          ; If the same, skip
+007B   0A??           00328   goto  SPIWriteIODIR_2
+                      00329 
+                      00330   ;*** Read Inputs (SPI)
+007C   0C09           00331   movlw MCPGPIO           ; Load Addr
+007D   00??           00332   movwf Addr
+007E   09??           00333   call  SPIByteRead       ; Data will be stored in "ReadData"
+007F   02??           00334   movf  ReadData,w        ; Move Read data...
+0080   00??           00335   movwf DataByte          ; into the write data
+                      00336   
+0081   03??           00337   swapf DataByte,f        ; Swap nibbles so switch data can be written to LEDs
+                      00338 
+                      00339   ;*** Set outputs to match inputs
+0082   0C0A           00340   movlw OLAT              ; Load Addr
+0083   00??           00341   movwf Addr
+0084   09??           00342   call  SPIByteWrite      ; Call I2C Byte Write ("DataByte" is already loaded);
+                      00343 
+                      00344   ;*** Start Over
+0085   0A??           00345   goto  CheckToggleSwitch ; Start over
+                      00346 
+                      00347 
+                      00348 ;******************************************************************************
+                      00349 ;***************************** SUBROUTINES CODE *******************************
+                      00350 ;******************************************************************************
+                      00351 SUBROUTINES CODE
+                      00352 ;****************************** I2C Routines **********************************
+                      00353 ;******************************************************************************
+                      00354 ; I2CByteWrite - Writes an I2C byte
+                      00355 ; OPCODE w/ An pins (R/W = 0)
+                      00356 ; ADDR
+                      00357 ; Write Data 
+                      00358 ;******************************************************************************
+0000                  00359 I2CByteWrite
+0000   09??           00360   call  I2CStart
+                      00361 
+                      00362   ;*** OPCODE
+0001   0C40           00363   movlw OPCODE          ; Load Opcode
+0002   0D00           00364   iorlw AnPINS          ; IOR An pins
+0003   00??           00365   movwf TempData        ; Place in data byte
+0004   0C00           00366   movlw WRITECMD        ; Write command
+0005   01??           00367   iorwf TempData, 1     ; IOR write command and place results in TempData
+0006   09??           00368   call  I2CClockByte
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00369   
+0007   09??           00370   call  IsACK?
+                      00371 
+                      00372   ;*** Address
+0008   02??           00373   movf  Addr,w          ; Load Address
+0009   00??           00374   movwf TempData        ; Place in data byte
+000A   09??           00375   call  I2CClockByte
+                      00376   
+000B   09??           00377   call  IsACK?
+                      00378 
+                      00379   ;*** Data
+000C   02??           00380   movf  DataByte,w      ; Load Data (was configured outside of subroutine)
+000D   00??           00381   movwf TempData        ; Place in data byte
+000E   09??           00382   call  I2CClockByte
+                      00383 
+000F   09??           00384   call  IsACK?
+0010   09??           00385   call  I2CStop
+                      00386   
+0011   0800           00387   retlw 0
+                      00388 
+                      00389 ;******************************************************************************
+                      00390 ; I2CByteRead - Reads an I2C byte
+                      00391 ; S
+                      00392 ; OPCODE w/ An pins (R/W = 0)
+                      00393 ; ADDR
+                      00394 ; ReStart
+                      00395 ; OPCODE w/ An pins (R/W = 1)
+                      00396 ; Read Data
+                      00397 ;******************************************************************************
+0012                  00398 I2CByteRead
+0012   09??           00399   call  I2CStart
+                      00400 
+                      00401   ;*** OPCODE (R/W = 0)
+0013   0C40           00402   movlw OPCODE          ; Load Opcode
+0014   0D00           00403   iorlw AnPINS          ; IOR An pins
+0015   00??           00404   movwf TempData        ; Place in data byte
+0016   0C00           00405   movlw WRITECMD        ; WRITE command
+0017   01??           00406   iorwf TempData, 1     ;IOR write command and place results in TempData
+0018   09??           00407   call  I2CClockByte
+                      00408   
+0019   09??           00409   call  IsACK?
+                      00410 
+                      00411   ;*** Address
+001A   02??           00412   movf  Addr,w          ; Load Address
+001B   00??           00413   movwf TempData        ; Place in data byte
+001C   09??           00414   call  I2CClockByte
+                      00415   
+001D   09??           00416   call  IsACK?
+                      00417 
+001E   09??           00418   call  I2CStart        ; ReStart
+                      00419 
+                      00420   ;*** OPCODE (R/W = 1)
+001F   0C40           00421   movlw OPCODE          ; Load Opcode
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0020   0D00           00422   iorlw AnPINS          ; IOR An pins
+0021   00??           00423   movwf TempData        ; Place in data byte
+0022   0C01           00424   movlw READCMD         ; READ command
+0023   01??           00425   iorwf TempData, 1     ; IOR write command and place results in TempData
+0024   09??           00426   call  I2CClockByte
+                      00427   
+0025   09??           00428   call  IsACK?
+                      00429   
+                      00430   ;*** Read data
+0026   00??           00431   clrf  ReadData
+                      00432 
+0027   0CFF           00433   movlw 0xFF            ; Set TempData all '1's to make SDA an input
+0028   00??           00434   movwf TempData        ; so can read the data
+0029   09??           00435   call  I2CClockByte    ; Data is now in ReadData variable
+                      00436   
+002A   09??           00437   call  NoACK
+002B   09??           00438   call  I2CStop
+                      00439 
+002C   0800           00440   retlw 0
+                      00441 
+                      00442 ;******************************************************************************
+                      00443 ; I2CClockByte - Clocks a byte.
+                      00444 ;******************************************************************************
+002D                  00445 I2CClockByte
+002D   0C08           00446   movlw   0x08          ; For looping on 1 byte
+002E   00??           00447   movwf   BitCount
+002F                  00448 NextBit                 ; Loop through data
+002F   03??           00449   rlf     TempData,f      ; Else, shift bits through C bit. MSB first, Note TempData is lost
+0030   0A??           00450   goto    I2CClockBit
+0031                  00451 ContinueI2C
+0031   02??           00452   decfsz  BitCount,f
+0032   0A??           00453   goto    NextBit       ; END of loop
+                      00454   
+0033   0800           00455   retlw 0
+                      00456 
+                      00457 
+                      00458 ;******************************************************************************
+                      00459 ; I2CClockBit - Clock a bit MCP23008 (I2C)
+                      00460 ; W reg contains data bit level
+                      00461 ; Set SDA level
+                      00462 ; SCL = HIGH
+                      00463 ; SCL = LOW
+                      00464 ;
+                      00465 ; This is not actually a subroutine, however, it was split from the
+                      00466 ; I2CClockByte routing for clarity.
+                      00467 ;******************************************************************************
+0034                  00468 I2CClockBit
+0034   0603           00469   btfsc STATUS,C        ; Check if a '1' or '0'
+0035   0A??           00470   goto  SDAHigh
+                      00471 
+0036                  00472 SDALow
+                      00473   ;*** Either Set SDA = LOW
+0036   02??           00474   movf  RAMTRIS,w
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0037   0EFB           00475   andlw SDA_L                   ; make SDA an output (drive LOW)
+0038   00??           00476   movwf RAMTRIS
+0039   0006           00477   tris  GPIO                    
+003A   0A??           00478   goto  PulseSCL
+                      00479 
+003B                  00480 SDAHigh
+                      00481   ;*** OR Set SDA = HIGH
+003B   02??           00482   movf  RAMTRIS,w
+003C   0D04           00483   iorlw SDA_H                   ; make SDA an input (float HIGH)
+003D   00??           00484   movwf RAMTRIS
+003E   0006           00485   tris  GPIO
+                      00486 
+003F                  00487 PulseSCL
+                      00488   ;*** Set clock = HIGH
+003F   02??           00489   movf  RAMTRIS,w
+0040   0D01           00490   iorlw SCL_H                   ; make SCL an input (float HIGH)
+0041   00??           00491   movwf RAMTRIS
+0042   0006           00492   tris  GPIO
+                      00493 
+                      00494         ;*** First check SDA value (this is for I2C reads)
+0043   0C00           00495   movlw 0               ; Check status of SDA pin
+0044   0646           00496   btfsc SDA             ; Make sure SDAbit is cleared by the calling routine first
+0045   0C01           00497   movlw 1
+0046   0403           00498   bcf   STATUS,C
+0047   03??           00499   rlf   ReadData,f      ; Shift left by one bit (for next time through)
+0048   01??           00500   addwf ReadData,f      ; Place value into variable
+                      00501 
+                      00502   ;*** Set clock = LOW
+0049   02??           00503   movf  RAMTRIS,w
+004A   0EFE           00504   andlw SCL_L                   ; make SCL an output (drive LOW)
+004B   00??           00505   movwf RAMTRIS
+004C   0006           00506   tris  GPIO
+                      00507 
+004D   0A??           00508   goto  ContinueI2C
+                      00509 
+                      00510 ;******************************************************************************
+                      00511 ; I2CStart - Send a START bit MCP23008 (I2C)
+                      00512 ; SCL = LOW
+                      00513 ; SDA = HIGH
+                      00514 ; SCL = HIGH
+                      00515 ; SDA = LOW
+                      00516 ;******************************************************************************
+004E                  00517 I2CStart
+                      00518   ;*** Set SCL = LOW ...Just in case it is not already
+004E   02??           00519   movf  RAMTRIS,w
+004F   0EFE           00520   andlw SCL_L                 ; make SCL an output (drive LOW)
+0050   00??           00521   movwf RAMTRIS
+0051   0006           00522   tris  GPIO
+                      00523 
+                      00524   ;*** Set SDA = HIGH
+0052   02??           00525   movf  RAMTRIS,w
+0053   0D04           00526   iorlw SDA_H                 ; make SDA an input (float HIGH)
+0054   00??           00527   movwf RAMTRIS
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0055   0006           00528   tris  GPIO
+                      00529   
+                      00530   ;*** Set SCL = HIGH
+0056   02??           00531   movf  RAMTRIS,w
+0057   0D01           00532   iorlw SCL_H                 ; make SCL an input (float HIGH)
+0058   00??           00533   movwf RAMTRIS
+0059   0006           00534   tris  GPIO
+                      00535 
+                      00536   ;*** Set SDA = LOW
+005A   02??           00537   movf  RAMTRIS,w
+005B   0EFB           00538   andlw SDA_L                 ; make SDA an output (drive LOW)
+005C   00??           00539   movwf RAMTRIS
+005D   0006           00540   tris  GPIO
+                      00541                         
+                      00542   ;*** Set SCL = LOW before exiting
+005E   02??           00543   movf  RAMTRIS,w
+005F   0EFE           00544   andlw SCL_L                 ; make SCL an output (drive LOW)
+0060   00??           00545   movwf RAMTRIS
+0061   0006           00546   tris  GPIO
+                      00547 
+0062   0800           00548   retlw 0       
+                      00549   
+                      00550 ;******************************************************************************
+                      00551 ; I2CStop - Send a STOP bit MCP23008 (I2C)
+                      00552 ; SCL = LOW
+                      00553 ; SDA = LOW
+                      00554 ; SCL = HIGH
+                      00555 ; SDA = HIGH
+                      00556 ;******************************************************************************
+0063                  00557 I2CStop
+                      00558   ;*** Set SCL = LOW ...Just in case it is not already
+0063   02??           00559   movf  RAMTRIS,w
+0064   0EFE           00560   andlw SCL_L                 ; make SCL an output (drive LOW)
+0065   00??           00561   movwf RAMTRIS
+0066   0006           00562   tris  GPIO
+                      00563 
+                      00564   ;*** Set SDA = LOW
+0067   02??           00565   movf  RAMTRIS,w
+0068   0EFB           00566   andlw SDA_L                 ; make SDA an output (drive LOW)
+0069   00??           00567   movwf RAMTRIS
+006A   0006           00568   tris  GPIO                    
+                      00569 
+                      00570         ;*** Set SCL = HIGH
+006B   02??           00571   movf  RAMTRIS,w
+006C   0D01           00572   iorlw SCL_H                 ; make SCL an input (float HIGH)
+006D   00??           00573   movwf RAMTRIS
+006E   0006           00574   tris  GPIO
+                      00575 
+                      00576   ;*** Set SDA = HIGH
+006F   02??           00577   movf  RAMTRIS,w
+0070   0D04           00578   iorlw SDA_H                 ; make SDA an input (float HIGH)
+0071   00??           00579   movwf RAMTRIS
+0072   0006           00580   tris  GPIO
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00581   
+0073   0800           00582   retlw 0
+                      00583 
+                      00584 ;******************************************************************************
+                      00585 ; I2CACK - Send an ACK bit to the MCP23008 (I2C)
+                      00586 ;
+                      00587 ;******************************************************************************
+0074                  00588 I2CACK
+                      00589   ;*** Set SDA = LOW
+0074   02??           00590   movf  RAMTRIS,w
+0075   0EFB           00591   andlw SDA_L                 ; make SDA an output (drive LOW)
+0076   00??           00592   movwf RAMTRIS
+0077   0006           00593   tris  GPIO                    
+                      00594 
+                      00595   ;*** Set SCL = HIGH
+0078   02??           00596   movf  RAMTRIS,w
+0079   0D01           00597   iorlw SCL_H                 ; make SCL an input (float HIGH)
+007A   00??           00598   movwf RAMTRIS
+007B   0006           00599   tris  GPIO
+                      00600 
+                      00601   ;*** Set SCL = LOW ...Just in case it is not already
+007C   02??           00602   movf  RAMTRIS,w
+007D   0EFE           00603   andlw SCL_L                 ; make SCL an output (drive LOW)
+007E   00??           00604   movwf RAMTRIS
+007F   0006           00605   tris  GPIO
+                      00606 
+                      00607   ;*** Set SDA = HIGH
+0080   02??           00608   movf  RAMTRIS,w
+0081   0D04           00609   iorlw SDA_H                 ; make SDA an input (float HIGH)
+0082   00??           00610   movwf RAMTRIS
+0083   0006           00611   tris  GPIO
+                      00612   
+0084   0800           00613   retlw 0
+                      00614 
+                      00615 ;******************************************************************************
+                      00616 ; NoACK - Send a NACK (no ACK) bit to the MCP23008 (I2C)
+                      00617 ;
+                      00618 ;******************************************************************************
+0085                  00619 NoACK
+                      00620   ;*** Set SDA = HIGH
+0085   02??           00621   movf  RAMTRIS,w
+0086   0D04           00622   iorlw SDA_H                 ; make SDA an input (float HIGH)
+0087   00??           00623   movwf RAMTRIS
+0088   0006           00624   tris  GPIO
+                      00625 
+                      00626   ;*** Set clock = HIGH
+0089   02??           00627   movf  RAMTRIS,w
+008A   0D01           00628   iorlw SCL_H                 ; make SCL an input (float HIGH)
+008B   00??           00629   movwf RAMTRIS
+008C   0006           00630   tris  GPIO
+                      00631         
+                      00632   ;*** Set clock = LOW
+008D   02??           00633   movf  RAMTRIS,w
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+008E   0EFE           00634   andlw SCL_L                 ; make SCL an output (drive LOW)
+008F   00??           00635   movwf RAMTRIS
+0090   0006           00636   tris  GPIO
+                      00637 
+0091   0800           00638   retlw 0
+                      00639 
+                      00640 ;******************************************************************************
+                      00641 ; IsACK? - Check if device ACKed
+                      00642 ;
+                      00643 ;******************************************************************************
+0092                  00644 IsACK?
+                      00645   ;*** Set SDA = HIGH
+0092   02??           00646   movf  RAMTRIS,w
+0093   0D04           00647   iorlw SDA_H                 ; make SDA an input (float HIGH)
+0094   00??           00648   movwf RAMTRIS
+0095   0006           00649   tris  GPIO
+                      00650 
+0096   0206           00651   movfw GPIO          ; Will check SDA pin level later
+0097   00??           00652   movwf ACKStat       ; Place in variable
+                      00653 
+                      00654   ;*** Pulse SCL to clear ACK slot
+                      00655   ;*** Set clock = HIGH
+0098   02??           00656   movf  RAMTRIS,w
+0099   0D01           00657   iorlw SCL_H                 ; make SCL an input (float HIGH)
+009A   00??           00658   movwf RAMTRIS
+009B   0006           00659   tris  GPIO
+                      00660   ;*** Set clock = LOW
+009C   02??           00661   movf  RAMTRIS,w
+009D   0EFE           00662   andlw SCL_L                 ; make SCL an output (drive LOW)
+009E   00??           00663   movwf RAMTRIS
+009F   0006           00664   tris  GPIO
+                      00665 
+00A0   0640           00666   btfsc ACKStat,2     ; Test ACK status (on GP2)
+00A1   0A??           00667   goto  ACK_F
+00A2   0A??           00668   goto  ACK_T
+                      00669 
+00A3                  00670 ACK_F                 ; No ACK
+00A3   0800           00671   retlw 0 
+00A4                  00672 ACK_T                 ; ACK
+00A4   0801           00673   retlw 1 
+                      00674 ;END*END*END******************* I2C Routines ***********************END*END*END
+                      00675 ;END*END*END******************* I2C Routines ***********************END*END*END
+                      00676 
+                      00677 
+                      00678 ;****************************** SPI Routines **********************************
+                      00679 ;******************************************************************************
+                      00680 ; SPIByteWrite - Writes an SPI byte
+                      00681 ; Load "DataByte" defore calling this routine
+                      00682 ;
+                      00683 ; OPCODE w/ An pins (R/W = 0)
+                      00684 ; ADDR
+                      00685 ; Write Data 
+                      00686 ;******************************************************************************
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00A5                  00687 SPIByteWrite
+                      00688 
+                      00689   ;*** Set clock = LOW for MODE 00
+00A5   09??           00690   call  ClockMode00
+                      00691   
+                      00692   ;*** Set CS = LOW
+00A6   02??           00693   movf  RAMTRIS,w
+00A7   0EFD           00694   andlw CS_OUT        ; make an output
+00A8   00??           00695   movwf RAMTRIS
+00A9   0006           00696   tris  GPIO
+                      00697 
+00AA   0C00           00698   movlw 0x00          ; Drive nCS low
+00AB   0026           00699   movwf GPIO          ;
+                      00700 
+                      00701   ;*** Send OPCODE
+00AC   0C40           00702   movlw OPCODE        ; Load Opcode
+00AD   0D00           00703   iorlw AnPINS        ; IOR An pins
+00AE   00??           00704   movwf TempData      ; Place in data byte
+00AF   0C00           00705   movlw WRITECMD      ; WRITE command
+00B0   01??           00706   iorwf TempData, 1   ; IOR write command and place results in TempData
+00B1   09??           00707   call  SPIClockByte
+                      00708 
+                      00709   ;*** Send Address
+00B2   02??           00710   movf  Addr,w        ; Load Address
+00B3   00??           00711   movwf TempData      ; Place in data byte
+00B4   09??           00712   call  SPIClockByte
+                      00713 
+                      00714   ;*** Send Data
+00B5   02??           00715   movf  DataByte,w    ; Load Data (was configured outside of subroutine)
+00B6   00??           00716   movwf TempData      ; Place in data byte
+00B7   09??           00717   call  SPIClockByte
+                      00718 
+                      00719   ;*** Set clock = LOW for MODE 00
+00B8   09??           00720   call  ClockMode00
+                      00721 
+                      00722         ;*** Set CS = HIGH
+00B9   0C02           00723   movlw 0x02          ; Drive nCS high
+00BA   0026           00724   movwf GPIO          ;
+                      00725 
+00BB   0800           00726   retlw 0
+                      00727 
+                      00728 ;******************************************************************************
+                      00729 ; SPIByteRead - Reads an SPI byte
+                      00730 ; OPCODE w/ An pins (R/W = 0)
+                      00731 ; ADDR
+                      00732 ; Read Data 
+                      00733 ;******************************************************************************
+00BC                  00734 SPIByteRead
+                      00735   ;*** Set clock = LOW for MODE 00
+00BC   09??           00736   call  ClockMode00
+                      00737 
+                      00738   ;*** Set CS = LOW
+00BD   02??           00739   movf  RAMTRIS,w
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00BE   0EFD           00740   andlw CS_OUT        ; make an output
+00BF   00??           00741   movwf RAMTRIS
+00C0   0006           00742   tris  GPIO
+                      00743 
+00C1   0C00           00744   movlw 0x00          ; Drive nCS low
+00C2   0026           00745   movwf GPIO          ;
+                      00746 
+                      00747   ;*** Send OPCODE
+00C3   0C40           00748         movlw OPCODE        ; Load Opcode
+00C4   0D00           00749   iorlw AnPINS        ; IOR An pins
+00C5   00??           00750   movwf TempData      ; Place in data byte
+00C6   0C01           00751   movlw READCMD       ; READ command
+00C7   01??           00752   iorwf TempData, 1   ; IOR write command and place results in TempData
+00C8   09??           00753   call  SPIClockByte
+                      00754 
+                      00755   ;*** Send Address
+00C9   02??           00756   movf Addr,w         ; Load Address
+00CA   00??           00757   movwf TempData      ; Place in data byte
+00CB   09??           00758   call  SPIClockByte
+                      00759   
+                      00760   ;*** Read Data
+00CC   00??           00761   clrf  ReadData      ; Clear byte that holds data
+                      00762   
+00CD   0CFF           00763   movlw 0xFF          ; Make TempData all ones so SI stays high
+00CE   02??           00764   movf  TempData,f    ; during the read of SO
+00CF   09??           00765   call  SPIClockByte  ; Data is now in ReadData variable
+                      00766 
+                      00767   ;*** Set clock = LOW for MODE 00
+00D0   09??           00768   call  ClockMode00
+                      00769 
+                      00770         ;*** Set CS = HIGH
+                      00771 
+00D1   0C02           00772   movlw 0x02          ; Drive nCS High
+00D2   0026           00773   movwf GPIO          ;
+                      00774 
+00D3   0800           00775   retlw 0
+                      00776 
+                      00777 ;******************************************************************************
+                      00778 ; SPIClockByte - Clocks a byte
+                      00779 ; 
+                      00780 ;******************************************************************************
+00D4                  00781 SPIClockByte
+00D4   0C08           00782   movlw 0x08            ; For looping on 1 byte
+00D5   00??           00783   movwf BitCount
+00D6                  00784 NextSPIBit              ; Loop through data
+00D6   03??           00785   rlf     TempData,f      ; MSB first, Note TempData is lost
+00D7   0A??           00786   goto    SPIClockBit   ;
+00D8                  00787 ContinueSPI
+00D8   02??           00788   decfsz  BitCount,f
+00D9   0A??           00789   goto    NextSPIBit    ; END of loop
+                      00790 
+00DA   0800           00791   retlw 0
+                      00792 
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00793 ;******************************************************************************
+                      00794 ; SPIClockBit - Clocks a bit
+                      00795 ; 
+                      00796 ; This is not actually a subroutine, however, it was split from the
+                      00797 ; SPIClockByte routing for clarity.
+                      00798 ;******************************************************************************
+00DB                  00799 SPIClockBit
+00DB   0603           00800   btfsc STATUS,C        ; Check if a '1' or '0'
+00DC   0A??           00801   goto  SIHigh
+                      00802 
+                      00803   ;*** Set SI = LOW
+00DD                  00804 SILow
+00DD   02??           00805   movf  RAMTRIS,w
+00DE   0EFB           00806   andlw SI_L                  ; make an output (drive LOW)
+00DF   00??           00807   movwf RAMTRIS
+00E0   0006           00808   tris  GPIO
+00E1   0A??           00809   goto  PulseSCK                        
+                      00810 
+00E2                  00811 SIHigh
+                      00812   ;*** Set SI = HIGH
+00E2   02??           00813   movf  RAMTRIS,w
+00E3   0D04           00814   iorlw SI_H                  ; make an input (float HIGH)
+00E4   00??           00815   movwf RAMTRIS
+00E5   0006           00816   tris  GPIO
+00E6   0A??           00817   goto  PulseSCK
+                      00818 
+00E7                  00819 PulseSCK
+                      00820   ;*** Set clock = HIGH
+00E7   02??           00821   movf  RAMTRIS,w
+00E8   0D01           00822   iorlw SCK_H                 ; make an input (float HIGH)
+00E9   00??           00823   movwf RAMTRIS
+00EA   0006           00824   tris  GPIO
+                      00825         
+                      00826   ;*** First check SDA value
+00EB   0C00           00827   movlw 0x00            ; Check status of SO pin
+00EC   0666           00828   btfsc SO              ; Test pin state, skip if LOW
+00ED   0C01           00829   movlw 0x01
+00EE   0403           00830   bcf   STATUS,C
+00EF   03??           00831   rlf   ReadData,1      ; Shift left by one bit (for next time through)
+00F0   01??           00832   iorwf ReadData,1      ; Place value into variable
+                      00833   
+                      00834   ;*** Set clock = LOW
+00F1   02??           00835   movf  RAMTRIS,w
+00F2   0EFE           00836   andlw SCK_L                 ; make an output (drive LOW)
+00F3   00??           00837   movwf RAMTRIS
+00F4   0006           00838   tris  GPIO                    
+                      00839 
+00F5   0A??           00840   goto  ContinueSPI
+                      00841 
+                      00842 ;END*END*END******************* SPI Routines ***********************END*END*END
+                      00843 ;END*END*END******************* SPI Routines ***********************END*END*END
+                      00844 
+                      00845 
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00846 ;*************************** Low Level Pin Control ***************************
+                      00847 ;*************************** Low Level Pin Control ***************************
+                      00848 
+                      00849 ;******************************************************************************
+                      00850 ; ClockMode00 - Sets SCK LOW
+                      00851 ;
+                      00852 ; Note: Cannot call from Byte level or Bit level routines due to stack
+                      00853 ;       limitation.
+                      00854 ;******************************************************************************
+00F6                  00855 ClockMode00
+00F6   02??           00856   movf  RAMTRIS,w
+00F7   0EFE           00857   andlw SCK_L                 ; make an output (drive LOW)
+00F8   00??           00858   movwf RAMTRIS
+00F9   0006           00859   tris  GPIO                    
+                      00860         
+00FA   0800           00861   retlw 0
+                      00862 
+                      00863 ;END*END*END**************** Low Level Pin Control ****************END*END*END
+                      00864 ;END*END*END**************** Low Level Pin Control ****************END*END*END
+                      00865   
+                      00866   END                           ; directive 'end of program'
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE 18
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKStat                           00000006
+ACK_F                             000000A3
+ACK_T                             000000A4
+Addr                              00000000
+AnPINS                            b'0000'
+BitCount                          00000002
+C                                 00000000
+CAL0                              00000001
+CAL1                              00000002
+CAL2                              00000003
+CAL3                              00000004
+CAL4                              00000005
+CAL5                              00000006
+CAL6                              00000007
+CS_IN                             b'00000010'
+CS_OUT                            b'11111101'
+CheckToggleSwitch                 00000024
+ClockMode00                       000000F6
+ContinueI2C                       00000031
+ContinueSPI                       000000D8
+DC                                00000001
+DEFVAL                            0x03
+DataByte                          00000001
+F                                 00000001
+FOSC4                             00000000
+FSR                               00000004
+GP0                               00000000
+GP1                               00000001
+GP2                               00000002
+GP3                               00000003
+GPINTEN                           0x02
+GPIO                              00000006
+GPPU                              0x06
+GPWUF                             00000007
+I2CACK                            00000074
+I2CByteRead                       00000012
+I2CByteWrite                      00000000
+I2CClockBit                       00000034
+I2CClockByte                      0000002D
+I2CLoop                           00000054
+I2CStart                          0000004E
+I2CStop                           00000063
+I2CWriteIODIR                     0000000E
+I2CWriteIODIR_1                   00000068
+I2CWriteIODIR_2                   00000054
+INDF                              00000000
+INTCAP                            0x08
+INTCON                            0x04
+INTF                              0x07
+IOCON                             0x05
+IODIR                             0x00
+IPOL                              0x01
+InitPIC                           00000001
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE 19
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+IsACK?                            00000092
+MCPGPIO                           0x09
+NOT_GPPU                          00000006
+NOT_GPWU                          00000007
+NOT_PD                            00000003
+NOT_TO                            00000004
+NewSwitch                         00000008
+NextBit                           0000002F
+NextSPIBit                        000000D6
+NoACK                             00000085
+OLAT                              0x0A
+OPCODE                            0x40
+OSCCAL                            00000005
+OldSwitch                         00000007
+PCL                               00000002
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PulseSCK                          000000E7
+PulseSCL                          0000003F
+RAMTRIS                           0000000A
+READCMD                           1
+ReadData                          00000005
+SCK                               GPIO,0
+SCK_H                             b'00000001'
+SCK_L                             b'11111110'
+SCL                               GPIO,0
+SCL_H                             b'00000001'
+SCL_L                             b'11111110'
+SDA                               GPIO,2
+SDAHigh                           0000003B
+SDALow                            00000036
+SDA_H                             b'00000100'
+SDA_L                             b'11111011'
+SI                                GPIO,2
+SIHigh                            000000E2
+SILow                             000000DD
+SI_H                              b'00000100'
+SI_L                              b'11111011'
+SO                                GPIO,3
+SPIByteRead                       000000BC
+SPIByteWrite                      000000A5
+SPIClockBit                       000000DB
+SPIClockByte                      000000D4
+SPILoop                           00000072
+SPIWriteIODIR                     0000001A
+SPIWriteIODIR_1                   0000004A
+SPIWriteIODIR_2                   00000072
+STATUS                            00000003
+SerMode                           0x00
+SerOutData                        00000004
+SetI2CMode                        0000004A
+MPASM  5.04                       00010R1.ASM   10-18-2006  21:36:52         PAGE 20
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SetSPIMode                        00000068
+SetSwitchI2C                      0000003E
+SetSwitchSPI                      00000032
+Start                             00000000
+T0CS                              00000005
+T0SE                              00000004
+TMR0                              00000001
+TempData                          00000003
+W                                 00000000
+WRITECMD                          0
+Z                                 00000002
+_CP_OFF                           00000FFF
+_CP_ON                            00000FF7
+_IntRC_OSC                        00000FFF
+_MCLRE_OFF                        00000FEF
+_MCLRE_ON                         00000FFF
+_WDT_OFF                          00000FFB
+_WDT_ON                           00000FFF
+__10F202                          00000001
+n                                 00000009
+nCS                               GPIO,1
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

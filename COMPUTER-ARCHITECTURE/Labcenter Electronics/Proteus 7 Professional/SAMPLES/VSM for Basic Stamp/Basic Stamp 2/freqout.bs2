@@ -1,0 +1,31 @@
+'-----------------------------------------------------------------------------
+' 
+' Sample program to play random sounds
+'                                                                                                                                                                                                      
+'=============================================================================
+'
+'
+
+'{$STAMP BS2}
+
+
+i       var byte
+f       var word
+C       con 2092
+D       con 2348
+E       con 2636
+G       con 3136
+R       con 0
+
+start:
+
+    for i = 0 to 28
+        lookup i,[E,D,C,D,E,E,E,R,D,D,D,R,E,G,G,R,E,D,C,D,E,E,E,D,D,E,D,C],f
+        freqout 0,250,f,(f-8) MAX 32768
+    next
+
+    pause   1000
+    goto    start
+    
+    stop
+

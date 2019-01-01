@@ -1,0 +1,255 @@
+MPASM 03.00 Released         PIC12ADC.ASM   9-27-2004  12:20:55         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001         LIST    p=12C671 ; 
+                      00002         #include "P12C671.INC" ; Include header file
+                      00001         LIST
+                      00002 ; P12C671.INC  Standard Header File, Version 1.03    Microchip Technology, Inc.
+                      00178         LIST
+                      00003 
+                      00004 ; Macro to generate a MOVLW instruction that also causes a model break:
+                      00005 break   MACRO arg
+                      00006         DW    0x3100 | (arg & H'FF')
+                      00007         ENDM
+                      00008 
+                      00009 bank0   MACRO 
+                      00010         bcf STATUS,RP0
+                      00011         ENDM
+                      00012         
+                      00013 bank1   MACRO
+                      00014         bsf STATUS,RP0
+                      00015         ENDM    
+                      00016 
+                      00017         cblock 0x20   
+  00000020            00018         result           
+  00000021            00019         count   
+                      00020         endc
+                      00021 
+                      00022         ; Vector for normal start up.
+0000                  00023         org     0
+0000   2805           00024         goto    start
+                      00025 
+0004                  00026         org     4
+0004   2831           00027         goto intvec
+                      00028 
+                      00029 ; Main program starts here:
+0005   0103           00030 start   clrw                    ; Clear W.      
+0006   0085           00031         movwf   GPIO            ; Ensure PORTA is zero before we enable it.
+0007   30C1           00032         movlw   0xC1
+0008   009F           00033         movwf   ADCON0          ; Turn on the ADC                                                       
+                                     
+0009   130C           00034         bcf PIR1,ADIF           ; Clear any pending interrupt
+                      00035         bank1                                   
+000A   1683               M         bsf STATUS,RP0
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000B   1285           00036         bcf TRISIO,5            ; GP5 is an output
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000C   1205           00037         bcf TRISIO,4            ; GP4 is an output
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000D   1701           00038         bsf OPTION_REG,INTEDG   ; Interrupt on rising edge of INT
+000E   3005           00039         movlw 0x05
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000F   009F           00040         movwf ADCON1            ; GP0/GP1 analog inputs        
+                      00041 
+0010   108B           00042         bcf INTCON,INTF        
+0011   160B           00043         bsf INTCON,INTE 
+0012   170B           00044         bsf INTCON,PEIE         ; Enable peripheral interrupt   
+MPASM 03.00 Released         PIC12ADC.ASM   9-27-2004  12:20:55         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0013   170C           00045         bsf PIE1,ADIE           ; Enable ADC interrupt
+0014   178B           00046         bsf INTCON,GIE                                       
+                      00047         
+                      00048 ;Select voltage reference mode:
+0015   0063           00049 loop    sleep                   ; Wait for external interrupt
+                      00050 
+                      00051         bank0
+0016   1283               M         bcf STATUS,RP0
+0017   3004           00052         movlw   0x04            ; VREF=VDD pin
+0018   1985           00053         btfsc GPIO,3
+0019   3005           00054         movlw   0x05            ; VREF=VREF pin
+                      00055         bank1
+001A   1683               M         bsf STATUS,RP0
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001B   009F           00056         movwf   ADCON1          
+                      00057         bank0
+001C   1283               M         bcf STATUS,RP0
+                      00058 
+                      00059 ;Wait out the acquisition time
+001D   3010           00060         movlw 10
+001E   0821           00061         movfw count
+001F   0BA1           00062 wtacc   decfsz count,F
+0020   281F           00063         goto wtacc
+                      00064 
+                      00065 ;Do the conversion              
+0021   151F           00066         bsf ADCON0,GO           ; Start the ADC
+0022   0063           00067         sleep                   ; Wait for ADC completion
+0023   081E           00068         movfw ADRES             ; Catch the result
+0024   00A0           00069         movwf result
+                      00070 
+                      00071 ;Serial output of result
+0025   3008           00072         movlw 8                 ;Loop for 8 bits
+0026   00A1           00073         movwf count          
+0027   0103           00074 loop1   clrw                    ;Start with a zero                      
+0028   1BA0           00075         btfsc result,7          ;Test result bit    
+0029   3820           00076         iorlw 0x20
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002A   0085           00077         movwf TRISIO            ;Output data bit to port on GP5
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002B   1605           00078         bsf TRISIO,4            ;Generate Clock pulse on GP4
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002C   1205           00079         bcf TRISIO,4                            
+002D   0DA0           00080         rlf result,F            ;Get next result bit
+002E   0BA1           00081         decfsz count,F          ;Loop for next bit
+002F   2827           00082         goto loop1
+                      00083                         
+0030   2815           00084         goto loop       
+                      00085 
+                      00086                         
+                      00087 ;Interrupt Vector
+0031   108B           00088 intvec  bcf INTCON,INTF
+0032   130C           00089         bcf PIR1,ADIF
+MPASM 03.00 Released         PIC12ADC.ASM   9-27-2004  12:20:55         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0033   0009           00090         retfie
+                      00091         
+                      00092         END
+MPASM 03.00 Released         PIC12ADC.ASM   9-27-2004  12:20:55         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRES                             0000001E
+C                                 00000000
+CAL0                              00000004
+CAL1                              00000005
+CAL2                              00000006
+CAL3                              00000007
+CALFST                            00000003
+CALSLW                            00000002
+CHS0                              00000003
+CHS1                              00000004
+DC                                00000001
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+GPIE                              00000003
+GPIF                              00000000
+GPIO                              00000005
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_DONE                          00000002
+NOT_GPPU                          00000007
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_TO                            00000004
+OPTION_REG                        00000081
+OSCCAL                            0000008F
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RP0                               00000005
+MPASM 03.00 Released         PIC12ADC.ASM   9-27-2004  12:20:55         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RP1                               00000006
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+TRISIO                            00000085
+W                                 00000000
+Z                                 00000002
+_CP_50                            00002ADF
+_CP_75                            000015BF
+_CP_ALL                           0000009F
+_CP_OFF                           00003FFF
+_EXTRC_OSC                        00003FFE
+_EXTRC_OSC_CLKOUT                 00003FFF
+_EXTRC_OSC_NOCLKOUT               00003FFE
+_HS_OSC                           00003FFA
+_INTRC_OSC                        00003FFC
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FF8
+_MCLRE_OFF                        00003F7F
+_MCLRE_ON                         00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FEF
+_WDT_OFF                          00003FF7
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FF9
+__12C671                          00000001
+bank0                             
+bank1                             
+break                             
+count                             00000021
+intvec                            00000031
+loop                              00000015
+loop1                             00000027
+result                            00000020
+start                             00000005
+wtacc                             0000001F
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXX------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    49
+Program Memory Words Free:   975
+
+MPASM 03.00 Released         PIC12ADC.ASM   9-27-2004  12:20:55         PAGE  6
+
+
+
+
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     9 reported,     0 suppressed
+
+

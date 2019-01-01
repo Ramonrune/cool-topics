@@ -1,0 +1,208 @@
+'{$STAMP BS2}
+
+'-----------------------------------------------------------------------------
+' 
+' Sample program to drive LCD in 4-bit mode
+'
+'		(C)2002, Advanced Digital Technologies
+'
+'=============================================================================
+'
+'
+char			    var	byte
+temp			    var	byte
+temp2			    var	byte
+custom			    var	byte
+loop			    var	byte
+busy                var byte
+
+
+LCD_RS			    con	4
+LCD_E			    con	5
+LCD_RW              con 6
+LCD_CLEARSCREEN	    con	$01
+LCD_SETVISIBLE	    con	$08
+LCD_SETMODE		    con	$04
+LCD_SETDDADDR	    con	$80
+LCD_CGADDR		    con	$40
+PACMAN_OPENMOUTH    con	16
+PACMAN_SHUTMOUTH	con	24
+
+
+DATA "4-Bit LCD Mode",13
+DATA $00,$0E,$07,$03,$01,$03,$07,$0E,$00
+DATA $00,$00,$0F,$1F,$01,$1F,$0F,$00,$00
+
+
+'
+'=============================================================================
+main:
+	PAUSE	200
+
+
+
+	' initialize lcd
+	DIRS = $3F								' set lcd pins to output	
+
+    low 8
+
+	char = 3
+	GOSUB	lcd_wrcmd	
+	char = 2
+	GOSUB	lcd_wrcmd	
+	char = 12
+	GOSUB	lcd_wrcmd	
+	char = 6
+	GOSUB	lcd_wrcmd
+
+	char = LCD_CGADDR
+	GOSUB	lcd_wrcmd
+
+
+	' write open mouth custom character to lcd
+	custom = PACMAN_OPENMOUTH
+	FOR loop = 0 TO  7
+		READ	custom,char
+		GOSUB	lcd_wrdata
+		custom = custom + 1
+	NEXT
+
+	' write shut mouth custom character to lcd
+	custom = PACMAN_SHUTMOUTH
+	FOR loop = 0 TO  7
+		READ	custom,char
+		GOSUB	lcd_wrdata
+		custom = custom + 1
+	NEXT
+
+main_1:
+	loop = 0									' reset eeprom counter
+	GOSUB	lcd_cls									' clear the screen
+
+main_2:
+	READ	loop,char		
+	IF char = 13 THEN main_3
+	
+	GOSUB	lcd_wrdata
+	loop = loop + 1
+	PAUSE	150
+	GOTO	main_2
+
+main_3:
+	custom = 0
+	
+	FOR loop = 15 TO 0 step -1
+		char = LCD_SETDDADDR + loop
+		GOSUB	lcd_wrcmd
+		char = custom
+		GOSUB	lcd_wrdata
+		char = 32
+		GOSUB	lcd_wrdata
+
+		PAUSE	350
+		custom = custom ^ 1					' toggle the character
+	NEXT
+
+    GOSUB   lcd_cls
+
+	PAUSE	500
+	GOTO	main_1
+
+	END
+
+
+'
+'=============================================================================
+lcd_cls:
+	char = LCD_CLEARSCREEN
+	GOSUB	lcd_wrcmd
+	RETURN
+
+
+'
+'=============================================================================
+lcd_wrcmd:
+	' write high nibble first
+	LOW		LCD_RS
+    LOW     LCD_RW
+	GOSUB	lcd_wrnibbles							' write data to lcd
+	RETURN
+	
+	
+'
+'=============================================================================
+lcd_wrdata:
+	' write high nibble first
+	HIGH	LCD_RS
+	LOW     LCD_RW
+	GOSUB	lcd_wrnibbles							' write data to lcd
+	RETURN	
+
+'
+'=============================================================================
+lcd_rddata:
+	' write high nibble first
+	high	LCD_RS
+	HIGH    LCD_RW
+
+    dirs = dirs & $f0
+
+    HIGH    LCD_E
+    busy = ins & $0f << 4
+    LOW     LCD_E
+
+    HIGH    LCD_E
+    busy = busy | (ins & $0f)
+    LOW     LCD_E
+
+    dirs = dirs | $f0
+	RETURN	
+
+
+'
+'=============================================================================
+lcd_wrnibbles:
+	' write MSN
+	OUTS = OUTS & %01110000					' clear data bus
+	temp = char / 16						' put high nibble of char into temp
+	OUTS = OUTS | temp						' OR the contents of temp into pins
+	PULSOUT LCD_E,5 								' strobe the E pin
+
+	' write LSN
+	OUTS = OUTS & %01110000					' clear data bus
+	temp = char & %00001111					' put low nibble of char into temp
+	OUTS = OUTS | temp						' OR the contents of temp into pins
+	PULSOUT LCD_E,5 								' strobe the E pin
+
+'	IF char <> 1 THEN lcd_wrnibbles_1
+'	PAUSE 20
+
+lcd_wrnibbles_1:	
+	GOSUB	lcd_wait
+	RETURN
+	
+'
+'=============================================================================
+lcd_wait:
+	DIRS = DIRS & $F0						' set data bus to input
+	LOW		LCD_RS
+	HIGH    LCD_RW
+	
+	
+lcd_wait_1:
+    HIGH    LCD_E
+    busy = ins & $0f << 4
+    LOW     LCD_E
+
+    HIGH    LCD_E
+    busy = busy | (ins & $0f)
+    LOW     LCD_E
+
+    if busy & $80 then lcd_wait_1
+
+	LOW    LCD_RW
+	DIRS = DIRS | $0F
+	RETURN	
+	
+	
+	

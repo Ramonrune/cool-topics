@@ -1,0 +1,484 @@
+MPASM 02.30 Released         RS232LCD.ASM   5-15-2001  15:18:25         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00001 ; Simple PIC 16F877X Program to drive Serial LCDs.
+                    00002 ; Assumes 1MHZ CPU clock, 2400 baud rate for the LCD.
+                    00003 
+                    00004            LIST    p=16F874
+                    00005            #include "P16F874.INC"
+                    00001         LIST
+                    00002 ; P16F874.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+                    00374         LIST
+                    00006 
+                    00007            ; Counter variables for delay
+                    00008            cblock 0x20
+  00000020          00009                char,cmd,lc1,lc2;
+                    00010            endc
+                    00011 
+                    00012            ; Vector for normal start up.
+0000                00013            org     0
+0000 2805           00014            goto    start
+                    00015 
+0004                00016            org     4
+0004 2869           00017            goto    inthlr
+                    00018 
+                    00019 ; Main program starts here:
+0005 0103           00020 start      clrw                    ; Clear W.
+0006 0085           00021            movwf   PORTA           ; Ensure PORTA is zero before we enable it.
+0007 0086           00022            movwf   PORTB           ; Ensure PORTB is zero before we enable it.
+                    00023 
+                    00024            ; Set up ports:
+0008 1283           00025            bcf     STATUS,RP0      ; Select Bank 0
+0009 1798           00026            bsf     RCSTA,SPEN      ; Enable USART.
+000A 1618           00027            bsf     RCSTA,CREN      ; Enable Receeive
+000B 1683           00028            bsf     STATUS,RP0      ; Select Bank 1
+000C 0103           00029            clrw                    ; Set W to mask for all outputs.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000D 0085           00030            movwf   TRISA           ; Set TRISA register as outputs.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000E 0086           00031            movwf   TRISB           ; Set TRISB register as outputs.
+000F 3019           00032            movlw   0x19            ; BRG value for 2400 baud @ 1MHz
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0010 0099           00033            movwf   SPBRG           ; Write it to register.
+0011 30A4           00034            movlw   0xA4            ; CSRC/TXEN (Internal clock, 8 bit mode, Async operation, High Speed)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0012 0098           00035            movwf   TXSTA           ; Write to TX control register.           
+                    00036 
+0013 3080           00037            movlw   80
+0014 2060           00038            call    delay
+                    00039 
+0015 304D           00040            movlw   'M'             ; Value to transmit.
+0016 2058           00041            call    putc                       
+0017 3069           00042            movlw   'i'             ; Value to transmit.
+0018 2058           00043            call    putc                       
+0019 306C           00044            movlw   'l'             ; Value to transmit.
+001A 2058           00045            call    putc                       
+001B 3066           00046            movlw   'f'             ; Value to transmit.
+MPASM 02.30 Released         RS232LCD.ASM   5-15-2001  15:18:25         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001C 2058           00047            call    putc                       
+001D 306F           00048            movlw  'o'              ; Value to transmit.
+001E 2058           00049            call    putc                       
+001F 3072           00050            movlw  'r'              ; Value to transmit.
+0020 2058           00051            call    putc                       
+0021 3064           00052            movlw  'd'              ; Value to transmit.
+0022 2058           00053            call    putc                       
+0023 3020           00054            movlw  ' '              ; Value to transmit.
+0024 2058           00055            call    putc                       
+0025 304C           00056            movlw  'L'              ; Value to transmit.
+0026 2058           00057            call    putc                       
+0027 3043           00058            movlw  'C'              ; Value to transmit.
+0028 2058           00059            call    putc                       
+0029 3044           00060            movlw  'D'              ; Value to transmit.
+002A 2058           00061            call    putc                       
+002B 3020           00062            movlw  ' '              ; Value to transmit.
+002C 2058           00063            call    putc                       
+002D 3044           00064            movlw  'D'              ; Value to transmit.
+002E 2058           00065            call    putc                       
+002F 3065           00066            movlw  'e'              ; Value to transmit.
+0030 2058           00067            call    putc                       
+0031 306D           00068            movlw  'm'              ; Value to transmit.
+0032 2058           00069            call    putc                       
+0033 306F           00070            movlw  'o'              ; Value to transmit.
+0034 2058           00071            call    putc                       
+                    00072 
+0035 30C0           00073            movlw  0xC0             ; Move cursor to row two
+0036 204D           00074            call   wrcmd
+                    00075 
+0037 300D           00076            movlw  0x0D             ; Show the cursor
+0038 204D           00077            call   wrcmd
+                    00078                     
+0039 2052           00079 loop       call  getc                                  
+003A 00A0           00080            movwf char           
+003B 3C0D           00081            sublw 0d
+003C 1903           00082            btfsc STATUS,Z
+003D 2845           00083            goto  cls         
+003E 0820           00084            movf  char,w
+003F 3C08           00085            sublw 08
+0040 1903           00086            btfsc STATUS,Z
+0041 2848           00087            goto  bspace
+0042 0820           00088            movf  char,W
+0043 2058           00089            call  putc             ; Send the character straight thru
+0044 2839           00090            goto  loop
+                    00091 
+0045 3001           00092 cls        movlw  0x01            ; Send command prefix
+0046 204D           00093            call wrcmd
+0047 2839           00094            goto loop            
+                    00095 
+0048 3010           00096 bspace     movlw 0x10             ; Send command prefix
+0049 204D           00097            call wrcmd
+004A 2839           00098            goto loop
+                    00099                  
+MPASM 02.30 Released         RS232LCD.ASM   5-15-2001  15:18:25         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+004B 0064           00100 hang       clrwdt                 ; Clear WDT in case it is enabled.
+004C 284B           00101            goto hang                    
+                    00102 
+                    00103 ;Subroutine to sent a command
+004D 00A1           00104 wrcmd      movwf cmd              ; Store the command      
+004E 30FE           00105            movlw 0xFE             ; Write the command prefix
+004F 2058           00106            call putc
+0050 0821           00107            movf cmd,W             ; Write the command code
+0051 2858           00108            goto putc
+                    00109            
+                    00110 ;Subroutine to wait and receive a byte
+                    00111 ;Returns character in W
+                    00112 ;
+0052 1283           00113 getc       bcf     STATUS,RP0      ; Select Bank 0.
+0053 1E8C           00114 getc1      btfss   PIR1,RCIF       ; Skip if RC int flag set  
+0054 2853           00115            goto    getc1           ; Try again
+0055 081A           00116            movf    RCREG,W         ; Read the character
+0056 128C           00117            bcf     PIR1,RCIF       ; Clear the interrupt flag
+0057 0008           00118            return
+                    00119 
+                    00120 ;Subroutine to transmit a byte and wait
+                    00121 ;W = Character
+                    00122 ;
+0058 1283           00123 putc       bcf     STATUS,RP0      ; Select Bank 0.
+0059 0099           00124            movwf   TXREG           ; Write it!
+005A 1683           00125            bsf     STATUS,RP0      ; Select Bank 1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+005B 0818           00126            movf    TXSTA,W         ; Peek transmit status
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+005C 1C98           00127 putc1      btfss   TXSTA,1         ; Skip if TXbuffer empty
+005D 285C           00128            goto    putc1           ; Try again     
+005E 1283           00129            bcf     STATUS,RP0      ; Select Bank 0.                 
+005F 0008           00130            return
+                    00131 
+                    00132 ;Delay Routine   
+                    00133 ;W = delay time
+                    00134 ;
+0060 00A3           00135 delay      movwf   lc2
+0061 30FF           00136 _sw2       movlw   0xFF
+0062 00A2           00137            movwf   lc1
+0063 0000           00138 _sw3       nop
+0064 0BA2           00139            decfsz  lc1,f
+0065 2863           00140            goto    _sw3
+0066 0BA3           00141            decfsz  lc2,f
+0067 2861           00142            goto    _sw2
+0068 0008           00143            return
+                    00144 
+                    00145 
+                    00146 
+0069 0009           00147 inthlr     retfie                          
+                    00148 
+                    00149            END
+MPASM 02.30 Released         RS232LCD.ASM   5-15-2001  15:18:25         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BRGH                              00000002
+C                                 00000000
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CKE                               00000006
+CKP                               00000004
+CREN                              00000004
+CSRC                              00000007
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+D_A                               00000005
+EEADR                             0000010D
+MPASM 02.30 Released         RS232LCD.ASM   5-15-2001  15:18:25         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OBF                               00000006
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+MPASM 02.30 Released         RS232LCD.ASM   5-15-2001  15:18:25         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+R                                 00000002
+RBIE                              00000003
+RBIF                              00000000
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+R_W                               00000002
+S                                 00000003
+SEN                               00000000
+SMP                               00000007
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+MPASM 02.30 Released         RS232LCD.ASM   5-15-2001  15:18:25         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISB                             00000086
+TRISC                             00000087
+TRISD                             00000088
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+W                                 00000000
+MPASM 02.30 Released         RS232LCD.ASM   5-15-2001  15:18:25         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00000FCF
+_CP_HALF                          00001FDF
+_CP_OFF                           00003FFF
+_CP_UPPER_256                     00002FEF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_ENABLE_OFF                   00003DFF
+_WRT_ENABLE_ON                    00003FFF
+_XT_OSC                           00003FFD
+__16F874                          00000001
+_sw2                              00000061
+_sw3                              00000063
+bspace                            00000048
+char                              00000020
+cls                               00000045
+cmd                               00000021
+delay                             00000060
+getc                              00000052
+getc1                             00000053
+hang                              0000004B
+inthlr                            00000069
+lc1                               00000022
+lc2                               00000023
+loop                              00000039
+putc                              00000058
+putc1                             0000005C
+start                             00000005
+wrcmd                             0000004D
+MPASM 02.30 Released         RS232LCD.ASM   5-15-2001  15:18:25         PAGE  9
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXX------ ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   103
+Program Memory Words Free:  3993
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     6 reported,     0 suppressed
+
+

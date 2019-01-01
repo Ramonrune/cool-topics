@@ -1,0 +1,424 @@
+;************************************************************************
+;*	Microchip Technology Inc. 2002										*
+;*	Assembler version: 2.0000											*
+;*	Filename: 															*
+;*		p18math.asm (main routine)   									*
+;*	March 14,2002														*
+;*      Designed to run at 4MHz                                         *
+;* 	PICDEM 2 PLUS DEMO code                                   			*
+;*																		*
+;* Revisions:															*
+;* 1/23/04 Replaced "CLRW" instruction with "clrf	w" instruction.		*
+;*		Changed the 16/8 divide routine.								*
+;************************************************************************
+
+	list	p=18f452
+	#include	p18f452.inc
+
+	#define	_C	STATUS,0
+	
+MSB			equ	7
+
+MATH_VAR	UDATA
+AARGB0		RES 1
+AARGB1		RES 1
+AARGB2		RES 1
+AARGB3		RES 1
+AARGB5		RES 1
+BARGB0		RES 1
+BARGB1		RES 1
+REMB0		RES 1
+REMB1		RES 1
+TEMP		RES 1
+LOOPCOUNT	RES 1
+
+	GLOBAL	AARGB0, AARGB1, BARGB0
+
+PROG2	CODE
+;---------------- 8 * 8 UNSIGNED MULTIPLY -----------------------
+
+;       Max Timing:     3+12+6*8+7 = 70 clks
+;       Min Timing:     3+7*6+5+3 = 53 clks
+;       PM: 19            DM: 4
+UMUL0808L
+		CLRF    AARGB1
+                MOVLW   0x08
+                MOVWF   LOOPCOUNT
+                MOVF    AARGB0,W
+
+LOOPUM0808A
+                RRCF     BARGB0, F
+                BTFSC   _C
+                bra    LUM0808NAP
+                DECFSZ  LOOPCOUNT, F
+                bra    LOOPUM0808A
+
+                CLRF    AARGB0
+                RETLW   0x00
+
+LUM0808NAP
+                BCF     _C
+                bra    LUM0808NA
+
+LOOPUM0808
+                RRCF             BARGB0, F
+                BTFSC   _C
+                ADDWF   AARGB0, F
+LUM0808NA       RRCF    AARGB0, F
+                RRCF    AARGB1, F
+                DECFSZ          LOOPCOUNT, F
+                bra            LOOPUM0808
+		return
+		GLOBAL	UMUL0808L
+;----------------  16/8 UNSIGNED DIVIDE	  ------------------------
+FXD1608U
+		GLOBAL		FXD1608U
+
+		MOVLW		0x01
+		CPFSGT		BARGB0
+		GOTO		DREMZERO8
+
+FXD1608U1
+		GLOBAL		FXD1608U1
+
+		BCF		_C
+		CLRF		TBLPTRH
+		RLCF		BARGB0,W
+		RLCF		TBLPTRH,F
+		ADDLW		LOW (IBXTBL256+1)	; access reciprocal table
+		MOVWF		TBLPTRL
+		MOVLW		HIGH (IBXTBL256)
+		ADDWFC		TBLPTRH,F
+		TBLRD		*-
+
+FXD1608U2
+		GLOBAL		FXD1608U2
+
+		MOVFF		AARGB0,REMB1
+		MOVFF		AARGB1,REMB0
+
+		MOVF		TABLAT,W		; estimate quotient
+		MULWF		REMB1
+		MOVFF		PRODH,AARGB0
+		MOVFF		PRODL,AARGB1
+
+		TBLRD		*+
+		MOVF		TABLAT,W
+		MULWF		REMB0
+		MOVFF		PRODH,AARGB2
+
+		MULWF		REMB1
+		MOVF		PRODL,W
+		ADDWF		AARGB2,F
+		MOVF		PRODH,W
+		ADDWFC		AARGB1,F
+		CLRF		WREG
+		ADDWFC		AARGB0,F
+
+		TBLRD		*-
+		MOVF		TABLAT,W
+		MULWF		REMB0
+		MOVF		PRODL,W
+		ADDWF		AARGB2,F
+		MOVF		PRODH,W
+		ADDWFC		AARGB1,F
+		CLRF		WREG
+		ADDWFC		AARGB0,F
+		
+		MOVF		BARGB0,W
+		MULWF		AARGB1
+		MOVFF		PRODL,AARGB3
+		MOVFF		PRODH,AARGB2
+		MULWF		AARGB0
+		MOVF		PRODL,W
+		ADDWF		AARGB2,F
+
+		MOVF		AARGB3,W		; estimate remainder
+		SUBWF		REMB0,F
+		MOVF		AARGB2,W
+		SUBWFB		REMB1,F
+
+		BTFSS		REMB1,MSB		; test remainder
+		RETLW		0x00
+
+		DECF		AARGB1,F
+		CLRF		WREG
+		SUBWFB		AARGB0,F
+
+		MOVF		BARGB0,W
+		ADDWF		REMB0,F
+
+        RETLW       0x00
+        
+         
+;----------------------------------------------------------------------------------------------        
+DREMZERO8
+		CLRF		REMB0
+		RETLW		0x00
+
+;----------------------------------------------------------------------------------------------
+;	The table IBXTBL256 is used by all routines and consists of 16-bit
+;	upper bound approximations to the reciprocal of BARGB0.
+
+IBXTBL256
+		GLOBAL	IBXTBL256
+
+		DATA	0x0000
+		DATA	0x0001
+		DATA	0x8001
+		DATA	0x5556
+		DATA	0x4001
+		DATA	0x3334
+		DATA	0x2AAB
+		DATA	0x2493
+		DATA	0x2001
+		DATA	0x1C72
+		DATA	0x199A
+		DATA	0x1746
+		DATA	0x1556
+		DATA	0x13B2
+		DATA	0x124A
+		DATA	0x1112
+		DATA	0x1001
+		DATA	0x0F10
+		DATA	0x0E39
+		DATA	0x0D7A
+		DATA	0x0CCD
+		DATA	0x0C31
+		DATA	0x0BA3
+		DATA	0x0B22
+		DATA	0x0AAB
+		DATA	0x0A3E
+		DATA	0x09D9
+		DATA	0x097C
+		DATA	0x0925
+		DATA	0x08D4
+		DATA	0x0889
+		DATA	0x0843
+		DATA	0x0801
+		DATA	0x07C2
+		DATA	0x0788
+		DATA	0x0751
+		DATA	0x071D
+		DATA	0x06EC
+		DATA	0x06BD
+		DATA	0x0691
+		DATA	0x0667
+		DATA	0x063F
+		DATA	0x0619
+		DATA	0x05F5
+		DATA	0x05D2
+		DATA	0x05B1
+		DATA	0x0591
+		DATA	0x0573
+		DATA	0x0556
+		DATA	0x053A
+		DATA	0x051F
+		DATA	0x0506
+		DATA	0x04ED
+		DATA	0x04D5
+		DATA	0x04BE
+		DATA	0x04A8
+		DATA	0x0493
+		DATA	0x047E
+		DATA	0x046A
+		DATA	0x0457
+		DATA	0x0445
+		DATA	0x0433
+		DATA	0x0422
+		DATA	0x0411
+		DATA	0x0401
+		DATA	0x03F1
+		DATA	0x03E1
+		DATA	0x03D3
+		DATA	0x03C4
+		DATA	0x03B6
+		DATA	0x03A9
+		DATA	0x039C
+		DATA	0x038F
+		DATA	0x0382
+		DATA	0x0376
+		DATA	0x036A
+		DATA	0x035F
+		DATA	0x0354
+		DATA	0x0349
+		DATA	0x033E
+		DATA	0x0334
+		DATA	0x032A
+		DATA	0x0320
+		DATA	0x0316
+		DATA	0x030D
+		DATA	0x0304
+		DATA	0x02FB
+		DATA	0x02F2
+		DATA	0x02E9
+		DATA	0x02E1
+		DATA	0x02D9
+		DATA	0x02D1
+		DATA	0x02C9
+		DATA	0x02C1
+		DATA	0x02BA
+		DATA	0x02B2
+		DATA	0x02AB
+		DATA	0x02A4
+		DATA	0x029D
+		DATA	0x0296
+		DATA	0x0290
+		DATA	0x0289
+		DATA	0x0283
+		DATA	0x027D
+		DATA	0x0277
+		DATA	0x0271
+		DATA	0x026B
+		DATA	0x0265
+		DATA	0x025F
+		DATA	0x025A
+		DATA	0x0254
+		DATA	0x024F
+		DATA	0x024A
+		DATA	0x0244
+		DATA	0x023F
+		DATA	0x023A
+		DATA	0x0235
+		DATA	0x0231
+		DATA	0x022C
+		DATA	0x0227
+		DATA	0x0223
+		DATA	0x021E
+		DATA	0x021A
+		DATA	0x0215
+		DATA	0x0211
+		DATA	0x020D
+		DATA	0x0209
+		DATA	0x0205
+		DATA	0x0201
+		DATA	0x01FD
+		DATA	0x01F9
+		DATA	0x01F5
+		DATA	0x01F1
+		DATA	0x01ED
+		DATA	0x01EA
+		DATA	0x01E6
+		DATA	0x01E2
+		DATA	0x01DF
+		DATA	0x01DB
+		DATA	0x01D8
+		DATA	0x01D5
+		DATA	0x01D1
+		DATA	0x01CE
+		DATA	0x01CB
+		DATA	0x01C8
+		DATA	0x01C4
+		DATA	0x01C1
+		DATA	0x01BE
+		DATA	0x01BB
+		DATA	0x01B8
+		DATA	0x01B5
+		DATA	0x01B3
+		DATA	0x01B0
+		DATA	0x01AD
+		DATA	0x01AA
+		DATA	0x01A7
+		DATA	0x01A5
+		DATA	0x01A2
+		DATA	0x019F
+		DATA	0x019D
+		DATA	0x019A
+		DATA	0x0198
+		DATA	0x0195
+		DATA	0x0193
+		DATA	0x0190
+		DATA	0x018E
+		DATA	0x018B
+		DATA	0x0189
+		DATA	0x0187
+		DATA	0x0184
+		DATA	0x0182
+		DATA	0x0180
+		DATA	0x017E
+		DATA	0x017B
+		DATA	0x0179
+		DATA	0x0177
+		DATA	0x0175
+		DATA	0x0173
+		DATA	0x0171
+		DATA	0x016F
+		DATA	0x016D
+		DATA	0x016B
+		DATA	0x0169
+		DATA	0x0167
+		DATA	0x0165
+		DATA	0x0163
+		DATA	0x0161
+		DATA	0x015F
+		DATA	0x015D
+		DATA	0x015B
+		DATA	0x0159
+		DATA	0x0158
+		DATA	0x0156
+		DATA	0x0154
+		DATA	0x0152
+		DATA	0x0151
+		DATA	0x014F
+		DATA	0x014D
+		DATA	0x014B
+		DATA	0x014A
+		DATA	0x0148
+		DATA	0x0147
+		DATA	0x0145
+		DATA	0x0143
+		DATA	0x0142
+		DATA	0x0140
+		DATA	0x013F
+		DATA	0x013D
+		DATA	0x013C
+		DATA	0x013A
+		DATA	0x0139
+		DATA	0x0137
+		DATA	0x0136
+		DATA	0x0134
+		DATA	0x0133
+		DATA	0x0131
+		DATA	0x0130
+		DATA	0x012F
+		DATA	0x012D
+		DATA	0x012C
+		DATA	0x012A
+		DATA	0x0129
+		DATA	0x0128
+		DATA	0x0126
+		DATA	0x0125
+		DATA	0x0124
+		DATA	0x0122
+		DATA	0x0121
+		DATA	0x0120
+		DATA	0x011F
+		DATA	0x011D
+		DATA	0x011C
+		DATA	0x011B
+		DATA	0x011A
+		DATA	0x0119
+		DATA	0x0117
+		DATA	0x0116
+		DATA	0x0115
+		DATA	0x0114
+		DATA	0x0113
+		DATA	0x0112
+		DATA	0x0110
+		DATA	0x010F
+		DATA	0x010E
+		DATA	0x010D
+		DATA	0x010C
+		DATA	0x010B
+		DATA	0x010A
+		DATA	0x0109
+		DATA	0x0108
+		DATA	0x0107
+		DATA	0x0106
+		DATA	0x0105
+		DATA	0x0104
+		DATA	0x0103
+		DATA	0x0102
+		DATA	0x0101	
+         
+		end

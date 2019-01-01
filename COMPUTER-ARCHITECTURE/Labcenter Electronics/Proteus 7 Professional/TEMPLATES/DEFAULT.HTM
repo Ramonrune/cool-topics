@@ -1,0 +1,323 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.1 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<TITLE>Bill Of Materials For {{DTITLE}}</TITLE>
+<STYLE TYPE="text/css">
+<!--
+.horzline
+ { border-top-width: medium;
+    border-right-width: medium;
+    border-bottom-width: medium;
+    border-left-width: medium;
+    border-bottom-style: solid;
+    border-top-color: #000099;
+    border-right-color: #000099;
+    border-bottom-color: #000099;
+    border-left-color: #000099;
+    color: #000099;
+ }
+.mainheading
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: large;
+    font-weight: bold;
+    text-transform: capitalize;
+    text-decoration: underline;
+    color: #000099;
+ }
+.designtitle
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: medium;
+    font-weight: bold;
+ }
+.designvalue
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: medium;
+ }
+.categoryheading
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: medium;
+    color: #000099;
+    border-top-width: medium;
+    border-right-width: medium;
+    border-bottom-width: medium;
+    border-left-width: medium;
+    border-bottom-style: solid;
+    border-top-color: #000099;
+    border-right-color: #000099;
+    border-bottom-color: #000099;
+    border-left-color: #000099;
+    border-top-style: solid;
+    background-color: #FFFFE0;
+ }
+.fieldheading
+ { font-family: Arial, Helvetica, sans-serif;
+	 font-size: small;
+	 color: #000099;
+	 text-decoration: underline;
+ }
+.oddfield
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+ }
+.evenfield
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+ }
+.subtotal
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    color: #000099;
+ }
+.total
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    color: #000099;
+ }
+.notes
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: x-small;
+ } 
+.footer
+ { font-family: Arial, Helvetica, sans-serif;
+    font-size: x-small;
+    font-style: italic;
+ } 
+-->
+</STYLE>
+</HEAD>
+<BODY>
+<TABLE>
+   <TR> 
+      <TD COLSPAN="30" CLASS="mainheading"> Bill Of Materials For {{DTITLE}} </TD>
+   </TR>
+   <TR> 
+      <TD COLSPAN="30"> 
+         <TABLE BORDER="0" CELLPADDING="0">
+            <TR VALIGN="BASELINE"> 
+               <TD CLASS="designtitle">Design Title</TD>
+               <TD>:</TD>
+               <TD CLASS="designvalue">{{DTITLE}}</TD>
+            </TR>
+            <TR VALIGN="BASELINE"> 
+               <TD CLASS="designtitle">Author</TD>
+               <TD>:</TD>
+               <TD CLASS="designvalue">{{AUTHOR}}</TD>
+            </TR>
+            <TR VALIGN="BASELINE"> 
+               <TD CLASS="designtitle">Revision</TD>
+               <TD>:</TD>
+               <TD CLASS="designvalue">{{REV}}</TD>
+            </TR>
+            <TR VALIGN="BASELINE"> 
+               <TD CLASS="designtitle">Design Created</TD>
+               <TD>:</TD>
+               <TD CLASS="designvalue">{{WL_CDATE}}</TD>
+            </TR>
+            <TR VALIGN="BASELINE"> 
+               <TD CLASS="designtitle">Design Last Modified</TD>
+               <TD>:</TD>
+               <TD CLASS="designvalue">{{WL_MDATE}}</TD>
+            </TR>
+            <TR VALIGN="BASELINE"> 
+               <TD CLASS="designtitle">Total Parts In Design</TD>
+               <TD>:</TD>
+               <TD CLASS="designvalue">{{NPARTS}}</TD>
+            </TR>
+         </TABLE>
+      </TD>
+   </TR>
+   <!--START CATEGORY ROW-->
+   <TR> 
+      <TD HEIGHT="10" COLSPAN="30"></TD>
+   </TR>
+   <TR> 
+      <TD COLSPAN="30" CLASS="categoryheading">{{CATQTY}}&nbsp;{{CATNAME}}</TD>
+   </TR>
+   <TR> 
+      <TD HEIGHT="5" COLSPAN="30"></TD>
+   </TR>
+   <TR CLASS="fieldheading"> 
+      <TD WIDTH="10"></TD>
+      <TD>Quantity:</TD>
+      <TD WIDTH="10"></TD>
+      <TD>References</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H1}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H2}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H3}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H4}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H5}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H6}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H7}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H8}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H9}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H10}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H11}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{H12}}</TD>
+      <!--END OF FIELDS-->
+      <TD WIDTH="10"></TD>
+   </TR>
+   <!--START ODD FIELD ROW-->
+   <TR CLASS="oddfield"> 
+      <TD WIDTH="10" CLASS="evenfield"></TD>
+      <TD VALIGN="BASELINE">{{QUANTITY}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE">{{REFS}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V1}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V2}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V3}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V4}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V5}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V6}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V7}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V8}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V9}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V10}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V11}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V12}}</TD>
+      <!--END OF FIELDS-->
+      <TD WIDTH="10"></TD>
+   </TR>
+   <!--START EVEN FIELD ROW-->
+   <TR CLASS="evenfield"> 
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE">{{QUANTITY}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE">{{REFS}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V1}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V2}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V3}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V4}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V5}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V6}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V7}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V8}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V9}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V10}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V11}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD VALIGN="BASELINE" NOWRAP>{{V12}}</TD>
+      <!--END OF FIELDS-->
+      <TD WIDTH="10"></TD>
+   </TR>
+   <!--START SUBTOTAL ROW-->
+   <TR> 
+      <TD HEIGHT="5" COLSPAN="30"></TD>
+   </TR>
+   <TR CLASS="subtotal"> 
+      <TD WIDTH="10"></TD>
+      <TD COLSPAN="3">Sub-totals:</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V1}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V2}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V3}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V4}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V5}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V6}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V7}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V8}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V9}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V10}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V11}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V12}}</TD>
+      <!--END OF FIELDS-->
+      <TD WIDTH="10"></TD>
+   </TR>
+   <!--START END CATEGORY ROW-->
+   <!--START TOTAL ROW-->
+   <TR> 
+      <TD COLSPAN="30" CLASS="horzline">&nbsp;</TD>
+   </TR>
+   <TR CLASS="total"> 
+      <TD WIDTH="10"></TD>
+      <TD COLSPAN="3">Totals:</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V1}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V2}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V3}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V4}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V5}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V6}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V7}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V8}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V9}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V10}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V11}}</TD>
+      <TD WIDTH="10"></TD>
+      <TD NOWRAP>{{V12}}</TD>
+      <!--END OF FIELDS-->
+      <TD WIDTH="10"></TD>
+   </TR>
+	<!--START NOTES ROW-->
+   <TR> 
+      <TD COLSPAN="30">&nbsp; </TD>
+   </TR>
+   <TR CLASS="notes"> 
+      <TD COLSPAN="30"><u>Notes:</u><BR>{{NOTES}}</TD>
+   </TR>
+   <!--START FOOTER-->
+   <TR> 
+      <TD COLSPAN="30">&nbsp; </TD>
+   </TR>
+   <TR ALIGN="RIGHT" CLASS="footer"> 
+      <TD COLSPAN="30">{{WL_TDATE}}&nbsp;&nbsp;{{TIME}}</TD>
+   </TR>
+</TABLE>
+</BODY>
+</HTML>

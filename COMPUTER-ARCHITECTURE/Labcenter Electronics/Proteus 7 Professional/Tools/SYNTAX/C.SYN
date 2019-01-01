@@ -1,0 +1,17 @@
+#
+# Labcenter Electronics
+#
+# C syntax highlighter definition file.
+#
+line_comment=//.*$
+block_comment_open=/\*
+block_comment_close=\*/
+string="([^"\\]|\\.)*"
+constant=\b((0(x|X)[\da-fA-F]*)|((\d+\.?\d*)|(\.\d+))((e|E)(\+|-)?\d+)?)(L|l|UL|ul|u|U|F|f)?\b
+constant='([^'\\]|\\.)*'
+keyword=\b(auto|break|case|char|const|continue|defualt|do|double|else|enum|extern|float|for|goto|if|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while)\b
+extensions=\b(asm|_cs|cdecl|_ds|_es|far|fortran|huge|interrupt|near|pascal|_ss)\b
+macro=^\w*#(define|include|if|endif|else).*$
+operator=(\?|:|\|\||&&|~|\+\+|--)
+operator=(&|\^|\||<<|>>|\*|/|%|\+|-|=|!|<|>)(=)?
+

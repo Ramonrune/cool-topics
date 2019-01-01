@@ -1,0 +1,2702 @@
+
+
+
+
+                MCS-51 Microcontroller Family Cross Assembler
+
+
+
+
+
+
+             AAA     SSSSSS  EEEEEEE  MM   MM        5555555   11
+            AA AA   SS       EE       MMM MMM        55       111
+           AA   AA  SS       EE       MM M MM        55        11
+           AA   AA   SSSSS   EEEEEEE  MM   MM  ====  555555    11
+           AAAAAAA       SS  EE       MM   MM             55   11
+           AA   AA       SS  EE       MM   MM             55   11
+           AA   AA  SSSSSS   EEEEEEE  MM   MM        555555   1111
+
+
+
+
+
+
+
+
+
+                         U S E R ' S    M A N U A L
+
+                                Version  1.2
+
+
+
+
+                              January 22, 1996
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                Copyright (c) 1994, 1996  by  W.W. Heinz
+
+
+
+                          TABLE OF CONTENTS
+                          -----------------
+
+
+      Foreword to Version 1.0
+      Foreword to Version 1.2
+
+I.    Introduction
+
+II.   Getting started
+
+      II.1  Files
+      II.2  ASEM-51 Installation
+      II.3  Invoking ASEM
+            II.3.1  DOS Command Line Operation
+            II.3.2  Running ASEM-51 in the Borland-IDE
+            II.3.3  Running ASEM-51 from Windows 3.1
+            II.3.4  Running ASEM-51 from BRIEF
+            II.3.5  Running ASEM-51 in a UNIX Environment
+      II.4  The HEXBIN Utility
+      II.5  The DEMO Program
+
+III.  The ASEM-51 Assembly Language
+
+      III.1  Statements
+      III.2  Symbols
+      III.3  Constants
+      III.4  Expressions
+      III.5  The 8051 Instruction Set
+      III.6  Pseudo Instructions
+      III.7  Segment Type
+      III.8  Assembler Controls
+             III.8.1  Primary Controls
+             III.8.2  General Controls
+      III.9  Predefined Symbols
+      III.10 Conditional Assembly
+
+IV.   Compatibility with the Intel Assembler
+
+      IV.1  Restrictions
+      IV.2  Extensions
+      IV.3  Further Differences
+
+V.    List File Format
+
+VI.   Support of 8051 Derivatives
+
+Appendix A:  ASEM-51 Error Messages
+             A.1  Assembly Errors
+             A.2  Runtime Errors
+Appendix B:  HEXBIN Error Messages
+             B.1  Conversion Errors
+             B.2  Runtime Errors
+Appendix C:  Predefined Symbols
+Appendix D:  Reserved Keywords
+Appendix E:  Specification of the Intel-HEX Format
+Appendix F:  The ASCII Character Set
+Appendix G:  Literature
+Appendix H:  Trademarks
+Appendix I:  8051 Instructions in numerical Order
+Appendix J:  8051 Instructions in lexical Order
+
+
+Foreword to Version 1.0
+=======================
+
+Today microcontrollers are used in a wide range of applications from simple
+consumer electronic products to complex avionic components. Thus I was not
+very surprised to find an 80C31 on the videotext decoder board, I purchased
+some time ago. Since it had a poor user interface and many bugs, I thought
+I could do it better and so I began to look for an 8051 cross assembler.
+But in contrast to the huge number of hardware components sold, the number
+of people developing microcontroller software seemed to be remarkable small,
+and so was the number of development tools on the market.
+There was a very small number of good professional cross assemblers for $250
+and up - too expensive for hobby purposes. Aside of useless demos, there were
+no restricted starter kits or school versions available.
+I found also a few shareware and public domain assemblers. But either they
+were poor and not very reliable, or not very 8051-specific, or they used some
+kind of fantasy syntax that was 100 % compatible to itself, but far away from
+the Intel standard. I didn't like them all!
+There seems to be a general lack of useful and affordable microcontroller
+development software. This is a pity, because their universality, simple
+architectures and low prices make microcontrollers so interesting especially
+for hobby and education.
+So I decided to write a handy 8051 cross assembler for the PC.
+
+And here it is:             ASEM-51 V1.0
+
+I hope it will help to discover the wonderful world of microcontrollers.
+
+Have fun!
+
+
+                                        Deisenhofen,  July 19, 1994
+
+                                                         W.W. Heinz
+
+
+Foreword to Version 1.2
+=======================
+
+More than one year has passed, since I had released ASEM-51 V1.1 in
+October 1994. Although I didn't spend all the time on ASEM-51, V1.2
+comes with several extensions, bug fixes, and numerous functional or
+internal improvements!
+Highlights of the new version are a nearly perfectly featured list
+file with cross-reference and some new printing options, a bootstrap
+program for MCS-51 evaluation boards, and plenty of new *.MCU files.
+For detailed information see the ASEM-51 V1.2 Release Notes.
+
+What I have learned through the last two years is that freeware is
+not free, neither for the author nor for the users.
+ASEM-51 could not be made with nothing but numberless free hours,
+spent on pure software development. I also had to purchase a PASCAL
+development system, lots of microcontroller literature, and an 80C535
+evaluation board.
+The distribution of freeware seems to be a bigger problem than its
+development. First of all, one has to buy a modem. After that, it
+costs a lot of time, fees, trouble, and "interesting" discussions
+with the particular sysops, until the stuff is posted (or not) on
+several BBS and ftp sites.
+To publish a program on shareware CD-ROMs, one has only to find out,
+which are the most suitable. For this, it is best to buy a dozen or
+two (and a CD-ROM drive), and to send the software to the publishers
+of those that seem to be the most popular.
+The interested users finally have to purchase modems or CD-ROM drives,
+and pay the same fees, or buy the same CD-ROMs, to get the "freeware"
+again from these public sources.
+After all, it may be cheaper, faster, and more convenient, to simply buy
+a professional software solution (if any) in the PC shop at the corner.
+But it's not half the fun!
+
+ASEM-51 V1.1 had been distributed (and mirrored) to more than 60 ftp
+sites all over the world, uploaded to so many BBS, and published on
+at least two shareware CD-ROMs.
+But I only received mails from 9 users, a local cockroach, and an
+international monster. The latter two asked me for permission, to
+sell ASEM-51 for (their) profit, and failed miserably.
+Most of the user mails started with "I have copied your assembler
+from an ftp site, which I don't remember. It is looking fine on the
+first glance! By the way, have you got a data sheet of the 80Cxyz?",
+or something like that.
+During all the time, I have received one single error report only.
+Since it had been reported by phone, I couldn't reproduce it.
+Nevertheless two serious bugs have been fixed since version 1.1, but
+I have found them by myself in November 1995 both.
+Sure ASEM-51 is no mainstream software, but to be honest, I am a
+little disappointed of the poor user feedback!
+
+Finally, I should thank the persons, who helped me to release ASEM-51:
+Andreas Kies has tested all previous beta versions of the assembler. He
+has distributed the first releases, and maintained a free ASEM-51 support
+account right from the beginning.
+Gabriele Novak has checked the orthography of all the documentation files.
+Werner Allinger has tested the latest beta version and the bootstrap program.
+Last but not least, I want to thank all interested users for their comments
+and suggestions.
+                                     Deisenhofen,  January 22, 1996
+
+                                                         W.W. Heinz
+
+I. Introduction
+===============
+ASEM-51 is a generic two-pass cross assembler for the MCS-51 microcontroller
+family. It is running on IBM-PC/XT/AT computers and all true compatibles.
+It only requires 256K of memory and MS-DOS 2.0 (or higher).
+The ASEM-51 assembly language is a subset of the Intel standard that
+guarantees maximum compatibility with existing 8051 assembler sources.
+ASEM-51 generates an Intel-HEX file output, which is directly accepted by
+most EPROM blowers. Thus ASEM-51 is suitable for small and medium 8031/51-
+based microcontroller projects in the non-profit area.
+However, ASEM-51 has been designed to process also very large programs!
+Its most important features are:
+
+    - fast, compact, reliable, easy to use, and well-documented
+    - easy installation, no configuration required
+    - command line operation, batch and networking capability
+    - support for easy integration into the popular Borland IDE
+    - support for installation under Windows 3.1
+    - Intel-compatible syntax
+    - five location counters, one for each of the 8051 address spaces
+    - built-in symbols for 8051 special function registers (can be disabled)
+    - 8051 register bank support
+    - assembly-time evaluation of arithmetic and logical expressions
+    - segment type checking for instruction operands
+    - automatic code optimization of generic jumps and calls
+    - nested include file processing
+    - nested conditional assembly
+    - detailed assembler listing with symbol table or cross reference
+    - further fancy printing facilities  ;-)
+    - Intel-HEX file output
+    - hex-to-binary conversion utility
+    - direct support of more than thirty 8051 derivatives
+    - support of user-defined 8051 derivatives
+    - special support of the Philips 83C75x family
+    - bootstrap program for testing on the MCS-51 target board
+    - limited update service by the author
+
+    - also running under OS/2 2.x and Warp     (in the DOS window)
+    - also running under Windows 3.1 and 95    (in the DOS box)
+    - also running under LINUX 1.1.12 and up   (with dosemu 0.52 and up)
+    - YES, it runs with Novell DOS 7.
+
+All executable programs of the ASEM-51 package have been developed with:
+
+      Turbo-Pascal 7.01 for DOS (c) Borland International 1992
+
+
+II. Getting started
+===================
+
+
+II.1 Files
+----------
+Your ASEM-51 distribution disk or archive should contain the following
+groups of files:
+
+1.)  ASEM_51.DOC          ASEM-51 User's Manual  (this file)
+        ASEM.EXE          cross assembler
+        ASEM.PIF          program information file for Windows 3.1
+        ASEM.ICO          icon file for Windows 3.1
+    ASEM2MSG.EXE          ASEM-51 message filter for Borland-IDE
+    ASEM2MSG.PAS          Turbo-Pascal source of ASEM2MSG.EXE
+      HEXBIN.EXE          hex-to-binary conversion utility
+        DEMO.A51          a sample 8051 assembler program
+           *.MCU          processor definition files of 8051 derivatives
+                          (for a detailed list of MCU files see chapter
+                           "VI. Support of 8051 Derivatives")
+
+2.)   BOOT51.DOC          BOOT-51 user's manual
+      BOOT51.A51          BOOT-51 assembler source (requires ASEM-51 V1.2)
+    CUSTOMIZ.EXE          BOOT-51 customization utility
+        BOOT.BAT          batch file for application program upload
+        LOAD.BAT          called by BOOT.BAT only
+       RESET.EXE          program to reset target system via PC printer port
+       BLINK.A51          sample test program for BOOT-51
+
+3.)  LICENSE.DOC          ASEM-51 License Agreement
+     RELEASE.120          ASEM-51 V1.2 Release Notes
+     UPDATES.DOC          ASEM-51 Updating Guide
+    KILLASEM.BAT          deletes all files of the ASEM-51 package
+     FILE_ID.DIZ          a brief description of the ASEM-51 archive
+
+The first group contains all files directly associated with the assembler.
+The second group contains all files directly associated with the bootstrap
+program. The third group contains general support and documentation files
+that apply to the whole package.
+
+
+II.2 ASEM-51 Installation
+-------------------------
+In principle ASEM-51 doesn't require a fuzzy software installation or
+configuration. In the simplest case you can copy all files of the package
+to your working directory, and enjoy the benefits of true plug-and-play
+compatibility!
+On the other hand, an installation of ASEM-51 under MS-DOS is very simple:
+
+  - Create a new directory on your harddisk, e.g. C:\ASEM51.
+
+  - Copy all files of the ASEM-51 package into this directory.
+
+  - Append it to your PATH statement in file AUTOEXEC.BAT, e.g.
+
+        PATH C:\DOS;C:\UTIL;C:\ASEM51
+
+  - Reboot your PC.
+
+
+II.3 Invoking ASEM
+------------------
+ASEM-51 provides full support of DOS command line operation and batch
+capability as the best commercial development tools.   :-)
+Nevertheless, it can be integrated into foreign development environments,
+if desired.
+
+
+II.3.1 DOS Command Line Operation
+---------------------------------
+ASEM-51 is invoked by typing:
+
+ASEM <source> [<hex> [<list>]] [/INCLUDES:p] [/DEFINE:s:v:t] [/COLUMNS]
+
+where <source> is the 8051 assembler source, <hex> is the output file in
+Intel-HEX format, and <list> is the assembler list file.
+The parameters <hex> and <list> are optional. When omitted, the file names
+are derived from the <source> name, but with extensions HEX and LST.
+All file names may be specified without extensions. In these cases, the
+assembler adds default extensions as shown below:
+
+        file             extension
+        --------------------------
+        <source>         .A51
+        <hex>            .HEX
+        <list>           .LST
+
+If you want a file name to have no extension, terminate it with a '.'!
+Instead of file names you may also specify device names to redirect the
+output to character I/O ports. Device names may be terminated with a ':'!
+It is not checked, whether the device is existing or suitable for the task.
+Although it is possible to read the source file from a character device
+(e.g. CON:) instead of a file, this cannot be recommended: Since ASEM-51
+is a two-pass assembler, it always reads the source file twice!
+
+When the /INCLUDES option is used, the assembler searches the specified
+path p for include files that cannot be found in the working directory.
+p may be any number of directories separated by ';' characters.
+The directories will be searched from left to right.
+
+The /DEFINE option is useful for selecting particular program variants
+from the command line that have been implemented with conditional assembly.
+It allows to define a symbol s with value v and segment type t in the
+command line. v and t are optional. The segment type of the symbol defaults
+to NUMBER, if t is omitted. The symbol value will be 0, if v is omitted.
+v may be any numeric constant. t must be one of the following characters:
+
+             C   =   CODE
+             D   =   DATA
+             I   =   IDATA
+             X   =   XDATA
+             B   =   BIT
+             N   =   NUMBER    (default)
+
+Options may be abbreviated as long as they remain unique!
+
+Examples:
+
+  1.)      ASEM PROGRAM
+
+     will assemble the 8051 assembly language program PROGRAM.A51 and
+     produce an Intel-HEX file PROGRAM.HEX and a listing PROGRAM.LST.
+
+  2.)      ASEM TARZAN.ASM JANE JUNGLE.PRN
+
+     will assemble the 8051 assembly language program TARZAN.ASM and
+     produce an Intel-HEX file JANE.HEX and a listing JUNGLE.PRN.
+
+  3.)      ASEM PROJECT EPROM.
+
+     will assemble the 8051 assembly language program PROJECT.A51 and
+     produce an Intel-HEX file EPROM and a listing PROJECT.LST.
+
+  4.)      ASEM sample COM2: NUL
+
+     will assemble the 8051 assembly language program SAMPLE.A51, send
+     the HEX file output to the serial interface COM2 and suppress the
+     list file output by sending it to the NUL device.
+
+  5.)      ASEM APPLICAT /INC:C:\ASEM51;D:\MICROS\8051\HEADERS
+
+     will assemble the program APPLICAT.A51, while all required include
+     files will be searched first in the default directory, then in
+     C:\ASEM51, and finally in D:\MICROS\8051\HEADERS.
+
+  6.)      ASEM UNIVERSL /D:Eva_Board:8000H:C
+
+     will assemble the program UNIVERSL.A51, while the CODE symbol
+     EVA_BOARD will be predefined with value 8000H during assembly.
+
+When program errors are detected, they are flagged on the console. This
+may look as follows:
+
+
+        MCS-51 Family Cross Assembler ASEM-51 V1.2
+
+        APPLICAT.A51(14): must be known on first pass
+        USERBITS.INC(6): attempt to divide by zero
+        DEFINES.INC(37): symbol not defined
+        APPLICAT.A51(20): symbol not defined
+        APPLICAT.A51(27): no END statement found
+
+             5 errors detected
+
+
+Every error is flagged with the name of the source or include file, the
+local line number where it was found, and the error message itself.
+This output format makes it easy to integrate ASEM-51 into existing foreign
+development environments or workbenches.
+A perfect fit for the Turbo C++ IDE (and perhaps others) can be reached
+with the /COLUMNS option. When specified, the column numbers of program
+errors are output additionally after the line numbers:
+
+
+        MCS-51 Family Cross Assembler ASEM-51 V1.2
+
+        APPLICAT.A51(14,12): must be known on first pass
+        USERBITS.INC(6,27): attempt to divide by zero
+        DEFINES.INC(37,18): symbol not defined
+        APPLICAT.A51(20,18): symbol not defined
+        APPLICAT.A51(27,1): no END statement found
+
+             5 errors detected
+
+
+When terminating ASEM-51 returns an exit code to the operating system:
+
+     situation                           ERRORLEVEL
+     ----------------------------------------------
+     no errors                               0
+     program errors detected                 1
+     fatal runtime error                     2
+
+
+II.3.2 Running ASEM-51 in the Borland-IDE
+-----------------------------------------
+Turbo C++ (1.0 thru 3.0) users will appreciate the possibility to invoke
+ASEM-51 as a transfer program from the Borland IDE.
+For this, the filter program ASEM2MSG for the ASEM-51 error messages
+has been provided. To integrate ASEM-51 into the Borland IDE, perform
+the following steps:
+
+  - Be sure that ASEM-51 has been installed properly as described before,
+    or that ASEM.EXE and ASEM2MSG.EXE are somewhere in your PATH.
+
+  - Start the Turbo C++ (or Borland C++) IDE for DOS.
+
+  - For Turbo C++ 1.0, first click:  Options | Full menus | ON
+
+  - Click from the menu bar:         Options | Transfer
+
+  - When the "Transfer" dialog box is active, press the Edit button.
+
+  - Now the "Modify/New Transfer Item" dialog box should be active.
+    Fill in the following items:
+
+         Program Title:   ASEM-~51
+         Program Path:    ASEM
+         Command Line:    $NOSWAP $SAVE CUR $CAP MSG(ASEM2MSG) $EDNAME /C
+         Translator:      [X]
+         Hot key:         Shift F8
+
+    Then press the New button.
+
+  - When returned to the "Transfer" dialog box, press the OK button.
+
+  - Click from the menu bar:         Options | Save | OK
+
+Now it should be possible, to assemble the file in the active edit
+window with ASEM-51, when pressing Shift-F8. The error messages (if any)
+should appear in the "Message" window. You can browse through the errors,
+and jump into the source text by simply pressing <Enter>. This even works,
+if the error is not in the program itself, but in an include file!
+
+Turbo-Pascal 7.0 users can also employ their Borland IDE for assembly.
+To integrate ASEM-51 into the Turbo-Pascal IDE, perform the following
+steps:
+
+  - Be sure that ASEM-51 has been installed properly as described before,
+    or that ASEM.EXE and ASEM2MSG.EXE are somewhere in your PATH.
+
+  - Start the Turbo-Pascal 7.0 (or Borland-Pascal 7.0) IDE for DOS.
+
+  - Click from the menu bar:         Options | Tools
+
+  - When the "Tools" dialog box is active, press the New button.
+
+  - Now the "Modify/New Tool" dialog box should be active.
+    Fill in the following items:
+
+         Title:           ASEM-~5~1
+         Program path:    ASEM
+         Command line:    $NOSWAP $SAVE CUR $CAP MSG(ASEM2MSG) $EDNAME
+         Hot keys:        Shift+F8
+
+    Then press the OK button.
+
+  - When returned to the "Tools" dialog box, press the OK button.
+
+  - Click from the menu bar:         Options | Environment | Preferences
+
+  - When the "Preferences" dialog box is active, disable the "Close on
+    go to source" item in the "Options" checkbox. Then press the OK button.
+
+  - Finally click from the menu bar: Options | Save
+
+Now ASEM-51 can be invoked with Shift F8, to assemble the program in the
+active edit window, while error messages (if any) appear in the "Messages"
+window.
+
+Users of both Turbo C++ and Turbo-Pascal should prefer the Turbo C++ IDE.
+In the Turbo-Pascal 7.0 IDE, the /COLUMNS (or /C) option has no effect!
+
+
+II.3.3 Running ASEM-51 from Windows 3.1
+---------------------------------------
+For integration into the Windows 3.1 desktop, the files ASEM.PIF and
+ASEM.ICO have been provided. To insert ASEM-51 into a group of the
+Program Manager, perform the following steps:
+
+  - Be sure that ASEM-51 has been installed properly for MS-DOS
+    as described before.
+
+  - Start Windows 3.1 and expand the Program Manager window to its
+    full screen size representation, if necessary.
+
+  - Focus the program group in which ASEM-51 is to be inserted,
+    e.g. "Applications".
+
+  - Click from the Program Manager menu bar:   File | New
+
+  - When the "New Program Object" dialog box is active, choose
+    the option "program", and click the OK button.
+
+  - Now the "Program Properties" dialog box should be active.
+    Fill in the following items:
+
+         Description:          ASEM-51
+         Command line:         ASEM.PIF
+         Working Directory:                  (whatever you want)
+         Hot key:                            (whatever you want)
+         as a Symbol:          [ ]
+
+    Then press the [Change Icon] button.
+
+  - Now a message box appears with the error message
+    "no icon available for the specified file".
+    Simply press the OK button.
+
+  - The "Select Icon" dialog box should be displayed now. Fill in
+
+         File Name:      ASEM.ICO
+
+    and press the OK button. Now the ASEM-51 icon should be displayed
+    in the icon field. Press the OK button again.
+
+  - When returned to the "Program Properties" dialog box, press the
+    OK button.
+
+(Since I had no English Windows version to try this, things may look
+ slightly different in real life.)
+
+Now ASEM-51 can be invoked by simply clicking the ASEM-51 icon twice.
+After entering the program parameters in a corresponding dialog box,
+ASEM-51 is running in a DOS window, which remains open after program
+termination, to let you have a look on the error messages.
+
+
+II.3.4  Running ASEM-51 from BRIEF
+----------------------------------
+BRIEF 3.x users can integrate ASEM-51 into their editor by simply
+defining another DOS environment variable in their AUTOEXEC.BAT with
+
+         SET BCA51="ASEM %%s"
+
+This specifies the command for compiling files with extension *.A51.
+After that, ASEM-51 can be invoked from BRIEF with Alt-F10.
+
+
+II.3.5  Running ASEM-51 in a UNIX Environment
+---------------------------------------------
+If you are running ASEM-51 on a Linux or another PC-based UNIX system
+with an MS-DOS emulator, note that all executable programs of the ASEM-51
+package can only read ASCII files in DOS format with CR/LF at the end of
+line. Native UNIX text files with only a LF at the end of line cannot be
+processed!
+Consequently, all ASCII files, generated by programs of the ASEM-51
+package, are written in MS-DOS format.
+
+
+II.4 The HEXBIN Utility
+-----------------------
+Most EPROM blowers accept the Intel-HEX object file format that is output
+by ASEM-51. However, for dumb EPROM blowers and special purposes it might be
+useful to convert the HEX file to a pure binary image file.
+For this the conversion utility HEXBIN is provided.
+It is invoked as follows:
+
+        HEXBIN <hex> [<bin>] [/OFFSET:o] [/LENGTH:l] [/FILL:f]
+
+where <hex> is the input file in Intel-HEX format, and <bin> is the
+binary output file. The parameter <bin> is optional. When omitted, the
+file name is derived from the <hex> file name, but with the extension BIN.
+All file names may be specified without extensions. In these cases, the
+program adds default extensions as shown below:
+
+        file             extension
+        ------------------------------
+        <hex>            .HEX
+        <bin>            .BIN
+
+If you want a file name to have no extension, terminate it with a '.'!
+Instead of file names you may also specify device names to redirect the
+output to character I/O ports. Device names may be terminated with a ':'!
+It is not checked, whether the device is existing or suitable for the task.
+
+The binary file output can also be controlled with the options /OFFSET,
+/FILL and /LENGTH.
+Normally the first byte in the binary file is the first byte of the HEX
+record with the lowest load address. If a number of dummy bytes is to be
+inserted on top of the file (e.g. for alignment in an EPROM image), this
+can be performed with the /OFFSET option:
+
+        /OFFSET:1000
+
+would insert 4096 dummy bytes before the first byte of the first HEX record
+loaded. The offset must always be specified as a hex number. The default
+offset is 0.
+Since there may be peepholes between the HEX records, a fill byte value can
+be defined with the /FILL option:
+
+        /FILL:0
+
+would fill all peepholes between the HEX records with zero bytes as well as
+all the dummy bytes that might have been inserted with the /OFFSET or /LENGTH
+option. The fill byte value must always be specified as a hex number.
+The default fill byte is the EPROM-friendly FFH.
+By default the last byte in the binary file is the last byte of the HEX
+record with the highest load address. If the binary file should have a
+well defined length, then a number of dummy bytes can be appended to the
+file (e.g. for exactly matching an EPROM length), this can be performed
+with the /LENGTH option:
+
+        /LENGTH:8000
+
+would append as many dummy bytes behind the last byte of the file, that the
+total file length becomes exactly 32768 bytes. The file length must always
+be specified as a hex number.
+Options may be abbreviated as long as they remain unique!
+
+Examples:
+
+  1.)      HEXBIN PROGRAM
+
+     will convert the Intel-HEX file PROGRAM.HEX to a pure binary image file
+     PROGRAM.BIN.
+
+  2.)      HEXBIN TARZAN.OBJ JUNGLE/FILL:E5
+
+     will convert the Intel-HEX file TARZAN.OBJ to a binary image file
+     JUNGLE.BIN and fill all peepholes between the HEX file records with
+     the binary value E5H.
+
+  3.)      HEXBIN PROJECT EPROM. /off:8000 /length:10000 /f:0
+
+     will convert the Intel-HEX file PROJECT.HEX to a binary image file
+     EPROM, insert 32K dummy bytes on top of file, fill all peepholes
+     and the dummy bytes with nulls, and extend the file to exactly 64K.
+
+When terminating HEXBIN returns an exit code to the operating system:
+
+     situation                           ERRORLEVEL
+     ----------------------------------------------
+     no errors                               0
+     conversion errors detected              1
+     fatal runtime error                     2
+
+
+II.5 The DEMO Program
+---------------------
+For getting started with a new assembler, it is always good to have a
+program, that can be assembled with it. For this purpose, the 8051
+assembler program DEMO.A51 is provided, that can be used for a first
+test of ASEM-51. Be sure to have all files of the ASEM-51 package on your
+disk! Then simply type
+
+        ASEM DEMO
+        HEXBIN DEMO
+
+at the DOS prompt. ASEM and HEXBIN should finish without errors and you
+should have the following new files on your disk:
+
+        DEMO.HEX          Intel-HEX file
+        DEMO.LST          assembler list file of DEMO.A51
+        DEMO.BIN          binary image file of DEMO.HEX
+
+When something goes wrong, there may be files missing in your distribution!
+DEMO.A51 may also serve as a sample assembler program that includes
+examples for all machine instructions, pseudo instructions and assembler
+controls, that have been implemented in ASEM-51. Whenever in doubt how to
+use a particular command, DEMO.A51 may be a valuable help.
+
+
+III.  The ASEM-51 Assembly Language
+===================================
+The user should be familiar with 8051 microcontrollers and assembly
+language programming. This manual will not explain the architecture of
+the MCS-51 microcontroller family nor will it discuss the basic concepts
+of assembly language programming. It only describes the general syntax
+of assembler statements and the assembler instructions that have been
+implemented in ASEM-51.
+
+
+III.1 Statements
+----------------
+Source files consist of a sequence of statements of one of the forms:
+
+          [symbol:]  [instruction [arguments]]     [;comment]
+
+           symbol     instruction  argument        [;comment]
+
+          $control   [argument]                    [;comment]
+
+Everything that is written in brackets is optional.
+The maximum length of source code lines is 255 characters.
+Everything from the ';' character to the end of line is assumed to be
+commentary. Blank lines are considered to be commentary, too.
+The lexical elements of a statement may be separated by blanks and tabs.
+Aside of character string constants, upper and lower case letters are
+equivalent.
+
+Examples:     HERE:   MOV A,#0FFH     ;define label HERE and load A with FFH
+
+                      YEAR EQU 1996   ;define symbol for current year
+
+              $INCLUDE (80C517.MCU)   ;include SAB80C517 register definitions
+
+
+III.2 Symbols
+-------------
+Symbols are user-defined names for addresses or numbers.
+Their maximum significant length is 31 characters. They can be even
+longer, but everything behind the first 31 characters is ignored.
+Symbols may consist of letters, digits, '_' and '?' characters.
+A symbol name must not start with a digit!
+Upper and lower case letters are considered to be equivalent.
+Note: Assembly language keywords must not be redefined as user symbols!
+
+Example:     Is_this_really_a_SYMBOL_?       is a legal symbol name!
+
+
+III.3 Constants
+---------------
+Numeric constants consist of a sequence of digits, followed by a radix
+specifier. The first character must always be a decimal digit.
+The legal digits and radix specifiers are:
+
+          constant     digits        radix
+          ------------------------------------
+          binary       0 ... 1       B
+          octal        0 ... 7       Q or O
+          decimal      0 ... 9       D or none
+          hex          0 ... F       H
+
+Thus, for example, the following constants are equivalent:
+
+          1111111B      binary
+              177Q      octal
+              177o      octal
+               127      decimal
+              127d      decimal
+              07FH      hex
+
+Character constants may be used wherever a numeric value is allowed.
+A character constant consists of one or two printing characters enclosed
+in single or double quotes. The quote character itself can be represented
+by two subsequent quotes. For example:
+
+               'X'       8 bit constant:       58H
+              "a@"      16 bit constant:     6140H
+              ''''       8 bit constant:       27H
+
+In DB statements, character constants may have any length.
+In this case, we call it a character string. For example:
+
+              "It's only text!"
+
+
+III.4 Expressions
+-----------------
+Arithmetic expressions are composed of operands, operators and parentheses.
+Operands may be user-defined symbols, constants or special assembler symbols.
+All operands are treated as unsigned 16-bit numbers.
+Special assembler symbols, that can be used as operands are:
+
+    AR0, ... , AR7     direct addresses of registers R0 thru R7
+
+    $                  the location counter of the currently active segment
+                       (start address of the current assembler statement)
+
+The following operators are implemented:
+
+Unary operators:   +          identity:             +x = x
+                   -          two's complement:     -x = 0-x
+                   NOT        one's complement:  NOT x = FFFFH-x
+                   HIGH       high order byte
+                   LOW        low order byte
+
+Binary operators:  +          unsigned addition
+                   -          unsigned subtraction
+                   *          unsigned multiplication
+                   /          unsigned division
+                   MOD        unsigned remainder
+                   SHL        logical shift left
+                   SHR        logical shift right
+                   AND        logical and
+                   OR         logical or
+                   XOR        exclusive or
+                   .          bit operator used for bit-adressable locations
+                   EQ  or =   equal to                ----.
+                   NE  or <>  not equal to                |  results are:
+                   LT  or <   less than                   |
+                   LE  or <=  less or equal than          |     0 if FALSE
+                   GT  or >   greater than                |  FFFF if TRUE
+                   GE  or >=  greater or equal than   ____|
+
+Operators that are no special characters but keywords as SHR or AND must
+be separated from their operands by at least one blank or tab.
+In general expressions are evaluated from left to right according to
+operator precedence, which may be overridden by parentheses.
+Parentheses may be nested to any level.
+Expressions always evaluate to unsigned 16-bit numbers, while overflows
+are ignored. When an expression result is to be assigned to an 8-bit
+quantity, the high byte must be either 00 or FF.
+
+      Operator precedence:
+      -----------------------------------------------------------------
+      ( )                                                   ^   highest
+      + - NOT HIGH LOW                       (unary)        |
+      .                                                     |
+      * / MOD                                               |
+      SHL SHR                                               |
+      + -                                    (binary)       |
+      EQ = NE <> LT < LE <= GT > GE >=                      |
+      AND                                                   |
+      OR XOR                                                v   lowest
+      -----------------------------------------------------------------
+
+Example:  The expression  P1.((87+3)/10 AND -1 SHR 0DH)  will evaluate to 91H.
+
+
+III.5 The 8051 Instruction Set
+------------------------------
+ASEM-51 implements all 8051 machine instructions including generic jumps
+and calls. The assembler implements two instructions
+
+        JMP  <address>
+        CALL <address>
+
+that do not represent a specific opcode: generic jump and call.
+These instructions will always evaluate to a jump or call, not necessarily
+the shortest, that will reach the specified address.
+JMP may assemble to SJMP, AJMP or LJMP, while CALL can only evaluate to
+ACALL or LCALL. Note that the assembler decision may not be optimal. For
+code addresses that are forward references, the assembler always generates
+LJMP or LCALL respectively. However, for backward references this is a
+powerful tool to reduce code size without extra trouble.
+
+With the $PHILIPS control, ASEM-51 can be switched to the reduced instruction
+set of the Philips 83C75x family of microcontrollers. This disables the LJMP,
+LCALL, and MOVX instructions as well as the XDATA and XSEG pseudo instructions,
+and generic jumps and calls will always assemble to absolute addressing.
+
+The rest of the 8051 instruction mnemonics is listed in Appendix D.
+Appendices I and J are containing tables of all 8051 instructions with
+their opcodes, mnemonics, arguments, lengths, affected flags and durations.
+The comprehensive example program DEMO.A51 provided shows all the 8051
+instructions in a syntactical context.
+All 8051 instruction mnemonics are copyright (c) by Intel corporation!
+
+
+III.6 Pseudo Instructions
+-------------------------
+In the subsequent paragraphs, all ASEM-51 pseudo instructions are described.
+Lexical symbols are written in lower case letters, while assembler keywords
+are written in upper case.
+Instruction arguments are represented by <arg>, <arg1> or something like
+that. Expressions are represented by <expr>, <expr1> and so on.
+Syntax elements enclosed in brackets are optional.
+The ellipsis "..." means always "a list with any number of elements".
+
+
+DB <arg1> [,<arg2> [,<arg3> ... ]]              define bytes
+
+        The DB instruction reserves and initializes a number of bytes with
+        the values defined by the arguments. The arguments may either be
+        expressions (which must evaluate to 8-bit values) or character
+        strings of any length. DB is only allowed in the CODE segment!
+
+        Example:   DB 11,'January',96,(3*7+12)/11
+
+
+DW <expr1> [,<expr2> [,<expr3> ... ]]           define words
+
+        The DW instruction reserves and initializes a number of words with
+        the values defined by the arguments. Every argument may be an
+        arbitrary expression and requires two bytes of space.
+        DW is only allowed in the CODE segment!
+
+        Example:   DW 0,0C800H,1996,4711
+
+
+DS <expr>                                       define space
+
+        Reserves a number of uninitialized bytes in the current segment.
+        The value of <expr> must be known on pass 1!
+        DS is allowed in every segment!
+
+        Example:   DS 200H
+
+
+DBIT <expr>                                     define bits
+
+        Reserves a number of uninitialized bits.
+        The value of <expr> must be known on pass 1!
+        DBIT is only allowed in the BIT segment!
+
+        Example:   DBIT 16
+
+
+NAME <symbol>                                   define module name
+
+        Defines a name for the program module. The module name must be a
+        legal symbol. Only one NAME instruction is allowed in the program.
+        Since the NAME instruction has been introduced for compatibility
+        purposes only, the symbol is not currently used. It may be redefined
+        in the subsequent program.
+
+
+ORG <expr>                                      origin of segment
+
+        Sets the location counter of the current segment to the value <expr>.
+        Additional ORG statements may be used to generate program segments
+        which will load at different locations.
+        The value of <expr> must be known on pass 1!
+        The default value of all location counters at program start is 0.
+
+        Example:   ORG 08000H
+
+
+USING <expr>                                    using register bank
+
+        Sets the register bank used to <expr>, which must be in the range
+        of 0...3. The USING instruction only affects the values of the
+        special assembler symbols AR0, ... , AR7 representing the direct
+        addresses of registers R0, ... , R7 in the current register bank.
+        The value of <expr> must be known on pass 1!
+        The default value for the register bank is 0.
+
+        Example:   USING 1
+
+
+END                                             end of program
+
+        This must be the last statement in the source file. After the END
+        statement only commentary and blank lines are allowed!
+
+        Example:   END       ;end of program
+
+
+<symbol> EQU <expr>                             define constant
+<symbol> SET <expr>                             define variable
+
+        The EQU instruction defines a symbolic constant of the type NUMBER.
+        A symbol defined with EQU can never be changed!
+        The SET instruction defines a symbolic value of the type NUMBER,
+        that may be changed with subsequent SET statements.
+        The value of <expr> must be known on pass 1!
+        A symbol that has been SET, cannot be redefined with EQU!
+        A symbol that has been EQU'd cannot be reSET!
+        On pass 2, forward references to a SET symbol always evaluate
+        to the last value, the symbol has been SET to on pass 1.
+
+        Examples:   MAXMONTH  EQU 12
+                    OCTOBER   EQU MAXMONTH-2
+
+                    CHAPTER   SET  1
+                    CHAPTER   SET  CHAPTER+1
+
+
+<symbol> CODE  <expr>                           define ROM address
+<symbol> DATA  <expr>                           define direct RAM address
+<symbol> IDATA <expr>                           define indirect RAM address
+<symbol> BIT   <expr>                           define bit address
+<symbol> XDATA <expr>                           define external RAM address
+
+        These instructions define symbolic addresses for the five 8051
+        memory segments (address spaces). For DATA, IDATA and BIT type
+        symbols, the value of <expr> must not exceed 0FFH!
+        The value of <expr> must be known on pass 1!
+        Once defined with one of the above instructions, the symbols cannot
+        be redefined.
+
+        Examples:   EPROM    CODE  08000H
+                    STACK    DATA       7
+                    V24BUF   IDATA   080H
+                    REDLED   BIT     P1.5
+                    SAMPLER  XDATA  0100H
+
+
+CSEG [AT <expr>]                           switch to CODE  space [at address]
+DSEG [AT <expr>]                           switch to DATA  space [at address]
+ISEG [AT <expr>]                           switch to IDATA space [at address]
+BSEG [AT <expr>]                           switch to BIT   space [at address]
+XSEG [AT <expr>]                           switch to XDATA space [at address]
+
+        These instructions switch to one of the five 8051 memory segments
+        (address spaces) and optionally set the location counter of that
+        segment to a particular address <expr>.
+        When the construction "AT <expr>" is omitted, the location counter
+        keeps its previous value.
+        The value of <expr> must be known on pass 1!
+        At program start the default segment is CODE and all the location
+        counters are set to zero.
+
+        Examples:   DSEG            ;switch to DATA segment
+
+                    CSEG AT 8000h   ;switch to CODE segment at address 8000H
+
+                    XSEG at 0       ;switch to XDATA segment at address 0
+
+
+III.7 Segment Type
+------------------
+Every assembly time expression is assigned a segment type, depending on
+its operands and operators. The segment type indicates the address space,
+the expression result might belong to, if it were used as an address.
+There are six possible segment types:
+
+        CODE
+        DATA
+        IDATA
+        XDATA
+        BIT
+        NUMBER    (typeless)
+
+Most expression results have the segment type NUMBER. That means they are
+assumed to be typeless. However, in some cases it may be useful to assign
+a particular segment type!
+The following six rules apply when the segment type is evaluated:
+
+    1. Numerical constants are always typeless.
+       Consequently their segment type is NUMBER.
+
+    2. Symbols are assigned a segment type during definition. Symbols
+       that are defined with EQU or SET have no segment type.
+       Labels get the segment type of the currently active segment.
+
+    3. The result of a unary operation (+, -, NOT, HIGH, LOW) will have
+       the segment type of its operand.
+
+    4. The results of all binary operations (except "+", "-" and ".") will
+       have no segment type.
+
+    5. If only one operand in a binary "+" or "-" operation has a segment
+       type, then the result will have that segment type, too. In all other
+       cases, the result will have no segment type.
+
+    6. The result of the bit operation "." will always have the segment
+       type BIT.
+
+Examples:
+---------       The following symbols have been defined in a program:
+
+                OFFSET  EQU   16
+                START   CODE  30H
+                DOIT    CODE  0100H
+                REDLED  BIT   P1.3
+                VARIAB4 DATA  20H
+                PORT    DATA  0C8H
+                RELAY   EQU   5
+
+    1.)  The expression  START+OFFSET+3  will have the segment type CODE.
+    2.)  The expression  START+DOIT  will be typeless.
+    3.)  The expression  DOIT-REDLED  will be typeless.
+    4.)  The expression  2*VARIAB4  will be typeless.
+    5.)  The expression  PORT.RELAY  will have the segment type BIT.
+
+The segment type is checked, when expressions appear as addresses. When the
+expression result is not typeless and does not have the segment type of the
+corresponding segment, the instruction is flagged with an error message.
+The only exceptions are the segment types DATA and IDATA, which are assumed
+to be compatible in the address range of 0 to 7FH. Since ASEM-51 does only
+support absolute segments, those addresses are really always pointing to the
+same physical location in the internal memory.
+
+Example:
+--------
+
+ Line  I  Addr  Code            Source
+
+    1:          N        30             DSEG AT 030H     ;internal RAM
+    2:      30  N        01     COUNT:  DS 1             ;counter variable
+    3:
+    4:                                  CSEG             ;ROM
+    5:    0000  C2 30           START:  CLR COUNT
+                                                 ^
+                          @@@@@ segment type mismatch @@@@@
+
+The CLR instruction is flagged with the error message "segment type mismatch"
+in the assembler list file, because only a BIT type address is allowed here.
+However, COUNT is a label with the segment type DATA!
+
+
+III.8 Assembler Controls
+------------------------
+ASEM-51 implements a number of assembler controls that influence the
+assembly process and list file generation. There are two groups of
+controls: primary and general controls.
+Primary controls can only be used at the beginning of the program and
+remain in effect throughout the assembly. They may be preceded only
+by control statements, blank and commentary lines. If the same primary
+control is used multiple times with different parameters, the last one
+counts.
+General controls may be used everywhere in the program. They perform a
+single action, or remain in effect until they are cancelled or changed by
+a subsequent control statement.
+Assembler controls may have a number or string type operand.
+Number type operands are arithmetic expressions that must be known on pass 1.
+String type operands are character strings which are enclosed in parentheses
+instead of quotes. In analogy to quoted strings, no control characters
+(including tabs) are allowed within these strings! The string delimiter ')'
+can be represented by two subsequent ')' characters.
+The subsequent paragraphs contain detailed explanations of the implemented
+controls and their abbreviations:
+
+
+Control        Type  Default    Abbreviation            Meaning
+------------------------------------------------------------------------------
+$DATE(string)    P      ''      $DA      inserts date string into page header
+------------------------------------------------------------------------------
+$DEBUG           P   $NODEBUG   $DB      (currently dummy)
+$NODEBUG         P              $NODB    (   "        "  )
+------------------------------------------------------------------------------
+$EJECT           G              $EJ      start a new page in list file
+------------------------------------------------------------------------------
+$INCLUDE(file)   G              $IC      include a source file
+------------------------------------------------------------------------------
+$LIST            G   $LIST      $LI      list subsequent source lines
+$NOLIST          G              $NOLI    don't list subsequent source lines
+------------------------------------------------------------------------------
+$MOD51           P   $MOD51     $MO      enable predefined SFR symbols
+$NOMOD51         P              $NOMO    disable predefined SFR symbols
+------------------------------------------------------------------------------
+$PAGING          P   $PAGING    $PI      enable listing page formatting
+$NOPAGING        P              $NOPI    disable listing page formatting
+------------------------------------------------------------------------------
+$PAGELENGTH(n)   P   n=64       $PL      set lines per page for listing
+------------------------------------------------------------------------------
+$PAGEWIDTH(n)    P   n=132      $PW      set columns per line for listing
+------------------------------------------------------------------------------
+$PHILIPS         P   MCS-51     ---      switch on 83C75x family support
+------------------------------------------------------------------------------
+$SYMBOLS         P   $SYMBOLS   $SB      create symbol table
+$NOSYMBOLS       P              $NOSB    don't create symbol table
+------------------------------------------------------------------------------
+$NOTABS          P   use tabs   ---      don't use tabs in list file
+------------------------------------------------------------------------------
+$TITLE(string)   G   copyright  $TT      inserts title string into page header
+------------------------------------------------------------------------------
+$XREF            P   $NOXREF    $XR      create cross reference
+$NOXREF          P              $NOXR    don't create cross reference
+
+
+III.8.1 Primary Controls
+------------------------
+
+$DATE (string)    Inserts a date string into the list file page header.
+                  If $DATE() is specified, the actual date is inserted.
+                  Date strings will be truncated to a maximum length of
+                  11 characters.
+                  Default is: no date string.
+                  The control has no effect, when the $NOPAGING control has
+                  been specified.
+
+$DEBUG            Dummy. (For compatibility purposes only!)
+
+$NODEBUG          Dummy. (For compatibility purposes only!)
+
+$MOD51            Switches on the built-in 8051 special function register
+                  and interrupt symbol definitions. (Default!)
+
+$NOMOD51          Switches off the built-in 8051 special function register
+                  and interrupt symbol definitions.
+
+$PAGING           Switches on the page formatting in the list file.
+                  (Default!)
+
+$NOPAGING         Switches off the page formatting in the list file.
+
+$PAGELENGTH (n)   Sets the list file page length to n lines.
+                  (12 <= n <= 65535)
+                  Default is n=64.
+                  The control has no effect, when the $NOPAGING control has
+                  been specified.
+
+$PAGEWIDTH (n)    Sets the list file page width to n columns.
+                  (72 <= n <= 255)
+                  Default is n=132.
+
+$PHILIPS          Switches on the Philips 83C75x family support option.
+                  This disables the LJMP, LCALL, and MOVX instructions as
+                  well as the XDATA and XSEG pseudo instructions. Generic
+                  jumps and calls will always assemble to absolute addressing.
+
+$SYMBOLS          Generates the symbol table at the end of the list file.
+                  (Default!)
+                  When the $XREF control is active, $SYMBOLS has no effect!
+
+$NOSYMBOLS        Suppresses the symbol table at the end of the list file.
+                  When the $XREF control is active, $NOSYMBOLS has no effect!
+
+$NOTABS           Expands all tab characters in the list file output to
+                  blanks.
+
+$XREF             Generates a cross-reference listing instead of a symbol
+                  table. Note that this slightly slows down assembly, and
+                  consumes about 67 % more memory space!
+
+$NOXREF           Generates a symbol table instead of a cross-reference
+                  listing. (Default!)
+
+
+Examples:   $NOMOD51              ;switch off 8051 SFR symbol definitions
+            $PAGELENGTH(60)       ;set page length to 60 lines per page
+            $PW(80)               ;set page width to 80 characters per line
+            $NOSYMBOLS            ;no symbol table required
+            $NOTABS               ;printer doesn't support tab characters
+            $DATE(2. 8. 95)       ;date of latest version
+            $XREF                 ;generate a cross-reference listing
+
+
+III.8.2 General Controls
+------------------------
+
+$EJECT            Starts a new page in the list file.
+                  The control has no effect, when the $NOPAGING control has
+                  been specified.
+
+$INCLUDE (file)   Includes an external source file into the assembler program
+                  just behind the $INCLUDE statement. If the include file
+                  cannot be found in the default directory, the include file
+                  path, specified with the /INCLUDES command line option, is
+                  searched. Include files may also be nested.
+
+$NOLIST           After this control statement source code lines are no longer
+                  listed, provided they do not contain errors, until the next
+$LIST             statement occurs.
+
+$TITLE (string)   Inserts a title string into the list file page header.
+                  Titles may be truncated according to the specified (or
+                  default) page width.
+                  Default: ASEM-51 copyright information.
+                  The control has no effect, when the $NOPAGING control has
+                  been specified.
+
+
+Examples:   $NOLIST               ;switch off listing
+            $INCLUDE (8052.MCU)   ;include 8052 SFR symbol definition file
+            $LIST                 ;switch on listing
+            $TITLE (Computer-Controlled Combustion Unit for Motorcycles)
+            $EJ                   ;new page with new title
+
+
+III.9 Predefined Symbols
+------------------------
+For easy access to the 8051 special function register and interrupt
+addresses, ASEM-51 has a number of predefined (built-in) DATA, BIT and
+CODE symbols.
+These predefined symbols can be switched off with the $NOMOD51 control.
+For detailed information on symbols and addresses refer to Appendix C.
+
+
+III.10 Conditional Assembly
+---------------------------
+To support easy configuration control and maintenance of 8051 application
+programs, the following fife meta instructions have been implemented for
+conditional assembly:
+
+       IF     <expr>
+       IFDEF  <symbol>
+       IFNDEF <symbol>
+       ELSE
+       ENDIF
+
+For the IF statement, conditional assembly works as follows:
+When the expression <expr> in the IF statement is not equal to 0 (TRUE),
+then the statements 1 to n are assembled and the statements n+1 to n+m
+are ignored.
+
+      IF <expr>
+        <statement 1>
+        <statement 2>       ;assembled when <expr> is TRUE
+            .
+            .
+        <statement n>
+      ELSE
+        <statement n+1>
+        <statement n+2>     ;assembled when <expr> is FALSE
+            .
+            .
+        <statement n+m>
+      ENDIF
+
+Should <expr> be equal to 0 (FALSE), it is exactly vice versa! That means
+the statements 1 to n are ignored and the statements n+1 to n+m are
+assembled.
+This works also, when the IF or ELSE branches contain no statements at all.
+When the ELSE branch doesn't enclose any statements, the whole construction
+can be simplified to a special case:
+
+      IF <expr>
+        <statement 1>
+        <statement 2>       ;assembled when <expr> is TRUE
+            .
+            .
+        <statement n>
+      ENDIF
+
+Then the statements 1 to n are assembled, if <expr> is not equal to 0,
+otherwise they are ignored.
+The value of <expr> must be known on pass 1!
+
+Example:     TARGET EQU 0    ;configuration:  1 for application board
+                             ;--------------  0 for evaluation board
+             IF TARGET
+               ORG 0         ;program start address of application board
+             ELSE
+               ORG 08000H    ;program start address of evaluation board
+             ENDIF
+
+The IFDEF and IFNDEF statements are working quite similar:
+
+             IFDEF <symbol>
+               .
+             ELSE
+               .
+             ENDIF
+
+When the <symbol> is defined in the program, the statements in the IFDEF
+branch are assembled, and those in the ELSE branch (if any) are ignored.
+When the <symbol> is not defined in the program, it is exactly vice versa!
+
+             IFNDEF <symbol>
+               .
+             ELSE
+               .
+             ENDIF
+
+When the <symbol> is defined in the program, the statements in the IFNDEF
+branch are ignored, and those in the ELSE branch (if any) are assembled.
+When the <symbol> is not defined in the program, it is vice versa!
+
+Example:    ;EVA_537 EQU 0      ;symbol undefined: 80C537 application board
+                                ;symbol defined:   80C537 evaluation board
+             IFNDEF EVA_537
+               CLOCK EQU 16     ;clock frequency of application board
+               CSEG  AT  0      ;program start address of application board
+             ELSE
+               CLOCK EQU 12     ;clock frequency of evaluation board
+               CSEG  AT  08000H ;program start address of evaluation board
+             ENDIF
+
+        Currently the program is configured for the application board version.
+
+The <symbol> operands of the IFDEF and IFNDEF instructions must be either
+undefined or defined on pass 1!
+
+IF/IFDEF/IFNDEF...ELSE...ENDIF constructions may be nested to any depth!
+
+
+IV. Compatibility with the Intel Assembler
+==========================================
+The ASEM-51 assembly language is a subset of the Intel standard, that
+guarantees maximum compatibility with existing 8051 assembler sources.
+It implements all 8051 instruction mnemonics as well as a useful subset
+of the Intel pseudo instructions and assembler controls.
+
+
+IV.1 Restrictions
+-----------------
+Since ASEM-51 generates an Intel-HEX file output instead of relocatable
+object modules, the whole source code of an 8051 application program has to
+reside in one single file. Consequently all pseudo instructions, that deal
+with relocatable segments or external symbols, have not been implemented:
+
+        PUBLIC
+        EXTRN
+        SEGMENT
+        RSEG
+
+The SET command cannot redefine special assembler symbols (e.g. registers)!
+Macros are not supported!
+Up to now only the following assembler controls and their abbreviations have
+been implemented:
+
+         |  primary controls         abbrev. |  general controls    abbrev.
+---------+-----------------------------------+-----------------------------
+         |  $DATE (<string>)          $DA    |  $EJECT               $EJ
+         |  $DEBUG                    $DB    |  $INCLUDE (<file>)    $IC
+         |  $NODEBUG                  $NODB  |  $LIST                $LI
+         |  $MOD51                    $MO    |  $NOLIST              $NOLI
+Intel-   |  $NOMOD51                  $NOMO  |  $TITLE (<string>)    $TT
+         |  $PAGING                   $PI    |
+controls |  $NOPAGING                 $NOPI  |
+         |  $SYMBOLS                  $SB    |
+         |  $NOSYMBOLS                $NOSB  |
+         |  $PAGELENGTH (<lines>)     $PL    |
+         |  $PAGEWIDTH (<columns>)    $PW    |
+---------+-----------------------------------+-----------------------------
+ASEM-51  |  $NOTABS                   -----  |
+controls |  $PHILIPS                  -----  |
+
+
+IV.2 Extensions
+---------------
+Assembler controls need not start in column 1, but may be preceded by any
+number of blanks and tabs. Primary controls may also be preceded by
+$INCLUDE statements, provided the corresponding include files are only
+containing other control statements.
+Character strings may also be enclosed in double quotes.
+The DATA symbol for the special function register PCON is predefined.
+The bit operator '.' is allowed in all expressions, not only in those that
+have to match the segment type BIT.
+To support easy conditional assembly, the following fife meta instructions
+have been implemented:
+
+        IF     <expression>
+        IFDEF  <symbol>
+        IFNDEF <symbol>
+        ELSE
+        ENDIF
+
+
+IV.3 Further Differences
+------------------------
+To make semantics unique, especially the precedence of unary operators in
+expressions is slightly different. Furthermore, expressions with a bit
+operation "." evaluate to a BIT type result, not to NUMBER. This is described
+in detail in chapters "III.4 Expressions" and "III.7 Segment Type".
+Except in DB instructions, the zero length string constant '' is illegal.
+The $NOMOD51 control disables also the predefined CODE addresses.
+The special assembler symbols AR0...AR7 are predefined for bank 0 before
+the first USING statement occurs.
+
+
+V. List File Format
+===================
+The ASEM-51 list file format has been designed to give the user as much
+information about the generated code as possible.
+Besides the source code listed, there are five basic layout structures
+in the listing:
+
+  - the page header
+  - the file header
+  - the line headings
+  - the error diagnosis
+  - the symbol table or cross-reference listing
+
+Normally every page of the listing starts with a page header as shown below:
+
+
+ASEM-51 V1.2              Copyright (c) 1996 by W.W. Heinz               PAGE 1
+
+
+It identifies the assembler, contains the copyright information and shows the
+actual page number at the right margin. After the page header, source lines
+are output in the list file format. When the maximum number of lines per page
+is reached, another page header is output after a form feed character. When
+the printer used doesn't work with form feeds, the page header can be
+suppressed with the $NOPAGING control. The number of lines per page can be
+adjusted to the paper format with the $PAGELENGTH control. The width of the
+page header (and all other lines) can be set with the $PAGEWIDTH control.
+
+The file header appears only on the first page. It identifies the assembler,
+lists all input and output files and marks the columns for the line headings.
+A typical file header is looking as shown below:
+
+
+       MCS-51 Family Cross Assembler   A S E M - 5 1   V 1.2
+       =====================================================
+
+
+
+        Source File:    DEMO.A51
+        Object File:    DEMO.HEX
+        List File:      DEMO.LST
+
+
+
+ Line  I  Addr  Code            Source
+
+
+Directly after the file header starts the listing of the source code lines.
+Every source code line is preceded by a line heading. The line heading
+consists of four columns: line number, include file level, line address,
+and generated code.
+
+The column "Line" contains the source file line number. It is not necessarily
+the local line number within the particular source file, but a global line
+number, that is counted over the main source and all include files.
+
+The column "I" flags the level of include file nesting. In the main source,
+this column is empty. The first include file gets level 1. If this include
+file includes another include file, this one gets level 2, and so on.
+
+The column "Addr" shows the start address of the listed line in the currently
+active segment (8051 address space). All addresses are represented as hex
+numbers. The addresses in the CODE and XDATA segments are four-digit numbers.
+Addresses in all other segments are two-digit numbers. For lines that cannot
+be assigned to a particular segment, the "Addr" field is left blank.
+
+The "Code" column may contain up to four bytes of generated code, which is
+sufficient for all 8051 instructions. The code is listed in hex byte
+quantities starting from the left margin of the "Code" column.
+However, the code generated for DB and DW instructions may be longer than
+four bytes. In these cases, the source code line is followed by additional
+line headings until the whole code of the line is listed.
+The "Code" column does not always contain code, that consumes space in the
+8051 CODE segment. In contrast to many other assemblers, ASEM-51 lists the
+evaluation results of all expressions that may appear in pseudo instructions
+or assembler controls. These values are listed in hex representation at the
+right margin of the "Code" column. The segment type of those expressions is
+flagged with one single character at the left margin of the "Code" column:
+
+                        C         CODE
+                        D         DATA
+                        I         IDATA
+                        X         XDATA
+                        B         BIT
+                        N         number
+
+The "Source" column finally contains the original source code line.
+A typical source code listing is looking as follows:
+
+
+ Line  I  Addr  Code            Source
+
+    1:                                  ;A sample List File Demo Program
+    2:                                  ;-------------------------------
+    3:                          $NOMOD51                 ;no 8051 SFR
+    4:          N      004F     $PAGEWIDTH (79)          ;79 columns per line
+    5:                          $NOTABS                  ;expand tabs
+    6:          N        90             P1    DATA 090H  ;port 1 address
+    7:          B        93             INPUT BIT  P1.3  ;pulse input
+    8:
+    9:          N      8000             ORG  08000H      ;set location counter
+   10:    8000  80 20                   SJMP START       ;jump to start address
+   11:
+   12:    8002  01 07                   DB  1,7          ;define bytes
+   13:    8004  00 02 00 0C             DW  2,12,9       ;define words
+          8008  00 09
+   14:    800A  63 6F 66 66             DB  'coffeeright (c) 1996',0    ;string
+          800E  65 65 72 69
+          8012  67 68 74 20
+          8016  28 63 29 20
+          801A  31 39 39 36
+          801E  00
+   15:    801F  N      0003             DS  3            ;define space
+   16:
+   17:    8022  75 30 00        START:  MOV COUNT,#0     ;reset counter
+   18:    8025  30 93 FD        LLEVEL: JNB INPUT,LLEVEL ;wait for high
+   19:    8028  20 93 FD        HLEVEL: JB  INPUT,HLEVEL ;wait for low
+   20:    802B  05 30                   INC COUNT        ;count pulse
+   21:    802D  80 F6                   JMP LLEVEL       ;next pulse
+   22:
+   23:          N        30             DSEG AT 030H     ;internal RAM
+   24:      30  N        01     COUNT:  DS 1             ;counter variable
+   25:
+   26:                                  END
+
+
+If an error is detected in a source line, its position is flagged with a ^
+character as good as possible, and a comprehensive error message is inserted.
+This is looking as shown below:
+
+
+   17:    8022  75 30 00        START:  MOV COUNT,#0     ;reset counter
+   18:    8025  30 93 FD        LLEVEL: JNB INPUT,LLEVEL ;wait for high
+   19:    8028  20 93 00        HLEVEL: JB  INPUT,HLEUEL ;wait for low
+                                                  ^
+                          @@@@@ symbol not defined @@@@@
+
+   20:    802B  05 30                   INC COUNT        ;count pulse
+   21:    802D  80 F6                   JMP LLEVEL       ;next pulse
+
+
+The error diagnosis at the end of program lists the register banks used,
+and the total number of errors detected throughout the assembly:
+
+
+                     register banks used:  0, 1, 3
+
+                     187 errors detected
+
+
+A register bank counts as "used", if the program had switched to that
+bank with a USING instruction, or one of the special assembler symbols
+AR0 ... AR7 has been used, while the bank was active. The message
+
+                     register banks used:  ---
+
+means, that no bank has been used explicitly, and that the program
+code may, but need not, be register bank independent.
+
+After the source code listing and error diagnosis, the symbol table or
+cross-reference listing starts. By default, a symbol table is generated.
+The symbol table lists all the symbols of a program in alphabetical order
+with their symbol name, segment type, hex value and first definition line.
+Predefined symbols are listed without a definition line number.
+The symbol table listing can be suppressed with the $NOSYMBOLS control.
+A typical symbol table listing is looking as shown below:
+
+
+               L I S T   O F   S Y M B O L S
+               =============================
+
+
+SYMBOL                            TYPE     VALUE        LINE
+------------------------------------------------------------
+COUNT                             DATA        30          46
+HLEVEL                            CODE      802E          35
+INPUT                             BIT         93          12
+LLEVEL                            CODE      802B          34
+MY_PROGRAM                        MODULE                  14
+P1                                DATA        90
+QUANT                             NUMBER    0013          22
+SP                                DATA        81
+STACK                             IDATA       80          17
+START                             CODE      8022          31
+VOLTDC                            XDATA     D785          49
+
+
+If the $XREF control is specified, a cross-reference listing is generated
+instead of a symbol table. The corresponding cross-reference listing for
+the above symbol table is looking as follows:
+
+
+               C R O S S - R E F E R E N C E - L I S T I N G
+               =============================================
+
+
+SYMBOL                           TYPE     VALUE     DEFINED  REFERENCED
+-------------------------------------------------------------------------------
+COUNT                            DATA        30          46          32      39
+                                                                     42      43
+HLEVEL                           CODE      802E          35          35
+INPUT                            BIT         93          12          34      35
+LLEVEL                           CODE      802B          34          34      40
+MY_PROGRAM                       MODULE                  14
+P1                               DATA        90                      12
+QUANT                            NUMBER    0007          22          43
+                                 NUMBER    0013          37
+SP                               DATA        81                      31
+STACK                            IDATA       80          17          31
+START                            CODE      8022          31          24
+TRASH                            undef.    ----                      41
+VOLTDC                           XDATA     D785          49          33
+
+
+It lists all the symbols of the program in alphabetical order, with their
+symbol name, all definitions including definition lines, segment types, and
+numerical values. Furthermore, all symbol references are listed as well.
+The SYMBOL column contains the symbol name, while the columns TYPE, VALUE,
+and DEFINED may contain the segment types, numerical values, and definition
+lines of one, more, or no symbol defintions.
+Module names have the symbol type "MODULE", and symbols that have been
+referenced but not defined, are flagged with "undef." in the TYPE column.
+Starting from column REFERENCED up to the right margin, there is a number of
+columns (depending on the page width), containing all line numbers of symbol
+references (if any).
+The cross-reference listing does not distinguish, whether multiple definitions
+of, or references to a particular symbol are legal or not. For this, refer to
+the error messages in the source listing.
+
+
+VI. Support of 8051 Derivatives
+===============================
+Today a large number of 8051 derivatives is available that grows almost
+monthly! They all use the same instruction set of the 8051 processor kernel,
+but are different in peripheral components, to cover a wide range of
+applications. The difference for the assembly language programmer is mainly
+the varying set of special function registers and interrupt addresses.
+It is always good practice to use the same SFR names in a microcontroller
+application program that the manufacturer of the derivative used has defined.
+For this the processor definition files *.MCU are provided. They all are
+include files with the special function register definitions of a particular
+8051 derivative. However, the predefined symbols of ASEM-51 must be switched
+off prior to including the SFR definitions of another derivative as shown
+below:
+              $NOMOD51
+              $INCLUDE (80C515.MCU)
+
+This would switch off the predefined symbols of the 8051 and include the
+register definitions of the 80C515 or 80C535 respectively.
+Hence it is easy for the user to adapt ASEM-51 to a brandnew 8051 derivative!
+All what he has to do is to write a corresponding include file with the SFR
+definitions derived from the manufacturer's data sheet.
+The name of every processor definition file is corresponding to the ROM
+version of a particular derivative. Of course it also applies to the EPROM,
+EEPROM, and ROM-less versions (if any) of that derivative.
+By the way, the file 8051.MCU provided contains exactly the predefined
+symbols of ASEM-51, because its internal symbol table has been generated
+from it!
+To switch ASEM-51 to the reduced instruction set of the Philips 83C75x
+family of microcontrollers, the $PHILIPS control can be used.
+
+
+Currently the following processor definition files are provided with ASEM-51:
+
+
+      Name        Manufacturer    Versions
+    ---------------------------------------------------------------------
+      8051.MCU    Intel           8051, 8031, 8751BH
+                  (and others)    8051AH, 8031AH, 8751H, 8051AHP, 8751H-8
+                                  80C51BH, 80C31BH, 87C51, 80C51BHP
+      8052.MCU    Intel           8052AH, 8032AH, 8752BH
+                  SIEMENS         80513, 8352-5
+     80C52.MCU    Intel           80C52, 80C32
+    83C51F.MCU    Intel           83C51FA, 80C51FA, 87C51FA
+                                  83C51FB, 87C51FB, 87C51FC
+    83C152.MCU    Intel           80C152JA, 83C152JA, 80C152JB
+                                  80C152JC, 83C152JC, 80C152JD
+    83C452.MCU    Intel           83C452, 80C452
+      8044.MCU    Intel           8044AH, 8344AH, 8744AH
+     80512.MCU    SIEMENS         80512, 80532
+     80515.MCU    SIEMENS         80515, 80535, 80515K, 83515-4
+    80C515.MCU    SIEMENS         80C515, 80C535, 83C515H
+   83C515A.MCU    SIEMENS         83C515A-5, 80C515A
+    80C517.MCU    SIEMENS         80C517, 80C537
+   83C517A.MCU    SIEMENS         83C517A-5, 80C517A
+      C501.MCU    SIEMENS         C501-1R, C501-L
+      C502.MCU    SIEMENS         C502-2R, C502-L
+      C503.MCU    SIEMENS         C503-1R, C503-L
+      C511.MCU    SIEMENS         C511, C511A
+      C513.MCU    SIEMENS         C513, C513A, C513A-H
+    83C451.MCU    Philips         83C451, 80C451, 87C451
+    83C528.MCU    Philips         83C528, 80C528, 87C528, 83C524, 87C524
+                                  83CE528, 80CE528, 89CE528
+    83C550.MCU    Philips         83C550, 80C550, 87C550
+    83C552.MCU    Philips         83C552, 80C552, 87C552
+    83C562.MCU    Philips         83C562, 80C562
+    83C652.MCU    Philips         83C652, 80C652, 87C652
+                                  83C654, 87C654, 83CE654, 80CE654
+    83C750.MCU    Philips         83C750, 87C750
+    83C751.MCU    Philips         83C751, 87C751
+    83C752.MCU    Philips         83C752, 87C752
+    83C851.MCU    Philips         83C851, 80C851
+    83C852.MCU    Philips         83C852
+    80C521.MCU    AMD             80C521, 80C541, 87C521, 87C541, 80C321
+    80C324.MCU    AMD             80C324
+    83C154.MCU    OKI             83C154, 80C154, 85C154VS
+    80C320.MCU    DALLAS          80C320, 87C320, 80C323, 87C323
+  COM20051.MCU    SMC             COM20051
+   89C1051.MCU    Atmel           89C1051, 89C2051
+
+
+Appendix A
+==========
+
+
+ASEM-51 Error Messages
+----------------------
+
+A.1 Assembly Errors:
+--------------------
+Assembly errors apply to the consistency of the assembly language
+program in syntax and semantics. If one of these errors is detected,
+it is flagged in the list file, and program execution continues.
+When assembly is finished, ASEM terminates with ERRORLEVEL 1:
+
+address out of range                    The address of a jump or call
+                                        instruction cannot be reached with
+                                        the selected addressing mode.
+
+attempt to divide by zero               During evaluation of an assembly time
+                                        expression, the assembler has to
+                                        divide by zero.
+
+binary operator expected                In this position of an expression,
+                                        only binary operators are allowed.
+
+comma expected                          There should be a ',' character in
+                                        the marked position.
+
+commands after END statement            The END statement is followed by
+                                        further assembler statements.
+
+constant out of range                   A numerical constant is greater
+                                        than 65535.
+
+ENDIF statement expected                There are IF, IFDEF, or IFNDEF meta
+                                        instructions, which are not terminated
+                                        with an ENDIF instruction.
+
+expression out of range                 The result of an expression is too
+                                        big or too small for that purpose.
+
+file name expected                      There should be a valid file name
+                                        in this position.
+
+illegal character                       A statement contains characters, which
+                                        are not allowed in MCS-51 assembly
+                                        language.
+
+illegal constant                        There are syntax errors in a
+                                        numeric constant.
+
+illegal control statement               A statement is starting with an
+                                        unknown keyword beginning with a $.
+
+illegal operand                         In this position of an expression,
+                                        a valid operand had been expected.
+
+illegal operator                        An expression contains a special
+                                        character or keyword instead of an
+                                        arithmetical or logical operator,
+                                        which is not allowed in that place.
+
+illegal statement syntax                A statement contains a syntax element,
+                                        which is not allowed in this context.
+
+invalid base address                    A DATA address that is not bit-
+                                        addressable has been used on the
+                                        left side of a '.' operator.
+
+invalid bit number                      A number greater than 7 has been
+                                        used on the right side of a '.'
+                                        operator.
+
+invalid instruction                     The instruction has previously been
+                                        disabled with the $PHILIPS control.
+
+module name already defined             There are more than one NAME
+                                        statements in the program.
+
+must be known on first pass             The result of an expression must
+                                        fully evaluate on pass 1 of assembly.
+
+must be preceded by IF                  An ELSE or ENDIF meta instruction
+                                        occurs without a preceding IF,
+                                        IFDEF, or IFNDEF instruction.
+
+no END statement found                  The program ends without an END
+                                        statement.
+
+not allowed in BIT segment              Instruction is not allowed in a
+                                        BIT segment.
+
+only allowed in BIT segment             Instruction is only allowed in a
+                                        BIT segment.
+
+only allowed in CODE segment            Instruction is only allowed in a
+                                        CODE segment.
+
+operand expected                        An instruction ends, before it is
+                                        syntactically complete.
+
+phase error                             On pass 2, a symbol value has evaluated
+                                        to another value than on pass 1.
+                                        This is a serious, internal assembler
+                                        error, and should be reported to the
+                                        author immediately!
+
+preceded by non-control lines           A primary control occurs after
+                                        statements that are no assembler
+                                        controls.
+
+segment limit exceeded                  The location counter exceeds the
+                                        boundaries of the current segment.
+
+segment type mismatch                   The segment type of an operand does
+                                        not match the type of the instruction.
+
+string exceeds end of line              A character string is not properly
+                                        terminated with a quote.
+
+symbol already defined                  Attempt to redefine a symbol, which
+                                        is already defined.
+
+symbol name expected                    There should be a valid symbol name
+                                        in this position.
+
+symbol not defined                      A symbol is referenced, which has
+                                        never been defined.
+
+too many closing parentheses            An expression contains more closing
+                                        than opening parentheses.
+
+too many opening parentheses            An expression contains more opening
+                                        than closing parentheses.
+
+too many operands                       An instruction contains more operands
+                                        than expected.
+
+unary operator expected                 In this position of an expression,
+                                        only unary operators are allowed.
+
+
+A.2 Runtime Errors:
+-------------------
+Runtime errors are operational errors, or I/O errors.
+If one of these errors is detected, it is flagged on the console,
+and ASEM is aborting with ERRORLEVEL 2:
+
+access denied                 No priviledge for attempted operation.
+disk full                     No more free disk space.
+disk write protected          Attempt to write to a write-protected disk.
+drive not ready               Disk drive is off, or no media mounted.
+duplicate file name           Attempt to overwrite an input or output file.
+fatal I/O error               General (unknown) disk or device I/O error.
+file not found                Source or include file not found.
+invalid argument              Option has an illegal argument value.
+no input file                 There is no file name in the command line.
+no parameters                 ASEM has been invoked without any parameters.
+out of memory                 Heap overflow!
+path not found                Disk or directory not found.
+too many open files           No more free file handles.
+too many parameters           More than three file names have been specified.
+unknown option                Option is not implemented.
+
+
+Appendix B
+==========
+
+
+HEXBIN Error Messages
+---------------------
+
+B.1 Conversion Errors:
+----------------------
+Conversion errors apply to the consistency of Intel-HEX file and
+program options. If one of these errors is detected, it is flagged
+on the console, and HEXBIN is aborting with ERRORLEVEL 1:
+
+checksum error                        Checksum is not correct.
+data after EOF record                 Type 0 records after type 1 record.
+file length out of range              /LENGTH option makes file too large.
+fill-byte out of range                /FILL option defines byte value > 255.
+hex file format error                 Certainly no Intel-HEX file.
+illegal hex digit                     Character is no valid hex digit.
+illegal record type                   Record type is none of 0 or 1.
+invalid record length                 Record length doesn't match the record.
+multiple EOF records                  More than one type 1 record.
+no data records found                 File doesn't contain any type 0 records.
+no EOF record found                   File ends without a type 1 record.
+offset out of range                   /OFFSET option makes file too large.
+record exceeds FFFFH                  Address space wrap around in record.
+record exceeds file length            /LENGTH option made file too short.
+
+
+B.2 Runtime Errors:
+-------------------
+Runtime errors are operational errors, or I/O errors.
+If one of these errors is detected, it is flagged on the console,
+and HEXBIN is aborting with ERRORLEVEL 2:
+
+access denied                 No priviledge for attempted operation.
+disk full                     No more free disk space.
+disk write protected          Attempt to write to a write-protected disk.
+drive not ready               Disk drive is off, or no media mounted.
+duplicate file name           Attempt to overwrite an input or output file.
+fatal I/O error               General (unknown) disk or device I/O error.
+file not found                Intel-HEX file not found.
+invalid argument              Option has an illegal argument value.
+no input file                 There is no file name in the command line.
+no parameters                 HEXBIN has been invoked without any parameters.
+path not found                Disk or directory not found.
+too many open files           No more free file handles.
+too many parameters           More than two file names have been specified.
+unknown option                Option is not implemented.
+
+
+Appendix C
+==========
+
+
+Predefined Symbols
+------------------
+
+                             DATA Addresses:
+                             ---------------
+        P0          080H                        P1          090H
+        SP          081H                        SCON        098H
+        DPL         082H                        SBUF        099H
+        DPH         083H                        P2          0A0H
+        PCON        087H                        IE          0A8H
+        TCON        088H                        P3          0B0H
+        TMOD        089H                        IP          0B8H
+        TL0         08AH                        PSW         0D0H
+        TL1         08BH                        ACC         0E0H
+        TH0         08CH                        B           0F0H
+        TH1         08DH
+
+
+                             BIT Addresses:
+                             --------------
+        IT0         088H                        EA          0AFH
+        IE0         089H                        RXD         0B0H
+        IT1         08AH                        TXD         0B1H
+        IE1         08BH                        INT0        0B2H
+        TR0         08CH                        INT1        0B3H
+        TF0         08DH                        T0          0B4H
+        TR1         08EH                        T1          0B5H
+        TF1         08FH                        WR          0B6H
+        RI          098H                        RD          0B7H
+        TI          099H                        PX0         0B8H
+        RB8         09AH                        PT0         0B9H
+        TB8         09BH                        PX1         0BAH
+        REN         09CH                        PT1         0BBH
+        SM2         09DH                        PS          0BCH
+        SM1         09EH                        P           0D0H
+        SM0         09FH                        OV          0D2H
+        EX0         0A8H                        RS0         0D3H
+        ET0         0A9H                        RS1         0D4H
+        EX1         0AAH                        F0          0D5H
+        ET1         0ABH                        AC          0D6H
+        ES          0ACH                        CY          0D7H
+
+
+                             CODE Addresses:
+                             ---------------
+        RESET      0000H                        EXTI1      0013H
+        EXTI0      0003H                        TIMER1     001BH
+        TIMER0     000BH                        SINT       0023H
+
+
+Appendix D
+==========
+
+
+Reserved Keywords
+-----------------
+
+                      Special Assembler Symbols:
+                      --------------------------
+        $                                   location counter
+        A                                   accumulator
+        AB                                  A/B register pair
+        AR0,AR1,AR2,AR3,AR4,AR5,AR6,AR7     direct register addresses
+        C                                   carry flag
+        DPTR                                data pointer
+        PC                                  program counter
+        R0, R1, R2, R3, R4, R5, R6, R7      registers
+
+
+                      Instruction Mnemonics
+                      ---------------------
+        ACALL       DA          JNB         MUL         RR
+        ADD         DEC         JNC         NOP         RRC
+        ADDC        DIV         JNZ         ORL         SETB
+        AJMP        DJNZ        JZ          POP         SJMP
+        ANL         INC         LCALL       PUSH        SUBB
+        CALL        JB          LJMP        RET         SWAP
+        CJNE        JBC         MOV         RETI        XCH
+        CLR         JC          MOVC        RL          XCHD
+        CPL         JMP         MOVX        RLC         XRL
+
+
+                      Pseudo Instructions
+                      -------------------
+        AT          DATA        DSEG        IDATA       SET
+        BIT         DB          DW          ISEG        USING
+        BSEG        DBIT        END         NAME        XDATA
+        CODE        DS          EQU         ORG         XSEG
+        CSEG
+
+                      Operators
+                      ---------
+        AND         GT          LOW         NE          SHL
+        EQ          HIGH        LT          NOT         SHR
+        GE          LE          MOD         OR          XOR
+
+
+                      Assembler Controls
+                      ------------------
+        $DA         $LI         $NOMO       $NOXREF     $SB
+        $DATE       $LIST       $NOMOD51    $PAGING     $SYMBOLS
+        $DEBUG      $MO         $NOPAGING   $PAGELENGTH $TITLE
+        $DB         $MOD51      $NOPI       $PAGEWIDTH  $TT
+        $EJ         $NODB       $NOSB       $PHILIPS    $XR
+        $EJECT      $NODEBUG    $NOSYMBOLS  $PI         $XREF
+        $IC         $NOLI       $NOTABS     $PL
+        $INCLUDE    $NOLIST     $NOXR       $PW
+
+
+                      Meta Instructions
+                      -----------------
+        ELSE        ENDIF       IF          IFDEF       IFNDEF
+
+Appendix E
+==========
+
+
+Specification of the Intel-HEX Format
+-------------------------------------
+This object file format is supported by many cross assemblers, utilities,
+and most EPROM blowers.
+An Intel-HEX file is a 7-bit ASCII text file, that contains a sequence of
+data records and an end record. Every record is a line of text that starts
+with a colon and ends with CR and LF.
+Data records contain up to 16 data bytes, a 16-bit load address, a record
+type byte and an 8-bit checksum. All numbers are represented by upper case
+ASCII-hex characters.
+
+       DATA RECORD:
+
+       Byte 1               colon (:)
+            2 and 3         number of binary data bytes for this record
+            4 and 5         load address for this record, high byte
+            6 and 7         load address  "    "     "     low byte
+            8 and 9         record type: 00  (data record)
+           10 to  x         data bytes, two characters each
+          x+1 to  x+2       checksum (two characters)
+          x+3 to  x+4       CR and LF
+
+       A typical data record looks like
+
+                         :10E0000002E003E4F588758910F58DF58BD28E302A
+
+The end record is the last line of the file.
+In principle it is structured like a data record, but the number of data
+bytes is 00, the record type is 01 and the load-address field is 0000.
+
+       END RECORD:
+
+       Byte 1               colon (:)
+            2 and 3         00   (number of data bytes)
+            4 and 5         00   (load address, high byte)
+            6 and 7         00   (load address, low byte)
+            8 and 9         record type: 01  (end record)
+           10 and 11        checksum (two characters)
+           12 and 13        CR and LF
+
+
+       The typical END record looks like
+
+                         :00000001FF
+
+The checksum is the two's complement of the 8-bit sum, without carry, of
+the byte count, the two load address bytes, the record type byte and all
+data bytes.
+
+
+Appendix F:
+===========
+
+
+The ASCII Character Set
+-----------------------
+
+
+
+         hex |   00   10   20   30   40   50   60   70
+        -----+------------------------------------------
+          0  |  NUL  DLE         0    @    P    `    p
+          1  |  SOH  DC1    !    1    A    Q    a    q
+          2  |  STX  DC2    "    2    B    R    b    r
+          3  |  ETX  DC3    #    3    C    S    c    s
+          4  |  EOT  DC4    $    4    D    T    d    t
+          5  |  ENQ  NAK    %    5    E    U    e    u
+          6  |  ACK  SYN    &    6    F    V    f    v
+          7  |  BEL  ETB    '    7    G    W    g    w
+          8  |   BS  CAN    (    8    H    X    h    x
+          9  |   HT   EM    )    9    I    Y    i    y
+          A  |   LF  SUB    *    :    J    Z    j    z
+          B  |   VT  ESC    +    ;    K    [    k    {
+          C  |   FF   FS    ,    <    L    \    l    |
+          D  |   CR   GS    -    =    M    ]    m    }
+          E  |   SO   RS    .    >    N    ^    n    ~
+          F  |   SI   US    /    ?    O    _    o  DEL
+
+
+Appendix G:
+===========
+
+
+Literature
+----------
+                                                             Ordering Number
+
+Intel:        MCS-51 Macro Assembler User's Guide
+              8-Bit Embedded Controllers 1990
+
+SIEMENS:      SAB 80512/80532 User's Manual                B2-B3808-X-X-7600
+              SAB 80515/80535 User's Manual                B2-B3976-X-X-7600
+              SAB 80C515/80C535 Data Sheet
+              SAB 80C515A/83C515A-5 Addendum             B158-H6613-X-X-7600
+              SAB 80C515A/83C515A-5 Data Sheet           B158-H6605-X-X-7600
+              SAB 80C517/80C537 User's Manual            B258-B6075-X-X-7600
+              SAB 80C517A/83C517A-5 Addendum             B158-H6612-X-X-7600
+              SAB 80C517A/83C517A-5 Data Sheet           B158-H6581-X-X-7600
+              SIEMENS Microcontrollers Data Catalog      B158-H6569-X-X-7600
+              SAB 80513/8352-5 Data Sheet                B158-B6245-X-X-7600
+              SAB-C501 User's Manual                     B158-H6723-G1-X-7600
+              SAB-C502 User's Manual                     B158-H6722-G1-X-7600
+              SAB-C503 User's Manual                     B158-H6650-G1-X-7600
+              Application Notes and User Manuals, CD     B193-H6900-X-X-7400
+
+Philips:      PCB83C552 User's Manual
+              PCB83C552, PCB80C552 Development Data
+              8051-Based 8-Bit Microcontrollers - Data Handbook 1994
+
+AMD:          Eight-Bit 80C51 Embedded Processors - Data Book 1990
+
+OKI:          MSM80C154, MSM83C154 User's Manual
+              Microcontroller Data Book, 5th Edition 1990
+
+DALLAS:       High-Speed Micro User's Guide, V1.3 January 1994        011994
+              DS80C320 High-Speed Micro, PRELIMINARY                  081793
+
+Andreas Roth: Das MICROCONTROLLER Kochbuch, 1992, iWT     ISBN 3-88322-225-9
+
+
+Appendix H:
+===========
+
+
+Trademarks
+----------
+
+ASEM-51 is a trademark of W.W. Heinz.
+MCS-51 is a trademark of Intel Corporation.
+Turbo-Pascal and Borland-Pascal are trademarks of Borland International, Inc.
+Turbo C++ and Borland C++ are trademarks of Borland International, Inc.
+IBM-PC, IBM-XT, IBM-AT and OS/2 are trademarks of IBM Corporation.
+MS-DOS and Windows are trademarks of Microsoft Corporation.
+Novell DOS is a trademark of Novell, Inc.
+BRIEF is a trademark of SDC Partners II L.P.
+All device codes of 8051 derivatives are trademarks of the manufacturers.
+Other brand and product names are trademarks of their respective holders.
+
+
+Appendix I:
+===========
+
+
+8051 Instructions in numerical Order
+------------------------------------
+
+Abbreviations:      direct   =   8-bit DATA address in internal memory
+                    const8   =   8-bit constant in CODE memory
+                    const16  =  16-bit constant in CODE memory
+                    addr16   =  16-bit long CODE address
+                    addr11   =  11-bit absolute CODE address
+                    rel      =  signed 8-bit relative CODE address
+                    bit      =   8-bit BIT address in internal memory
+
+
+Opcode  Mnemonic  Operands            Bytes     Flags     Cycles
+----------------------------------------------------------------
+  00      NOP                           1                    1
+  01      AJMP    addr11                2                    2
+  02      LJMP    addr16                3                    2
+  03      RR      A                     1                    1
+  04      INC     A                     1              P     1
+  05      INC     direct                2                    1
+  06      INC     @R0                   1                    1
+  07      INC     @R1                   1                    1
+  08      INC     R0                    1                    1
+  09      INC     R1                    1                    1
+  0A      INC     R2                    1                    1
+  0B      INC     R3                    1                    1
+  0C      INC     R4                    1                    1
+  0D      INC     R5                    1                    1
+  0E      INC     R6                    1                    1
+  0F      INC     R7                    1                    1
+  10      JBC     bit, rel              3                    2
+  11      ACALL   addr11                2                    2
+  12      LCALL   addr16                3                    2
+  13      RRC     A                     1     CY       P     1
+  14      DEC     A                     1              P     1
+  15      DEC     direct                2                    1
+  16      DEC     @R0                   1                    1
+  17      DEC     @R1                   1                    1
+  18      DEC     R0                    1                    1
+  19      DEC     R1                    1                    1
+  1A      DEC     R2                    1                    1
+  1B      DEC     R3                    1                    1
+  1C      DEC     R4                    1                    1
+  1D      DEC     R5                    1                    1
+  1E      DEC     R6                    1                    1
+  1F      DEC     R7                    1                    1
+  20      JB      bit, rel              3                    2
+  21      AJMP    addr11                2                    2
+  22      RET                           1                    2
+  23      RL      A                     1                    1
+  24      ADD     A, #const8            2     CY AC OV P     1
+  25      ADD     A, direct             2     CY AC OV P     1
+  26      ADD     A, @R0                1     CY AC OV P     1
+  27      ADD     A, @R1                1     CY AC OV P     1
+
+
+Opcode  Mnemonic  Operands            Bytes     Flags     Cycles
+----------------------------------------------------------------
+  28      ADD     A, R0                 1     CY AC OV P     1
+  29      ADD     A, R1                 1     CY AC OV P     1
+  2A      ADD     A, R2                 1     CY AC OV P     1
+  2B      ADD     A, R3                 1     CY AC OV P     1
+  2C      ADD     A, R4                 1     CY AC OV P     1
+  2D      ADD     A, R5                 1     CY AC OV P     1
+  2E      ADD     A, R6                 1     CY AC OV P     1
+  2F      ADD     A, R7                 1     CY AC OV P     1
+  30      JNB     bit, rel              3                    2
+  31      ACALL   addr11                2                    2
+  32      RETI                          1                    2
+  33      RLC     A                     1     CY       P     1
+  34      ADDC    A, #const8            2     CY AC OV P     1
+  35      ADDC    A, direct             2     CY AC OV P     1
+  36      ADDC    A, @R0                1     CY AC OV P     1
+  37      ADDC    A, @R1                1     CY AC OV P     1
+  38      ADDC    A, R0                 1     CY AC OV P     1
+  39      ADDC    A, R1                 1     CY AC OV P     1
+  3A      ADDC    A, R2                 1     CY AC OV P     1
+  3B      ADDC    A, R3                 1     CY AC OV P     1
+  3C      ADDC    A, R4                 1     CY AC OV P     1
+  3D      ADDC    A, R5                 1     CY AC OV P     1
+  3E      ADDC    A, R6                 1     CY AC OV P     1
+  3F      ADDC    A, R7                 1     CY AC OV P     1
+  40      JC      rel                   2                    2
+  41      AJMP    addr11                2                    2
+  42      ORL     direct, A             2                    1
+  43      ORL     direct, #const8       3                    2
+  44      ORL     A, #const8            2              P     1
+  45      ORL     A, direct             2              P     1
+  46      ORL     A, @R0                1              P     1
+  47      ORL     A, @R1                1              P     1
+  48      ORL     A, R0                 1              P     1
+  49      ORL     A, R1                 1              P     1
+  4A      ORL     A, R2                 1              P     1
+  4B      ORL     A, R3                 1              P     1
+  4C      ORL     A, R4                 1              P     1
+  4D      ORL     A, R5                 1              P     1
+  4E      ORL     A, R6                 1              P     1
+  4F      ORL     A, R7                 1              P     1
+  50      JNC     rel                   2                    2
+  51      ACALL   addr11                2                    2
+  52      ANL     direct, A             2                    1
+  53      ANL     direct, #const8       3                    2
+  54      ANL     A, #const8            2              P     1
+  55      ANL     A, direct             2              P     1
+  56      ANL     A, @R0                1              P     1
+  57      ANL     A, @R1                1              P     1
+  58      ANL     A, R0                 1              P     1
+  59      ANL     A, R1                 1              P     1
+  5A      ANL     A, R2                 1              P     1
+  5B      ANL     A, R3                 1              P     1
+  5C      ANL     A, R4                 1              P     1
+  5D      ANL     A, R5                 1              P     1
+  5E      ANL     A, R6                 1              P     1
+  5F      ANL     A, R7                 1              P     1
+
+
+Opcode  Mnemonic  Operands            Bytes     Flags     Cycles
+----------------------------------------------------------------
+  60      JZ      rel                   2                    2
+  61      AJMP    addr11                2                    2
+  62      XRL     direct, A             2                    1
+  63      XRL     direct, #const8       3                    2
+  64      XRL     A, #const8            2              P     1
+  65      XRL     A, direct             2              P     1
+  66      XRL     A, @R0                1              P     1
+  67      XRL     A, @R1                1              P     1
+  68      XRL     A, R0                 1              P     1
+  69      XRL     A, R1                 1              P     1
+  6A      XRL     A, R2                 1              P     1
+  6B      XRL     A, R3                 1              P     1
+  6C      XRL     A, R4                 1              P     1
+  6D      XRL     A, R5                 1              P     1
+  6E      XRL     A, R6                 1              P     1
+  6F      XRL     A, R7                 1              P     1
+  70      JNZ     rel                   2                    2
+  71      ACALL   addr11                2                    2
+  72      ORL     C, bit                2     CY             2
+  73      JMP     @A+DPTR               1                    2
+  74      MOV     A, #const8            2              P     1
+  75      MOV     direct, #const8       3                    2
+  76      MOV     @R0, #const8          2                    1
+  77      MOV     @R1, #const8          2                    1
+  78      MOV     R0, #const8           2                    1
+  79      MOV     R1, #const8           2                    1
+  7A      MOV     R2, #const8           2                    1
+  7B      MOV     R3, #const8           2                    1
+  7C      MOV     R4, #const8           2                    1
+  7D      MOV     R5, #const8           2                    1
+  7E      MOV     R6, #const8           2                    1
+  7F      MOV     R7, #const8           2                    1
+  80      SJMP    rel                   2                    2
+  81      AJMP    addr11                2                    2
+  82      ANL     C, bit                2     CY             2
+  83      MOVC    A, @A+PC              1              P     2
+  84      DIV     AB                    1     CY    OV P     4
+  85      MOV     direct, direct        3                    2
+  86      MOV     direct, @R0           2                    2
+  87      MOV     direct, @R1           2                    2
+  88      MOV     direct, R0            2                    2
+  89      MOV     direct, R1            2                    2
+  8A      MOV     direct, R2            2                    2
+  8B      MOV     direct, R3            2                    2
+  8C      MOV     direct, R4            2                    2
+  8D      MOV     direct, R5            2                    2
+  8E      MOV     direct, R6            2                    2
+  8F      MOV     direct, R7            2                    2
+  90      MOV     DPTR, #const16        3                    2
+  91      ACALL   addr11                2                    2
+  92      MOV     bit, C                2                    2
+  93      MOVC    A, @A+DPTR            1              P     2
+  94      SUBB    A, #const8            2     CY AC OV P     1
+  95      SUBB    A, direct             2     CY AC OV P     1
+  96      SUBB    A, @R0                1     CY AC OV P     1
+  97      SUBB    A, @R1                1     CY AC OV P     1
+
+
+Opcode  Mnemonic  Operands            Bytes     Flags     Cycles
+----------------------------------------------------------------
+  98      SUBB    A, R0                 1     CY AC OV P     1
+  99      SUBB    A, R1                 1     CY AC OV P     1
+  9A      SUBB    A, R2                 1     CY AC OV P     1
+  9B      SUBB    A, R3                 1     CY AC OV P     1
+  9C      SUBB    A, R4                 1     CY AC OV P     1
+  9D      SUBB    A, R5                 1     CY AC OV P     1
+  9E      SUBB    A, R6                 1     CY AC OV P     1
+  9F      SUBB    A, R7                 1     CY AC OV P     1
+  A0      ORL     C, /bit               2     CY             2
+  A1      AJMP    addr11                2                    2
+  A2      MOV     C, bit                2     CY             1
+  A3      INC     DPTR                  1                    2
+  A4      MUL     AB                    1     CY    OV P     4
+  A5      illegal opcode
+  A6      MOV     @R0, direct           2                    2
+  A7      MOV     @R1, direct           2                    2
+  A8      MOV     R0, direct            2                    2
+  A9      MOV     R1, direct            2                    2
+  AA      MOV     R2, direct            2                    2
+  AB      MOV     R3, direct            2                    2
+  AC      MOV     R4, direct            2                    2
+  AD      MOV     R5, direct            2                    2
+  AE      MOV     R6, direct            2                    2
+  AF      MOV     R7, direct            2                    2
+  B0      ANL     C, /bit               2     CY             2
+  B1      ACALL   addr11                2                    2
+  B2      CPL     bit                   2                    1
+  B3      CPL     C                     1     CY             1
+  B4      CJNE    A, #const8, rel       3     CY             2
+  B5      CJNE    A, direct, rel        3     CY             2
+  B6      CJNE    @R0, #const8, rel     3     CY             2
+  B7      CJNE    @R1, #const8, rel     3     CY             2
+  B8      CJNE    R0, #const8, rel      3     CY             2
+  B9      CJNE    R1, #const8, rel      3     CY             2
+  BA      CJNE    R2, #const8, rel      3     CY             2
+  BB      CJNE    R3, #const8, rel      3     CY             2
+  BC      CJNE    R4, #const8, rel      3     CY             2
+  BD      CJNE    R5, #const8, rel      3     CY             2
+  BE      CJNE    R6, #const8, rel      3     CY             2
+  BF      CJNE    R7, #const8, rel      3     CY             2
+  C0      PUSH    direct                2                    2
+  C1      AJMP    addr11                2                    2
+  C2      CLR     bit                   2                    1
+  C3      CLR     C                     1     CY             1
+  C4      SWAP    A                     1                    1
+  C5      XCH     A, direct             2              P     1
+  C6      XCH     A, @R0                1              P     1
+  C7      XCH     A, @R1                1              P     1
+  C8      XCH     A, R0                 1              P     1
+  C9      XCH     A, R1                 1              P     1
+  CA      XCH     A, R2                 1              P     1
+  CB      XCH     A, R3                 1              P     1
+  CC      XCH     A, R4                 1              P     1
+  CD      XCH     A, R5                 1              P     1
+  CE      XCH     A, R6                 1              P     1
+  CF      XCH     A, R7                 1              P     1
+
+
+Opcode  Mnemonic  Operands            Bytes     Flags     Cycles
+----------------------------------------------------------------
+  D0      POP     direct                2                    2
+  D1      ACALL   addr11                2                    2
+  D2      SETB    bit                   2                    1
+  D3      SETB    C                     1     CY             1
+  D4      DA      A                     1     CY       P     1
+  D5      DJNZ    direct, rel           3                    2
+  D6      XCHD    A, @R0                1              P     1
+  D7      XCHD    A, @R1                1              P     1
+  D8      DJNZ    R0, rel               2                    2
+  D9      DJNZ    R1, rel               2                    2
+  DA      DJNZ    R2, rel               2                    2
+  DB      DJNZ    R3, rel               2                    2
+  DC      DJNZ    R4, rel               2                    2
+  DD      DJNZ    R5, rel               2                    2
+  DE      DJNZ    R6, rel               2                    2
+  DF      DJNZ    R7, rel               2                    2
+  E0      MOVX    A, @DPTR              1              P     2
+  E1      AJMP    addr11                2                    2
+  E2      MOVX    A, @R0                1              P     2
+  E3      MOVX    A, @R1                1              P     2
+  E4      CLR     A                     1              P     1
+  E5      MOV     A, direct             2              P     1
+  E6      MOV     A, @R0                1              P     1
+  E7      MOV     A, @R1                1              P     1
+  E8      MOV     A, R0                 1              P     1
+  E9      MOV     A, R1                 1              P     1
+  EA      MOV     A, R2                 1              P     1
+  EB      MOV     A, R3                 1              P     1
+  EC      MOV     A, R4                 1              P     1
+  ED      MOV     A, R5                 1              P     1
+  EE      MOV     A, R6                 1              P     1
+  EF      MOV     A, R7                 1              P     1
+  F0      MOVX    @DPTR, A              1                    2
+  F1      ACALL   addr11                2                    2
+  F2      MOVX    @R0, A                1                    2
+  F3      MOVX    @R1, A                1                    2
+  F4      CPL     A                     1              P     1
+  F5      MOV     direct, A             2                    1
+  F6      MOV     @R0, A                1                    1
+  F7      MOV     @R1, A                1                    1
+  F8      MOV     R0, A                 1                    1
+  F9      MOV     R1, A                 1                    1
+  FA      MOV     R2, A                 1                    1
+  FB      MOV     R3, A                 1                    1
+  FC      MOV     R4, A                 1                    1
+  FD      MOV     R5, A                 1                    1
+  FE      MOV     R6, A                 1                    1
+  FF      MOV     R7, A                 1                    1
+
+
+Appendix J:
+===========
+
+
+8051 Instructions in lexical Order
+----------------------------------
+
+Abbreviations:      direct   =   8-bit DATA address in internal memory
+                    const8   =   8-bit constant in CODE memory
+                    const16  =  16-bit constant in CODE memory
+                    addr16   =  16-bit long CODE address
+                    addr11   =  11-bit absolute CODE address
+                    rel      =  signed 8-bit relative CODE address
+                    bit      =   8-bit BIT address in internal memory
+
+                    i  =  register numbers 0 or 1
+                    n  =  register numbers 0 thru 7
+                    a  =  32 * m
+                    m  =  the 3 most significant bits of an absolute address
+
+
+Opcode  Mnemonic  Operands            Bytes     Flags     Cycles
+----------------------------------------------------------------
+  11+a    ACALL   addr11                2                    2
+  24      ADD     A, #const8            2     CY AC OV P     1
+  26+i    ADD     A, @Ri                1     CY AC OV P     1
+  25      ADD     A, direct             2     CY AC OV P     1
+  28+n    ADD     A, Rn                 1     CY AC OV P     1
+  34      ADDC    A, #const8            2     CY AC OV P     1
+  36+i    ADDC    A, @Ri                1     CY AC OV P     1
+  35      ADDC    A, direct             2     CY AC OV P     1
+  38+n    ADDC    A, Rn                 1     CY AC OV P     1
+  01+a    AJMP    addr11                2                    2
+  54      ANL     A, #const8            2              P     1
+  56+i    ANL     A, @Ri                1              P     1
+  55      ANL     A, direct             2              P     1
+  58+n    ANL     A, Rn                 1              P     1
+  B0      ANL     C, /bit               2     CY             2
+  82      ANL     C, bit                2     CY             2
+  53      ANL     direct, #const8       3                    2
+  52      ANL     direct, A             2                    1
+  B6+i    CJNE    @Ri, #const8, rel     3     CY             2
+  B4      CJNE    A, #const8, rel       3     CY             2
+  B5      CJNE    A, direct, rel        3     CY             2
+  B8+n    CJNE    Rn, #const8, rel      3     CY             2
+  E4      CLR     A                     1              P     1
+  C2      CLR     bit                   2                    1
+  C3      CLR     C                     1     CY             1
+  F4      CPL     A                     1              P     1
+  B2      CPL     bit                   2                    1
+  B3      CPL     C                     1     CY             1
+  D4      DA      A                     1     CY       P     1
+  16+i    DEC     @Ri                   1                    1
+  14      DEC     A                     1              P     1
+  15      DEC     direct                2                    1
+  18+n    DEC     Rn                    1                    1
+  84      DIV     AB                    1     CY    OV P     4
+  D5      DJNZ    direct, rel           3                    2
+
+
+Opcode  Mnemonic  Operands            Bytes     Flags     Cycles
+----------------------------------------------------------------
+  D8+n    DJNZ    Rn, rel               2                    2
+  06+i    INC     @Ri                   1                    1
+  04      INC     A                     1              P     1
+  05      INC     direct                2                    1
+  A3      INC     DPTR                  1                    2
+  08+n    INC     Rn                    1                    1
+  20      JB      bit, rel              3                    2
+  10      JBC     bit, rel              3                    2
+  40      JC      rel                   2                    2
+  73      JMP     @A+DPTR               1                    2
+  30      JNB     bit, rel              3                    2
+  50      JNC     rel                   2                    2
+  70      JNZ     rel                   2                    2
+  60      JZ      rel                   2                    2
+  12      LCALL   addr16                3                    2
+  02      LJMP    addr16                3                    2
+  76+i    MOV     @Ri, #const8          2                    1
+  F6+i    MOV     @Ri, A                1                    1
+  A6+i    MOV     @Ri, direct           2                    2
+  74      MOV     A, #const8            2              P     1
+  E6+i    MOV     A, @Ri                1              P     1
+  E5      MOV     A, direct             2              P     1
+  E8+n    MOV     A, Rn                 1              P     1
+  92      MOV     bit, C                2                    2
+  A2      MOV     C, bit                2     CY             1
+  75      MOV     direct, #const8       3                    2
+  86+i    MOV     direct, @Ri           2                    2
+  F5      MOV     direct, A             2                    1
+  85      MOV     direct, direct        3                    2
+  88+n    MOV     direct, Rn            2                    2
+  90      MOV     DPTR, #const16        3                    2
+  78+n    MOV     Rn, #const8           2                    1
+  F8+n    MOV     Rn, A                 1                    1
+  A8+n    MOV     Rn, direct            2                    2
+  93      MOVC    A, @A+DPTR            1              P     2
+  83      MOVC    A, @A+PC              1              P     2
+  F0      MOVX    @DPTR, A              1                    2
+  F2+i    MOVX    @Ri, A                1                    2
+  E0      MOVX    A, @DPTR              1              P     2
+  E2+i    MOVX    A, @Ri                1              P     2
+  A4      MUL     AB                    1     CY    OV P     4
+  00      NOP                           1                    1
+  44      ORL     A, #const8            2              P     1
+  46+i    ORL     A, @Ri                1              P     1
+  45      ORL     A, direct             2              P     1
+  48+n    ORL     A, Rn                 1              P     1
+  A0      ORL     C, /bit               2     CY             2
+  72      ORL     C, bit                2     CY             2
+  43      ORL     direct, #const8       3                    2
+  42      ORL     direct, A             2                    1
+  D0      POP     direct                2                    2
+  C0      PUSH    direct                2                    2
+  22      RET                           1                    2
+  32      RETI                          1                    2
+  23      RL      A                     1                    1
+  33      RLC     A                     1     CY       P     1
+
+
+Opcode  Mnemonic  Operands            Bytes     Flags     Cycles
+----------------------------------------------------------------
+  03      RR      A                     1                    1
+  13      RRC     A                     1     CY       P     1
+  D2      SETB    bit                   2                    1
+  D3      SETB    C                     1     CY             1
+  80      SJMP    rel                   2                    2
+  94      SUBB    A, #const8            2     CY AC OV P     1
+  96+i    SUBB    A, @Ri                1     CY AC OV P     1
+  95      SUBB    A, direct             2     CY AC OV P     1
+  98+n    SUBB    A, Rn                 1     CY AC OV P     1
+  C4      SWAP    A                     1                    1
+  C6+i    XCH     A, @Ri                1              P     1
+  C5      XCH     A, direct             2              P     1
+  C8+n    XCH     A, Rn                 1              P     1
+  D6+i    XCHD    A, @Ri                1              P     1
+  64      XRL     A, #const8            2              P     1
+  66+i    XRL     A, @Ri                1              P     1
+  65      XRL     A, direct             2              P     1
+  68+n    XRL     A, Rn                 1              P     1
+  63      XRL     direct, #const8       3                    2
+  62      XRL     direct, A             2                    1

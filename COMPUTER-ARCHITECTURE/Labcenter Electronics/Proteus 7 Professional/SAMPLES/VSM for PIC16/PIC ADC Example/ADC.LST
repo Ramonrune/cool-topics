@@ -1,0 +1,438 @@
+MPASM 02.30 Released              ADC.ASM   5-21-2001  18:57:19         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00001            LIST    p=16F877
+                    00002            #include "P16F877.INC"
+                    00001         LIST
+                    00002 ; P16F877.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+                    00370         LIST
+                    00003 
+                    00004 ; Macro to generate a MOVLW instruction that also causes a model break:
+                    00005 break      MACRO arg
+                    00006            DW    0x3100 | (arg & H'FF')
+                    00007            ENDM
+                    00008 
+                    00009            cblock 0x20
+  00000020          00010               count, lc1, lc2;
+                    00011            endc
+                    00012 
+                    00013            ; Vector for normal start up.
+0000                00014            org     0
+0000 2805           00015            goto    start
+                    00016 
+0004                00017            org     4
+0004 2840           00018            goto    inthlr
+                    00019 
+                    00020 ; Main program starts here:
+0005 0103           00021 start      clrw                    ; Clear W.
+0006 0086           00022            movwf   PORTB           ; Ensure PORTB is zero before we enable it.
+0007 0088           00023            movwf   PORTD           ; Ensure PORTD is zero before we enable it.
+0008 00A0           00024            movwf   count           ; Reset count value.
+0009 0096           00025            movwf   CCPR1H          ; Clear.
+000A 0095           00026            movwf   CCPR1L          ; Clear.
+                    00027 
+                    00028            ; Set up ports:
+000B 1683           00029            bsf     STATUS,RP0      ; Select Bank 1
+000C 30FF           00030            movlw   0xFF            ; Set W to mask for all inputs.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000D 0085           00031            movwf   TRISA           ; set TRISA register as inputs.
+000E 3000           00032            movlw   0x00            ; Set W to mask for all inputs.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000F 0085           00033            movwf   TRISA           ; set TRISA register as inputs.
+                    00034 
+0010 1283           00035            bcf     STATUS,RP0      ; Select Bank 1
+0011 1405           00036            bsf     PORTA,0
+0012 1005           00037            bcf     PORTA,0
+0013 1405           00038            bsf     PORTA,0
+0014 1005           00039            bcf     PORTA,0
+0015 1683           00040            bsf     STATUS,RP0      ; Select Bank 0
+                    00041 
+0016 30FF           00042            movlw   0xFF            ; Set W to mask for all inputs.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0017 0085           00043            movwf   TRISA           ; set TRISA register as inputs.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0018 0186           00044            clrf    TRISB           ; Set TRISB register as outputs.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0019 0188           00045            clrf    TRISD           ; Set TRISD register as outputs.
+MPASM 02.30 Released              ADC.ASM   5-21-2001  18:57:19         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00046 
+001A 3081           00047            movlw   0x81            ; ADFM=1, all inputs analogue, +VREF enabled.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001B 009F           00048            movwf   ADCON1          ; Save it.
+001C 1283           00049            bcf     STATUS,RP0      ; Select Bank 0.
+001D 30C1           00050            movlw   0xC1            ; Clock/Channel select and enable.
+001E 009F           00051            movwf   ADCON0          ; Save it.
+001F 3001           00052            movlw   0x01            ; Number of loops of 255 clocks.
+0020 2041           00053            call    swait           ; Wait for acquire time.
+                    00054 
+0021 151F           00055 do_conv    bsf     ADCON0,GO
+0022 191F           00056 wait_eoc   btfsc   ADCON0,GO       ; Is bit still set?
+0023 2822           00057            goto    wait_eoc        ; Yes, so loop and wait for end of conversion.
+                    00058 
+0024 1283           00059            bcf     STATUS,RP0      ; Ensure we have bank 0.
+0025 1408           00060            bsf     PORTD,0         ; Show ISR in progress.
+0026 0AA0           00061            incf    count,F         ; Increment count.
+0027 2031           00062            call    disp_adc        ; Display captured value.
+0028 1008           00063            bcf     PORTD,0         ; Remove progress bit.
+                    00064 
+0029 3040           00065            movlw   0x40            ; Count      
+002A 00A0           00066            movwf   count           ; Save it.
+002B 0000           00067 loop1      nop                     ; Dilly...
+002C 0000           00068            nop                     ; Dally...
+002D 0000           00069            nop                     ; Dilly...
+Message[305]: Using default destination of 1 (file).
+002E 0BA0           00070            decfsz count            ; Decrement loop counter
+002F 282B           00071            goto loop1              ; Loop if no zero.
+                    00072 
+0030 2821           00073            goto    do_conv         ; Do another conversion.
+                    00074 
+0031 1683           00075 disp_adc   bsf     STATUS,RP0      ; Bank 1.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0032 081E           00076            movf    ADRESL,W        ; Get ADRESL into W.
+0033 1283           00077            bcf     STATUS,RP0      ; Bank 0.
+0034 0086           00078            movwf   PORTB           ; Write it to port
+0035 1708           00079            bsf     PORTD,6         ; Toggle latch enable
+0036 0000           00080            nop                     ; Wait
+0037 0000           00081            nop                     ; Wait
+0038 1308           00082            bcf     PORTD,6         ; Toggle latch enable
+0039 081E           00083            movf    ADRESH,W        ; Get ADRESH into W.
+003A 0086           00084            movwf   PORTB           ; Write it to port
+003B 1788           00085            bsf     PORTD,7         ; Toggle latch enable
+003C 0000           00086            nop                     ; Wait
+003D 0000           00087            nop                     ; Wait
+003E 1388           00088            bcf     PORTD,7         ; Toggle latch enable
+003F 0008           00089            return
+                    00090 
+0040 0009           00091 inthlr     retfie
+                    00092 
+                    00093 ; -------------------------------------------------------------------------------
+                    00094 ; Wait function
+                    00095 ; -------------
+MPASM 02.30 Released              ADC.ASM   5-21-2001  18:57:19         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0041 00A2           00096 swait      movwf   lc2
+0042 30FF           00097 _sw2       movlw   0xFF
+0043 00A1           00098            movwf   lc1
+0044 0000           00099 _sw3       nop
+0045 0BA1           00100            decfsz  lc1,f
+0046 2844           00101            goto    _sw3
+0047 0BA2           00102            decfsz  lc2,f
+0048 2842           00103            goto    _sw2
+0049 0008           00104            return
+                    00105 
+                    00106            END
+MPASM 02.30 Released              ADC.ASM   5-21-2001  18:57:19         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADDEN                             00000003
+ADFM                              00000005
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BRGH                              00000002
+C                                 00000000
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CHS3                              00000001
+CKE                               00000006
+CKP                               00000004
+CREN                              00000004
+CSRC                              00000007
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+D_A                               00000005
+MPASM 02.30 Released              ADC.ASM   5-21-2001  18:57:19         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OBF                               00000006
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+MPASM 02.30 Released              ADC.ASM   5-21-2001  18:57:19         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+R                                 00000002
+RBIE                              00000003
+RBIF                              00000000
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+R_W                               00000002
+S                                 00000003
+SEN                               00000000
+SMP                               00000007
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+MPASM 02.30 Released              ADC.ASM   5-21-2001  18:57:19         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISB                             00000086
+TRISC                             00000087
+TRISD                             00000088
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+W                                 00000000
+MPASM 02.30 Released              ADC.ASM   5-21-2001  18:57:19         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00000FCF
+_CP_HALF                          00001FDF
+_CP_OFF                           00003FFF
+_CP_UPPER_256                     00002FEF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_ENABLE_OFF                   00003DFF
+_WRT_ENABLE_ON                    00003FFF
+_XT_OSC                           00003FFD
+__16F877                          00000001
+_sw2                              00000042
+_sw3                              00000044
+break                             
+count                             00000020
+disp_adc                          00000031
+do_conv                           00000021
+inthlr                            00000040
+lc1                               00000021
+lc2                               00000022
+loop1                             0000002B
+start                             00000005
+swait                             00000041
+wait_eoc                          00000022
+MPASM 02.30 Released              ADC.ASM   5-21-2001  18:57:19         PAGE  9
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXX------ ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    71
+Program Memory Words Free:  8121
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     8 reported,     0 suppressed
+
+

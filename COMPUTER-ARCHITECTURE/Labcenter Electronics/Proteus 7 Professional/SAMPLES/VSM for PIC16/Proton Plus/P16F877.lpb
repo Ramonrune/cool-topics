@@ -1,0 +1,334 @@
+
+        NOLIST
+
+W   = 0
+F   = 1
+
+; Register Files
+
+INDF                         EQU H'0000'
+TMR0                         EQU H'0001'
+PCL                          EQU H'0002'
+STATUS                       EQU H'0003'
+FSR                          EQU H'0004'
+PORTA                        EQU H'0005'
+PORTB                        EQU H'0006'
+PORTC                        EQU H'0007'
+PORTD                        EQU H'0008'
+PORTE                        EQU H'0009'
+PCLATH                       EQU H'000A'
+INTCON                       EQU H'000B'
+PIR1                         EQU H'000C'
+PIR2                         EQU H'000D'
+TMR1L                        EQU H'000E'
+TMR1LH                        EQU H'000F'
+TMR1H                        EQU H'000F'
+T1CON                        EQU H'0010'
+TMR2                         EQU H'0011'
+T2CON                        EQU H'0012'
+SSPBUF                       EQU H'0013'
+SSPCON                       EQU H'0014'
+CCPR1L                       EQU H'0015'
+CCPR1LH                       EQU H'0016'
+CCPR1H                       EQU H'0016'
+CCP1CON                      EQU H'0017'
+RCSTA                        EQU H'0018'
+TXREG                        EQU H'0019'
+RCREG                        EQU H'001A'
+CCPR2L                       EQU H'001B'
+CCPR2LH                       EQU H'001C'
+CCPR2H                       EQU H'001C'
+CCP2CON                      EQU H'001D'
+ADRESLH                       EQU H'001E'
+ADRESH                       EQU H'001E'
+ADCON0                       EQU H'001F'
+
+OPTION_REG  Equ     H'81'
+TRISA 	Equ     H'85'
+TRISB 	Equ     H'86'
+TRISC 	Equ     H'87'
+TRISD 	Equ     H'88'
+TRISE 	Equ     H'89'
+PIE1 	Equ     H'8C'
+PIE2 	Equ     H'8D'
+PCON 	Equ     H'8E'
+SSPCON2 Equ     H'91'
+PR2  	Equ     H'92'
+SSPADD  Equ     H'93'
+SSPSTAT Equ     H'94'
+TXSTA 	Equ     H'98'
+SPBRG 	Equ     H'99'
+ADRESL  Equ     H'9E'
+ADRES 	Equ     H'9E'
+ADCON1  Equ     H'9F'
+
+EEDAT  Equ     H'010C'
+EEADR 	Equ     H'010D'
+EEDATH  Equ     H'010E'
+EEADRH  Equ     H'010F'
+
+EECON1  Equ     H'018C'
+EECON2  Equ     H'018D'
+
+; STATUS Bits
+
+IRP 	= 7
+RP1 	= 6
+RP0 	= 5
+NOT_TO 	= 4
+NOT_PD 	= 3
+Z   	= 2
+DC  	= 1
+C   	= 0
+
+; INTCON Bits
+
+GIE 	= 7
+PEIE 	= 6
+T0IE 	= 5
+INTE 	= 4
+RBIE 	= 3
+T0IF 	= 2
+INTF 	= 1
+RBIF 	= 0
+
+; PIR1 Bits  
+
+PSPIF  	= 7
+ADIF 	= 6
+RCIF 	= 5
+TXIF 	= 4
+SSPIF  	= 3
+CCP1IF 	= 2
+TMR2IF 	= 1
+TMR1IF 	= 0
+
+; PIR2 Bits  
+
+EEIF 	= 4
+BCLIF  	= 3
+CCP2IF 	= 0
+
+; T1CON Bits
+
+T1CKPS1 = 5
+T1CKPS0	= 4
+T1OSCEN = 3
+NOT_T1SYNC = 2
+T1INSYNC   = 2    
+T1SYNC 	= 2
+TMR1CS 	= 1
+TMR1ON 	= 0
+
+; T2CON Bits
+
+TOUTPS3	= 6
+TOUTPS2 = 5
+TOUTPS1 = 4
+TOUTPS0 = 3
+TMR2ON 	= 2
+T2CKPS1 = 1
+T2CKPS0 = 0
+
+; SSPCON Bits
+
+WCOL 	= 7
+SSPOV  	= 6
+SSPEN  	= 5
+CKP 	= 4
+SSPM3  	= 3
+SSPM2  	= 2
+SSPM1  	= 1
+SSPM0  	= 0
+
+; CCP1CON Bits
+
+CCP1X  	= 5
+CCP1Y  	= 4
+CCP1M3 	= 3
+CCP1M2 	= 2
+CCP1M1 	= 1
+CCP1M0 	= 0
+
+; RCSTA Bits
+
+SPEN 	= 7
+RX9 	= 6
+RC9 	= 6   
+NOT_RC8 = 6   
+RC8_9  	= 6    
+SREN 	= 5
+CREN 	= 4
+ADDEN  	= 3
+FERR 	= 2
+OERR 	= 1
+RX9D 	= 0
+RCD8 	= 0    
+
+; CCP2CON Bits
+
+CCP2X  	= 5
+CCP2Y  	= 4
+CCP2M3 	= 3
+CCP2M2 	= 2
+CCP2M1 	= 1
+CCP2M0 	= 0
+
+; ADCON0 Bits
+
+ADCS1  	= 7
+ADCS0  	= 6
+CHS2 	= 5
+CHS1 	= 4
+CHS0 	= 3
+GO  	= 2
+NOT_DONE = 2
+GO_DONE  = 2
+ADON 	= 0
+
+; OPTION_REG Bits  
+
+NOT_RBPU = 7
+INTEDG 	= 6
+T0CS 	= 5
+T0SE 	= 4
+PSA 	= 3
+PS2 	= 2
+PS1 	= 1
+PS0 	= 0
+
+; TRISE Bits
+
+IBF 	= 7
+OBF 	= 6
+IBOV 	= 5
+PSPMODE = 4
+TRISE2 	= 2
+TRISE1 	= 1
+TRISE0 	= 0
+
+; PIE1 Bits  
+
+PSPIE  	= 7
+ADIE 	= 6
+RCIE 	= 5
+TXIE 	= 4
+SSPIE  	= 3
+CCP1IE 	= 2
+TMR2IE 	= 1
+TMR1IE 	= 0
+
+; PIE2 Bits  
+
+EEIE 	= 4
+BCLIE  	= 3
+CCP2IE 	= 0
+
+; PCON Bits  
+
+NOT_POR = 1
+NOT_BO 	= 0
+NOT_BOR = 0
+
+; SSPCON2 Bits
+
+GCEN 	= 7
+ACKSTAT = 6
+ACKDT  	= 5
+ACKEN  	= 4
+RCEN 	= 3
+PEN 	= 2
+RSEN 	= 1  
+SEN 	= 0   
+
+; SSPSTAT Bits
+
+SMP 	= 7
+CKE 	= 6
+D   	= 5
+I2C_DTA = 5
+NOT_A  	= 5
+NOT_ADDRESS = 5
+D_A 	= 5
+DATA_ADDR  = 5
+P   	= 4
+I2C_STP = 4
+S   	= 3
+I2C_STRT = 3
+R   	= 2
+I2C_RD 	= 2
+NOT_W  	= 2
+NOT_WRT = 2
+R_W 	= 2
+READ_WRT = 2
+UA  	= 1
+BF  	= 0
+
+; TXSTA Bits
+
+CSRC 	= 7
+TX9 	= 6
+NOT_TX8 = 6    
+TX8_9  	= 6    
+TXEN 	= 5
+SYNC 	= 4
+BRGH 	= 2
+TRMT 	= 1
+TX9D 	= 0
+TXD8 	= 0    
+
+; ADCON1 Bits
+
+ADFM 	= 7
+PCFG3  	= 3
+PCFG2  	= 2
+PCFG1  	= 1
+PCFG0  	= 0
+
+; EECON1 Bits
+
+EEPGD  	= 7
+WRERR  	= 3
+WREN 	= 2
+WR  	= 1
+RD  	= 0
+
+	__MAXRAM H'1FF'
+        __BADRAM H'8F'-H'90', H'95'-H'97', H'9A'-H'9D'
+        __BADRAM H'105', H'107'-H'109'
+        __BADRAM H'185', H'187'-H'189', H'18E'-H'18F'
+
+;Configuration Bits
+
+CP_ALL                      Equ     H'0FCF'
+CP_HALF                     Equ     H'1FDF'
+CP_UPPER_256                Equ     H'2FEF'
+CP_OFF                      Equ     H'3FFF'
+DEBUG_ON                    Equ     H'37FF'
+DEBUG_OFF                   Equ     H'3FFF'
+WRTE_ON               	    Equ     H'3FFF'
+WRTE_OFF                    Equ     H'3DFF'
+CPD_ON                      Equ     H'3EFF'
+CPD_OFF                     Equ     H'3FFF'
+LVP_ON                      Equ     H'3FFF'
+LVP_OFF                     Equ     H'3F7F'
+BODEN_ON                    Equ     H'3FFF'
+BODEN_OFF                   Equ     H'3FBF'
+PWRTE_OFF                   Equ     H'3FFF'
+PWRTE_ON                    Equ     H'3FF7'
+WDT_ON                      Equ     H'3FFF'
+WDT_OFF                     Equ     H'3FFB'
+LP_OSC                      Equ     H'3FFC'
+XT_OSC                      Equ     H'3FFD'
+HS_OSC                      Equ     H'3FFE'
+RC_OSC                      Equ     H'3FFF'
+
+; Set the default fuse configuration
+	ifndef CONFIG_REQ
+	  ifdef WATCHDOG_REQ
+        	__config HS_OSC & WDT_ON & PWRTE_ON & BODEN_OFF & LVP_OFF & WRTE_ON & CP_OFF & DEBUG_OFF
+	  else
+		__config HS_OSC & WDT_OFF & PWRTE_ON & BODEN_OFF & LVP_OFF & WRTE_ON & CP_OFF & DEBUG_OFF
+	  endif       
+	endif
+	LIST

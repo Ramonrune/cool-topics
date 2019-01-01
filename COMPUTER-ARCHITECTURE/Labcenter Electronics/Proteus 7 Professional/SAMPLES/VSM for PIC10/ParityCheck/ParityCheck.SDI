@@ -1,0 +1,88 @@
+,,,;Simple Parity Checker
+,,,
+,,,        LIST    p=10F202 ;
+,,,        #include "P10F202.INC" ; Include header file
+,,,
+,,,        CBLOCK 0x08   ; Temporary storage
+,,,        dc1
+,,,        bitcount
+,,,        databyte
+,,,        onecount
+,,,        ENDC
+,,,
+,,,
+,,,        ; Vector for normal start up.
+,,,        org     0
+00000000,0A01,,        goto    start
+,,,
+,,,
+,,,; Main program starts here:
+00000001,0040,start,start   clrw                    ; Clear W.
+00000002,0026,,        movwf   GPIO            ; Ensure PORT is zero before we enable it.
+00000003,0CFD,,        movlw   0xFD            ; All inputs except GP1
+00000004,0006,,        tris    GPIO
+,,,
+,,,;Wait for a start bit
+00000005,0606,wstart,wstart  btfsc   GPIO,0
+00000006,0A05,,        goto    wstart
+,,,
+00000007,0924,,        call    waithalf
+,,,
+,,,;Check start bit still low
+00000008,0606,,        btfsc   GPIO,0
+00000009,0A05,,        goto    wstart
+,,,
+,,,;Loop 8 times to capture data byte
+0000000A,006A,,        clrf    databyte
+0000000B,006B,,        clrf    onecount
+0000000C,0C08,,        movlw   8
+0000000D,0029,,        movwf   bitcount
+0000000E,0921,l1,l1      call    waitfull
+0000000F,0306,,        rrf     GPIO,W
+00000010,032A,,        rrf     databyte,F
+00000011,0606,,        btfsc   GPIO,0
+00000012,02AB,,        incf    onecount,F
+00000013,02E9,,        decfsz  bitcount,F
+00000014,0A0E,,        goto    l1
+,,,
+,,,;Wait for parity bit
+00000015,0921,,        call waitfull
+,,,
+,,,;Add the parity bit to the 1's count
+00000016,0606,,        btfsc   GPIO,0
+00000017,02AB,,        incf    onecount,F
+,,,;Add the state from GP2 to the 1's count so as to switch between
+,,,;checking even or odd parity
+00000018,0646,,        btfsc   GPIO,2
+00000019,02AB,,        incf    onecount,F
+,,,;If the 1's count is odd we are OK, if it's odd we had a parity error
+0000001A,0040,,        clrw
+0000001B,070B,,        btfss   onecount,0
+0000001C,0C02,,        movlw   0x02
+,,,;Write result to the LED
+0000001D,0026,,        movwf   GPIO
+,,,
+,,,;Wait for stop bit, then go again
+0000001E,0706,wstop,wstop   btfss   GPIO,0
+0000001F,0A1E,,        goto wstop
+00000020,0A05,,        goto wstart
+,,,
+,,,
+,,,;Wait a full bit time
+,,,;
+00000021,,waitfull,waitfull
+00000021,0924,,        call waithalf
+00000022,0924,,        call waithalf
+00000023,0800,,        return
+,,,
+,,,;Wait half a bit time
+,,,;
+00000024,,waithalf,waithalf
+00000024,0C89,,        movlw 0x89
+00000025,0028,,        movwf dc1
+00000026,,wh1,wh1
+00000026,02E8,,        decfsz  dc1,f
+00000027,0A26,,        goto wh1
+00000028,0800,,        return
+,,,
+,,,        END

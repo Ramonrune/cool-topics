@@ -1,0 +1,15 @@
+A DOS-based command-line MC68HC11 cross-assembler that can generate 
+(P&E compatible or ASCII source-level) MAP files, S19, LST, ERR, and 
+(simple or EM11/Shadow11-compatible) SYM files.  Assembles many files 
+with a single command.  Supports upto 100 nested $INCLUDEd files.  
+Full path error reporting for smart IDEs.  Includes extra 
+instructions (built-in macros), and several assembler directives for 
+controlling listing, source-level mapping, tabs, case sensitivity, 
+extra instructions, etc.  Auto-direct mode use without possibility of 
+errors. Supports conditional assembly with user messages, errors, and
+warnings.  Will also run under Win3.x, Win95, Win98, and WinNT in a
+DOS box or called from another program.  Not crippled in any way.
+
+Freeware with an option to pay!
+
+By Tony Papadimitriou <tonyp@acm.org>

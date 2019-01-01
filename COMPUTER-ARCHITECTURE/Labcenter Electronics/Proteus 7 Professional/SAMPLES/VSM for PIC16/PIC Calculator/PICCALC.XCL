@@ -1,0 +1,162 @@
+/***********************************************************************
+ *                      -L16F876.XCL-
+ *
+ *      XLINK command file to be used with the PIC C-compiler for the
+ *      PICmicro 16F876 controller
+ *
+ *      Usage:  xlink  your_file(s)  -f l16F876
+ *
+ *      Copyright 1999 IAR Systems. All Rights Reserved.
+ *
+ *      NOTE:   By default this file is tailored for
+ *              the 16F876
+ *               
+ *      $Revision: 1.3 $
+ *
+ *      $Log: L16F876.XCL $
+ *      Revision 1.3  2000/12/04 10:27:10  ILAK
+ *      Added segment CHECKSUM, used by the linker
+ *      to store the checksum
+ *      Revision 1.2  2000/02/25 15:20:14  ILAK
+ *      Added the EEPROM_ID segment
+ *      Revision 1.1  1999/08/10 14:17:24  ILAK
+ *      Initial revision
+ *
+ ************************************************************************/
+
+/*        Define CPU.           */
+
+-cpic
+
+/************************************************************************
+ *      Allocate interrupt vector area segment which is mapped to ROM.
+ *
+ *      Interrupt vector area:   000000 - 0013.
+ *
+ *      NOTE:   All addresses are in bytes, not words!
+ *
+ ************************************************************************/
+
+-Z(CODE)INTVEC=0000-0013
+
+/************************************************************************
+ *
+ *      Allocate startup code and run-time library code segment which is
+ *      mapped to ROM.
+ *
+ *      Addresses are for the 16F876.
+ *
+ *      Address 0x0014 is here supposed to be start of ROM area and
+ *      address 0x3FFF is here supposed to be end of ROM area (2*2000H).
+ *
+ *      NOTE:   All addresses are in bytes, not words!
+ *
+ *
+ ************************************************************************/
+
+/* First we specify internal memory */
+/* First we specify init code that must be placed in the first code page */
+-Z(CODE)SCODE=14-1FF
+/* The end address here must not be larger than the first code page (i.e. 0FFF) */
+-P(CODE)RCODE=0-0FFF
+
+
+/* Then we place the largest blocks first using the P directive */
+-P(CODE)HCODE=0-3FFF
+/* Code blocks smaller than the page size are inserted here */
+-P(CODE)CODE=[0-3FFF]/1000
+/* RETLW blocks with alignment 1 Word and smaller than 256 Words are 
+   inserted here */
+-P(CODE)SCONST=[0-3FFF]/200
+
+/* Last we insert blocks that we can place anywhere in the memory */
+-P(CODE)BANKN_ID,BANK0_ID,BANK1_ID,BANK2_ID,BANK3_ID,EEPROM_ID,CONST=0-3FFF
+
+/* EEPROM data 256 bytes */
+
+-Z(IDATA)EEPROM_Z,EEPROM_I,EEPROM_N=0-0FF
+
+/* Stack is put above the code area since it is in fact not used for 
+   anything other than a check of call depth                            */
+
+-Z(CODE)CALLSTACK=100000-10000F
+-Z(CODE)CHECKSUM=100100-10010F
+
+
+/************************************************************************
+ *
+ *      Allocate banked memories. These corresponds to the __bankn
+ *      pointers.
+ *
+ *      BANKN_Z/I/N:          __nonbanked 
+ *
+ *      BANK0_Z/I/N:          __bank0
+ *      OVERLAY0:             Overlay area in bank 0
+ *      INTSAVE0/WRKSEG:      Must reside in GPR area in bank 0 
+ *      BANK1_Z/I/N:          __bank1
+ *      OVERLAY1:             Overlay area in bank 1
+ *      INTSAVE1:             Must reside in GPR area in bank 1
+ *      BANK2_Z/I/N:          __bank2
+ *      OVERLAY2:             Overlay area in bank 2
+ *      INTSAVE2:             Must reside in GPR area in bank 2
+ *      BANK3_Z/I/N:          __bank3
+ *      OVERLAY3:             Overlay area in bank 3
+ *      INTSAVE3:             Must reside in GPR area in bank 3
+ *
+ *      The bank layout is for 16F876 PIC
+ *
+ ************************************************************************/
+
+-Z(DATA)BANKN_I,BANKN_Z,BANKN_N#70-07F            
+
+-Z(DATA)INTSAVE0=20-07F            
+-P(DATA)OVERLAY0,WRKSEG,BANK0_I,BANK0_Z,BANK0_N=20-07F            
+
+-Z(DATA)INTSAVE1,OVERLAY1,BANK1_I,BANK1_Z,BANK1_N=0A0-0EF 
+
+-Z(DATA)INTSAVE2,OVERLAY2,BANK2_I,BANK2_Z,BANK2_N=110-16F                  
+
+-Z(DATA)INTSAVE3,OVERLAY3,BANK3_I,BANK3_Z,BANK3_N=190-1EF                  
+
+/************************************************************************
+ *
+ *       Select the printf/sprintf formatter to use.
+ *
+ *       See configuration section in manual.
+ *
+ ************************************************************************/
+
+-e_small_write=_formatted_write
+
+/************************************************************************
+ *
+ *       Select the scanf/sscanf formatter to use.
+ *
+ *       See configuration section in manual.
+ *
+ ************************************************************************/
+
+-e_small_read=_formatted_read
+
+/************************************************************************
+ *
+ *       Select the 'C' library depending on processor used.
+ *
+ ************************************************************************/
+
+cl16f876.r39
+
+/************************************************************************
+ *
+ *       Put the code in the file '???.hex' in INTEL STANDARD format
+ *
+ ************************************************************************/
+
+-Ointel-standard=.hex
+
+
+/************************************************************************
+ *
+ *       EOF
+ *
+ ************************************************************************/

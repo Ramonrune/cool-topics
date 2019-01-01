@@ -1,0 +1,153 @@
+### uVision2 Project, (C) Keil Software
+### Do not modify !
+
+Target (LPC2124), 0x0003 // Tools: 'ARM-GNU'
+
+Group (Chess Code)
+Group (Startup Code)
+Group (Support Code)
+
+File 1,1,<.\src\atak.c><atak.c> 0x3E386DF4 
+File 1,1,<.\src\book.c><book.c> 0x41DC3A26 
+File 1,1,<.\src\cmd.c><cmd.c> 0x3F002642 
+File 1,1,<.\src\debug.c><debug.c> 0x41E413F6 
+File 1,1,<.\src\epd.c><epd.c> 0x3EFDC284 
+File 1,1,<.\src\eval.c><eval.c> 0x3F321E68 
+File 1,1,<.\src\genmove.c><genmove.c> 0x3E8F78E0 
+File 1,1,<.\src\getopt1.c><getopt1.c> 0x3E500C40 
+File 1,1,<.\src\getopt.c><getopt.c> 0x3E500C40 
+File 1,1,<.\src\hash.c><hash.c> 0x3EE918B4 
+File 1,1,<.\src\hung.c><hung.c> 0x3DFF2C28 
+File 1,1,<.\src\init.c><init.c> 0x41DC35F6 
+File 1,1,<.\src\input.c><input.c> 0x424BCE54 
+File 1,1,<.\src\iterate.c><iterate.c> 0x3F002CF6 
+File 1,1,<.\src\lexpgn.c><lexpgn.c> 0x41C212A2 
+File 1,1,<.\src\main.c><main.c> 0x424B2F0C 
+File 1,1,<.\src\move.c><move.c> 0x3EE8FFA2 
+File 1,1,<.\src\null.c><null.c> 0x3DFF2C28 
+File 1,1,<.\src\output.c><output.c> 0x424ACC8C 
+File 1,1,<.\src\pgn.c><pgn.c> 0x3EFDD0C4 
+File 1,1,<.\src\players.c><players.c> 0x3EE52422 
+File 1,1,<.\src\ponder.c><ponder.c> 0x3E1DB864 
+File 1,1,<.\src\quiesce.c><quiesce.c> 0x3E74C1D6 
+File 1,1,<.\src\random.c><random.c> 0x3DFF2C28 
+File 1,1,<.\src\repeat.c><repeat.c> 0x3DFF2C28 
+File 1,1,<.\src\search.c><search.c> 0x3F00315A 
+File 1,1,<.\src\solve.c><solve.c> 0x3DFF2C28 
+File 1,1,<.\src\sort.c><sort.c> 0x3EE52422 
+File 1,1,<.\src\swap.c><swap.c> 0x3DFF2C28 
+File 1,1,<.\src\test.c><test.c> 0x3DFF2C28 
+File 1,1,<.\src\ttable.c><ttable.c> 0x3F002CF8 
+File 1,1,<.\src\util.c><util.c> 0x3DFF2C28 
+File 2,2,<.\startup.s><startup.s> 0x424A8D12 
+File 3,1,<.\src\syscalls.c><syscalls.c> 0x424BCDEE 
+File 3,1,<.\src\graphics.c><graphics.c> 0x424BD0FC 
+File 3,1,<.\src\pieces.c><pieces.c> 0x421235EC 
+File 3,1,<.\src\eeprom.c><eeprom.c> 0x4249E66A 
+
+
+Options 1,0,0  // Target 'LPC2124'
+ Device (LPC2124)
+ Vendor (Philips)
+ Cpu (IRAM(0x40000000-0x40003FFF) IROM(0-0x3FFFF) CLOCK(60000000) CPUTYPE(ARM7TDMI))
+ FlashUt (LPC210x_ISP.EXE ("#H" ^X $D COM1: 9600 1))
+ StupF ()
+ FlashDR ()
+ DevID ()
+ Rgf (LPC21xx.H)
+ Mem ()
+ C ()
+ A ()
+ RL ()
+ OH ()
+ DBC_IFX ()
+ DBC_CMS ()
+ DBC_AMS ()
+ DBC_LMS ()
+ UseEnv=0
+ EnvBin ()
+ EnvInc ()
+ EnvLib ()
+ EnvReg (ÿPhilips\)
+ OrgReg (ÿPhilips\)
+ TgStat=16
+ OutDir (.\)
+ OutName (gnuchess)
+ GenApp=1
+ GenLib=0
+ GenHex=1
+ Debug=1
+ Browse=1
+ LstDir (.\)
+ HexSel=1
+ MG32K=0
+ TGMORE=0
+ RunUsr 0 0 <>
+ RunUsr 1 0 <>
+ BrunUsr 0 0 <>
+ BrunUsr 1 0 <>
+ SVCSID <>
+ GLFLAGS=1022
+ GCPUTYP (ARM7TDMI)
+ TFlagsA { 0,12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ OCMARM { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ OCMARAM { 0,0,0,0,64,0,64,0,0 }
+ OCMAROM { 1,0,0,0,0,0,0,4,0 }
+ OCMXRAM { 0,0,0,0,0,0,0,0,0 }
+ ACCFLG { 1,0,32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ ACMISC ()
+ ACDEFN ()
+ ACUDEF ()
+ ACINCD ()
+ AASFLG { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ AAMISC ()
+ AADEFN ()
+ AAUDEF ()
+ AAINCD ()
+ PropFld { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=1
+ AlwaysBuild=0
+ GenAsm=0
+ AsmAsm=0
+ PublicsOnly=0
+ StopCode=3
+ CustArgs ()
+ LibMods ()
+ ALDFLAG { 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ ALDTADR (0x00000000)
+ ALDDADR (0x40000000)
+ ALDBSSR ()
+ ALDICLB ()
+ ALDICDR ()
+ ALDMISC ()
+ ALDSCAT (gnuchess.ld)
+  OPTDL (SARM.DLL)()(DARMP.DLL)(-pLPC21xx)(SARM.DLL)()(TARMP.DLL)(-pLPC21xx)
+  OPTDBG 44029,-1,()()()()()()()()()() (BIN\UL2ARM.DLL)()()()
+ FLASH1 { 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ FLASH2 ()
+ FLASH3 (LPC210x_ISP.EXE ("#H" ^X $D COM1: 9600 1))
+ FLASH4 ()
+EndOpt
+
+Options 1,1,0  // Group 'Chess Code'
+ PropFld { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ IncBld=2
+ AlwaysBuild=2
+ GenAsm=2
+ AsmAsm=2
+ PublicsOnly=2
+ StopCode=11
+ CustArgs ()
+ LibMods ()
+ ACCFLG { 34,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ ACMISC ()
+ ACDEFN ()
+ ACUDEF ()
+ ACINCD (src)
+ AASFLG { 10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 }
+ AAMISC ()
+ AADEFN ()
+ AAUDEF ()
+ AAINCD ()
+EndOpt
+

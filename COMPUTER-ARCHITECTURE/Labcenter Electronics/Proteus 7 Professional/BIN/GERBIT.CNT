@@ -1,0 +1,25 @@
+:Base gerbit.HLP
+1 Generic Windows Help
+2 System Minimize Command=HID_SC_MINIMIZE
+2 View Status Bar Command=HID_VIEW_STATUS_BAR
+2 status bar=AFX_HIDW_STATUS_BAR
+2 Help Using Help Command=HID_CONTEXT_HELP
+2 Filing Commands
+3 File Save command=HID_FILE_SAVE
+3 File Save As command=HID_FILE_SAVE_AS
+3 File Open command=HID_FILE_OPEN
+3 File New command=HID_FILE_NEW
+3 File Exit command=HID_APP_EXIT
+3 File Close command=HID_FILE_CLOSE
+3 File 1, 2, 3, 4 command=HID_FILE_MRU_FILE1
+1 Gerbit Specific Help
+2 Introduction=Introduction
+2 Requirements for Conversion=Requirements_for_Conversion
+2 Tutorial=Tutorial
+2 The Menus
+3 The Options Menu=The_Options_Menu
+3 The View Menu=The_View_Menu
+2 The Views
+3 File View=File_View
+3 Tool View=Tool_View
+3 Quick View=Quick_View

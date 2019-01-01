@@ -1,0 +1,12 @@
+'{$STAMP BS2p}
+
+    debug   "Program 2",CR
+
+    pollin      0,0
+    pollrun     0
+    pollmode    4
+
+
+Loop:
+    goto    Loop
+    

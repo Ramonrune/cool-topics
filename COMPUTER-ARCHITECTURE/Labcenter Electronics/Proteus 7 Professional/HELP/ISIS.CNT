@@ -1,0 +1,330 @@
+:Base ISIS.hlp
+1 INTRODUCTION
+2 About ISIS=About_ISIS
+2 ISIS and PCB Design=INTRO_ISIS_and_PCB_Design
+2 ISIS and Simulation=ISIS_and_Simulation
+2 ISIS and Networks=ISIS_and_Networks
+2 How to Use This Documentation=How_to_Use_this_Documentation
+1 TUTORIAL
+2 Introduction=INTRODUCTION_9
+2 A Guided Tour of the ISIS Editor=A_GUIDED_TOUR_OF_THE_ISIS_EDITOR
+2 Basic Schematic Entry=BASIC_SCHEMATIC_ENTRY
+2 Visual Aids to Design=Visual_Aids_to_Design
+2 Picking Parts from the Library=Picking_Components
+2 Placing Components on the Schematic=Placing_Components_onto_the_Schematic
+2 Wiring Up Components on the Schematic=Wiring_Up_Components_on_the_Schematic
+2 Editing Part Labels=Editing_Part_Labels
+2 Block Editing Functions=BLOCK_EDITING_FUNCTIONS
+2 Practise Makes Perfect=PRACTICE_MAKES_PERFECT
+2 Annotating the Design=ANNOTATING_THE_DIAGRAM
+2 Drawing a New Component=Drawing_a_New_Component
+2 Making a New Device=Making_a_New_Device
+2 Finishing Touches=FINISHING_TOUCHES
+2 Saving, Printing and Plotting=SAVING_PRINTING_AND_PLOTTING
+2 Creating a Multi Element Device=Making_a_Multi_Element_Device
+2 Using the Visual Packaging Tool=The_Visual_Packaging_Tool
+2 Symbols and the Symbol Library=SYMBOLS_AND_THE_SYMBOL_LIBRARY
+2 The Design Explorer=The_Design_Explorer_Tutorial
+2 The Object Selector Context Menu=OBJECT_SELECTOR_CONTEXT_MENU
+2 Report Generation=REPORT_GENERATION_2
+2 A Larger Design=A_LARGER_DESIGN
+1 GENERAL CONCEPTS
+2 Screen Layout
+3 The Menu Bar=The_Menu_Bar
+3 The Toolbars=The_Toolbars
+3 The Editing Window=The_Editing_Window_1
+3 The Overview Window=The_Overview_Window_1
+3 The Object Selector`=The_Object_Selector
+3 Co-ordinate Display=Co_ordinate_Display
+2 Co-ordinate Display
+3 False Origin=False_Origin
+3 The Dot Grid=The_Dot_Grid
+3 Snapping to a Grid=Snapping_to_a_Grid
+3 Real Time Snap=Real_Time_Snap
+2 Filing Commands
+3 Introduction=Introduction_18
+3 Starting a New Design=Starting_a_New_Design_1
+3 Loading a Design=Loading_a_Design_1
+3 Saving the Design=Saving_the_Design_1
+3 Import / Export Section=Import_Export_Section_1
+3 Quitting ISIS=Quitting_ISIS_1
+2 General Editing Facilities
+3 Object Placement=Object_Placement_1
+3 Tagging an Object=Tagging_an_Object_1
+3 Deleting an Object=Deleting_an_Object_1
+3 Dragging an Object=Dragging_an_Object_1
+3 Dragging an Object Label=Dragging_an_Object_Label_1
+3 Resizing an Object=Resizing_an_Object_1
+3 Reorienting an Object=Reorienting_an_Object_1
+3 Editing an Object=Editing_an_Object_1
+3 Editing an Object Label=Editing_an_Object_Label_1
+3 Copying all Tagged Objects=Copying_all_Tagged_Objects_1
+3 Moving all Tagged Objects=Moving_all_Tagged_Objects_1
+3 Deleting all Tagged Objects=Deleting_all_Tagged_Objects_1
+3 Rotating all Tagged Objects=Rotating_all_tagged_objects
+2 Wiring Up
+3 Wire Placement=Wire_Placement_1
+3 The Wire Auto-Router=The_Wire_Auto_Router_1
+3 Wire Repeat=Wire_Repeat_1
+3 Dragging Wires=Dragging_Wires_1
+2 The Design Explorer
+3 Introduction=DE_Introduction
+3 A Guided Tour=DE_Guided_Tour
+3 Navigating the Design=DE_Navigating_the_Design
+3 Schematic Interaction=DE_Schematic_Interaction
+3 PCB Integration=DE_PCB_Integration
+3 Some Examples=DE_Some_Examples
+2 Miscellaneous
+3 The Sheet Border=The_Sheet_Border_1
+3 The Header Block=The_Header_Block_1
+3 Send to Back / Bring to Front=Send_to_Back_Bring_to_Front_1
+3 The Automatic Annotator=THE_AUTOMATIC_ANNOTATOR_1
+3 Value Annotation=Value_Annotation_1
+3 Keyboard Configuration=Keyboard_Configuration
+1 TEMPLATES
+2 Overview=TEMPLATES_OVERVIEW
+2 The Master Sheet=THE_MASTER_SHEET
+2 Templates Tutorial
+3 Overview=TEMPLATES_TUTORIAL
+3 Editing Global Styles=Editing_Global_Styles
+3 Editing Local Styles=Editing_Local_Styles
+3 Editing the Master Sheet=Editing_the_Master_Sheet
+3 Saving the Design Template=Saving_the_Design_Template
+3 Loading a Design Template=Loading_a_design_template
+3 Creating a Template from an Existing Schematic=Creating_a_design_template_from_an_existing_schematic
+1 PROPERTIES
+2 Introduction=INTRODUCTION_11
+2 Object Properties
+3 Introduction=OP_INTRODUCTION
+3 System Properties=System_Properties_1
+3 User Properties=User_Properties_1
+3 Property Definitions (PROPDEFS)=Property_Definitions_PROPDEFS__1
+2 Sheet Properties
+3 Introduction=Introduction_14
+3 Defining Sheet Properties=Defining_Sheet_Properties_1
+3 Scope Rules for Sheet Properties=Scope_Rules_for_Sheet_Properties_1
+3 Design Properties=DESIGN_PROPERTIES_1
+2 Parameterized Circuits
+3 Introduction=PARAMETERIZED_CIRCUITS_1
+3 An Example=An_Example_1
+3 Property Substitution=Property_Substitution_1
+3 Property Expression Evaluation=Property_Expression_Evaluation_1
+3 The Rounding Functions E12 (), E24 ()=The_Rounding_Functions_E12_E24__1
+2 The Property Assignment Tool
+3 The PAT Dialogue Form=The_PAT_Dialogue_Form_1
+3 PAT Actions=PAT_Actions_1
+3 PAT Application Modes=PAT_Application_Modes_1
+3 The Search and Tag Commands=The_Search_and_Tag_Commands_1
+3 Examples=Examples_1
+2 Property Definitions
+3 Creating Property Definitions=Creating_Property_Definitions_1
+3 Default Property Definitions=Default_Property_Definitions_1
+3 Old Designs=Old_Designs_1
+1 OBJECT SPECIFICS
+2 Simulator Gadgets=SIMULATOR_GADGETS
+2 Components
+3 Introduction=COMP_Introduction
+3 Selecting Components from the Device Libraries=Selecting_Components_from_the_Device_Libraries_1
+3 Placing Components=Placing_Components_1
+3 Replacing Components=Replacing_Components_1
+3 Editing Components=Editing_Components_1
+3 Component Properties=Component_Properties_1
+3 Hidden Power Pins=Hidden_Power_Pins
+2 Dots
+3 Introduction=DOTS_Introduction
+3 Placing Dots=Placing_Dots_1
+3 Auto Dot Placement=Auto_Dot_Placement_1
+3 Auto Dot Removal=Auto_Dot_Removal_1
+2 Wire Labels
+3 Introduction=WLAB_Introduction
+3 Placing And Editing Wire Labels=Placing_And_Editing_Wire_Labels_1
+3 Deleting Wire Labels=Deleting_Wire_Labels_1
+3 Using a Wire Label to Assign a Net Name=Using_a_Wire_Label_to_Assign_a_Net_Name_1
+3 Using a Wire Label to Assign a Net Property=Using_a_Wire_Label_to_Assign_a_Net_Property_1
+3 Wire Label Properties=Wire_Label_Properties_1
+2 Scripts
+3 Introduction=SCRIPT_Introduction
+3 Placing and Editing Scripts=Placing_and_Editing_Scripts_1
+3 Script Block Types=Script_Block_Types_1
+3 Part Property Assignments (*FIELD)=Part_Property_Assignments_FIELD__1
+3 Sheet Global Net Property Assignments  (*NETPROP)=Sheet_Global_Net_Property_Assignments_NETPROP__1
+3 Sheet Property Definitions (*DEFINE)=Sheet_Property_Definitions_DEFINE__1
+3 Parameter Mapping Tables (*MAP ON varname)=Parameter_Mapping_Tables_MAP_ON_varname__1
+3 Model Definition Tables (*MODELS)=Model_Definition_Tables_MODELS__1
+3 Named Scripts (*SCRIPT scripttype scriptname)=Named_Scripts_SCRIPT_scripttype_scriptname__1
+3 SPICE Model Script (*SPICE)=SPICE_Model_Script_SPICE__1
+2 Buses
+3 Introduction=BUS_Introduction
+3 Placing Buses=Placing_Buses_1
+3 Bus Labels=Bus_Labels_1
+3 Wire/Bus Junctions=Wire_Bus_Junctions_1
+3 Bus Properties=Bus_Properties_1
+2 Sub-Circuits
+3 Introduction=SCIRC_Introduction
+3 Placing Sub-Circuits=Placing_Sub_Circuits_1
+3 Editing Sub-Circuits=Editing_Sub_Circuits_1
+3 Sub-Circuit Properties=Sub_Circuit_Properties_1
+2 Terminals
+3 Introduction=TERM_Introduction
+3 Logical Terminals=Logical_Terminals_1
+3 Physical Terminals=Physical_Terminals_1
+3 Placing Terminals=Placing_Terminals_1
+3 Editing Terminals=Editing_Terminals_1
+3 Terminal Properties=Terminal_Properties_1
+2 Pin Objects
+3 Introduction=PINOBJ_Introduction
+3 Placing Pin Objects=Placing_Pin_Objects_1
+3 Editing Pin Objects=Editing_Pin_Objects_1
+3 Pin Object Properties=Pin_Object_Properties_1
+2 2D Graphics
+3 Introduction=2DGR_Introduction
+3 Placing 2D Graphics=Placing_2D_Graphics_1
+3 Resizing 2D Graphics=Resizing_2D_Graphics_1
+3 Editing 2D Graphics=Editing_2D_Graphics_1
+2 Markers
+3 Marker Types=Marker_Types_1
+3 Placing Markers=Placing_Markers_1
+1 LIBRARY FACILITIES
+2 General Points About Libraries
+3 Library Discipline=Library_Discipline_1
+3 The Library Browser=The_Library_Browser
+3 Updating the Schematic from the Libraries=Updating_the_Schematic_from_the_Libraries
+2 Symbol Libraries
+3 Introduction=SYMLIB_Introduction
+3 Graphics Symbols=Graphics_Symbols_1
+3 User Defined Terminals=User_Defined_Terminals_1
+3 User Defined Module Ports=User_Defined_Module_Ports_1
+3 User Defined Device Pins=User_Defined_Device_Pins_1
+3 Editing an Existing Symbol=Editing_an_Existing_Symbol_1
+3 Hierarchical Symbol Definitions=Hierarchical_Symbol_Definitions_1
+2 Device Libraries
+3 Introduction=DEVLIB_Introduction
+3 Making a Device Element=IDH_MAKEDVCELEMENT
+3 The Make Device Command=IDH_MAKEDVCHELP
+3 The Visual Packaging Tool=IDH_PKGTOOLHELP
+3 Making a Single Element Device=Making_a_Single_Element_Device
+3 Making a Multi-Element Homogenous Device=Making_a_Multi_Element_Homogenous_Device_1
+3 Making a Multi-Element Heterogeneous Device=Making_a_Multi_Element_Heterogeneous_Device_1
+3 Making a Device with Bus Pins=Making_a_Device_with_Bus_Pins_1
+3 Property Definitions and Default Properties=Default_Properties_1
+3 Dealing with Power Pins=Dealing_with_Power_Pins_1
+3 Editing an Existing Device=Editing_an_Existing_Device_1
+3 Indexing Libraries with ASCII Data Import=Indexing_Libraries_using_Ascii_Data_Import_(ADI)
+1 MULTI-SHEET DESIGNS
+2 Multi Sheet Flat Designs
+3 Introduction=Introduction_16
+3 Design Menu Commands=Design_Menu_Commands_1
+2 Hierarchical Designs
+3 Introduction=Introduction_17
+3 Terminology=Terminology_1
+3 Sub-Circuits=Sub_Circuits_3
+3 Module-Components=Module_Components_1
+3 External Modules=External_Modules
+3 Moving About a Hierarchical Design=Moving_About_a_Hierarchical_Design_1
+3 Design Global Annotation=Design_Global_Annotation_1
+3 Non-Physical Sheets=Non_Physical_Sheets_1
+1 NETLIST GENERATION
+2 Introduction=INTRODUCTION_12
+2 Net Names=NET_NAMES_1
+2 Duplicate Pin Names=DUPLICATE_PIN_NAMES
+2 Hidden Power Pins=HIDDEN_POWER_PINS_1
+2 Special Net Name Syntaxes
+3 Global Nets=Global_Nets_1
+3 Inter-Element Connections for Multi-Element Parts=Inter_Element_Connections_for_Multi_Element_Parts_1
+2 Bus Connectivity Rules
+3 The Base Alignment Rule=The_Base_Alignment_Rule_1
+3 Using Bus Labels to Change the Connectivity Rule=Using_Bus_Labels_to_Change_the_Connectivity_Rule_1
+3 Using Bus Terminals to Interconnect Buses=Using_Bus_Terminals_to_Interconnect_Buses_1
+3 Connections to Individual Bits=Connections_to_Individual_Bits_1
+3 Tapping a Large Bus=Tapping_a_Large_Bus_1
+3 Some Examples=Some_Simple_Examples_Buses
+3 General Comment & Warning=General_Comment_Warning_1
+2 Power Rail Configuration
+3 Introduction=PRC_Introduction
+3 Dialogue Form=PRC_Dialogue
+3 Power Rail Bindings=PRC_Bindings
+3 Default Power Rail Configuration=PRC_Default
+3 On Schematic Power Rails and Bindings=PRC_Schematic_Bindings
+3 Legacy Designs=PRC_Legacy_Designs
+2 Generating a NetList File
+3 Introduction=NETL_Introduction
+3 Format=Format_1
+3 Logical/Physical/Transfer=Logical_Physical_Transfer_1
+3 Scope=Scope_1
+3 Depth=Depth_1
+3 Errors=Errors_1
+2 Netlist Formats
+3 SDF=SDF_1
+3 BOARDMAKER=BOARDMAKER_1
+3 EEDESIGNER=EEDESIGNER_1
+3 FUTURENET=FUTURENET_1
+3 MULTIWIRE=MULTIWIRE_1
+3 RACAL=RACAL_1
+3 SPICE=SPICE_1
+3 SPICE-AGE FOR DOS=SPICE_AGE_FOR_DOS_1
+3 TANGO=TANGO_1
+3 VALID=VALID_1
+3 VUTRAX=VUTRAX_1
+1 REPORT GENERATION
+2 Bill of Materials
+3 Generating the Report=Generating_the_Report_2
+3 Report Formats=Report_Formats
+3 Bill of Materials Configuration=Bill_of_Materials_Configuration_1
+3 Editing Bill of Materials Categories=Editing_Bill_of_Materials_Categories
+3 Editing Bill of Materials Fields (Columns)=Editing_Bill_of_Materials_Fields
+3 Adding Bill Of Materials Parts=Adding_Bill_of_Materials_Parts
+3 Saving and Loading Bill of Material Scripts=Saving_and_loading_bill_of_material_scripts
+2 ASCII Data Import
+3 Introduction=ASCII_Introduction
+3 The IF...END Command=The_IF_END_Command_1
+3 The DATA...END Command=The_DATA_END_Command_1
+2 Electrical Rules Check
+3 Introduction=ERC_Introduction
+3 Generating the Report=Generating_the_Report_3
+3 ERC Error Messages=ERC_Error_Messages_1
+1 HARD COPY GENERATION
+2 Printer and Plotter Output
+3 Printer Output=PRINTER_OUTPUT_1
+3 Plotter Output=PLOTTER_OUTPUT_1
+2 Clipboard and Graphics File Generation
+3 Introduction=CLIPBOARD_AND_GRAPHICS_FILE_GENERATION_1
+3 Bitmap Generation=Bitmap_Generation_1
+3 Metafile Generation=Metafile_Generation_1
+3 DXF File Generation=DXF_File_Generation_1
+3 EPS File Generation=EPS_File_Generation_1
+1 ISIS AND ARES
+2 Introduction=INTRODUCTION_13
+2 Routing Classes=NET_PROPERTIES_AND_ROUTING_STRATEGIES_1
+2 Changing the Net Class Assigned to a Power Rail=Changing_Power_Rail_Strategies
+2 Changing the Net Class using a Net Property=Changing_Strategies_Net_Property
+2 Re-Annotation=RE_ANNOTATION_1
+2 Packaging
+3 Packaging=PACKAGING_1
+3 Manual Packaging=Manual_Packaging_1
+3 Default Packaging=Default_Packaging
+3 Automatic Packaging=Automatic_Packaging_1
+3 Using the Bill of Materials to Help with Packaging=Using_the_Bill_of_Materials_to_Help_with_Packaging_1
+3 The Package Verifier=The_Package_Verifier
+3 Packaging with ARES=Packaging_with_ARES_1
+2 Forward Annotation- Engineering Changes
+3 Overview=FANNOT_Overview
+3 Forward Annotation - Engineering Changes=FORWARD_ANNOTATION_ENGINEERING_CHANGES_1
+3 Adding New Components=Adding_New_Components_1
+3 Removing Existing Components=Removing_Existing_Components_1
+3 Changing the connectivity=Changing_the_connectivity_1
+3 Re-Annotating Components, and Re-Packaging Gates=Re_Annotating_Components_and_Re_Packaging_Gates_1
+2 Pin Swap/Gate Swap
+3 Pin Swap/Gate Swap=PIN_SWAP_GATE_SWAP_1
+3 Specifying Pin-Swaps in Single Element Devices=Specifying_Pin_Swaps_in_Single_Element_Devices
+3 Specifying Pin-Swaps in Multi-Element Devices=Specifying_Pin_Swaps_in_Multi_Element_Devices_1
+3 Specifying Gate-Swaps in Multi-Element Devices=Specifying_Gate_Swaps_in_Multi_Element_Devices_1
+3 Performing Manual Pin-Swaps and Gate-Swaps in ARES=Performing_Manual_Pin_Swaps_and_Gate_Swaps_in_ARES_1
+3 The Gate-Swap Optimizer=The_Gate_Swap_Optimizer_1
+2 Back- Annotation with ISIS
+3 Introduction=BACK_ANNOT_Introduction
+3 Semi-Automatic Back-Annotation=Semi_Automatic_Back_Annotation_1
+3 Fully-Automatic Back-Annotation=Fully_Automatic_Back_Annotation_1
+2 Cross Probing with ARES
+3 Introduction=Cross_Probing_Introduction
+3 Cross Probing to a Footprint=Cross_Probing_to_a_Footprint
+3 Cross Probing to a Net=Cross_Probing_to_a_Net

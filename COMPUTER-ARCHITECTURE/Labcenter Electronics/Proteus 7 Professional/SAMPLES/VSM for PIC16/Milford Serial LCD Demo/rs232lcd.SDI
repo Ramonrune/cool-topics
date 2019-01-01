@@ -1,0 +1,149 @@
+,,,; Simple PIC 16F877X Program to drive Serial LCDs.
+,,,; Assumes 1MHZ CPU clock, 2400 baud rate for the LCD.
+,,,
+,,,           LIST    p=16F874
+,,,           #include "P16F874.INC"
+,,,
+,,,           ; Counter variables for delay
+,,,           cblock 0x20
+,,,               char,cmd,lc1,lc2;
+,,,           endc
+,,,
+,,,           ; Vector for normal start up.
+,,,           org     0
+0000,2805,,           goto    start
+,,,
+,,,           org     4
+0004,2869,,           goto    inthlr
+,,,
+,,,; Main program starts here:
+0005,0103,start,start      clrw                    ; Clear W.
+0006,0085,,           movwf   PORTA           ; Ensure PORTA is zero before we enable it.
+0007,0086,,           movwf   PORTB           ; Ensure PORTB is zero before we enable it.
+,,,
+,,,           ; Set up ports:
+0008,1283,,           bcf     STATUS,RP0      ; Select Bank 0
+0009,1798,,           bsf     RCSTA,SPEN      ; Enable USART.
+000A,1618,,           bsf     RCSTA,CREN      ; Enable Receeive
+000B,1683,,           bsf     STATUS,RP0      ; Select Bank 1
+000C,0103,,           clrw                    ; Set W to mask for all outputs.
+000D,0085,,           movwf   TRISA           ; Set TRISA register as outputs.
+000E,0086,,           movwf   TRISB           ; Set TRISB register as outputs.
+000F,3019,,           movlw   0x19            ; BRG value for 2400 baud @ 1MHz
+0010,0099,,           movwf   SPBRG           ; Write it to register.
+0011,30A4,,           movlw   0xA4            ; CSRC/TXEN (Internal clock, 8 bit mode, Async operation, High Speed)
+0012,0098,,           movwf   TXSTA           ; Write to TX control register.
+,,,
+0013,3080,,           movlw   80
+0014,2060,,           call    delay
+,,,
+0015,304D,,           movlw   'M'             ; Value to transmit.
+0016,2058,,           call    putc
+0017,3069,,           movlw   'i'             ; Value to transmit.
+0018,2058,,           call    putc
+0019,306C,,           movlw   'l'             ; Value to transmit.
+001A,2058,,           call    putc
+001B,3066,,           movlw   'f'             ; Value to transmit.
+001C,2058,,           call    putc
+001D,306F,,           movlw  'o'              ; Value to transmit.
+001E,2058,,           call    putc
+001F,3072,,           movlw  'r'              ; Value to transmit.
+0020,2058,,           call    putc
+0021,3064,,           movlw  'd'              ; Value to transmit.
+0022,2058,,           call    putc
+0023,3020,,           movlw  ' '              ; Value to transmit.
+0024,2058,,           call    putc
+0025,304C,,           movlw  'L'              ; Value to transmit.
+0026,2058,,           call    putc
+0027,3043,,           movlw  'C'              ; Value to transmit.
+0028,2058,,           call    putc
+0029,3044,,           movlw  'D'              ; Value to transmit.
+002A,2058,,           call    putc
+002B,3020,,           movlw  ' '              ; Value to transmit.
+002C,2058,,           call    putc
+002D,3044,,           movlw  'D'              ; Value to transmit.
+002E,2058,,           call    putc
+002F,3065,,           movlw  'e'              ; Value to transmit.
+0030,2058,,           call    putc
+0031,306D,,           movlw  'm'              ; Value to transmit.
+0032,2058,,           call    putc
+0033,306F,,           movlw  'o'              ; Value to transmit.
+0034,2058,,           call    putc
+,,,
+0035,30C0,,           movlw  0xC0             ; Move cursor to row two
+0036,204D,,           call   wrcmd
+,,,
+0037,300D,,           movlw  0x0D             ; Show the cursor
+0038,204D,,           call   wrcmd
+,,,
+0039,2052,loop,loop       call  getc
+003A,00A0,,           movwf char
+003B,3C0D,,           sublw 0d
+003C,1903,,           btfsc STATUS,Z
+003D,2845,,           goto  cls
+003E,0820,,           movf  char,w
+003F,3C08,,           sublw 08
+0040,1903,,           btfsc STATUS,Z
+0041,2848,,           goto  bspace
+0042,0820,,           movf  char,W
+0043,2058,,           call  putc             ; Send the character straight thru
+0044,2839,,           goto  loop
+,,,
+0045,3001,cls,cls        movlw  0x01            ; Send command prefix
+0046,204D,,           call wrcmd
+0047,2839,,           goto loop
+,,,
+0048,3010,bspace,bspace     movlw 0x10             ; Send command prefix
+0049,204D,,           call wrcmd
+004A,2839,,           goto loop
+,,,
+004B,0064,hang,hang       clrwdt                 ; Clear WDT in case it is enabled.
+004C,284B,,           goto hang
+,,,
+,,,;Subroutine to sent a command
+004D,00A1,wrcmd,wrcmd      movwf cmd              ; Store the command
+004E,30FE,,           movlw 0xFE             ; Write the command prefix
+004F,2058,,           call putc
+0050,0821,,           movf cmd,W             ; Write the command code
+0051,2858,,           goto putc
+,,,
+,,,;Subroutine to wait and receive a byte
+,,,;Returns character in W
+,,,;
+0052,1283,getc,getc       bcf     STATUS,RP0      ; Select Bank 0.
+0053,1E8C,getc1,getc1      btfss   PIR1,RCIF       ; Skip if RC int flag set
+0054,2853,,           goto    getc1           ; Try again
+0055,081A,,           movf    RCREG,W         ; Read the character
+0056,128C,,           bcf     PIR1,RCIF       ; Clear the interrupt flag
+0057,0008,,           return
+,,,
+,,,;Subroutine to transmit a byte and wait
+,,,;W = Character
+,,,;
+0058,1283,putc,putc       bcf     STATUS,RP0      ; Select Bank 0.
+0059,0099,,           movwf   TXREG           ; Write it!
+005A,1683,,           bsf     STATUS,RP0      ; Select Bank 1
+005B,0818,,           movf    TXSTA,W         ; Peek transmit status
+005C,1C98,putc1,putc1      btfss   TXSTA,1         ; Skip if TXbuffer empty
+005D,285C,,           goto    putc1           ; Try again
+005E,1283,,           bcf     STATUS,RP0      ; Select Bank 0.
+005F,0008,,           return
+,,,
+,,,;Delay Routine
+,,,;W = delay time
+,,,;
+0060,00A3,delay,delay      movwf   lc2
+0061,30FF,,_sw2       movlw   0xFF
+0062,00A2,,           movwf   lc1
+0063,0000,,_sw3       nop
+0064,0BA2,,           decfsz  lc1,f
+0065,2863,,           goto    _sw3
+0066,0BA3,,           decfsz  lc2,f
+0067,2861,,           goto    _sw2
+0068,0008,,           return
+,,,
+,,,
+,,,
+0069,0009,inthlr,inthlr     retfie
+,,,
+,,,           END

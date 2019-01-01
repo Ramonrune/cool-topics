@@ -1,0 +1,25 @@
+#
+# Labcenter Electronics
+#
+# Microchip PIC18 syntax highlighter definition file
+#
+line_comment=;.*$
+string='([^'\\]|\\.)*'
+constant=((0(x|X)[\da-fA-F]*)|((\d+\.?\d*)|(\.\d+))((e|E)(\+|-)?\d+)?)(L|l|UL|ul|u|U|F|f)?
+
+#PIC18
+keyword=\b(add(lw|wf(c)?)|and(lw|wf)|bc(f)?|bn(c|n|o|z)?|bov|bra|bsf|bt(fs(c|s)|g)|bz|class|clr(f|wdt)|comf|cpf(seq|sgt|slt)|daw|dcfsnz|decf(sz)?|goto|incf(z)?|infsnz|ior(lw|wf)|lfsr|mov(f|wf|l(b|w))|mul(lw|wf)|negf|nop|pop|push|rcall|reset|ret(fie|lw|urn)|r(l|r)(n)?cf|setf|sleep|sub(fwb|lw|wf(b)?)|swapf|tbl(rd|wt)|tstfsz|xor(lw|wf))\b
+
+#PIC18 Extended
+keyword=\b(add|sub)(fsr|ulnk)|callw|movs(s|f)|pushl)\b
+
+#Extensions omitted as there are simply too many. (Manually add them on a chip by ship basis if required.)
+
+#Common macros
+macro=\b(ADDCF|ADDDCF|BC|BNC|BNDC|BZ|BNZ|CLRC|CLRDC|CLRZ|MOVFN|NEGF|SETC|SETDC|SETZ|SKPC|SKPNC|SKPDC|SKPNDC|SKPZ|SKPNZ|SUBCF|SUBDCF|TSTF)\b
+macro=\b(#DEFINE|#INCLUDE|#UNDEFINE|BANKISEL|BANKSEL|CBLOCK|CODE|CONSTANT|DATA|DB|DE|DT|DW|ELSE|END|ENDC|ENDIF|ENDM|ENDW|EQU|ERROR|ERRORLEVEL|EXITM|EXPAND|EXTERN|FILL|GLOBAL|IDATA|IF|IFDEF|IFNDEF|LIST|LOCAL|MACRO|MESSG|NOEXPAND|NOLIST|ORG|PAGE|PAGESEL|PROCESSOR|RADIX|RES|SET|SPACE|SUBTITLE|TITLE|UDATA|UDATA_OVR|UDATA_SHR|VARIABLE|WHILE|__BADRAM|__CONFIG|__IDLOCS|__MAXRAM)\b
+
+#Operators
+operator=(\+|-|<|>|/(/)?)
+
+

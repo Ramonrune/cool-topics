@@ -1,0 +1,235 @@
+[][][0]FILE_REF S 1,GLCD_T~1.BAS
+[][][0]' Display text and graphics on a graphic LCD
+[][][1]
+[][][2]		Include "PROTON_G4.INT" 
+[1][PROTON_G4.INT][0]FILE_REF S 2,PROTON_G4.INT
+[1][PROTON_G4.INT][1]' Operating on 4MHz.
+[1][PROTON_G4.INT][2]' Using a GRAPHIC LCD with an internal FONT
+[1][PROTON_G4.INT][3]
+[1][PROTON_G4.INT][4]		DEVICE = 16F877
+[1][PROTON_G4.INT][5]        XTAL = 4
+[1][PROTON_G4.INT][6]        REMARKS = ON
+[1][PROTON_G4.INT][7]        WATCHDOG = OFF
+[1][PROTON_G4.INT][8]        MACRO_PARAMS = ON
+[1][PROTON_G4.INT][9]        
+[1][PROTON_G4.INT][10]		LCD_DTPORT = PORTD
+[1][PROTON_G4.INT][11]		LCD_RSPIN = PORTC.1
+[1][PROTON_G4.INT][12]		LCD_ENPIN = PORTE.0
+[1][PROTON_G4.INT][13]		LCD_RWPIN = PORTC.0
+[1][PROTON_G4.INT][14]        LCD_CS1PIN = PORTE.1
+[1][PROTON_G4.INT][15]		LCD_CS2PIN = PORTE.2
+[1][PROTON_G4.INT][16]        LCD_TYPE = GRAPHIC
+[1][PROTON_G4.INT][17]		INTERNAL_FONT = ON
+[1][PROTON_G4.INT][18]		FONT_ADDR = 0
+[1][PROTON_G4.INT][19]		GLCD_FAST_STROBE = OFF
+[1][PROTON_G4.INT][20]        
+[1][PROTON_G4.INT][21]		SDA_PIN = PORTC.4
+[1][PROTON_G4.INT][22]		SCL_PIN = PORTC.3
+[1][PROTON_G4.INT][23]
+[1][PROTON_G4.INT][24]		SERIAL_BAUD = 9600	
+[1][PROTON_G4.INT][25]		RSOUT_PIN = PORTC.6
+[1][PROTON_G4.INT][26]		RSOUT_MODE = TRUE
+[1][PROTON_G4.INT][27]		RSOUT_PACE = 1
+[1][PROTON_G4.INT][28]		RSIN_PIN = PORTC.7
+[1][PROTON_G4.INT][29]		RSIN_MODE = TRUE
+[1][PROTON_G4.INT][30]        
+[1][PROTON_G4.INT][31]        HSERIAL_BAUD = 2400				' Set baud rate to 2400 for 4MHz XTAL
+[1][PROTON_G4.INT][32]        HSERIAL_RCSTA = %10010000       ' Enable serial port and continuous receive
+[1][PROTON_G4.INT][33]        HSERIAL_TXSTA = %00100000       ' Enable transmit and asynchronous mode 
+[1][PROTON_G4.INT][34]        HSERIAL_CLEAR = ON				' Enable Error clearing on received characters
+[1][PROTON_G4.INT][35]        
+[1][PROTON_G4.INT][36]		KEYPAD_PORT = PORTB
+[1][PROTON_G4.INT][37]        
+[1][PROTON_G4.INT][38]		Symbol T300 = 3313	NO_LIST
+[1][PROTON_G4.INT][39]		Symbol N300 = 3313 + $4000	NO_LIST
+[1][PROTON_G4.INT][40]		Symbol T600 = 1646	NO_LIST
+[1][PROTON_G4.INT][41]		Symbol N600 = 1646 + $4000	NO_LIST
+[1][PROTON_G4.INT][42]		Symbol T1200 = 813	NO_LIST
+[1][PROTON_G4.INT][43]		Symbol N1200 = 813 + $4000	NO_LIST
+[1][PROTON_G4.INT][44]		Symbol T2400 = 396	NO_LIST
+[1][PROTON_G4.INT][45]		Symbol N2400 = 396 + $4000	NO_LIST
+[1][PROTON_G4.INT][46]		Symbol T4800 = 188	NO_LIST
+[1][PROTON_G4.INT][47]		Symbol N4800 = 188 + $4000	NO_LIST
+[1][PROTON_G4.INT][48]		Symbol T9600 = 84	NO_LIST
+[1][PROTON_G4.INT][49]		Symbol N9600 = 84 + $4000 NO_LIST
+[1][PROTON_G4.INT][50]    
+[1][PROTON_G4.INT][51]		Symbol OT2400 = 396 + $8000	NO_LIST       ' Open True
+[1][PROTON_G4.INT][52]		Symbol OT1200 = 813 + $8000	NO_LIST       ' Open True
+[1][PROTON_G4.INT][53]		Symbol OT9600 = 84 + $8000	NO_LIST      ' Open True
+[1][PROTON_G4.INT][54]		Symbol OT300  = 3313 + $8000	NO_LIST      ' Open True
+[1][PROTON_G4.INT][55]
+[1][PROTON_G4.INT][56]		Symbol ON2400 = 396 + $4000 + $8000	NO_LIST      ' Open Inverted
+[1][PROTON_G4.INT][57]		Symbol ON1200 = 813 + $4000 + $8000	NO_LIST      ' Open Inverted
+[1][PROTON_G4.INT][58]		Symbol ON9600 = 84 + $4000 + $8000	NO_LIST      ' Open Inverted
+[1][PROTON_G4.INT][59]		Symbol ON300  = 3313 + $4000 + $8000 	NO_LIST     ' Open Inverted
+[1][PROTON_G4.INT][60]
+[1][PROTON_G4.INT][61]' Rsout / Serial Constants
+[1][PROTON_G4.INT][62]		Symbol HOME = 1	NO_LIST
+[1][PROTON_G4.INT][63]		Symbol BELL = 7	NO_LIST
+[1][PROTON_G4.INT][64]		Symbol BKSP = 8	NO_LIST
+[1][PROTON_G4.INT][65]		Symbol TAB = 9	NO_LIST
+[1][PROTON_G4.INT][66]		Symbol CR = 13	NO_LIST
+[1][PROTON_G4.INT][67]        
+[1][PROTON_G4.INT][68]        ADCON1 = 7						' Set PORTA and PORTE to all digital
+[1][PROTON_G4.INT][69]        
+[1][PROTON_G4.INT][70]        
+[1][PROTON_G4.INT][71]
+[1][PROTON_G4.INT][72]FILE_REF E 2,PROTON_G4.INT
+[][][3]        
+[][][4]' Set up some Variables
+[][][5]        
+[][][6]        Dim Xpos		as	Byte
+[][][7]        Dim	Ypos		as	Byte
+[][][8]
+[][][9]        Cls
+[][][10]        Print at 0 , 2 , "Graphic LCD Test"
+[][][11]        
+[][][12]Again:        
+[][][13]        For Xpos = 0 to 63
+[][][14]        	Ypos = SIN Xpos
+[][][15]        	Plot Xpos , Ypos
+[][][16]        	Delayms 10
+[][][17]        Next
+[][][18]        For Xpos = 0 to 63
+[][][19]        	Ypos = SIN Xpos
+[][][20]        	UnPlot Xpos , Ypos
+[][][21]        	Delayms 10
+[][][22]        Next                
+[][][23]		Goto Again
+[][][24]        
+[][][25]		Include "FONT.INC"
+[2][FONT.INC][0]FILE_REF S 3,FONT.INC
+[2][FONT.INC][1]' Copy and paste this table into your own program
+[2][FONT.INC][2]' if an internal font is required.
+[2][FONT.INC][3]FONT:-	CData $00,$00,$00,$00,$00,$00		'Graphic character 0
+[2][FONT.INC][4]		CData $FF,$FF,$FF,$FF,$FF,$FF		'Graphic character 1
+[2][FONT.INC][5]        CData $07,$07,$07,$00,$00,$00		'Graphic character 2
+[2][FONT.INC][6]        CData $00,$00,$00,$07,$07,$07		'Graphic character 3
+[2][FONT.INC][7]        CData $E0,$E0,$E0,$00,$00,$00		'Graphic character 4
+[2][FONT.INC][8]        CData $00,$00,$00,$E0,$E0,$E0		'Graphic character 5
+[2][FONT.INC][9]        CData $FF,$FF,$FF,$00,$00,$00		'Graphic character 6
+[2][FONT.INC][10]        CData $00,$00,$00,$FF,$FF,$FF		'Graphic character 7
+[2][FONT.INC][11]        CData $07,$07,$07,$07,$07,$07		'Graphic character 8
+[2][FONT.INC][12]        CData $E0,$E0,$E0,$E0,$E0,$E0		'Graphic character 9
+[2][FONT.INC][13]        CData $E0,$E0,$E0,$07,$07,$07		'Graphic character 10
+[2][FONT.INC][14]        CData $07,$07,$07,$E0,$E0,$E0		'Graphic character 11
+[2][FONT.INC][15]        CData $FF,$FF,$FF,$E0,$E0,$E0		'Graphic character 12
+[2][FONT.INC][16]        CData $E0,$E0,$E0,$FF,$FF,$FF		'Graphic character 13
+[2][FONT.INC][17]        CData $07,$07,$07,$FF,$FF,$FF		'Graphic character 14
+[2][FONT.INC][18]        CData $FF,$FF,$FF,$07,$07,$07		'Graphic character 15
+[2][FONT.INC][19]        CData $55,$AA,$55,$AA,$55,$AA		'Graphic character 16
+[2][FONT.INC][20]        CData $AA,$55,$AA,$55,$AA,$55		'Graphic character 17
+[2][FONT.INC][21]        CData $01,$01,$01,$01,$01,$01		'Graphic character 18
+[2][FONT.INC][22]        CData $80,$80,$80,$80,$80,$80		'Graphic character 19
+[2][FONT.INC][23]        CData $FF,$00,$00,$00,$00,$00		'Graphic character 20
+[2][FONT.INC][24]        CData $00,$00,$00,$00,$00,$FF		'Graphic character 21
+[2][FONT.INC][25]        CData $FF,$01,$01,$01,$01,$01		'Graphic character 22
+[2][FONT.INC][26]        CData $01,$01,$01,$01,$01,$FF		'Graphic character 23
+[2][FONT.INC][27]        CData $FF,$80,$80,$80,$80,$80		'Graphic character 24
+[2][FONT.INC][28]        CData $80,$80,$80,$80,$80,$FF		'Graphic character 25
+[2][FONT.INC][29]        CData $00,$00,$06,$09,$09,$06		'User defined character 26
+[2][FONT.INC][30]        CData $00,$00,$00,$00,$00,$00		'User defined character 27
+[2][FONT.INC][31]        CData $00,$00,$00,$00,$00,$00		'User defined character 28
+[2][FONT.INC][32]        CData $00,$00,$00,$00,$00,$00		'User defined character 29
+[2][FONT.INC][33]        CData $00,$00,$00,$00,$00,$00		'User defined character 30
+[2][FONT.INC][34]        CData $00,$00,$00,$00,$00,$00		'User defined character 31
+[2][FONT.INC][35]        CData $00,$00,$00,$00,$00,$00		'32 -   - 20        
+[2][FONT.INC][36]		CData $00,$00,$4F,$00,$00,$00		'33 - ! - 21
+[2][FONT.INC][37]		CData $00,$07,$00,$07,$00,$00		'34 - " - 22
+[2][FONT.INC][38]		CData $14,$7F,$14,$7F,$14,$00		'35 - # - 23
+[2][FONT.INC][39]		CData $24,$2A,$7F,$2A,$12,$00		'36 - $ - 24
+[2][FONT.INC][40]		CData $23,$13,$08,$64,$62,$00		'37 - % - 25
+[2][FONT.INC][41]		CData $36,$49,$55,$22,$50,$00		'38 - & - 26
+[2][FONT.INC][42]		CData $00,$05,$03,$00,$00,$00		'39 - ' - 27
+[2][FONT.INC][43]		CData $1C,$22,$41,$00,$00,$00		'40 - ( - 28
+[2][FONT.INC][44]		CData $00,$00,$41,$22,$1C,$00		'41 - ) - 29
+[2][FONT.INC][45]		CData $14,$08,$3E,$08,$14,$00		'42 - * - 2A
+[2][FONT.INC][46]		CData $08,$08,$3E,$08,$08,$00		'43 - + - 2B
+[2][FONT.INC][47]		CData $00,$50,$30,$00,$00,$00		'44 - , - 2C
+[2][FONT.INC][48]		CData $08,$08,$08,$08,$08,$00		'45 - - - 2D
+[2][FONT.INC][49]		CData $00,$60,$60,$00,$00,$00		'46 - . - 2E
+[2][FONT.INC][50]		CData $20,$10,$08,$04,$02,$00		'47 - / - 2F
+[2][FONT.INC][51]		CData $3E,$51,$49,$45,$3E,$00		'48 - 0 - 30
+[2][FONT.INC][52]		CData $00,$42,$7F,$40,$00,$00		'49 - 1 - 31
+[2][FONT.INC][53]		CData $42,$61,$51,$49,$46,$00		'50 - 2 - 32
+[2][FONT.INC][54]		CData $21,$41,$45,$4B,$31,$00		'51 - 3 - 33
+[2][FONT.INC][55]		CData $18,$14,$12,$7F,$10,$00		'52 - 4 - 34
+[2][FONT.INC][56]		CData $27,$45,$45,$45,$39,$00		'53 - 5 - 35
+[2][FONT.INC][57]		CData $3C,$4A,$49,$49,$30,$00		'54 - 6 - 36
+[2][FONT.INC][58]		CData $01,$71,$09,$05,$03,$00		'55 - 7 - 37
+[2][FONT.INC][59]		CData $36,$49,$49,$49,$36,$00		'56 - 8 - 38
+[2][FONT.INC][60]		CData $06,$49,$49,$49,$3E,$00		'57 - 9 - 39
+[2][FONT.INC][61]		CData $00,$36,$36,$00,$00,$00		'58 - : - 3A
+[2][FONT.INC][62]		CData $00,$56,$36,$00,$00,$00		'59 - ; - 3B
+[2][FONT.INC][63]		CData $08,$14,$22,$41,$00,$00		'60 - < - 3C
+[2][FONT.INC][64]		CData $14,$14,$14,$14,$14,$00		'61 - = - 3D
+[2][FONT.INC][65]		CData $00,$41,$22,$14,$08,$00		'62 - > - 3E
+[2][FONT.INC][66]		CData $02,$01,$51,$09,$06,$00		'63 - ? - 3F
+[2][FONT.INC][67]		CData $32,$49,$79,$41,$3E,$00		'64 - @ - 40
+[2][FONT.INC][68]		CData $7E,$11,$11,$11,$7E,$00		'65 - A - 41
+[2][FONT.INC][69]		CData $7F,$49,$49,$49,$36,$00		'66 - B - 42
+[2][FONT.INC][70]		CData $3E,$41,$41,$41,$22,$00		'67 - C - 43
+[2][FONT.INC][71]		CData $7F,$41,$41,$22,$1C,$00		'68 - D - 44
+[2][FONT.INC][72]		CData $7F,$49,$49,$49,$41,$00		'69 - E - 45
+[2][FONT.INC][73]		CData $7F,$09,$09,$09,$01,$00		'70 - F - 46
+[2][FONT.INC][74]		CData $3E,$41,$49,$49,$7A,$00		'71 - G - 47
+[2][FONT.INC][75]		CData $7F,$08,$08,$08,$7F,$00		'72 - H - 48
+[2][FONT.INC][76]		CData $00,$41,$7F,$41,$00,$00		'73 - I - 49
+[2][FONT.INC][77]		CData $20,$40,$41,$3F,$01,$00		'74 - J - 4A
+[2][FONT.INC][78]		CData $7F,$08,$14,$22,$41,$00		'75 - K - 4B
+[2][FONT.INC][79]		CData $7F,$40,$40,$40,$40,$00		'76 - L - 4C
+[2][FONT.INC][80]		CData $7F,$02,$0C,$02,$7F,$00		'77 - M - 4D
+[2][FONT.INC][81]		CData $7F,$04,$08,$10,$7F,$00		'78 - N - 4E
+[2][FONT.INC][82]		CData $3E,$41,$41,$41,$3E,$00		'79 - O - 4F
+[2][FONT.INC][83]		CData $7F,$09,$09,$09,$06,$00		'80 - P - 50
+[2][FONT.INC][84]		CData $3E,$41,$51,$21,$5E,$00		'81 - Q - 51
+[2][FONT.INC][85]		CData $7F,$09,$19,$29,$46,$00		'82 - R - 52
+[2][FONT.INC][86]		CData $46,$49,$49,$49,$31,$00		'83 - S - 53
+[2][FONT.INC][87]		CData $01,$01,$7F,$01,$01,$00		'84 - T - 54
+[2][FONT.INC][88]		CData $3F,$40,$40,$40,$3F,$00		'85 - U - 55
+[2][FONT.INC][89]		CData $1F,$20,$40,$20,$1F,$00		'86 - V - 56
+[2][FONT.INC][90]		CData $3F,$40,$38,$40,$3F,$00		'87 - W - 57
+[2][FONT.INC][91]		CData $63,$14,$08,$14,$63,$00		'88 - X - 58
+[2][FONT.INC][92]		CData $07,$08,$70,$08,$07,$00		'89 - Y - 59
+[2][FONT.INC][93]		CData $61,$51,$49,$45,$43,$00		'90 - Z - 5A
+[2][FONT.INC][94]		CData $7F,$41,$41,$00,$00,$00		'91 - [ - 5B
+[2][FONT.INC][95]		CData $02,$04,$08,$10,$20,$00		'92 - \ - 5C
+[2][FONT.INC][96]		CData $00,$00,$41,$41,$7F,$00		'93 - ] - 5D
+[2][FONT.INC][97]		CData $04,$02,$01,$02,$04,$00		'94 - ^ - 5E
+[2][FONT.INC][98]		CData $40,$40,$40,$40,$40,$00		'95 - _ - 5F
+[2][FONT.INC][99]		CData $00,$01,$02,$04,$00,$00		'96 - ` - 60
+[2][FONT.INC][100]		CData $20,$54,$54,$54,$78,$00		'97 - a - 61
+[2][FONT.INC][101]		CData $7F,$48,$44,$44,$38,$00		'98 - b - 62
+[2][FONT.INC][102]		CData $38,$44,$44,$44,$20,$00		'99 - c - 63
+[2][FONT.INC][103]		CData $38,$44,$44,$48,$7F,$00		'100  d - 64
+[2][FONT.INC][104]		CData $38,$54,$54,$54,$18,$00		'101  e - 65
+[2][FONT.INC][105]		CData $08,$7E,$09,$01,$02,$00		'102  f - 66
+[2][FONT.INC][106]		CData $0C,$52,$52,$52,$3E,$00		'103  g - 67
+[2][FONT.INC][107]		CData $7F,$08,$04,$04,$78,$00		'104  h - 68
+[2][FONT.INC][108]		CData $00,$44,$7D,$40,$00,$00		'105  i - 69
+[2][FONT.INC][109]		CData $00,$20,$40,$44,$3D,$00		'106  j - 6A
+[2][FONT.INC][110]		CData $7F,$10,$28,$44,$00,$00		'107  k - 6B
+[2][FONT.INC][111]		CData $00,$41,$7F,$40,$00,$00		'108  l - 6C
+[2][FONT.INC][112]		CData $7C,$04,$18,$04,$78,$00		'109  m - 6D
+[2][FONT.INC][113]		CData $7C,$08,$04,$04,$78,$00		'110  n - 6E
+[2][FONT.INC][114]		CData $38,$44,$44,$44,$38,$00		'111  o - 6F
+[2][FONT.INC][115]		CData $7C,$14,$14,$14,$08,$00		'112  p - 70
+[2][FONT.INC][116]		CData $08,$14,$14,$18,$7C,$00		'113  q - 71
+[2][FONT.INC][117]		CData $7C,$08,$04,$04,$08,$00		'114  r - 72
+[2][FONT.INC][118]		CData $48,$54,$54,$54,$20,$00		'115  s - 73
+[2][FONT.INC][119]		CData $04,$3F,$44,$40,$20,$00		'116  t - 74
+[2][FONT.INC][120]		CData $3C,$40,$40,$20,$7C,$00		'117  u - 75
+[2][FONT.INC][121]		CData $1C,$20,$40,$20,$1C,$00		'118  v - 76
+[2][FONT.INC][122]		CData $3C,$40,$30,$40,$3C,$00		'119  w - 77
+[2][FONT.INC][123]		CData $44,$28,$10,$28,$44,$00		'120  x - 78
+[2][FONT.INC][124]		CData $0C,$50,$50,$50,$3C,$00		'121  y - 79
+[2][FONT.INC][125]		CData $44,$64,$54,$4C,$44,$00		'122  z - 7A
+[2][FONT.INC][126]		CData $08,$36,$41,$00,$00,$00		'123  { - 7B
+[2][FONT.INC][127]		CData $00,$00,$7F,$00,$00,$00		'124  | - 7C
+[2][FONT.INC][128]		CData $00,$00,$41,$36,$08,$00		'125  } - 7D
+[2][FONT.INC][129]		CData $00,$08,$04,$08,$04,$00 		'126  ~ - 7E     
+[2][FONT.INC][130]        
+[2][FONT.INC][131]FILE_REF E 3,FONT.INC
+[][][26]
+[][][27]
+[][][0]FILE_REF E 1,GLCD_T~1.BAS

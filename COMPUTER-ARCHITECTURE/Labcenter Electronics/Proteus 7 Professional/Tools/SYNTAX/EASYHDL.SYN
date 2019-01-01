@@ -1,0 +1,21 @@
+#
+# Labcenter Electronics
+#
+# EASYHDL syntax highlighter definition file.
+#
+line_comment=//.*$
+line_comment=REM.*$
+#block_comment_open=/\*
+#block_comment_close=\*/
+string="([^"\\]|\\.)*"
+constant=\b(EVTID|EVTTIME|REALTIME|TDSCALE|RANDOM|EI_ANY|EI_BOOT|EI_SETTLE|EI_INPUT|EI_OUTPUT|EI_CALLBACK|FLT|SHI|SLO|WHI|WLO|INACTIVE|FF|FT|POSEDGE|FALSE|ACTIVE|TF|NEGEDGE|TT|TRUE|PI)\b
+constant=(\$[\da-fA-F]+)|(\%[0-1]+)\b
+constant=\b((0(x|X)[\da-fA-F]+)|((\d+\.?\d*)|(\.\d+))((e|E)(\+|-)?\d+)?)(f|p|n|u|m|K|M|G|T)?\b
+#constant='([^'\\]|\\.)*'
+keyword=\b(ABORT|ALIAS|BOOL|BOUNDSTEP|BREAK|CALLBACK|CASE|CONTINUE|DATA|DEFAULT|DOUBLE|ELIF|ELSE|ELSEIF|ELSIF|END|ENDIF|ENDMAP|ENDON|ENDSW|FLOAT|FOR|GOSUB|GOTO|IF|INT|IPROP|LET)\b
+keyword=\b(MAP|NEXT|NODE|NPROP|ON|PIN|PRINT|READ|REM|REPEAT|RESTORE|RETURN|SEED|SLEEP|STRING|SUSPEND|SWITCH|TIME|TIMER|TPROP|UNTIL|WAIT|WEND|WHILE)\b
+keyword=\b(DEG|RAD|SIN|COS|TAN|ASIN|ACOS|ATAN|SQRT|LN|EXP|POW|ROUND|FRAC|ASC|CHR|LEN|SUBSTR)\b
+keyword=\b(AT|AFTER|EVERY|THEN|STEP|TO)\b
+#extensions=\b()\b
+operator=AND|OR|&|\^|\||<<|>>|\*|/|%|\+|-|=|!|<|>
+

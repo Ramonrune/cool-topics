@@ -1,0 +1,15 @@
+#
+# Labcenter Electronics
+#
+# AVR syntax highlighter definition file.
+#
+line_comment=;.*$
+string='([^'\\]|\\.)*'
+constant=\b((0(x|X)[\da-fA-F]*)|((\d+\.?\d*)|(\.\d+))((e|E)(\+|-)?\d+)?)(L|l|UL|ul|u|U|F|f)?\b
+keyword=\b(ad(d|c|iw)|and(i)?|cbr|clr|com|cp(c|i)?|dec|eor)\b
+keyword=\b(fmul(su|s)?|inc|mul(su|s)?|neg|or(i)?|sub(i)?|sbc(i)?|sbiw|sbr|ser|tst)\b
+keyword=\b(br(bs|bc|eq|ne|cs|cc|sh|lo|mi|pl|ge|lt|hs|hc|ts|tc|vs|vc|ie|id))\b
+keyword=\b(call|cpse|eicall|eijmp|ijmp|icall|jmp|rjmp|rcall|ret(i)?|sb(rc|rs|ic|is))\b
+keyword=\b(elpm|espm|in|ld(i|s|d)?|lpm|mov(w)?|out|push|pop|st(s|d)?|spm)\b
+keyword=\b(asr|cbi|cl(c|n|z|i|s|v|t|h)|lsl|lsr|nop|ror|rol|sbi|se(c|n|z|i|s|v|t|h)|swap|sleep|bst|bld|bset|bclr|wdr)/b
+extensions=\b\.(org|equ|include|macro|endmacro|set|byte|cseg|db|def|device|dseg|dw|eseg|exit|list|nolist|listmac)/b

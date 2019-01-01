@@ -1,0 +1,148 @@
+' -----[ Title ]-----------------------------------------------------------
+'
+' File...... 24LC32.BSP
+' Purpose... Demonstrates I2CIN, I2COUT and using an LCD
+' Author.... Parallax
+' E-mail.... stamptech@parallaxinc.com
+' Started... 
+' Updated... 
+
+' {$STAMP BS2p}
+
+' -----[ Program Description ]---------------------------------------------
+'
+' Writes to and reads from I2C EEPROM.  Data is displayed on a 2x16 LCD.
+'
+' Program requires a 2x16 LCD
+'
+'   - LCD.E 	--> Pin0 (pulled down [to ground] through 4.7K)
+'   - LCD.R/W	--> Pin2 
+'   - LCD.RS 	--> Pin3
+'   - LCD.D4	--> Pin4
+'   - LCD.D5	--> Pin5
+'   - LCD.D6	--> Pin6
+'   - LCD.D7	--> Pin7
+
+' -----[ I/O Definitions ]-------------------------------------------------
+'
+LCDpin		CON	0				' LCD is connected to OutL
+I2Cpin		CON	8				' SDA on 8; SCL on 9
+
+' -----[ Constants ]-------------------------------------------------------
+'
+NoCmd		CON	0
+ClrLCD  	CON	$01                     	' clear the LCD
+CrsrHm  	CON	$02                     	' move cursor to home position
+CrsrLf  	CON	$10                     	' move cursor left
+CrsrRt  	CON	$14                     	' move cursor right
+DispLf  	CON	$18                    	' shift displayed chars left
+DispRt  	CON	$1C                    	' shift displayed chars right
+
+DDRam   	CON 	$80                     	' Display Data RAM control
+CGRam		CON	$40				' Custom character RAM control
+Line1		CON	$80
+Line2		CON	$C0
+
+MaxEE		CON	4095				' highest EE address
+
+' -----[ Variables ]-------------------------------------------------------
+'
+addr		VAR	Word				' EE address
+'addrHi		VAR	addr.HighByte
+'addrLo		VAR	addr.LowByte
+rVr		VAR	Word				' for random number
+tOut		VAR	Byte				' test value to LCD
+tIn		VAR	Byte				' test value read from LCD
+temp		VAR	Word				' temp value for display
+width		VAR	Nib				' width of rt justified 
+pos		VAR	Byte				' column position 
+digits		VAR	Nib				' digits to display
+
+
+' -----[ EEPROM Data ]-----------------------------------------------------
+'
+Super2		DATA	%01100				' superscript 2 (custom char)
+		DATA	%00010
+		DATA	%00100
+		DATA	%01000
+		DATA	%01110
+		DATA	%00000
+		DATA	%00000
+		DATA	%00000
+
+' -----[ Initialization ]--------------------------------------------------
+'
+LCD_Setup:
+  PAUSE 500
+  LCDCMD LCDpin,%00000011 
+  PAUSE 5		' 8-bit mode
+  LCDCMD LCDpin,%00000011 
+  PAUSE 0
+  LCDCMD LCDpin,%00000011 
+  PAUSE 0
+  LCDCMD LCDpin,%00000010				' 4-bit mode
+  LCDCMD LCDpin,%00101000				' 2-line mode
+  LCDCMD LCDpin,%00001100				' no crsr, no blink 
+  LCDCMD LCDpin,%00000110				' inc crsr, no disp shift
+
+
+  ' download custom character map to LCD
+
+  LCDCMD LCDpin,CGRam				' write to CGRAM
+
+  FOR addr = Super2 TO (Super2 + 7)		' build custom char
+    READ addr,temp					' get byte from EEPROM
+    LCDOUT LCDpin,NoCmd,[temp]			' put into LCD CG RAM
+  NEXT
+
+' -----[ Main Code ]-------------------------------------------------------
+'
+Splash:
+  LCDOUT LCDpin,ClrLCD,["  BS2P <-> I",0,"C"]
+  LCDOUT LCDpin,Line2, [" Communications"]
+
+  PAUSE 2000
+
+Main:
+  LCDOUT LCDpin,ClrLCD,["I",0,"C:     Out="]
+  LCDOUT LCDpin,Line2 + 10,["In="]
+
+  FOR addr = 0 TO MaxEE STEP 5			' create addresses
+    RANDOM rvr					' create "random" value
+    tOut = rvr.lowByte
+
+    ' write value then read it back
+
+    I2COUT I2Cpin,$A0,addr.highbyte\addr.lowbyte,[tOut]
+    PAUSE 100
+    I2CIN I2Cpin,$A1,addr.highbyte\addr.lowbyte,[tIn]
+
+    ' display results
+
+    LCDOUT LCDpin,Line1 + 4,[DEC addr]
+    temp = tOut
+    width = 3
+    pos = Line1 + 13
+    GOSUB RJ_Print
+    temp = tIn
+    width = 3
+    pos = Line2 + 13
+    GOSUB RJ_Print
+
+    PAUSE 250
+  NEXT
+
+  END
+
+' -----[ Subroutines ]-----------------------------------------------------
+'
+RJ_Print:						' right justified printing
+  digits = width
+  LOOKDOWN temp,<[0,10,100,1000,65535],digits
+  LCDOUT LCDpin,pos,[REP " "\(width-digits),dec temp]
+  RETURN
+
+
+
+
+

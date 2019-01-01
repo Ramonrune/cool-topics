@@ -1,0 +1,86 @@
+File EVB11.ASM    þ By ASM11 v1.84b [Tuesday, May 15, 2001  3:38 pm]
+
+    1                           ;EVB11 Demo Program
+    2                           ;A very simple example which implements a
+    3                           ;terminal echo program and writes the incomming
+    4                           ;and outgoing characters to some LED displays.
+    5                           
+    6      9800                 ACIA_CONTROL    equ $9800
+    7      9800                 ACIA_STATUS     equ $9800
+    8      9801                 ACIA_DATA       equ $9801
+    9                           
+   10      1003                 PORTC             equ      $1003
+   11      1004                 PORTB             equ      $1004
+   12      1005                 PORTCL            equ      $1005
+   13      1007                 DDRC              equ      $1007
+   14                           
+   15                           
+   16      FFFE                                 org $FFFE
+   17 FFFE.E000                                 dw start
+   18                           
+   19      E000                                 org $E000
+   20                           
+   21 E000:8E00 FF         [ 3] start:          lds  #$FF
+   22                           
+   23 E003:8603            [ 2]                 ldaa #$03                       ; Reset
+   24 E005:B798 00         [ 4]                 staa ACIA_CONTROL
+   25                           
+   26 E008:861D            [ 2]                 ldaa #$1D                       ; 8 bits, odd, 1 stop, div 16 clocks
+   27 E00A:B798 00         [ 4]                 staa ACIA_CONTROL
+   28                           
+   29 E00D:86FF            [ 2]                 ldaa #$FF
+   30 E00F:B710 07         [ 4]                 staa DDRC
+   31                           
+   32                           
+   33 E012:B698 00         [ 4] waitrx:         ldaa ACIA_STATUS
+   34 E015:8401            [ 2]                 anda #$01
+   35 E017:2607 (E020)     [ 3]                 bne readrx
+   36 E019:8600            [ 2]                 ldaa #0
+   37 E01B:4A              [ 2] delay:          deca
+   38 E01C:26FD (E01B)     [ 3]                 bne delay
+   39 E01E:20F2 (E012)     [ 3]                 bra waitrx
+   40                           
+   41 E020:F698 01         [ 4] readrx:         ldab ACIA_DATA
+   42 E023:F710 04         [ 4]                 stab PORTB
+   43                           
+   44 E026:B698 00         [ 4] waittx:         ldaa ACIA_STATUS
+   45 E029:8402            [ 2]                 anda #$02
+   46 E02B:27F9 (E026)     [ 3]                 beq waittx
+   47                                   
+   48 E02D:F798 01         [ 4]                 stab ACIA_DATA
+   49 E030:F710 03         [ 4]                 stab PORTC
+   50                           
+   51 E033:20DD (E012)     [ 3] done:           bra waitrx
+   52                           
+   53                           
+   54                           
+   55                           
+
+-----------------------------------------------------------
+
+         S E G M E N T   U S A G E   R E P O R T
+
+Segment  Start   End    Size  CodObj  DatObj  TotObj  Lines
+-------  -----  -----  -----  ------  ------  ------  -----
+ROM      $E000  $FFFF  $2000   $0035   $0002   $0037     55
+
+Summary  $E000  $FFFF  $2000   $0035   $0002   $0037     55
+
+-----------------------------------------------------------
+
+         O V E R A L L   M E M O R Y   U S A G E
+
+Total RAM   size:      0   $0000    0.00 KB
+Total CODE  size:     53   $0035    0.05 KB   (22 instructions)
+Total DATA  size:      2   $0002    0.00 KB
+Total IMAGE size:     55   $0037    0.05 KB
+
+Lowest address  :  57344   $E000
+Highest address :  65535   $FFFF
+Address Range   :   8192   $2000    8.00 KB   (Used Range:  0.67%)
+
+Number of INCLUDE files: 0
+
+Assembled 55 lines (No Errors, Warnings: 0)
+
+                        *** End of EVB11.ASM listing ***

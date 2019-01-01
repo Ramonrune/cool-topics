@@ -1,0 +1,1439 @@
+BASIC11 Language Interpreter for the 68HC11EVB
+
+Documentation & User's Manual
+==============================================
+COPYRIGHT NOTICE
+	The entire contents of this manual and the software described
+herein are copyrighted with all rights reserved.  No part of this manual
+or the software may be copied in whole or in part without the express
+permission of the author.
+
+WARRANTY
+
+	Even though many hours of work went into the writing and testing
+of BASIC11 and it is believed to be "bug free", BASIC11 is supplied
+AS-IS and without warranty.  The author makes no express or implied
+warranties as to the fitness of use and merchantability of the product.
+The user assumes the entire risk as to its quality, performance and
+fitness of use.
+
+	In no event will the author be liable for direct, indirect,
+incidental, or consequential damages resulting from the use of this
+product.  Including but not limited to loss of sales, income, service,
+profits, or potential profits.
+
+	In the event a situation is found where the program does not
+function as the manual describes, the author will attempt to correct any
+errors brought to his attention, however he makes no guarantee to do so.
+===============================================================================
+ 1. Introduction
+
+	BASIC11 is a very fast and complete control oriented BASIC
+interpreter for the Motorola MC68HC11 single chip microcomputer. It
+provides all the functions of standard BASIC along with a number of
+enhancements that allow direct control of some of the MC68HC11's
+hardware features using BASIC statements.
+
+	The only limitations of BASIC11 (which usually aren't
+limitations in a control environment) are that it only supports integer
+variables.  Also  strings are only supported in PRINT and INPUT
+statements.
+
+	Lines entered into a BASIC11 program must begin with a line
+number and must be terminated by a carriage return.  Lines may be no
+longer than 80 characters.  All lines are automatically put in numerical
+order by BASIC11 as they are typed in.  Lines may be deleted from a
+program by simply typing the line number followed immediately by a
+carriage return.
+
+	The syntax of each line in a BASIC11 program is checked as soon
+as a CARRIAGE RETURN is entered and any errors are reported immediately.
+This prevents the interpreter from having to check syntax at runtime and
+is one of the things that contributes to BASIC11's speed.
+
+2. The Basics of BASIC11
+
+2.1 Lines
+
+	Each line of a BASIC11 program must begin with a line number.
+Lines may be numbered from 1 through 32767 and each line must be
+terminated by a CARRIAGE RETURN. Lines may contain multiple statements
+that are separated by colons. Spaces may be used freely in BASIC11
+statements to improve their readability with one exception.  Assignment
+statements and arithmetic/logic statements may contain no imbeded
+blanks.  Some examples follow:
+
+		10 PRINT X,   X*X  ,   RND(0)-5
+		20 X=5  :  Y=10  : Z=15
+
+2.2 Integer Constants:
+
+	All integer constants are represented internally as 16 bit two's
+complement numbers with a decimal range of -32768 to 32767.  In the
+source program and input statements numbers may represented in either
+decimal or hexidecimal form.  All hexidecimal constants must be prefixed
+by a dollar sign ($). Some examples of integer constants are:
+
+		50 X=1000
+		60 Y=-55
+		70 Z=PEEK($E010)
+
+2.3 String Constants:
+
+	As mentioned earlier, BASIC11 does not support string
+variables.  However, it does support string constants in both PRINT
+statements and INPUT statements to allow for prompting of input data.
+Some examples of string constants follow:
+
+		100 PRINT "Please Enter Your Name"
+		200 INPUT "Enter a Number",N
+
+2.4 Variables:
+
+	BASIC11 currently supports only integer variables (it may
+support string and floating point variables in the future).  Integer
+variable names can consist of a single alphabetic letter or a letter
+followed by another letter or number.  Examples of integer variable
+names are:
+
+		AB, XZ,R1,TO,IF
+
+	Notice in the above example that two of the variables are the
+same as the BASIC11 keywords TO and IF.  In many BASIC's this is illegal
+but in BASIC11 it is perfectly legal.
+
+	Any legal integer variable name may also be subscripted or
+dimensioned using the DIM statement. A variable is dimensioned by
+following any legal integer variable name by an expression that is
+enclosed in parentheses.  Note that when a variable is declared in a DIM
+statement storage is not allocated until runtime.  This is because all
+array storage is allocated dynamically.  All dimensioned variables start
+with 0. For example:
+
+			300 DIM AX(4)
+
+Will create the following five variables:
+
+			AX(0), AX(1), AX(2), AX(3), AX(4)
+
+	Again, the same variable name may be used for both a
+non-dimensioned and dimensioned variable. All dimensioned variables must
+be declared in a DIM statement before they can be referenced in an
+expression or Error # 24 will result when the variable is referenced
+during a program run.
+
+2.5 Variable Assignment
+
+	By using the LET, INPUT, INBYTE or the READ statements variables
+may be assigned values. The most common way to assign a value to a
+variable is through the use of the LET statement.  For example, the
+statement:
+
+			90 LET GD=7
+
+Would assign the integer value of 7 to the variable "GD" so that each
+time the variable "GD" was used in an expression, the numeric value of 7
+would actually be substituted.
+
+	An INPUT statement, when executed, will cause BASIC11 to stop,
+print a question mark on the terminal, and wait for the user to enter a
+numeric constant.  For example, the statement:
+
+			40 INPUT A1
+
+will assign whatever number is typed at the terminal to the variable
+"A1".
+
+	The INBYTE statement is similar to the input statement except
+that instead of expecting an ASCII formatted number from the specifyed
+input device, it assigns the value of the ASCII byte to the variable
+that follows it.  For example if the statement INBYTE AX were executed
+and the character "Y" were typed at the terminal, the variable AX would
+contain the value 89 which is the numeric value of the ASCII character
+"Y".  The INBYTE statement is very useful for obtaining data from input
+devices other than the control terminal.
+
+	The READ statement works almost like the INPUT statement except
+that the numeric constant is taken from a DATA statement instead of
+being typed in by a user from the terminal (more about the READ and DATA
+statements later).
+
+2.6 Operators:
+
+	There are three classes of operators available in BASIC11. The
+one most are familiar with is the mathematical operators.  Addition,
+subtraction, multiplication, and division. The mathematical operators
+are:
+		SYMBOL	EXAMPLE	MEANING
+			+	A+B	Add A to B
+			-	A-B	Subtract B from A
+			*	A*B	Multiply A and B
+			/	A/B	Divide A by B
+			\	A\B	Remainder of (A/B)
+
+	The next class of operators is the logical operators.  They are
+used to perform "bitwise" operations. They can be used to "ignore"
+certain bits within a word or in conditional tests when more than one
+condition needs to be tested.  The logical operators are:
+
+		SYMBOL	EXAMPLE	MEANING
+		  .AND.	A.AND.B	Bitwise logical AND of A and B.
+		   .OR.	A.OR.B	Bitwise logical OR of  A and B.
+		  .EOR.	A.EOR.B	Bitwise logical EXCLUSIVE OR of A and B.
+
+	The last class of operators is the relational operators.  These
+are used in the IF and WHILE statements to test whether one expression
+is less than, greater than, or equal to another expression.  The
+relational operators are:
+
+		SYMBOL	EXAMPLE	MEANING
+		    =	A=B	True if A is equal to B
+		   <>	A<>B	True if A is not equal to B
+		<	A<B	True if A is less than B
+		>	A>B	True if A is greater than B
+		<=	A<=B	True if A is less than or equal to B
+		>=	A>=B	True if A is greater than or equal to B
+
+2.7 Operator Precedence:
+
+	Overall operator precedence is shown below.  The operator at the
+top of the list has the highest priority in any expression, while the
+operator at the bottom has the lowest priority.
+
+			()	Expressions enclosed in parenthesis
+		-    NOT	Unary minus and NOT (one's complement)
+		*   /   \	Multiplication, division, and Mod (remainder)
+		+   -		Addition and subtraction
+			=	Relational operators
+			<>
+			<
+			>
+			<=
+			>=
+			.AND.	All logical operators have the same precdence
+			.OR.
+			.EOR.
+
+
+2.8 Operating Modes:
+
+	BASIC11 has two operating modes, the RUN mode and the immediate
+Mode.  In the RUN mode program lines that have previously been entered
+are executed starting with the smallest line number and continues until
+a STOP or END statement is executed, an error occurs, or a control-C is
+typed on the terminal.
+
+	In the immediate Mode, any legal BASIC11 statement or command
+may be typed in without a line number and the statement will immediately
+be executed.  BASIC11 may be used in this mode to debug programs by
+examining variables, memory locations, or I/O ports.
+
+
+2.9 Remarks:
+
+	It is a good idea to place remarks throughout your programs so
+that someone else can understand the operation of your program if it
+ever becomes necessary to change it.  It can even help you if you
+haven't worked with the program in a while.  Even though the REM
+statement is not executable it may be referenced by other program
+statements (for example, by a GOTO or GOSUB statement).
+3.0 Commands:
+
+	Commands are instructions to BASIC11 that allow it to perform
+"housekeeping" tasks at the users request.  None of the following
+commands may appear in a BASIC11 program.
+
+NAME	EXAMPLE/EXPLANATION
+
+CLEAR	CLEAR
+
+	The clear command is used to set all variables to zero and to
+reset the GOSUB, WHILE, and FOR - NEXT stacks.  A clear is automatically
+performed when a RUN command is entered.
+
+CONT	CONT
+
+	The CONT command is used to restart a BASIC11 program either
+after it has been stopped by either a STOP statement or a control-C was
+typed at the terminal. The program can't be restarted if an error
+occurred in the program or if the program is modified.
+
+LIST	LIST	Lists the entire program
+	LIST [line #]	Lists one line
+	LIST [line #]-[line #]	Lists from the first line number
+		through the second line number
+
+	The LIST command can be used to display selected lines of the
+program on the terminal. As can be seen from the above examples, all,
+part, or a single line of the program may be listed.
+
+LLIST	LLIST
+	LLIST [line #]
+	LLIST [line #]-[line #]
+
+	The LLIST works in the same manner as the LIST command, except
+that the program lines are sent to the system printer instead of the
+terminal.
+
+NEW	NEW
+
+	The NEW command is used to clear out both the BASIC program
+buffer and the variable storage space.  It prepares BASIC11 to accept a
+"New" program.
+
+RUN	RUN
+
+	The RUN command is used to begin execution of the program that
+is currently in memory.
+
+ESAVE	ESAVE
+
+	The ESAVE command is used to save the program that is currently
+in RAM to the program storage EEPROM that resides in the system.
+
+ELOAD	ELOAD
+
+	The ELOAD command is used to transfer a program to RAM that had
+previously been saved using the ESAVE command.
+
+AUTOST	AUTOST
+
+	The AUTOST command is used to set a flag that resides in the
+program storage EEPROM that will allow the BASIC11 program to execute
+from a powerup or reset condition.  Note that the BASIC11 program is
+executed out of the program storage EEPROM and is not copied into RAM.
+This allows the entire system RAM to be used for variable storage.
+
+NOAUTO	NOAUTO
+
+	This command resets the auto start flag set by the AUTOST
+command and disables the automatic execution of a BASIC program stored
+in the program storage EEPROM.
+4.0 Statements:
+
+	All of the following statements are used in the creation of
+BASIC11 programs. The statements are arranged in logical groups to make
+similar functions easy to find.  Each statement is accompanied by one or
+more program lines showing it's proper usage and an explanation of how
+the statement works if necessary.
+
+4.1 Assignment:
+
+
+DATA	<line number> DATA <number> [,<number>,<number>....]
+
+	10 DATA 500,-10,200,99,$CD03
+	20 DATA $FE   ,   1000,  -300
+
+	The data statement is used to specify data that will be assigned
+to variables with a READ statement.  The data is read from left to right
+and always begins with the first data statement in the program.  When
+the program has read all the data in a single DATA statement, BASIC11
+will search the program for the next DATA  statement starting at the
+line following  the just exhausted DATA line.  This is done because all
+data statements in a program are considered logically to be one long
+DATA statement.
+
+LET	<line number> LET <variable>=<expression>
+
+	10 LET X=5
+	20 LET Y=25*(Y/3)
+	30 LET AX(3)=AX(5)*10
+	40 CD=DE+23
+	50 XZ=-55
+
+	The LET statement is the most often used way to assign a value
+to a variable. Notice in line numbers 40 and 50 above do not contain the
+keyword LET.  This is what is known as an implied LET and is a feature
+of BASIC11 to help cut down typing time when entering a program since
+this is one of the most often used statements.  One final note. As
+stated earlier, Assignment statements and arithmetic/logic statements
+may contain no imbeded spaces.  This means that there may be no spaces
+between the variable and equals, the equals and the start of the
+expression, and no spaces within the expression.
+
+READ	<line number> READ <variable> [,<variable>,<variable>,....]
+
+	READ A,B,C
+
+	The READ statement is used in conjunction with the DATA
+statement to assign values to variables.  The first time the READ
+statement is executed, it will assign the first item in the first DATA
+statement to the first variable in its variable list.  If additional
+variables are present in its variable list, each one will sequentially
+be assigned the next item in the DATA statement.  Care must be taken
+when a program is written so that BASIC11 does not try to read past the
+last item in the last DATA statement.  If this happens, Error # 38 will
+be issued.
+
+RESTORE	<line number> RESTORE
+
+	330 RESTORE
+
+	The RESTORE statement is used to reset BASIC11's internal
+"pointer to the next item" in a DATA statement to the first item in the
+first DATA statement that appears in the program.
+
+EEP()	<line number> EEP(<expression>)=<expression>
+
+	25 EEP(30)=$55
+	30 EEP(X+1)=A/B
+
+	The EEP() statement is actually a special form of the implied
+LET.  EEP() is actually a subscripted variable that allows the BASIC
+program to directly write to the MC68HC11's on board EEPROM.  All the
+timing and control information necessary to write to the EEPROM is taken
+care of by BASIC11.  This feature makes it very convenient to save any
+kind of calibration data that must be retained in the event of a power
+failure. Currently the subscript of the EEP() statement is limited to
+255.  CAUTION: Since the the number of write/erase cycles of the EEPROM
+is limited, be very careful that the EEP() statement doesn't get
+executed repeatedly for the same location by having it reside within a
+loop.
+
+PORTA
+PORTB
+PORTC
+PORTD	<line number> PORTx=<expression>
+
+	75 PORTA=$A5
+	85 PORTC=X+(E-K)
+
+	The PORTx statement is also a special form of the implied LET
+statement.  It allows BASIC11 to directly assign an 8-bit value to one
+of the MC68HC11's I/O ports. Note that for a logic value to actually
+appear on one of the port pins, that particular pin must have been
+programed as an output by using the POKE() statement to write a one to
+that particular port's Data Direction Register (DDR).  If a value of
+greater than 255 ($FF) is written to a port, Error #46 will be issued.
+
+TIME	<line number>  TIME=<expression>
+
+	65  TIME=0
+	15  TIME=SC/60
+
+	The TIME statement, like the EEP() and PORT statement, is a
+special form of the implied LET statement that allows the BASIC program
+to assign a value to the system variable TIME which is used as BASIC11's
+"Real Time Clock".  BASIC11 uses the output compare one (OC1) register
+to generate a periodic interrupt which is then divided down by software
+so that the variable TIME is incremented once per second.  Since the
+variable is a 16 bit number, elapsed time can be kept track of for 65536
+seconds (approximately 18 hours) without any software overhead.
+
+PACC	<line number> PACC=<expression>
+
+	85  PACC=25
+	95  PACC=-5.AND.$00FF
+
+	Like the TIME, EEP(), and PORT statements, PACC statement is a
+special form of the implied LET statement that allows the programmer to
+directly alter the value of the MC68HC11s Pulse Accumulator.  Since the
+Pulse Accumulator is only an eight bit register, the must be in the
+range 0 ² expression ²255.
+4.2 Control Transfer:
+
+
+GOSUB	<line number> GOSUB <line number>
+
+	100 GOSUB 1000
+
+	The GOSUB statement is used to transfer control of the program
+to the subroutine whos line number follows the GOSUB statement.  The
+last statement of any subroutine should be a RETURN statement which will
+return control back to the statement following the GOSUB.
+
+RETURN	<line number> RETURN
+
+	1100 RETURN
+
+	As mentioned above the RETURN statement should be the last
+executed statement in a subroutine and will return program execution to
+the statement following the GOSUB.
+
+GOTO	<line number> GOTO <line number>
+
+	50 GOTO 10
+
+	The GOTO statement is used  just to transfer control of program
+execution to the line number following the GOTO statement.
+
+ON  GOSUB	<line number> ON <expression> GOSUB <line number> [,<line
+number>,......]
+
+	200  ON  X+1  GOSUB  10,90,300,550
+
+	The ON  GOSUB statement provides a facility to allow BASIC11 to
+decide which of a number of subroutines to execute based on the value of
+an expression.  When the expression is evaluated, the resulting number
+is used to pick one of the line numbers following the GOSUB it should
+execute.  In the above example if  X were equal to 0, the expression
+would evaluate to 1 and the subroutine starting at line 10 would be
+executed. If X were equal to 1, then the subroutine at line 90 would be
+executed and so on. If the expression evaluates to 0, a negative number
+or a number that is greater than the number of lines listed after the
+GOSUB, Error #32 will be issued.
+
+ON  GOTO	<line number> ON  GOTO <line number> [,<line number>,....<line
+number>]
+
+	500  ON  X  GOTO 100,200,300,400,500
+
+	The ON  GOTO statement works in basically the same manner as the
+ON  GOSUB except that control is transferred directly to the line number
+that is selected from the list following the GOTO.  No return address is
+saved and hence control cannot be returned to the statement following
+the ON  GOTO statement.
+
+
+4.3 Conditional Tests:
+
+IF  THEN	<line number> IF <expression> THEN <line number>
+
+	55  IF  A=1   THEN  200
+	70  IF  A=1.AND.B=1  THEN 500
+
+	The IF  THEN statement is used to transfer control of the
+program to another statement based on the results of the evaluation of
+the expression.  If the expression is true (evaluates to any non-zero
+value) then control is transferred to the statement at the line number
+following THEN.  If the expression evaluates as false (equal to zero)
+then the next sequential statement in the program will be executed.
+Notice in the second example that multiple conditions may easily be
+tested in a single IF statement by use of the logical operators.
+
+IF THEN
+ELSE	<line number> IF <expression> THEN <line number> ELSE <line
+number>
+
+	75  IF  PORTA=$FE  THEN  200  ELSE  300
+
+	This form of the IF  THEN statement is a slight variation in
+that if the expression is evaluated as false control of the program is
+transferred to the line number following the ELSE clause.
+
+	NOTE: In the above examples a space follows  the expression in
+the IF statement.  This IS REQUIRED so that BASIC11 will know  where the
+expression ends.  Failure to follow the expression with a space will
+result in an Error being reported (most likely Error #6).
+
+4.4 Input/Output:
+
+
+INPUT	<line number> INPUT ["string constant",] <variable>
+[,<variable>,....<variable>]
+
+	45 INPUT "ENTER THREE NUMBERS", A, B ,C
+	55 INPUT XE, ZE, PI
+
+	The input statement is one of the ways that a value may be
+assigned to a variable.  When the INPUT statement is executed, the
+prompt string, if present, will be printed on the terminal followed by a
+question mark and will wait for the user to enter the requested data. If
+the user enters less data than is requested, BASIC11 will respond by
+printing a question mark on the next line and will wait for the next
+piece of data to be entered. This will continue until all requested data
+has been entered by the user.  If more data is entered by the user than
+was requested by the INPUT statement, the excess will be ignored.
+
+	Note that if the user responds to an INPUT statement with a
+control-C, program execution will be halted and BASIC11 will return to
+the command mode.  Note that the program cannot be restarted by the use
+of the CONT command.
+
+PRINT	<line number> PRINT [variable, expression, "string constant"]
+
+	10 PRINT  "THE VALUE OF X IS "; X
+	20 PRINT  X, X*X, X/Z+3
+	30 PRINT  X, Y, Z
+	35 PRINT  A, B, C;
+	65 PRINT
+
+	The PRINT statement may be optionally followed by any
+combination of variables, expressions, or string constants each
+separated by either a comma or semicolon. The significance of separating
+the items in a PRINT statement by either a comma or a semicolon is
+explained below.
+
+	BASIC11 divides each output line into "fields" of eight (8)
+characters.  When the arguments following a PRINT statement are
+separated by commas, BASIC11 will print each item beginning at the next
+field in the line.  In line 30 in the above example, BASIC11 would print
+the value of variable X beginning in column 0, the value of variable Y
+would be printed starting in column 8 and the value of variable Z would
+be printed starting in column 16.
+
+	separating variables with semicolons effectively disables this
+"fielding" feature by printing variables and constants next to one
+another.  There will still be a space or two between successive numeric
+expressions that are printed because each number that is printed with
+one trailing space.  Also if a number is not negative a space will be
+printed in front of the number in place of the minus sign.
+	Notice in line number 35 above that a semicolon (it could have
+been a comma) follows the last variable.  This has the effect of
+suppressing the normal carriage return/line feed sequence that would
+normally be issued after printing the last expression.
+
+	As mentioned in the first paragraph, the argument list that
+follows the PRINT statement is optional as is illustrated in the example
+of line 60 above.  This form of the print statement has the effect of
+printing only a blank line.
+
+?	<line number> ?  [variable, expression, "string constant"]
+
+	The question mark can be entered instead of the keyword "PRINT"
+to save typing time when entering a program or executing a line in the
+immediate mode.  When entered in a program line the question mark is
+replaced by the same token as the keyword PRINT. Because of this, when
+the program line is listed the keyword PRINT will appear instead of the
+question mark.
+
+INPUT#	<line number> INPUT #<expression,> ["string constant",]
+<variable> [,<variable>,...<variable>]
+
+	15  INPUT #5, AX
+	20  INPUT #0, AX,DF,EG
+	25  INPUT #DE-1, LO
+
+	This form of the INPUT statement works in the same manner as the
+standard INPUT statement except that the data is obtained from a
+hardware device other than the control console or terminal.  The
+expression that follows the "#" is evaluated and is then used to choose
+one of eight (8) different hardware devices, numbered 0 through 7, from
+which to get the input data.  Device numbers 0 and 1 are currently used
+by BASIC11 for the control console and the system printer respectively.
+All other device numbers are available to the user for inputing data
+from special devices.  Note however that the user must provide the
+proper "drivers" for each device.  For a detailed explanation of how to
+use alternate devices for input, see Appendix A.  If <expression> is
+negative or greater than seven(7) error number 48 will be issued.
+
+PRINT #	<line number> PRINT #<expression,> [<expression>....<expression>]
+
+	25  PRINT #1,"THIS IS A TEST"
+	35  PRINT #0,AX,FG,R
+
+	This form of the PRINT statement works in the same manner as the
+standard PRINT statement except that data is sent to an alternate
+hardware device.  The same rules that apply to the INPUT # statement
+also apply to the PRINT # statement.  Again, for a detailed explanation
+of how to use alternate devices for output, see Appendix A.
+
+INBYTE	<line number>  INBYTE  <variable>
+
+	10  INBYTE  DC
+	20  INBYTE #3,AX(Z)
+	30  INBYTE #1,CV
+
+	The INBYTE statement is another way that a value may be assigned
+to a variable.  The INBYTE statement is similar to the input statement
+except that instead of expecting an ASCII formatted number from the
+specifyed input device, it assigns the value of an ASCII byte to the
+variable that follows it.  If the statement in line 10 were executed and
+the character "Y" were typed at the terminal, the variable DC would
+contain the decimal value 89 which is the numeric value of the ASCII
+character "Y".  The INBYTE statement is very useful for obtaining data
+from input devices other than the control terminal. The example in line
+number 30 above would retrieve a byte of data from the HC11's Serial
+Communications Interface (SCI) and would assign that value to the
+variable CV.
+
+4.5 Looping Constructs:
+
+
+FOR	<line number> FOR <variable>=<expression> TO <expression>
+[STEP<expression>]
+
+	85  FOR  X=1 TO 1000
+	90  FOR  X=A TO  B+C  STEP 10
+	95  FOR  X=100  TO  0  STEP  -1
+
+	The FOR  NEXT statements are what is known as a deterministic
+looping construct because the number of times the loop will be executed
+is determined at the start of the loop when the FOR statement is
+executed.  When a FOR statement is executed all instructions between it
+and the matching NEXT will repeatedly execute until one of two
+conditions  is met.  Each pass through the loop the STEP value is added
+to the value of the control variable.  If the STEP value is positive,
+the loop will be executed again if the control variable is less than or
+equal to the value of the expression following TO.  If the step value is
+negative the loop will be executed again if the control variable is
+greater than or equal to the value of the expression following the TO.
+Note that if no STEP value is supplied (it's optional) that a value of
+one (+1) is assumed.  Also note that all of the expressions in the FOR
+statement are evaluated only once at the start of the loop.  This means
+that that the terminating value and the step value may not be changed in
+the body of the loop, however; since the control variable is the same as
+any other variable, its value may be changed within the body of the
+loop.  This would allow for exiting the loop before it normally would.
+Again note that the test of the control variable against the terminating
+value is actually performed when the NEXT statement is executed, so the
+code between FOR and NEXT will be executed at least once.
+
+	FOR - NEXT statements may be nested but they must each use their
+own separate control variable.  Currently the maximum number of nested
+FOR - NEXT loops is eight (8).  Loops may be exited early by use of
+GOTO's however this is not good programming practice and is not
+recommended.
+
+	NOTE: In the above examples a space follows each of the
+expressions in the FOR statement.  This IS REQUIRED so that BASIC11 will
+know  where the expression ends.  Failure to follow each expression with
+a space will result in an Error being reported (most likely Error #6).
+
+NEXT	<line number> NEXT <variable>
+
+	100 NEXT  X
+
+	The NEXT statement is used in programs to complete a FOR loop.
+The variable specifyed in the NEXT statement must be the same as the
+control in the matching FOR. If it is not, Error #36 will be issued and
+program execution will stop.  As mentioned above, the test to see
+whether the loop should be terminated or not is actually performed when
+the NEXT statement is executed.
+
+WHILE	<line number> WHILE  <expression>
+
+	500  WHILE  X<=10000
+
+	The WHILE - ENDWH statements are considered to be a
+non-deterministic type of looping construct because the number of times
+the loop will execute is not determined at the start of the loop.  In
+fact since the expression following the WHILE statement is evaluated at
+the start of the loop, the loop may never be executed if the expression
+is false (evaluates to zero) upon entry of the loop.  There is one
+important point that needs to be made about the WHILE looping construct.
+The statements within the loop must contain a statement that changes the
+value of the test expression following WHILE so that the expression
+eventually becomes false otherwise the loop will never terminate and the
+statements bounded by WHILE and ENDWH will execute forever!
+
+	The WHILE statement may be used as part of a multiple statement
+line, however; in order to provide improved program readability and to
+show the structure of the program this practice is discouraged.
+
+	WHILE - ENDWH loops may be nested up to eight (8) levels deep.
+WHILE loops may be exited early by use of GOTO's however this is not
+good programming practice and is not recommended.
+
+
+ENDWH	<line number>  ENDWH
+
+	600 ENDWH
+
+	The ENDWH statement is used only in conjunction with a matching
+WHILE statement to enclose a group of lines within a loop.  The effect
+of the ENDWH statement is to evaluate the expression following WHILE to
+determine whether the loop should be executed again.  Note that the
+ENDWH statement may be part of a multi-statement line however, it must
+be the first statement on the line.
+4.6 Program Termination:
+
+
+STOP	<line number> STOP
+
+	1000  STOP
+
+	The STOP statement is essentially a software break (control-C)
+instruction. When the STOP statement is executed, program execution is
+temporarily suspended and the message:
+
+	STOPPED  AT  LINE  #  <line number>
+
+	is printed on the terminal.  In the above example <line number>
+would be 1000. If no alterations are made to the program after it has
+been suspended, execution may be restarted with the CONT command.  The
+first statement executed will be the one immediately following the STOP
+statement.
+
+END	<line number>  END
+
+	300  END
+
+	The END statement is used to terminate program execution.  It
+does not have to be the last statement and may appear anywhere in the
+program.  In fact an end statement need not appear anywhere in the
+program.  If BASIC11 tries to execute past the end of the program, an
+END statement will automatically be executed.  Unlike the STOP
+statement, after an END statement has been executed the program may not
+be restarted via the CONT command.
+4.7 Real Time Event Statements:
+
+	In any control environment, events usually occur asynchronously
+with respect to main program execution.  To cope with this kind of
+environment the MC68HC11 was designed with an extensive interrupt
+structure to support all of its on chip subsystems.  The following
+statements all provide control of interrupt driven events directly from
+BASIC11.
+
+ONTIME	<line number> ONTIME <expression>,<line number>
+
+	25  ONTIME  120,500
+	35  ONTIME  HR+1,200
+	95  ONTIME  0,500
+
+	In many control situations it is necessary to take periodic
+measurements or record certain events at fixed time intervals.  The
+ONTIME statement frees the main program from having to continuously
+check the value of the system variable TIME in order to determine when
+to take a measurement or record an event.  The ONTIME statement allows
+program control to be transferred directly to an interrupt handling
+routine begining at <line number> when the value of <expression> matches
+the value of the system variable TIME. The value of <expression> may
+evaluate to any legal integer, however; if <expression> evaluates to
+zero (0) it has the effect of disabling the ONTIME function.
+
+	One of two methods may be used to generate periodic interrupts
+using the ONTIME statement.  The first method involves zeroing the
+system variable TIME in the interrupt handling routine with the
+statement TIME=0.  This method may be used if continuous timekeeping is
+not required by the system.  The second method involves executing the
+ONTIME statement in the interrupt routine, adding the desired time
+interval (in seconds) to the current value of the system variable TIME.
+This second method should be used if continuous timekeeping is required
+by the system.  The following examples should clarify things.
+
+	First Method:
+
+		10  TIME=0
+		20  ONTIME  10,100
+		.
+		.
+		.
+		100  TIME=0
+		.
+		.
+		150  RETI
+
+	The above example will produce a timer interrupt every 10 seconds.
+
+	Second Method:
+
+		10  TIME =0
+		20  ONTIME  20,500
+		.
+		.
+		.
+		500  ONTIME  TIME+20,500
+		.
+		.
+		550  RETI
+
+	The above example will produce a timer interrupt every 20 seconds.
+
+ONIRQ	<line number>  ONIRQ  <expression>,<line number>
+
+	10  ONIRQ  1,355
+	25  ONIRQ  MD,225
+
+	The ONIRQ statement allows BASIC11 to directly handle interrupts
+that are generated by an active transition on the MC68HC11's IRQ pin.
+The <expression> following the ONIRQ keyword is used to select the mode
+of the statement.  If the expression evaluates to any non-zero integer,
+the servicing of the IRQ interrupt by BASIC11 is enabled.  If the
+expression evaluates to zero (0), IRQ interrupts are effectively
+disabled.  The <line number> following the expression may be any legal
+BASIC11 line number.
+
+ONPACC	<line number>  ONPACC <expression>,<expression>,<line number>
+
+	105  ONPACC  1,0,1000
+	255  ONPACC  A,B,3000
+
+	The ONPACC statement allows the programmer to handle events
+associated with the MC68HC11's Pulse Accumulator on an interrupt basis.
+The first expression following the ONPACC keyword is used to set the
+operating mode of the pulse accumulator. The expression must evaluate to
+a number from 0 through 4.  The operating modes of the pulse accumulator
+are described in the table below.
+
+		Mode	Action On Clock
+		0	Disables the Pulse Accumulator
+		1	Falling Edge on PA7 Increments the Counter
+		2	Rising Edge on PA7 Increments the counter
+		3	A "0" on PA7 Inhibits EÖ64 from Incrementing Counter
+		4	A "1" on PA7 Inhibits EÖ64 from Incrementing Counter
+
+	The second expression is used to determine which of two events
+will cause an interrupt to be generated by the pulse accumulator.  If
+the expression evaluates to zero (0) then an interrupt will be generated
+each time an active edge is detected on PA7 as described in the table
+above.  If it evaluates to 1, the pulse accumulator will generate an
+interrupt only when it overflows from $FF to $00.  The <line number>
+tells BASIC11 where the interrupt routine begins when a Pulse
+Accumulator interrupt occurs.
+
+	For more information on the MC68HC11's Pulse Accumulator
+subsystem, please refer to the parts data sheet.
+
+
+RETI	<line number>  RETI
+
+	485  RETI
+
+	All BASIC11 interrupt service routines must end with this
+statement. Failure to  end an interrupt routine with RETI will result in
+all successive interrupts being masked!  This will effectively stop the
+system TIME function.
+4.8 Miscellaneous Statements:
+
+
+DIM	<line number>  DIM  <subscripted variable> [,subscripted variable....]
+
+	10  DIM  AX(100), DX(9), LK(1000)
+	20  DIM  Z(A+5), D(X)
+	30  DIM  X(0)
+
+	The DIM statement, which was discussed briefly in section 2.3
+(Variables), is used to allocate storage for subscripted variables when
+a program is run.  As can be seen from the example in line 20 above, the
+expression in parenthesis does not have to be a constant. This is
+because array storage is dynamically allocated at runtime.  This feature
+is especially nice in control applications where memory is usually at a
+premium because large arrays don't have to be dimensioned in advance to
+fit the worse case.  All subscripted variables must appear in a DIM
+statement before they may be used in an expression. Failure to do this
+will result in Error # 24 being issued when the variable is referenced.
+
+	The storage required by subscripted integer variables is:
+
+	2*(<expression>+1)+2     bytes
+
+	Remember that all subscripts start at zero. In the example in
+line 10 above, the variable AX(100) would actually create 101 integer
+variables, AX(0) through AX(100). Although it may seem strange the
+example in line 30 is legal.  This will create a single integer
+subscripted variable X(0).
+
+POKE	<line number>  POKE(<expression>,<expression>)
+
+	45  POKE($ED00,$5A)
+	55  POKE(AD,X*5)
+
+	The POKE statement allows the BASIC11 program to directly modify
+RAM memory or I/O locations.  The first expression within the
+parenthesis is the address at which the second expression will be
+stored.  The first expression may evaluate to any legal integer number.
+However the second expression must be in the range  0 ² expression ² 255
+since a byte location is being written to.  If the second expression is
+outside the above range, Error #48 will be issued.  Care should be taken
+when using this statement so that part of the BASIC11 program or its
+data are not overwritten.
+
+REM	<line number>  REM  [any text]
+
+	10  REM  THIS IS A REMARK STATEMENT
+
+	The REM statement is used to insert comments about the operation
+or structure of  a program.  Any text following the REM statement is
+ignored, so if it appears in a multiple statement line, it should be the
+last statement on the line.  If control is passed to a REM statement by
+a GOTO, GOSUB, etc. , control is just passed to the line following the
+REM statement.
+
+TRON	<line number>  TRON
+
+	20  TRON
+
+	The TRON statement is used to turn the trace mode on.  The trace
+mode, when turned on, will print line numbers in brackets as each line
+is executed.  This can be used as an aid in debugging programs.
+
+TROFF	<line number>  TROFF
+
+	100  TROFF
+
+	The TROFF statement is used to turn the trace mode off.
+5.0 Built in Functions:
+
+
+	BASIC11 has a number of built in functions that are used to
+perform common operations on numerical quantities, perform special
+calculations, call user written assembly language subroutines, and
+access some of the special hardware features of the MC68HC11.
+
+
+5.1 Mathematical Functions:
+
+
+ABS(X)	The ABS function will return the ABSolute value of the
+expression in parenthesis.  The function will always return a positive
+number as its result.
+
+FDIV(X,Y)	The FDIV function is used to perform an unsigned
+fractional divide using the MC68HC11's FDIV instruction.  This function
+allows BASIC11 to resolve fractional parts of the remainder of an
+integer divide without using floating point math.  The result is a
+binary weighted decimal number.  Some examples may clarify what the
+function does.
+
+	3 / 4 = .75  decimal
+	3 / 4 = $C000  binary weighted decimal
+
+	2 / 4 = .50  decimal
+	2 / 4 = $8000  binary weighted decimal
+
+	1 / 4 = .25  decimal
+	1 / 4 = $4000  binary weighted decimal
+
+	.99999 = $FFFF
+
+	For the function to execute properly X must be less than Y and Y
+may not be equal to zero.
+If either condition exists Error #44 will be issued and program
+execution will terminate.
+
+RND(X)	The RND function will return a pseudo random number between 0
+and 32767 inclusive. The value of the argument X has the following
+effect on the function:
+
+	For x<0 a new series of random numbers will be started by
+reading the current value of the timer/counter and using it as the new
+seed value.
+
+	For X=0 a new random number will be returned each time the
+function is called.
+
+	For X>0 the last random number that was generated is returned.
+
+	Note that the function only generates pseudo random numbers and
+that a particular series will repeat every 65536 calls of the function.
+
+SGN(X)	The SGN function will return a plus one (1) if the argument is
+positive, zero (0) if the argument is zero, and a minus one (-1) if the
+argument is negative.
+5.2 Print Functions:
+
+
+CHR$(X)	The CHR$ function will return a single character string whose
+ASCII value is the argument X.  This function is very useful for sending
+non-printable ASCII characters to an output device.  The value of the
+argument X must be in the range of 0 ² X ² 255 or Error #43 will be
+issued.  This function may only be used in the PRINT statement.
+
+HEX(X)	The HEX function is used to convert a binary number to a four
+digit hexidecimal string. This function is very useful when printing the
+contents of memory locations or I/O ports. This function may only be
+used in the PRINT statement.
+
+HEX2(X)	The HEX2 function performs a similar operation to the HEX
+function except that it is used to convert a number in the range 0 ² X ²
+255 to a two digit hexidecimal string. If a number outside the specifyed
+range is passed as an argument to the HEX2 function, Error #50 will be
+reported.
+
+TAB(X)	The TAB function will move the cursor to column X on the output
+device. If the output device is already past column X then no action is
+performed.  The argument to the TAB function must be in the range of 0
+<= X <= 255 or Error # 42 will be issued. This function may only be used
+in the PRINT statement.
+5.3 Hardware Related Functions:
+
+ADC(X)	The ADC function allows a program to directly access the
+MC68HC11's on board 8-bit A-to-D converter.  Any one of the eight
+channels may be read by calling the function with the proper argument.
+If the argument is not in the proper range (between 0 and 7) Error #45
+will be issued.  The A-to-D converter is operated in the single channel
+mode and is converted four times.  These four conversions are then
+averaged by BASIC11 and the result is then returned.  Since the A-to-D
+conversion time is fast (16µs at 2.0 MHz) this tends to help average out
+any noise in the reading.
+
+CALL(X)	Even though BASIC11 is extremely fast for an interpreted BASIC,
+there are still some things that may need to be controlled that it can't
+keep up with.  The CALL function allows machine language subroutines to
+be called directly from BASIC11.  The CALL function must appear in an
+expression since it will return a 16-bit number as a result of the
+function call.  Some examples follow:
+
+	10  F=CALL($EAF0)
+	20  Z=CALL(AX*2)
+	30 PRINT  CALL($100)
+
+	The users machine language program must only preserve the
+Y-index register, the stack pointer, and the  current state of the
+stack.  All other registers may be destroyed.  The users subroutine is
+entered via a  JSR  (Jump to SubRoutine) instruction, therefore it must
+end with the execution of an  RTS  (ReTurn from Subroutine) instruction.
+Generally the users subroutine should have about 100 bytes of stack
+space available.  If more than this is needed, the subroutine will have
+to allocate its own stack storage space.
+
+EEP(X)	As mentioned in section 4.1 the EEP statement allows a BASIC11
+program to directly write information to the MC68HC11's on chip EEPROM
+when the EEP statement appears to the left of the equals as a basic
+"statement".  When EEP appears on the right side of the equals it
+syntaticly will act like a function and will return the value currently
+stored in the EEP array location described by the argument X.  Again,
+the argument to the function is actually the subscript of the EEP array
+so it may not be negative and must not be greater than the maximum value
+of 255.
+
+PEEK(X)	The PEEK function performs the opposite action of the POKE
+function. It allows BASIC11 to directly retrieve the contents of any
+memory or I/O location in the MC68HC11's memory map.  The argument X,
+since it is an address, is taken to be an unsigned number so X may take
+on any integer value.  A single byte is returned by the function so its
+value will be ³0 and ² 255.
+
+PORTA
+PORTB
+PORTC
+PORTD
+PORTE	The PORTx functions are different from the other functions in
+that they do not require an argument.  Essentially these functions act
+as special variables that allow direct reading of the MC68HC11's I/O
+ports from BASIC.
+
+	PORTC and PORTD are general purpose I/O ports and as such may
+have each pin of the port programed as either an input or an output.
+Each ports Data Direction Register (DDR) is used to specify the primary
+direction of data on the I/O pin.  If the corresponding port pins DDR
+bit is set to a one (1) the port pin will be configured as an output.
+If the DDR bit is cleared to a zero (0) the port pin will be configured
+as an input and will become high impedance.  When a bit which is
+configured for output is read, the value returned is the value at the
+input to the pin driver.  If a write is executed to a pin that is
+configured as an input, the value will be stored in an internal latch so
+that if the pin is later configured as an output, the latched value will
+then appear on the output
+
+	PORTA, PORTB, and PORTE are all fixed direction Ports with the
+exception of bit-7 of Port A.  When PORTB is being used for general
+purpose outputs, it is configured for output only and reads return the
+actual level sensed at the input of the pin drivers.  When PORTA is
+being used for general purpose I/O, bits 0,1, and 2 are configured as
+inputs and writes to these bits have no effect or meaning.  Bits 3, 4,
+5, and 6 are configured for output only and reads return the actual
+level sensed at the input of the pin drivers.  Bit 7 of PORTA can be
+configured as either an input or an output via the DDRA7 bit in the
+PORTA control register (PACTL).  PORTE contains the eight inputs to the
+A-to-D converter, however they may also be used as digital inputs.
+Writes to the PORTE address have no meaning or effect.
+
+	For a more complete discussion of the function of the I/O
+subsystems contained in the MC68HC11, it is suggested that the parts
+data sheet be consulted.
+
+TIME	Like the PORTx functions, the TIME function requires no
+arguments and is used to retrieve the current value of the system time.
+
+PACC	When the keyword PACC appears to the right of the equals sign it
+allows the program to retrieve the current value of the Pulse
+Accumulator.  Effectively  PACC is a function that requires no
+arguments.
+6.0 Error Reporting:
+
+
+	BASIC11 has an extensive error reporting structure that reports
+two basic types of errors.  The first category is command line errors.
+If a mistake is made by either typing an illegal command or a syntax
+error is detected either in a program line or a statement that is to be
+executed in the direct mode, BASIC11 will print the contents of the
+input buffer.  On the next line asterisks and arrows will be printed
+showing the approximate location of the error within the line.  Finally,
+a number is printed telling the operator what is wrong with the line. In
+the  example shown below programmer input is underlined.
+
+		#10  FOR  X=1  100  STEP  2
+
+		  10  FOR  X=1  100  STEP  2
+		  *********^^^
+		ERROR  #17
+		READY
+
+		#
+
+	Looking up error number 17 in the error table we find that we
+have inadvertently left out the "TO" in the FOR statement.  By retyping
+the line with "TO" between the 1 and 100 BASIC11 will accept the line.
+
+	When the programmer mistypes a command, Error number 3 (Invalid
+Expression) will generally be issued.  An example follows.
+
+		#LOST          (what the programmer meant to type was LIST)
+
+		LOST
+		*^^^
+		ERROR  #3
+		READY
+
+		#
+
+	The reason  error number 3 is issued is that BASIC11 first
+searches its command table to see if the programmer has typed a command.
+If no match is found, BASIC11 then searches its statement table to try
+to match the input buffer with one of the keywords.  If no match is
+found, BASIC11 assumes that the statement is an implied LET.  In the
+above example the first two letters, "LO", would be assumed to be a
+variable name, and the rules say that in an implied (or declared) LET
+the assignment variable must be immediately followed by an equals ("=").
+
+	The second category of errors is runtime errors.  These errors,
+which are context dependent, occur while the program is running.  All
+runtime errors are considered to be fatal in BASIC11 and will
+immediately terminate program execution.  A message will be printed on
+the terminal indicating what error occurred and in which line it
+occurred.  Even though BASIC11 does not list the source line for runtime
+errors, the error number is specific enough that the problem can easily
+be identified.
+
+	A list of error numbers and their meanings follows.
+
+
+
+
+
+Error #	Meaning
+
+	1	Line number < 0 or > 32767
+	2	Syntax Error
+	3	Invalid Expression
+	4	Unbalanced Parenthesis
+	5	Data Type Mismatch
+	6	Illegal Operator
+	7	Illegal Variable
+	8	Illegal Token
+	9	Out of Memory
+	10	Integer Overflow
+	11	Invalid Hex Digit
+	12	Hex Number Overflow
+	13	Missing Quote
+	14	Missing Open or Closing Parenthesis
+	15	Syntax Error in "ON" Statement
+	16	Missing "THEN" in an "IF" Statement
+	17	Missing "TO" in a "FOR" Statement
+	18	Line Number Zero (0) Not Allowed
+	19	Illegal Data Type
+	20	Expression Too Complex
+	21	Missing Comma
+	22	Missing Comma or Semicolon
+	23	Math Stack Overflow
+	24	Undimensioned Array
+	25	Subscript Out of Range
+	26	Divide By Zero
+	27	Line Number Not Found
+	28	Too Many Nested "GOSUB's" (maximum is eight)
+	29	"RETURN" without "GOSUB"
+	30	Too Many Active "WHILE's" (maximum is eight)
+	31	"ENDWH" without "WHILE"
+	32	"ON" argument is Negative, Zero, or Too Large
+	33	Non-subscriptable Variable Found in "DIM" statement
+	34	Variable has Already Been DIMensioned
+	35	Too Many Active "FOR - NEXT" loops (maximum is eight)
+	36	Mismatched "FOR - NEXT" loop
+	37	Can't Continue
+	38	Out of Data in "READ" or "RESTORE" Statement
+	39	Negative Subscripts Not Allowed
+	40	"EEP()" Subscript Negative or > 255
+	41	Function Only Allowed in "PRINT" Statement
+	42	Argument < 0 or > 255 in "TAB()" Function
+	43	Argument < 0 or > 255 in "CHR$()" Function
+	44	Overflow or Divide by Zero in "FDIV()" Function
+	45	Invalid Channel Number in "ADC()" Function
+	46	Tried to Assign a Value of < 0 or > 255 to a PORT
+	47	Illegal PORT
+	48	Illegal Device Number
+	49	Uninitalized I/O Vector
+	50	Argument < 0 or > 255 in "HEX2()" Function
+	51	Statement not allowed in immediate mode
+	52	RETI executed when not in an interrupt routine
+	53	Tried to assign a value of <0 or >255 to PACC
+	54	Interrupt or Count mode error in ONPACC
+Appendix A
+	This appendix contains information specific to BASIC11's
+implementation for the Motorola MC68HC11 evaluation board (Part #
+M68HC11EVB).
+
+Program Storage EEPROM:
+
+	The M68HC11EVB was designed to be an extremely low cost way of
+evaluating the capabilities of the MC68HC11 microcomputer hence it has
+no memory expansion capabilities.  To be able to save BASIC11 programs
+either while working on them or for stand alone execution in a control
+environment, some additional non-volatile memory must be added.  This
+memory is added in the form of an 8K x 8 EEPROM that is piggybacked on
+to the 8K x 8 RAM (U4).  The EEPROM that is used must have latched
+addresses, data, control signals, automatic erase before write
+capabilities, and have self timed write cycles. Several parts that meet
+these requirements are the XICOR X2864A-25, Samsung KM2864A, and EXEL
+XL2864A-25.
+
+	To add the 8K x 8 EEPROM it is necessary to parallel all
+address, data, and control lines of the part except pin #20 (chip
+enable), pin #22 (output enable), and pin #1 (RDY/BUSY). Do this by
+placing the EEPROM on top of the 8K x 8 RAM (U4) and carefully soldering
+all the leads, except pin 20, pin 22, and pin 1, together.  Carefully
+bend pin #20, #22 and #1 of the EEPROM away from the corresponding pins
+of the RAM I.C., U4.  Pin #1 may be cut off since it will not be used.
+You may piggyback a socket instead of directly soldering the EEPROM to
+the RAM.  Sockets are cheaper than EEPROMS!
+
+	To meet the write cycle timing requirements of the 2864 EEPROMS,
+the output enable must be negated (logic 1) during writes.  To
+accomplish this, an inverted R/W signal is routed to pin #22 of the
+EEPROM.  On the bottom of the board, cut the trace connecting pin #11
+and pin #13 of U11 (MC74HC14).  Using a piece of small gauge wire,
+connect pin #11 of U11 (MC74HC14) to pin #10 of U6 (MC14066B).  Once
+again using a piece of small gauge wire, connect pin #10 of U11 to pin
+#22 of the EEPROM.
+
+	Next, using a piece of wire wrap or other small gauge wire,
+connect pin #20 of the EEPROM to pin #59 of the MCU I/O Port Connector,
+P1.  Again, using a piece of wire wrap or other small gauge wire,
+connect pin #60 of connector P1 to pin #12 of the 74HC138 (U5).  This
+connects the chip enable pin of the EEPROM to the address decoder and
+places it in the memory map from addresses $6000 thru $7FFF. As a final
+step, solder a 10k ½ pull-up resistor between pins #12 and #16 of the
+74HC138 (U5).
+
+	Finish the installation by placing a fabricated jumper between
+pin #59 and 60 of the port connector P1.
+
+	The fabricated jumper installed in the previous step is used so
+that the EEPROM may be disabled during powerup.  This will effectively
+disable the automatic execution of a program stored in it if the AUTOST
+command was entered prior to the last power down.
+
+ System Printer:
+
+	BASIC11 contains device drivers that allows the connection of a
+serial printer to the HOST port of the M68HC11EVB.  Since the HOST port
+on the HC11EVB does not support any hardware handshaking, the printer
+must be able to support  X-On/X-Off  software handshaking.  The
+characters used for X-On/X-Off flow control are currently set to $13 for
+X-OFF and $11 for X-ON. If these characters need to be changed to
+accommodate other printers or devices, there are two variables located
+on page zero that may be changed by POKEing the desired values into
+them.  The X-ON variable is located at $0043 and the X-OFF variable is
+located at $0044.  The default configuration for the printer port is
+9600 BAUD, eight data bits, one start bit, and one stop bit.  This may
+easily be changed by poking the proper value into the BAUD control
+register located at $102B.  For further information on the MC68HC11's
+Serial Communications Interface (SCI), please refer to the parts data
+sheet.
+
+	Besides being used to get hard copy listings of programs with
+the LLIST command, the system printer may be accessed from within a
+program by using the "PRINT#<expression>" form of the PRINT statement
+with the value of <expression> evaluating to 1.  So the program line 10
+PRINT #1, "HELLO THERE WORLD", would print "HELLO THERE WORLD" on the
+system printer.  Even though it is not possible to "INPUT" anything from
+the system printer, the input vector for device #1 has been setup to
+allow characters to be received via the RxD line of the target system.
+
+	One final note about using the SCI port of the HC11 for serial
+Input and Output.  The HC11EVB hardware was designed so that both the
+TxD and RxD lines of the SCI could be disconnected from the HOST
+computer I/O connector.  The TxD line is disconnected from the HOST port
+by simply removing the fabricated jumper, J4.  The RxD line is
+alternately connected to either the target system or HOST port by means
+of an MC74HC4066 digital switch and an MC74HC74 flip-flop.  The
+switching of the receiver line from the target system to the HOST I/O
+port is accomplished by writing a logic one in bit 0 to any address in
+the range $A000-$BFFF.  Likewise, writing a logic zero in bit 0 to any
+address in the same range results in the target system being connected
+to the RxD pin of the HC11.
+
+	BASIC11 initializes the hardware so that the SCI RxD line is
+connected to the HOST I/O port. Connection to the target system may be
+accomplished by executing the statement POKE($A000,1).
+
+ Alternate Device I/O:
+
+	BASIC11 supports a form of device independent I/O in the PRINT,
+INPUT, and INBYTE statements by using the "#<expression>" modifier after
+each keyword.  The expression is evaluated and is used as an index into
+a pair of vector tables located in page 0 RAM.  Each table consists of
+eight entries of two byte addresses, therefore <expression> must
+evaluate to be in the range of 0 through 7.  The two tables, "INTABLE"
+AND "OUTABLE",  are located at $00A4 and $00B4 respectively. Currently
+device #0 is set up to be the control console I/O routines and device #1
+is setup to send data to a system printer connected to the HOST I/O
+port.  Device numbers 2 through 7 are available for use by the
+programmer.
+
+	As mentioned above, device #0 is used for the control console
+and is currently set up to use the MC6850 ACIA for system I/O.  If it is
+desired to use other hardware for system I/O the user may replace the
+current vectors in INTABLE and OUTABLE.  If control-C break in
+capability is to be maintained for the new hardware, two additional
+vectors must be modified.
+
+	The CONSTAT (CONsole STATus) vector located at $009E should
+point to a routine that checks the control console hardware to see if a
+character has been typed.  If a character has been received,the routine
+should return a NOT EQUAL condition (Z condition code bit cleared). This
+routine MAY NOT modify any registers except the condition code register.
+The CONINNE (CONsole INput No Echo) vector located at $00A1 should point
+to a routine that gets a character from the console hardware but does
+not echo it back to the hardware.  Note that these vectors are three (3)
+byte vectors with the first byte containing a JMP instruction ($7E). The
+address of the user routines needs to be put in the second and third
+bytes.
+
+	By using the CONSTAT vector to point to a routine that always
+returns an equal condition, (Z-bit in the condition code register set)
+the control-C break-in capability can effectively be disabled.
+
+	Note that any additional device drivers must be provided by the
+programmer and any hardware initializations must be performed before the
+"device" is used.
+
+ Interrupt Vector Table:
+
+	All twenty of the interrupt vectors for the different subsystems
+on the MC68HC11 are located in the memory map at locations $FFD4 through
+$FFFF.  To provide for more flexibility in using the subsystems in an
+interrupt driven mode, the ROM hardware vectors "point" to a second
+"JUMP" vector table located in RAM on page zero.  The table, as shown
+below, may be altered by the programmer to point to special interrupt
+handlers for a particular application.  The PACCIE, PACCOVF, TOC1, and
+IRQI vectors are initialized by BASIC11 to point to its own interrupt
+routines for the various real time control functions provided by
+BASIC11.  The ILLOP, COP, and CMF vectors are initialized to jump to the
+start of BASIC11. All the rest of the vectors point to an RTI
+instruction.
+
+*
+*
+	ORG	$009E
+*
+CONSTAT	RMB	3	GET CONTROL CONSOLE STATUS (FOR BREAK ROUTINE).
+INCONNE	RMB	3	GET BYTE DIRECTLY FROM CONTROL CONSOLE,NO ECHO.
+*
+*
+	ORG	$00A4
+*
+INTABLE	RMB	16	RESERVE SPACE FOR 8 DIFFERENT INPUT ROUTINES.
+OUTABLE	RMB	16	RESERVE SPACE FOR 8 DIFFERENT OUTPUT ROUTINES.
+*
+*
+*
+*
+	ORG	$00C4    START OF RAM INTERRUPT VECTORS.
+*
+RAMVECTs	 EQU	*
+SCISS	RMB	3	SCI SERIAL SYSTEM.
+SPITC	RMB	3 	SPI TRANSFER COMPLETE.
+PACCIE	RMB	3	PULSE ACCUMULATOR INPUT EDGE.
+PACCOVF	RMB	3	PULSE ACCUMULATOR OVERFLOW.
+TIMEROVF	RMB	3	TIMER OVERFLOW.
+TOC5	RMB	3	TIMER OUTPUT COMPARE 5.
+TOC4	RMB	3	TIMER OUTPUT COMPARE 4.
+TOC3	RMB	3	TIMER OUTPUT COMPARE 3.
+TOC2	RMB	3	TIMER OUTPUT COMPARE 2.
+TOC1	RMB	3 	TIMER OUTPUT COMPARE 1.
+TIC3	RMB	3	TIMER INPUT CAPTURE 3.
+TIC2	RMB	3	TIMER INPUT CAPTURE 2.
+TIC1	RMB	3	TIMER INPUT CAPTURE 1.
+REALTIMI	RMB	3	REAL TIME INTERRUPT.
+IRQI	RMB	3	IRQ INTERRUPT.
+XIRQ	RMB	3	XIRQ INTERRUPT.
+SWII	RMB	3	SOFTWARE INTERRUPT.
+ILLOP	RMB	3	ILLEGAL OPCODE TRAP.
+COP	RMB	3	WATCH DOG TIMER FAIL.
+CMF	RMB	3	CLOCK MONITOR FAIL.
+*
+*
+

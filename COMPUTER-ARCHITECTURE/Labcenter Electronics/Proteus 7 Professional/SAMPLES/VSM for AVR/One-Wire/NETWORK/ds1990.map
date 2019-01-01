@@ -1,0 +1,10 @@
+CodeVisionAVR C Compiler V1.24.6 Evaluation
+(C) Copyright 1998-2005 Pavel Haiduc, HP InfoTech s.r.l.
+http://www.hpinfotech.com
+e-mail:office@hpinfotech.com
+
+File: D:\Proteus\Myfiles\Labcenter\1WIRE\DS1990\ds1990.c
+Global variables memory map:
+
+Variable                          Address   Size
+rom_code                              E0h     72

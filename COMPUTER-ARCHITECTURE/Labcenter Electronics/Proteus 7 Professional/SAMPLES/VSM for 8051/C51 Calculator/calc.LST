@@ -1,0 +1,302 @@
+C51 COMPILER V6.02  CALC                                                                   11/03/2000 12:22:31 PAGE 1   
+
+
+C51 COMPILER V6.02, COMPILATION OF MODULE CALC
+OBJECT MODULE PLACED IN .\calc.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE .\calc.c DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          
+   2          /*******************************************************************************
+   3          ************                 LABCENTER ELECTRONICS                  ************                          
+             -    
+   4          ************		     Proteus VSM Sample Design Code             ************		 	
+   5          ************	       Integer Calculator ( 2K Code Limit)	        ************
+   6          *******************************************************************************/
+   7          
+   8          #include <intrins.h>
+   9          #include <reg51.h>
+  10          #include "calc.h"
+  11          
+  12          //Variables
+  13          static  data LONG lvalue;
+  14          static  data LONG rvalue;
+  15          static  data CHAR currtoken;
+  16          static  data CHAR lasttoken;
+  17          static  data CHAR lastpress;
+  18          static  xdata CHAR outputbuffer[MAX_DISPLAY_CHAR];
+  19          
+  20          VOID main (VOID)
+  21          //Initialise our variables and call the 
+  22          //Assembly routine to initialise the LCD display. 
+  23           { lvalue    = 0;
+  24   1         rvalue    = 0;
+  25   1         currtoken = '=';
+  26   1         lasttoken = '0';
+  27   1         initialise();  // Initialize the LCD
+  28   1         calc_output(OK);
+  29   1         calc_evaluate();
+  30   1       }   
+  31          
+  32          VOID calc_evaluate()
+  33           { CHAR data key;
+  34   1         INT  data i;
+  35   1         CHAR xdata number[MAX_DISPLAY_CHAR];
+  36   1         CHAR xdata *bufferptr;
+  37   1         
+  38   1         // Clear the buffer before we start.
+  39   1         for (i = 0; i <= MAX_DISPLAY_CHAR; i++)
+  40   1            { number[i] = ' ';
+  41   2      	  }
+  42   1         bufferptr = number;  
+  43   1         
+  44   1         for (;;)
+  45   1           { key = calc_getkey();
+  46   2      	   if (calc_testkey(key))
+  47   2             // Key test positive for digit so we read it into the
+  48   2             // buffer and then write the buffer to the screen/LCD.
+  49   2      	   // Size limit the number of digits - allow for termination
+  50   2      	   // and possible negative results.
+  51   2                { if (bufferptr != &number[MAX_DISPLAY_CHAR - 2])
+  52   3                     { *bufferptr = key;
+  53   4                       calc_display(number);
+  54   4                       bufferptr++;
+C51 COMPILER V6.02  CALC                                                                   11/03/2000 12:22:31 PAGE 2   
+
+  55   4                     }
+  56   3                }
+  57   2      
+  58   2             else
+  59   2             // Key is an operator so pass it to the function handlers.
+  60   2             // If we are just after startup or cancel then assign to lvalue
+  61   2             // otherwise assign to rvalue.
+  62   2                { 
+  63   3      		    //Assign the value.
+  64   3                  if (lasttoken == '0')
+  65   3                     { lvalue = calc_asciidec (number);}
+  66   3                  else
+  67   3                     { rvalue = calc_asciidec (number);}
+  68   3      
+  69   3                  //Clear the number buffer.
+  70   3                  bufferptr = number;
+  71   3                  for (i = 0;i <= MAX_DISPLAY_CHAR; i++)
+  72   3                     { number[i] = ' '; }
+  73   3      		 
+  74   3                  //Process the Operator.
+  75   3                  currtoken = key;
+  76   3      			if (currtoken == 'C') 
+  77   3      			   { calc_opfunctions(currtoken); }
+  78   3      		 	else
+  79   3      			   { calc_opfunctions(lasttoken); }
+  80   3      		
+  81   3       		    // Clear the outputbuffer for reuse on next operation.
+  82   3                  for (i = 0;i <= MAX_DISPLAY_CHAR;i++)
+  83   3                     { outputbuffer[i] = ' ';}
+  84   3      		      
+  85   3            	     bufferptr = number;
+  86   3      			// Handle the equals operation here for brevity.
+  87   3      			// All we need do is preserve the previous operator in
+  88   3      			// lasttoken.
+  89   3      			if (currtoken != 0x3D) lasttoken = currtoken;
+  90   3                  
+  91   3         		  }
+  92   2             lastpress = key;
+  93   2           }
+  94   1       }
+  95          
+  96          VOID calc_opfunctions (CHAR token)
+  97          // Handle the operations. Lvalue holds the result and we test for
+  98          // consecutive operator presses.
+  99           { CHAR data result;
+ 100   1         switch(token)
+ 101   1              // Add.
+ 102   1           {  case '+' : if ((currtoken == '=' ) || ((lastpress >= 0x30) && (lastpress <=0x39)))
+ 103   2            			      { lvalue += rvalue;
+ 104   3              			    result = calc_chkerror(lvalue);
+ 105   3      					  }
+ 106   2         				   else
+ 107   2            				  { result =  SLEEP; }		break;
+ 108   2              // Subtract.
+ 109   2      		case '-' : if ((currtoken == '=' ) || ((lastpress >= 0x30) && (lastpress <=0x39)))
+ 110   2                            { lvalue -= rvalue;
+ 111   3                              result = calc_chkerror(lvalue);		
+ 112   3      					  }
+ 113   2                         else
+ 114   2                            { result = SLEEP;}		break;
+ 115   2              // Multiply.
+ 116   2      		case '*' : if ((currtoken == '=' ) || ((lastpress >= 0x30) && (lastpress <=0x39)))
+C51 COMPILER V6.02  CALC                                                                   11/03/2000 12:22:31 PAGE 3   
+
+ 117   2                            { lvalue *= rvalue;
+ 118   3                              result =  calc_chkerror(lvalue);
+ 119   3                            }
+ 120   2                         else
+ 121   2                            { result =  SLEEP;}		break;
+ 122   2      		// Divide.			  
+ 123   2      		case '/' : if ((currtoken == '=' ) || ((lastpress >= 0x30) && (lastpress <=0x39)))
+ 124   2                            { if (rvalue)
+ 125   3                                 { lvalue /= rvalue;
+ 126   4                                   result = calc_chkerror(lvalue);
+ 127   4                                 }
+ 128   3                              else
+ 129   3                                 { result = ERROR;}				 
+ 130   3                            }
+ 131   2                         else
+ 132   2                            { result = SLEEP;}		break;
+ 133   2      		// Cancel.
+ 134   2       		case 'C' : lvalue = 0;
+ 135   2                         rvalue = 0;
+ 136   2                         currtoken = '0';
+ 137   2                         lasttoken = '0';
+ 138   2                         result = OK;				  	break;
+ 139   2      	
+ 140   2      		default :  result = SLEEP;  
+ 141   2      
+ 142   2            }
+ 143   1         calc_output(result); 
+ 144   1       }
+ 145          
+ 146           
+ 147          /************************************************************************
+ 148          ***** Utility Routines *****
+ 149          ***************************/
+ 150          
+ 151          INT calc_chkerror (LONG num)
+ 152          // Check upper and lower bounds for the display.
+ 153          // i.e. 99999999 and -99999999.
+ 154           { if ((num >= -9999999) && (num <= 9999999))
+ 155   1            return OK;
+ 156   1         else
+ 157   1            return ERROR;
+ 158   1       }
+ 159          
+ 160          
+ 161          VOID calc_output (INT status)
+ 162          // Output according to the status of the operation.
+ 163          // *Sleep* is used for the first op press after a full cancel
+ 164          // or on startup.
+ 165            
+ 166           { switch (status)
+ 167   1            { case OK      : calc_display(calc_decascii(lvalue));    break;
+ 168   2              case SLEEP   :                                         break;
+ 169   2      		case ERROR   : calc_display("Exception ");			   break;	
+ 170   2              default      : calc_display("Exception ");	    	   break;
+ 171   2            }
+ 172   1       }
+ 173          
+ 174          
+ 175          LONG calc_asciidec (CHAR *buffer)
+ 176          // Convert the ASCII string into the floating point number.
+ 177           { LONG data value;
+ 178   1         LONG data digit;
+C51 COMPILER V6.02  CALC                                                                   11/03/2000 12:22:31 PAGE 4   
+
+ 179   1         value = 0;
+ 180   1         while (*buffer != ' ')
+ 181   1            { digit = *buffer - 48;
+ 182   2      	    value = value*10 + digit;
+ 183   2              buffer++;
+ 184   2      	  }
+ 185   1         return value;
+ 186   1       }
+ 187          
+ 188          CHAR *calc_decascii (LONG num)
+ 189          // A rather messy function to convert a floating
+ 190          // point number into an ASCII string.
+ 191           { LONG data temp = num;
+ 192   1         CHAR xdata *arrayptr = &outputbuffer[MAX_DISPLAY_CHAR];
+ 193   1         LONG data divisor = 10;
+ 194   1         LONG data result;
+ 195   1         CHAR data remainder,asciival;
+ 196   1         INT  data i;
+ 197   1         
+ 198   1         // If the result of the calculation is zero 
+ 199   1         // insert a zero in the buffer and finish.
+ 200   1         if (!temp)
+ 201   1            { *arrayptr = 48;
+ 202   2      	    goto done;
+ 203   2      	  }
+ 204   1         // Handle Negative Numbers.
+ 205   1         if (temp < 0)
+ 206   1            { outputbuffer[0] = '-';
+ 207   2      	    temp -= 2*temp;
+ 208   2      	  }
+ 209   1      
+ 210   1         for (i=0 ; i < sizeof(outputbuffer) ; i++)
+ 211   1            { remainder = temp % divisor;   
+ 212   2              result = temp / divisor;
+ 213   2      	    
+ 214   2      		// If we run off the end of the number insert a space into
+ 215   2      	    // the buffer.
+ 216   2      	    if ((!remainder) && (!result))
+ 217   2       	       { *arrayptr = ' ';}
+ 218   2      	  
+ 219   2      	    // We're in business - store the digit offsetting
+ 220   2      	    // by 48 decimal to account for the ascii value.
+ 221   2      	    else
+ 222   2      	       { asciival = remainder + 48;
+ 223   3      		     *arrayptr = asciival;
+ 224   3      		   } 
+ 225   2       	  
+ 226   2      		temp /= 10;
+ 227   2      	    // Save a place for a negative sign.
+ 228   2      	    if (arrayptr != &outputbuffer[1]) arrayptr--;
+ 229   2      	   }
+ 230   1         done: return outputbuffer;
+ 231   1       }
+ 232          
+ 233          
+ 234          CHAR calc_testkey (CHAR key)
+ 235          // Test whether the key is a digit or an operator. Return 1 for digit, 0 for op.
+ 236           { if ((key >= 0x30) && (key <= 0x39))
+ 237   1            { return 1;}
+ 238   1         else
+ 239   1            { return 0;}
+ 240   1       }
+C51 COMPILER V6.02  CALC                                                                   11/03/2000 12:22:31 PAGE 5   
+
+ 241          
+ 242          /************************************************************************
+ 243          ***** I/O Routines *****
+ 244          ***********************/
+ 245          
+ 246          CHAR calc_getkey (VOID)
+ 247          // Use the input routine from the *Keypad_Read* assembly file to 
+ 248          // Scan for a key and return ASCII value of the Key pressed.
+ 249          { CHAR data mykey;
+ 250   1        do mykey = input();
+ 251   1           while (mykey == 0);
+ 252   1        return mykey;
+ 253   1       }
+ 254          
+ 255          VOID calc_display (CHAR buf[MAX_DISPLAY_CHAR])
+ 256          // Use the Output and Clearscreen routines from the 
+ 257          // *LCD_Write* assembly file to output ASCII values to the LCD.
+ 258           { INT data  i = 0;
+ 259   1         clearscreen();
+ 260   1         for (i ; i <= MAX_DISPLAY_CHAR ; i++)
+ 261   1            { if (buf[i] != ' ')
+ 262   2      	     { output(buf[i]); }
+ 263   2      	  }	
+ 264   1       }
+ 265          
+ 266          
+ 267          
+ 268          
+ 269          
+ 270          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1176    ----
+   CONSTANT SIZE    =     11    ----
+   XDATA SIZE       =      9       9
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     11      39
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

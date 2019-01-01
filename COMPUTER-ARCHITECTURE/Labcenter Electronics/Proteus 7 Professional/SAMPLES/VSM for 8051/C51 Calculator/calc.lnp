@@ -1,0 +1,4 @@
+"calc.obj",
+"keypad.obj",
+"lcd.obj" 
+TO "calc" 

@@ -1,0 +1,5 @@
+#Syntax Highlight Extension Mappings for HC11
+SDI=HC11.SYN
+ASM=HC11.SYN
+H=C.SYN
+C=C.SYN

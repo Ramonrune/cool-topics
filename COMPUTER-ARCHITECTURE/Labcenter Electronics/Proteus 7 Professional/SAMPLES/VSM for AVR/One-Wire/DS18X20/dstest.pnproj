@@ -1,0 +1,1 @@
+<Project name="dstest"><File path="uart.h"></File><File path="delay.c"></File><File path="delay.h"></File><File path="main.c"></File><File path="uart.c"></File><File path="onewire.h"></File><File path="onewire.c"></File><File path="ds18x20.h"></File><File path="ds18x20.c"></File><File path="crc8.h"></File><File path="crc8.c"></File></Project>

@@ -1,0 +1,37 @@
+LABCENTER PROTEUS TOOL INFORMATION FILE
+=======================================
+
+Tool set up for P:\PROTEUS4\SAMPLES\dbellr.lyt
+
+File List
+---------
+Top Copper      e:\gerbit\dbell.TOP
+Bottom Copper   e:\gerbit\dbell.BOT
+Top Silk        e:\gerbit\dbell.TS
+Drill           e:\gerbit\dbell.DRL
+
+Photoplotter Setup
+------------------
+Format: ASCII, 2.4, imperial, absolute, eob=*, LZO
+Notes:  D=Diam, S=Side, W=Width, H=Height
+
+D10	CIRCLE	D=25th                                    DRAW
+D11	CIRCLE	D=15th                                    DRAW
+D12	CIRCLE	D=10th                                    DRAW
+D13	CIRCLE	D=50th                                    FLASH
+D14	CIRCLE	D=80th                                    FLASH
+D15	SQUARE	S=50th                                    FLASH
+D16	CIRCLE	D=60th                                    FLASH
+D17	SQUARE	S=60th                                    FLASH
+D18	CIRCLE	D=0.1in                                   FLASH
+D19	CIRCLE	D=8th                                     DRAW
+D70	CIRCLE	D=50th                                    DRAW
+
+NC Drill Setup
+--------------
+Format: ASCII, 2.4, imperial, absolute, eob=<CR><LF>, no zero suppression.
+Notes:  Tool sizes are diameters.
+
+T01	20th
+T02	30th
+

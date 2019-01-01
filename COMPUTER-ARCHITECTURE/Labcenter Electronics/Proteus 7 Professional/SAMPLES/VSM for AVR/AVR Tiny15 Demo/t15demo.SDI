@@ -1,0 +1,155 @@
+,,,;Tiny 15 - Test of ADC - also include multiplex display driver.
+,,,         
+,,,; Specify Device.
+,,,.device ATTINY15
+,,,         
+,,,; I/O Register Definitions
+,,,.equ    SREG    =$3F
+,,,.equ    GIMSK   =$3B
+,,,.equ    GIFR    =$3A
+,,,.equ    TIMSK   =$39              
+,,,.equ    TIFR    =$38 
+,,,.equ    MCUCR   =$35
+,,,.equ    TCCR0   =$33
+,,,.equ    TCNT0   =$32
+,,,.equ    TCCR1   =$30
+,,,.equ    TCNT1   =$2F
+,,,.equ    OCR1A   =$2E
+,,,.equ    OCR1B   =$2D
+,,,.equ    PORTB   =$18
+,,,.equ  DDRB    =$17
+,,,.equ    ACSR    =$08     
+,,,.equ    ADMUX   =$07
+,,,.equ    ADCSR   =$06
+,,,.equ    ADCH    =$05
+,,,.equ    ADCL    =$04       
+,,,         
+,,,; Variable Declarations
+,,,.def temp     = r16
+,,,.def isrsreg  = r18
+,,,.def isrtemp1 = r19     
+,,,.def isrtemp2 = r20    
+,,,.def cseg     = r21
+,,,.def seg0     = r22
+,,,.def seg1     = r23
+,,,.def seg2     = r24
+,,,.def seg3     = r25
+,,,         
+,,,.cseg                                 ; CODE segment.
+,,,         
+,,,;Interrupt Vectors
+,,,.org 0
+000000,C008,,       rjmp init                       ;Reset
+000002,9518,,       reti                            ;INT 0
+000004,9518,,       reti                            ;Pin Change
+000006,9518,,       reti                            ;Output compare
+000008,9518,,       reti                            ;Timer 1
+00000A,C03E,,       rjmp tov0                       ;Timer 0
+00000C,9518,,       reti                            ;EEPROM ready
+00000E,9518,,       reti                            ;Analog Comparator
+000010,9518,,       reti                            ;ADC Complete 
+,,,         
+,,,;Initialization      
+000012,E10F,init,init:   ldi r16,$1F            ; 5 bits are outputs
+000014,BB07,,       out DDRB,r16            ; set portb bit 0 for outputs to display
+000016,E003,,       ldi r16,3               ; Timer 0 rolls over at 1.6MHz/256/64 = 97Hz
+000018,BF03,,       out TCCR0,r16
+00001A,E002,,       ldi r16,$02             ; Enable TOVF0
+00001C,BF09,,       out TIMSK,r16
+00001E,E051,,       ldi cseg,$01            ; Start at segment 
+000020,9478,,       sei                     ; Enable Interrupts                                   
+,,,         
+000022,E80E,,       ldi r16,$8E             ; Enable, ADIE, Prescale = 1/64
+000024,B906,,       out ADCSR,r16                                 
+000026,E000,,       ldi r16,0               ; Select ADC0 as input, VCC as VREF
+000028,B907,,       out ADMUX,r16
+,,,         
+00002A,E200,loop,loop:  ldi r16,$20             ; Sleep enable, idling mode
+00002C,BF05,,       out MCUCR,r16                                          
+00002E,9588,,       sleep                   ; Wait for a timer 0 interrupt
+000030,3058,,       cpi cseg,8              ; Wait for write to MS segment
+000032,F3D9,,       breq loop
+,,,      
+000034,E208,,       ldi r16,$28             ; Sleep enable, ADC low noise mode
+000036,BF05,,       out MCUCR,r16                                          
+000038,9588,,       sleep                   ; Wait for ADC to convert
+,,,         
+00003A,B004,,       in r0,ADCL              ; Read the converted value
+00003C,B015,,       in r1,ADCH
+,,,         
+,,,;Convert and display value for output
+,,,;Start value taken to be in r1:r0
+00003E,2444,,       clr r4                  ;Count result
+000040,2C20,dc1a,dc1a:  mov r2,r0               ;Subtract 1000's
+000042,2C31,,       mov r3,r1
+000044,EE08,,        ldi r16,$e8
+000046,1A20,,        sub r2,r16
+000048,E003,,        ldi r16,$3
+00004A,0A30,,        sbc r3,r16
+00004C,F020,,        brcs dc1b
+00004E,9443,,       inc r4
+000050,2C02,,       mov r0,r2
+000052,2C13,,       mov r1,r3
+000054,CFF5,,       rjmp dc1a               ; Go again
+000056,2D64,dc1b,dc1b:   mov seg0,r4            ; Store result
+,,,         
+000058,2444,,       clr r4  
+00005A,2C20,dc2a,dc2a:  mov r2,r0               ;Subtract 100's
+00005C,2C31,,       mov r3,r1
+00005E,E604,,        ldi r16,100        
+000060,1A20,,        sub r2,r16
+000062,2700,,        clr r16
+000064,0A30,,        sbc r3,r16
+000066,F020,,        brcs dc2b
+000068,9443,,       inc r4
+00006A,2C02,,       mov r0,r2
+00006C,2C13,,       mov r1,r3
+00006E,CFF5,,       rjmp dc2a               ; Go again
+000070,2D74,dc2b,dc2b:   mov seg1,r4            ; Store result
+,,,         
+000072,2444,,       clr r4  
+000074,2C20,dc3a,dc3a:  mov r2,r0               ;Subtract 10's
+000076,E00A,,        ldi r16,10
+000078,1A20,,        sub r2,r16
+00007A,F018,,        brcs dc3b
+00007C,9443,,       inc r4
+00007E,2C02,,       mov r0,r2
+000080,CFF9,,       rjmp dc3a               ; Go again
+000082,2D84,dc3b,dc3b:   mov seg2,r4            ; Store result
+,,,         
+000084,2D90,,       mov seg3,r0             ; The units are trivial
+,,,       
+,,,                                                                                                                              
+000086,CFD1,,       rjmp loop               ; Go again               
+,,,         
+,,,         
+,,,;Timer 0 interrupt - display driver
+000088,B72F,tov0,tov0:  in isrsreg,SREG         ; Preserver sreg
+,,,      
+00008A,2733,,       clr isrtemp1            ; Blank the display
+00008C,BB38,,       out PORTB,isrtemp1
+,,,         
+00008E,9556,,       lsr cseg                ; Advance segment selector address
+000090,F408,,       brcc tov0_1
+000092,E058,,       ldi cseg,0x08           ; Reset to seg 3                                
+000094,BB58,tov0_1,tov0_1: out PORTB,cseg         ; Drive the latch               
+,,,         
+000096,FD53,,       sbrc cseg,3             ; Select byte to output  
+000098,2F39,,       mov isrtemp1,seg3
+00009A,FD52,,       sbrc cseg,2
+00009C,2F38,,       mov isrtemp1,seg2
+00009E,FD51,,       sbrc cseg,1
+0000A0,2F37,,       mov isrtemp1,seg1
+0000A2,FD50,,       sbrc cseg,0
+0000A4,2F36,,       mov isrtemp1,seg0
+,,,         
+0000A6,E140,,       ldi isrtemp2,$10        ;Bit 4 is set to enable the 7447
+0000A8,2B34,,       or isrtemp1,isrtemp2    
+,,,              
+0000AA,9AC4,,       sbi PORTB,4             ;Pre Assert PB4
+0000AC,BB38,,       out PORTB,isrtemp1      ;Drive the segment value onto the display
+,,,         
+0000AE,BF2F,,       out SREG,isrsreg
+0000B0,9518,,       reti
+,,,          
+,,,

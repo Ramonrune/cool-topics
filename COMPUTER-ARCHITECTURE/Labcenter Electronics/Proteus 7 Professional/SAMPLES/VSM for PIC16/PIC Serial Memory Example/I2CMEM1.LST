@@ -1,0 +1,947 @@
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00001                  LIST    p=16F877
+                    00002                  #include "P16F877.INC"
+                    00001         LIST
+                    00002 ; P16F877.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+                    00373         LIST
+                    00003 
+  00000007          00004 SDO              EQU 7
+  00000006          00005 CLK              EQU 6
+                    00006 
+0000                00007                  ORG   0
+0000 291F           00008 entrypoint       goto  start
+                    00009 
+0004                00010                  ORG   4
+0004 2804           00011 intvector        goto    intvector
+                    00012 
+                    00013                  CBLOCK 0x30
+  00000030          00014                     address, value, byte, bit, ack
+  00000035          00015                     lc1, lc2, lc3
+                    00016                  ENDC
+                    00017 
+                    00018 
+0005 1283           00019 set_sdo_high     bcf    STATUS,RP0
+0006 1387           00020                  bcf    PORTC,SDO
+0007 1683           00021                  bsf    STATUS,RP0
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0008 1787           00022                  bsf    TRISC,SDO
+0009 1283           00023                  bcf    STATUS,RP0
+000A 0008           00024                  return
+                    00025 
+000B 1283           00026 set_sdo_low      bcf    STATUS,RP0
+000C 1387           00027                  bcf    PORTC,SDO
+000D 1683           00028                  bsf    STATUS,RP0
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000E 1387           00029                  bcf    TRISC,SDO
+000F 1283           00030                  bcf    STATUS,RP0
+0010 0008           00031                  return
+                    00032 
+                    00033 ;-----------------------------------------------------------
+0011 1283           00034 set_clk_high     bcf    STATUS,RP0
+0012 1707           00035                  bsf    PORTC,CLK
+0013 1683           00036                  bsf    STATUS,RP0
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0014 1307           00037                  bcf    TRISC,CLK
+0015 1283           00038                  bcf    STATUS,RP0
+0016 0008           00039                  return
+                    00040 
+                    00041 ;-----------------------------------------------------------
+0017 1283           00042 set_clk_low      bcf    STATUS,RP0
+0018 1307           00043                  bcf    PORTC,CLK
+0019 1683           00044                  bsf    STATUS,RP0
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001A 1307           00045                  bcf    TRISC,CLK
+001B 1283           00046                  bcf    STATUS,RP0
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001C 0008           00047                  return
+                    00048 
+                    00049 ;-----------------------------------------------------------
+001D 3006           00050 wait_quarter_bit movlw  0x06
+001E 00B5           00051                  movwf  lc1
+001F 0BB5           00052 wqb0:            decfsz lc1,F
+0020 281F           00053                  goto   wqb0
+0021 0008           00054                  return
+                    00055 
+                    00056 ;-----------------------------------------------------------
+0022 3010           00057 wait_half_bit    movlw  0x10
+0023 00B5           00058                  movwf  lc1
+0024 0BB5           00059 whb0:            decfsz lc1,F
+0025 281F           00060                  goto   wqb0
+0026 0008           00061                  return
+                    00062 
+                    00063 ;-----------------------------------------------------------
+0027 30FF           00064 init             movlw 0xFF
+0028 0087           00065                  movwf PORTC
+0029 3000           00066                  movlw 0x00
+002A 1683           00067                  bsf   STATUS,RP0
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002B 0087           00068                  movwf TRISC
+002C 1283           00069                  bcf   STATUS,RP0
+002D 0008           00070                  return
+                    00071 
+                    00072 ;-----------------------------------------------------------
+002E 2011           00073 wr_start         call  set_clk_high
+002F 2022           00074                  call  wait_half_bit
+0030 200B           00075                  call  set_sdo_low
+0031 2022           00076                  call  wait_half_bit
+0032 2017           00077                  call  set_clk_low
+0033 2022           00078                  call  wait_half_bit
+0034 2022           00079                  call  wait_half_bit
+0035 2022           00080                  call  wait_half_bit
+0036 0008           00081                  return
+                    00082 ;-----------------------------------------------------------
+0037 2022           00083 wr_stop          call  wait_half_bit
+0038 2017           00084                  call  set_clk_low
+0039 2022           00085                  call  wait_half_bit
+003A 200B           00086                  call  set_sdo_low
+003B 2022           00087                  call  wait_half_bit
+003C 2011           00088                  call  set_clk_high
+003D 2022           00089                  call  wait_half_bit
+003E 2005           00090                  call  set_sdo_high
+003F 2022           00091                  call  wait_half_bit
+0040 0008           00092                  return
+                    00093 
+                    00094 ;-----------------------------------------------------------
+0041 2017           00095 wr_restart       call   set_clk_low
+0042 2022           00096                  call   wait_half_bit
+0043 2005           00097                  call   set_sdo_high
+0044 2022           00098                  call   wait_half_bit
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0045 2011           00099                  call   set_clk_high
+0046 2022           00100                  call   wait_half_bit
+0047 200B           00101                  call   set_sdo_low
+0048 2022           00102                  call   wait_half_bit
+0049 2017           00103                  call   set_clk_low
+004A 2022           00104                  call   wait_half_bit
+004B 0008           00105                  return
+                    00106 
+                    00107 ;-----------------------------------------------------------
+004C 2017           00108 wr_ack           call   set_clk_low
+004D 2022           00109                  call   wait_half_bit
+004E 200B           00110                  call   set_sdo_low
+004F 2022           00111                  call   wait_half_bit
+0050 2011           00112                  call   set_clk_high
+0051 2022           00113                  call   wait_half_bit
+0052 2017           00114                  call   set_clk_low
+0053 2022           00115                  call   wait_half_bit
+0054 2005           00116                  call   set_sdo_high
+0055 2022           00117                  call   wait_half_bit
+0056 0008           00118                  return
+                    00119 
+                    00120 ;-----------------------------------------------------------
+0057 2017           00121 wr_no_ack        call   set_clk_low
+0058 2022           00122                  call   wait_half_bit
+0059 2005           00123                  call   set_sdo_high
+005A 2022           00124                  call   wait_half_bit
+005B 2011           00125                  call   set_clk_high
+005C 2022           00126                  call   wait_half_bit
+005D 2017           00127                  call   set_clk_low
+005E 2022           00128                  call   wait_half_bit
+005F 2022           00129                  call   wait_half_bit
+0060 0008           00130                  return
+                    00131 
+                    00132 ;-----------------------------------------------------------
+                    00133 ; Generate a reset by generating a stop followed by at least
+                    00134 ; eight clock pulses.
+0061 2022           00135 wr_reset         call   wait_half_bit
+0062 2017           00136                  call   set_clk_low
+0063 2022           00137                  call   wait_half_bit
+0064 200B           00138                  call   set_sdo_low
+0065 2022           00139                  call   wait_half_bit
+0066 2011           00140                  call   set_clk_high
+                    00141 
+0067 3040           00142                  movlw  0x40
+0068 00B5           00143                  movwf  lc1
+0069 0BB5           00144 wrr0:            decfsz lc1,F
+006A 2869           00145                  goto   wrr0
+                    00146 
+006B 2005           00147                  call   set_sdo_high
+                    00148 
+006C 3040           00149                  movlw  0x40
+006D 00B5           00150                  movwf  lc1
+006E 0BB5           00151 wrr1:            decfsz lc1,F
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+006F 286E           00152                  goto   wrr1
+                    00153 
+0070 2017           00154                  call   set_clk_low             ; clk 0
+0071 2022           00155                  call   wait_half_bit
+0072 2011           00156                  call   set_clk_high
+0073 2022           00157                  call   wait_half_bit
+0074 2017           00158                  call   set_clk_low             ; clk 1
+0075 2022           00159                  call   wait_half_bit
+0076 2011           00160                  call   set_clk_high
+0077 2022           00161                  call   wait_half_bit
+0078 2017           00162                  call   set_clk_low             ; clk 2
+0079 2022           00163                  call   wait_half_bit
+007A 2011           00164                  call   set_clk_high
+007B 2022           00165                  call   wait_half_bit
+007C 2017           00166                  call   set_clk_low             ; clk 3
+007D 2022           00167                  call   wait_half_bit
+007E 2011           00168                  call   set_clk_high
+007F 2022           00169                  call   wait_half_bit
+0080 2017           00170                  call   set_clk_low             ; clk 4
+0081 2022           00171                  call   wait_half_bit
+0082 2011           00172                  call   set_clk_high
+0083 2022           00173                  call   wait_half_bit
+0084 2017           00174                  call   set_clk_low             ; clk 5
+0085 2022           00175                  call   wait_half_bit
+0086 2011           00176                  call   set_clk_high
+0087 2022           00177                  call   wait_half_bit
+0088 2017           00178                  call   set_clk_low             ; clk 6
+0089 2022           00179                  call   wait_half_bit
+008A 2011           00180                  call   set_clk_high
+008B 2022           00181                  call   wait_half_bit
+008C 2017           00182                  call   set_clk_low             ; clk 7
+008D 2022           00183                  call   wait_half_bit
+008E 2011           00184                  call   set_clk_high
+008F 2022           00185                  call   wait_half_bit
+0090 2017           00186                  call   set_clk_low             ; clk 8
+0091 2022           00187                  call   wait_half_bit
+0092 2011           00188                  call   set_clk_high
+0093 2022           00189                  call   wait_half_bit
+                    00190 
+0094 0008           00191                  return
+                    00192 
+                    00193 
+                    00194 ;-----------------------------------------------------------
+0095 1283           00195 wr_bit           bcf   STATUS,RP0
+0096 201D           00196                  call  wait_quarter_bit
+0097 0833           00197                  movf  bit,w
+0098 0532           00198                  andwf byte,w
+0099 1903           00199                  btfsc STATUS,Z
+009A 289D           00200                  goto  bit_is_0
+                    00201 
+009B 2005           00202 bit_is_1         call  set_sdo_high
+009C 289F           00203                  goto  wbit0
+                    00204 
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+009D 200B           00205 bit_is_0         call  set_sdo_low
+009E 289F           00206                  goto  wbit0
+                    00207 
+                    00208 
+009F 1283           00209 wbit0            bcf   STATUS,RP0
+00A0 201D           00210                  call  wait_quarter_bit
+00A1 2011           00211                  call  set_clk_high
+00A2 2022           00212                  call  wait_half_bit
+00A3 2017           00213                  call  set_clk_low
+00A4 0008           00214                  return
+                    00215 
+                    00216 ;-----------------------------------------------------------
+00A5 00B2           00217 wr_byte          movwf byte
+00A6 3080           00218                  movlw 0x80
+00A7 00B3           00219                  movwf bit
+                    00220 
+00A8 2095           00221 wbyte0           call  wr_bit
+00A9 1003           00222                  bcf   STATUS,C
+00AA 0CB3           00223                  rrf   bit,F
+00AB 08B3           00224                  movf  bit,F
+00AC 1D03           00225                  btfss STATUS,Z
+00AD 28A8           00226                  goto  wbyte0
+                    00227 
+00AE 201D           00228                  call  wait_quarter_bit
+00AF 2005           00229                  call  set_sdo_high
+00B0 201D           00230                  call  wait_quarter_bit
+00B1 2011           00231                  call  set_clk_high
+00B2 201D           00232                  call  wait_quarter_bit
+00B3 0807           00233                  movf  PORTC,W
+00B4 3980           00234                  andlw (1<<SDO)
+00B5 3A80           00235                  xorlw (1<<SDO)
+00B6 00B4           00236                  movwf ack
+00B7 201D           00237                  call  wait_quarter_bit
+00B8 2017           00238                  call  set_clk_low
+00B9 201D           00239                  call  wait_quarter_bit
+00BA 0008           00240                  return
+                    00241 
+                    00242 ;-----------------------------------------------------------
+00BB 00B2           00243 wr_halfbyte      movwf byte
+00BC 3008           00244                  movlw 0x08
+00BD 00B3           00245                  movwf bit
+                    00246 
+00BE 2095           00247 whbyte0          call  wr_bit
+00BF 1003           00248                  bcf   STATUS,C
+00C0 0CB3           00249                  rrf   bit,F
+00C1 08B3           00250                  movf  bit,F
+00C2 1D03           00251                  btfss STATUS,Z
+00C3 28BE           00252                  goto  whbyte0
+                    00253 
+00C4 201D           00254                  call  wait_quarter_bit
+00C5 2005           00255                  call  set_sdo_high
+00C6 201D           00256                  call  wait_quarter_bit
+00C7 2011           00257                  call  set_clk_high
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00C8 201D           00258                  call  wait_quarter_bit
+00C9 0807           00259                  movf  PORTC,W
+00CA 3980           00260                  andlw (1<<SDO)
+00CB 3A80           00261                  xorlw (1<<SDO)
+00CC 00B4           00262                  movwf ack
+00CD 201D           00263                  call  wait_quarter_bit
+00CE 2017           00264                  call  set_clk_low
+00CF 201D           00265                  call  wait_quarter_bit
+00D0 0008           00266                  return
+                    00267 
+                    00268 ;-----------------------------------------------------------
+00D1 1283           00269 rd_bit           bcf    STATUS,RP0
+00D2 2005           00270                  call   set_sdo_high
+00D3 2017           00271                  call   set_clk_low
+00D4 2022           00272                  call   wait_half_bit
+00D5 2011           00273                  call   set_clk_high
+00D6 201D           00274                  call   wait_quarter_bit
+00D7 0807           00275                  movf   PORTC,W
+00D8 3980           00276                  andlw  (1<<SDO)
+00D9 1903           00277                  btfsc  STATUS,Z
+00DA 28DD           00278                  goto   rd_bit_clear
+00DB 0833           00279                  movf   bit,W
+00DC 04B2           00280                  iorwf  byte,F
+00DD 201D           00281 rd_bit_clear     call   wait_quarter_bit
+00DE 2017           00282                  call   set_clk_low
+00DF 0008           00283                  return
+                    00284 
+                    00285 ;-----------------------------------------------------------
+00E0 3000           00286 rd_byte          movlw  0x00
+00E1 00B2           00287                  movwf  byte
+00E2 3080           00288                  movlw  0x80
+00E3 00B3           00289                  movwf  bit
+                    00290 
+00E4 20D1           00291 rbyte0           call   rd_bit
+00E5 1003           00292                  bcf    STATUS,C
+00E6 0CB3           00293                  rrf    bit,F
+00E7 08B3           00294                  movf   bit,F
+00E8 1D03           00295                  btfss  STATUS,Z
+00E9 28E4           00296                  goto   rbyte0
+00EA 0832           00297                  movf   byte,W
+00EB 0008           00298                  return
+                    00299 
+                    00300 ;-----------------------------------------------------------
+                    00301 ; Write W register to PORTD and hang.
+00EC 1283           00302 wr_error         bcf   STATUS,RP0
+00ED 0088           00303                  movwf PORTD
+00EE 1683           00304                  bsf   STATUS,RP0
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+00EF 0188           00305                  clrf  TRISD
+00F0 1283           00306                  bcf   STATUS,RP0
+                    00307 
+00F1 1405           00308 wre_flash        bsf    PORTA,0
+00F2 30FF           00309                  movlw  0xFF
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00F3 2116           00310                  call   longwait
+00F4 30FF           00311                  movlw  0xFF
+00F5 2116           00312                  call   longwait
+00F6 1005           00313                  bcf    PORTA,0
+00F7 30FF           00314                  movlw  0xFF
+00F8 2116           00315                  call   longwait
+00F9 30FF           00316                  movlw  0xFF
+00FA 2116           00317                  call   longwait
+00FB 28F1           00318                  goto   wre_flash
+00FC 0008           00319                  return
+                    00320 
+                    00321 ;-----------------------------------------------------------
+                    00322 ; Write W register to PORTD and hang.
+00FD 1283           00323 wr_result        bcf   STATUS,RP0
+00FE 0088           00324                  movwf PORTD
+00FF 1683           00325                  bsf   STATUS,RP0
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0100 0188           00326                  clrf  TRISD
+0101 1283           00327                  bcf   STATUS,RP0
+                    00328 
+0102 1405           00329 wrr_flash        bsf    PORTA,0
+0103 3030           00330                  movlw  0x30
+0104 210A           00331                  call   vlongwait
+0105 1005           00332                  bcf    PORTA,0
+0106 3003           00333                  movlw  0x03
+0107 210A           00334                  call   vlongwait
+0108 2902           00335                  goto   wrr_flash
+0109 0008           00336                  return
+                    00337 
+                    00338 ;-----------------------------------------------------------
+010A 00B5           00339 vlongwait        movwf  lc1
+010B 30FF           00340 vlw1             movlw  0xFF
+010C 00B6           00341                  movwf  lc2
+010D 30FF           00342 vlw2             movlw  0xFF
+010E 00B7           00343                  movwf  lc3
+010F 0BB7           00344 vlw3             decfsz lc3,F
+0110 290F           00345                  goto   vlw3
+0111 0BB6           00346                  decfsz lc2,F
+0112 290D           00347                  goto   vlw2
+0113 0BB5           00348                  decfsz lc1,F
+0114 290B           00349                  goto   vlw1
+0115 0008           00350                  return
+                    00351 
+                    00352 ;-----------------------------------------------------------
+0116 00B5           00353 longwait         movwf  lc1
+0117 30FF           00354 lw1              movlw  0xFF
+0118 00B6           00355                  movwf  lc2
+0119 0BB6           00356 lw2              decfsz lc2,F
+011A 2919           00357                  goto   lw2
+011B 0BB5           00358                  decfsz lc1,F
+011C 2917           00359                  goto   lw1
+011D 0008           00360                  return
+                    00361 
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00362 ;-----------------------------------------------------------
+011E 291E           00363 hang             goto  hang
+                    00364 
+                    00365 
+                    00366 ;===========================================================
+011F 2027           00367 start            call  init
+0120 2061           00368                  call  wr_reset
+                    00369 
+                    00370 
+0121 1283           00371                  bcf   STATUS,RP0
+0122 0185           00372                  clrf  PORTA
+0123 0188           00373                  clrf  PORTD
+                    00374 
+0124 1683           00375                  bsf   STATUS,RP0
+0125 3006           00376                  movlw 0x06
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0126 009F           00377                  movwf ADCON1
+0127 3020           00378                  movlw 0x20
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0128 0085           00379                  movwf TRISA
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0129 0188           00380                  clrf  TRISD
+                    00381 
+012A 1283           00382                  bcf   STATUS,RP0
+012B 0185           00383                  clrf  PORTA
+012C 01B0           00384                  clrf  address
+012D 01B1           00385                  clrf  value
+                    00386 
+                    00387                  ; Test RA5 to see if we do writes:
+012E 1E85           00388                  btfss PORTA,5
+012F 2952           00389                  goto  reset_addr
+                    00390 
+                    00391                  ; Do start condition:
+0130 202E           00392 main_wr_loop:    call   wr_start
+                    00393 
+                    00394                  ; Send write command:
+0131 30A6           00395                  movlw  0xA6
+0132 20A5           00396                  call   wr_byte
+0133 3001           00397                  movlw  0x01
+0134 08B4           00398                  movf   ack,F
+0135 1903           00399                  btfsc  STATUS,Z
+0136 20EC           00400                  call   wr_error
+                    00401 
+                    00402                  ; Send address:
+0137 0830           00403                  movf   address,W
+0138 20A5           00404                  call   wr_byte
+0139 3002           00405                  movlw  0x02
+013A 08B4           00406                  movf   ack,F
+013B 1903           00407                  btfsc  STATUS,Z
+013C 20EC           00408                  call   wr_error
+                    00409 
+                    00410                  ; Send value:
+013D 0831           00411                  movf   value,W
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+013E 20A5           00412                  call   wr_byte
+013F 3003           00413                  movlw  0x03
+0140 08B4           00414                  movf   ack,F
+0141 1903           00415                  btfsc  STATUS,Z
+0142 20EC           00416                  call   wr_error
+                    00417 
+                    00418                  ; Do stop. This starts the write cycle.
+0143 2037           00419                  call   wr_stop
+                    00420 
+                    00421                  ; Now poll for acknowledge:
+0144 202E           00422 poll_for_ack     call   wr_start
+0145 30A6           00423                  movlw  0xA6
+0146 20A5           00424                  call   wr_byte
+0147 3004           00425                  movlw  0x04
+0148 08B4           00426                  movf   ack,F
+0149 1903           00427                  btfsc  STATUS,Z
+014A 2944           00428                  goto   poll_for_ack
+                    00429 
+                    00430                  ; Increment address/data and loop round:
+Message[305]: Using default destination of 1 (file).
+014B 0AB0           00431                  incf   address
+Message[305]: Using default destination of 1 (file).
+014C 0AB1           00432                  incf   value
+014D 1E30           00433                  btfss  address,4
+014E 2930           00434                  goto   main_wr_loop
+                    00435 
+                    00436                  ; Cancel sucessful poll command:
+014F 2037           00437                  call   wr_stop
+                    00438 
+0150 3010           00439 wait             movlw  0x10
+0151 2116           00440                  call   longwait
+                    00441 
+0152                00442 reset_addr       ; Generate start condition...
+0152 202E           00443                  call   wr_start
+                    00444 
+                    00445                  ; Write command:
+0153 30A6           00446                  movlw  0xA6
+0154 20A5           00447                  call   wr_byte
+0155 3005           00448                  movlw  0x05
+0156 08B4           00449                  movf   ack,F
+0157 1903           00450                  btfsc  STATUS,Z
+0158 20EC           00451                  call   wr_error
+                    00452 
+                    00453                  ; Send address:
+0159 01B0           00454                  clrf   address
+015A 0830           00455                  movf   address,W
+015B 20A5           00456                  call   wr_byte
+015C 3006           00457                  movlw  0x06
+015D 08B4           00458                  movf   ack,F
+015E 1903           00459                  btfsc  STATUS,Z
+015F 20EC           00460                  call   wr_error
+                    00461 
+                    00462                  ; Send stop:
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0160 2037           00463                  call   wr_stop
+                    00464 
+0161 202E           00465 read_bytes       call  wr_start
+0162 30A7           00466                  movlw  0xA7
+0163 20A5           00467                  call   wr_byte
+0164 3007           00468                  movlw  0x07
+0165 08B4           00469                  movf   ack,F
+0166 1903           00470                  btfsc  STATUS,Z
+0167 20EC           00471                  call   wr_error
+                    00472 
+0168 1485           00473                  bsf    PORTA,1
+0169 0000           00474                  nop
+016A 0000           00475                  nop
+016B 0000           00476                  nop
+016C 1085           00477                  bcf    PORTA,1
+                    00478 
+                    00479                  ; Do read:
+016D 20E0           00480 main_rd_loop     call   rd_byte
+                    00481 
+                    00482                  ; Is this the value we expected?
+016E 0830           00483                  movf   address,W
+016F 0232           00484                  subwf  byte,W
+0170 3008           00485                  movlw  0x08
+0171 1D03           00486                  btfss  STATUS,Z
+0172 20EC           00487                  call   wr_error
+                    00488 
+                    00489                  ; Increment address/data and loop round:
+Message[305]: Using default destination of 1 (file).
+0173 0AB0           00490                  incf   address
+0174 1A30           00491                  btfsc  address,4
+0175 2978           00492                  goto   done
+                    00493 
+                    00494                  ; Not done yet so acknowledge byte and read next one:
+0176 204C           00495                  call   wr_ack
+0177 296D           00496                  goto   main_rd_loop
+                    00497 
+                    00498 
+                    00499                  ; Stop condition marks end of sequential read:
+0178 2057           00500 done             call   wr_no_ack
+0179 2037           00501                  call   wr_stop
+                    00502 
+                    00503                  ; End of test:
+017A 211E           00504                  call hang
+                    00505 
+                    00506                  END
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BRGH                              00000002
+C                                 00000000
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CKE                               00000006
+CKP                               00000004
+CLK                               00000006
+CREN                              00000004
+CSRC                              00000007
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+D_A                               00000005
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE 12
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OBF                               00000006
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE 13
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+R                                 00000002
+RBIE                              00000003
+RBIF                              00000000
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+R_W                               00000002
+S                                 00000003
+SDO                               00000007
+SEN                               00000000
+SMP                               00000007
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISB                             00000086
+TRISC                             00000087
+TRISD                             00000088
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+UA                                00000001
+W                                 00000000
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00000FCF
+_CP_HALF                          00001FDF
+_CP_OFF                           00003FFF
+_CP_UPPER_256                     00002FEF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_ENABLE_OFF                   00003DFF
+_WRT_ENABLE_ON                    00003FFF
+_XT_OSC                           00003FFD
+__16F877                          00000001
+ack                               00000034
+address                           00000030
+bit                               00000033
+bit_is_0                          0000009D
+bit_is_1                          0000009B
+byte                              00000032
+done                              00000178
+entrypoint                        00000000
+hang                              0000011E
+init                              00000027
+intvector                         00000004
+lc1                               00000035
+lc2                               00000036
+lc3                               00000037
+longwait                          00000116
+lw1                               00000117
+lw2                               00000119
+main_rd_loop                      0000016D
+main_wr_loop                      00000130
+poll_for_ack                      00000144
+rbyte0                            000000E4
+rd_bit                            000000D1
+rd_bit_clear                      000000DD
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE 16
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+rd_byte                           000000E0
+read_bytes                        00000161
+reset_addr                        00000152
+set_clk_high                      00000011
+set_clk_low                       00000017
+set_sdo_high                      00000005
+set_sdo_low                       0000000B
+start                             0000011F
+value                             00000031
+vlongwait                         0000010A
+vlw1                              0000010B
+vlw2                              0000010D
+vlw3                              0000010F
+wait                              00000150
+wait_half_bit                     00000022
+wait_quarter_bit                  0000001D
+wbit0                             0000009F
+wbyte0                            000000A8
+whb0                              00000024
+whbyte0                           000000BE
+wqb0                              0000001F
+wr_ack                            0000004C
+wr_bit                            00000095
+wr_byte                           000000A5
+wr_error                          000000EC
+wr_halfbyte                       000000BB
+wr_no_ack                         00000057
+wr_reset                          00000061
+wr_restart                        00000041
+wr_result                         000000FD
+wr_start                          0000002E
+wr_stop                           00000037
+wre_flash                         000000F1
+wrr0                              00000069
+wrr1                              0000006E
+wrr_flash                         00000102
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXX-----
+
+All other memory blocks unused.
+
+Program Memory Words Used:   376
+Program Memory Words Free:  7816
+
+MPASM 02.30 Released          I2CMEM1.ASM   12-19-2001  11:23:01         PAGE 17
+
+
+
+
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :    13 reported,     0 suppressed
+
+

@@ -1,0 +1,350 @@
+,,,        LIST    p=12CE518 ;
+,,,        #include "P12CE518.INC" ; Include header file
+,,,        LIST
+,,,; P12CE518.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+,,,        LIST
+,,,
+,,,
+,,,        cblock 0x10
+,,,        result
+,,,        count
+,,,        endc
+,,,
+,,,        ; Vector for normal start up.
+,,,        org     0
+0000,0A01,,        goto    start
+,,,
+,,,
+,,,; Main program starts here:
+0001,0C3C,start,start   movlw 0x3C
+0002,0006,,        tris  GPIO
+,,,
+,,,
+,,,; Write a byte
+0003,0C00,,        movlw 0
+0004,003B,,        movwf EEADDR
+0005,0C85,loop,loop    movlw 0x85
+0006,003C,,        movwf EEDATA
+0007,0925,,        call WRITE_BYTE
+0008,0030,,        movwf result
+,,,
+0009,0916,,        call serout
+,,,
+,,,; Wait for INT high
+000A,0746,wait1,wait1   btfss GPIO,2
+000B,0A0A,,        goto wait1
+,,,
+,,,;Read it back
+,,,
+000C,0CFF,,        movlw 0xFF
+000D,003C,,        movwf EEDATA
+,,,
+000E,0922,,        call READ_CURRENT
+000F,021C,,        movfw EEDATA
+0010,0030,,        movwf result
+0011,0916,,        call serout
+,,,
+,,,; Wait for INT low
+0012,0646,wait2,wait2   btfsc GPIO,2
+0013,0A12,,        goto wait2
+,,,
+0014,02BB,,        incf EEADDR,F
+0015,0A05,,        goto loop
+,,,
+,,,;Serial output of result
+0016,0C08,serout,serout  movlw 8                 ;Loop for 8 bits
+0017,0031,,        movwf count
+0018,0CC0,loop1,loop1   movlw 0xC0              ;Start with a zero except for SDA/SCL
+0019,06F0,,        btfsc result,7          ;Test result bit
+001A,0D01,,        iorlw 0x01
+001B,0026,,        movwf GPIO              ;Output data bit to port on GP0
+001C,0526,,        bsf GPIO,1              ;Generate Clock pulse on GP1
+001D,0426,,        bcf GPIO,1
+001E,0370,,        rlf result,F            ;Get next result bit
+001F,02F1,,        decfsz count,F          ;Loop for next bit
+0020,0A18,,        goto loop1
+0021,0800,,        return
+,,,
+,,,
+,,,
+,,,        #include fl51xinc.asm
+,,,        TITLE "PIC with Flash EE data memory Interface"
+,,,;
+,,,;       Program:          FL51XINC.ASM  V1.10
+,,,;       Revision Date:
+,,,;                         09-09-97      Adapted to 12C51x parts
+,,,;                         01-Apr-1999   Added emulation hooks
+,,,;
+,,,
+,,,; #define EMULATED    ; comment this line out for use on real part
+,,,
+,,,; PIC12C51X EEPROM communication code.  This code should be included in
+,,,; with the application.  These routines provide the following functionality:
+,,,; write a byte to a specified address.
+,,,; read a byte from a specified address.
+,,,; read a byte from the next address.
+,,,;
+,,,; Emulation Requires:
+,,,;     MPLAB-ICE
+,,,;     PCM16XA0 processor module
+,,,;     DVA12XP80 Device Adapter.
+,,,; Define EMULATOR at the top of this file  (#define EMULATOR)
+,,,;     This will set the I2C_PORT, SDA and SCL lines to communicate over
+,,,;     Port A, pins 0 and 1.  It also assembles in the necessary TRIS
+,,,;     instructions to allow reading from the SDA line.
+,,,;
+,,,; To convert the code for the actual part, simply comment out the #define EMULATOR
+,,,; line and reassemble.
+,,,;
+,,,; FL51XTST.ASM is also provided for linker users.
+,,,;
+,,,; INTRODUCTION:
+,,,; The Microchip 12c51x family of microntrollers are multichip modules
+,,,; which contain a PIC12C508 microcontroller and a 24LC00 EEPROM.
+,,,; This application note is intended to provide users with highly compressed
+,,,; assembly code for communication between the EEPROM and the Microcontroller,
+,,,; which will leave the user a maximum amount of code space for the core
+,,,; application.
+,,,;
+,,,;***************************************************************************
+,,,;***************************  EEPROM Subroutines  **************************
+,,,;***************************************************************************
+,,,; Communication for EEPROM based on I2C protocall, with Acknowledge.
+,,,;
+,,,; Byte_Write: Byte write routine
+,,,;       Inputs:  EEPROM Address   EEADDR
+,,,;                EEPROM Data      EEDATA
+,,,;       Outputs: Return 01 in W if OK, else return 00 in W
+,,,;
+,,,; Read_Current: Read EEPROM at address currently held by EE device.
+,,,;       Inputs:  NONE
+,,,;       Outputs: EEPROM Data       EEDATA
+,,,;                Return 01 in W if OK, else return 00 in W
+,,,;
+,,,; Read_Random: Read EEPROM byte at supplied address
+,,,;       Inputs:  EEPROM Address    EEADDR
+,,,;       Outputs: EEPROM Data       EEDATA
+,,,;                Return 01 in W if OK, else return 00 in W
+,,,;
+,,,; Note: EEPROM subroutines will set bit 7 in PC_OFFSET register if the
+,,,;       EEPROM acknowledged OK, else that bit will be cleared.  This bit
+,,,;       can be checked instead of refering to the value returned in W
+,,,;***************************************************************************
+,,,
+,,,; OPERATION:
+,,,; For detailed operating information and other important information about
+,,,; this code, see AN571.  This code was derived from AN571, with changes
+,,,; as appropriate for the specific hardware in the PIC12C51x parts.
+,,,;**********************************************************************
+,,,
+,,,
+,,,;***************************************************************************
+,,,;***************************  Variable Listing  ****************************
+,,,;***************************************************************************
+,,,OK          EQU     01H
+,,,NO          EQU     00H
+,,,
+,,,#ifdef  EMULATED
+,,,I2C_PORT    EQU     5           ; Port A control register, used for I2C
+,,,SCL         EQU     01H         ; EEPROM Clock, SCL (I/O bit 7)
+,,,SDA         EQU     00H         ; EEPROM Data,  SDA (I/O bit 6)
+,,,#else
+,,,I2C_PORT    EQU     GPIO        ; Port B control register, used for I2C
+,,,SCL         EQU     07H         ; EEPROM Clock, SCL (I/O bit 7)
+,,,SDA         EQU     06H         ; EEPROM Data,  SDA (I/O bit 6)
+,,,#endif
+,,,
+,,,EE_OK       EQU     07H         ; Bit 7 in PC_OFFSET used as OK flag for EE
+,,,
+,,,        cblock 0x1A
+,,,PC_OFFSET                       ; PC offset register (low order 4 bits),
+,,,                                ;  value based on operating mode of EEPROM.
+,,,                                ;  Also, bit 7 used for EE_OK flag
+,,,EEADDR                          ; EEPROM Address
+,,,EEDATA                          ; EEPROM Data
+,,,EEBYTE                          ; Byte sent to or received from
+,,,                                ; EEPROM (control, address, or data)
+,,,COUNTER                         ; Bit counter for serial transfer
+,,,        endc
+,,,
+,,,
+,,,;***************************************************************************
+,,,;***************************  EEPROM Subroutines  **************************
+,,,;***************************************************************************
+,,,; Communication for EEPROM based on I2C protocall, with Acknowledge.
+,,,;
+,,,; WRITE_BYTE: Byte write routine
+,,,;       Inputs:  EEPROM Address   EEADDR
+,,,;                EEPROM Data      EEDATA
+,,,;       Outputs: Return 01 in W if OK, else return 00 in W
+,,,;
+,,,; READ_CURRENT: Read EEPROM at address currently held by EE device.
+,,,;       Inputs:  NONE
+,,,;       Outputs: EEPROM Data       EEDATA
+,,,;                Return 01 in W if OK, else return 00 in W
+,,,;
+,,,; READ_RANDOM: Read EEPROM byte at supplied address
+,,,;       Inputs:  EEPROM Address    EEADDR
+,,,;       Outputs: EEPROM Data       EEDATA
+,,,;                Return 01 in W if OK, else return 00 in W
+,,,;
+,,,; Note: EEPROM subroutines will set bit 7 in PC_OFFSET register if the
+,,,;       EEPROM acknowledged OK, else that bit will be cleared.  This bit
+,,,;       can be checked instead of refering to the value returned in W
+,,,;***************************************************************************
+,,,;********************** Set up EEPROM control bytes ************************
+,,,;***************************************************************************
+0022,,READ_CURRENT,READ_CURRENT
+0022,0C84,,        MOVLW   B'10000100'   ; PC offset for read current addr.  EE_OK bit7='1'
+0023,003A,,        MOVWF   PC_OFFSET     ; Load PC offset
+0024,0A52,,        GOTO    INIT_READ_CONTROL
+,,,
+0025,,WRITE_BYTE,WRITE_BYTE
+0025,0C80,,        MOVLW   B'10000000'   ; PC offset for write byte.  EE_OK: bit7 = '1'
+0026,0A28,,        GOTO    INIT_WRITE_CONTROL
+,,,
+0027,,READ_RANDOM,READ_RANDOM
+0027,0C83,,        MOVLW   B'10000011'   ; PC offset for read random.  EE_OK: bit7 = '1'
+,,,
+0028,,INIT_WRITE_CONTROL,INIT_WRITE_CONTROL
+0028,003A,,        MOVWF   PC_OFFSET     ; Load PC offset register, value preset in W
+0029,0CA0,,        MOVLW   B'10100000'   ; Control byte with write bit, bit 0 = '0'
+,,,
+002A,,START_BIT,START_BIT
+002A,04C6,,        BCF     I2C_PORT,SDA  ; Start bit, SDA and SCL preset to '1'
+,,,
+,,,
+,,,;******* Set up output data (control, address, or data) and counter ********
+,,,;***************************************************************************
+002B,,PREP_TRANSFER_BYTE,PREP_TRANSFER_BYTE
+002B,003D,,        MOVWF   EEBYTE        ; Byte to transfer to EEPROM already in W
+002C,0C08,,        MOVLW   .8            ; Counter to transfer 8 bits
+002D,003E,,        MOVWF   COUNTER
+,,,#ifdef  EMULATED
+,,,        movlw   0x00            ; make sure both are outputs
+,,,        tris    I2C_PORT
+,,,#endif
+,,,
+,,,
+,,,;************  Clock out data (control, address, or data) byte  ************
+,,,;***************************************************************************
+002E,,OUTPUT_BYTE,OUTPUT_BYTE
+002E,04E6,,        BCF     I2C_PORT,SCL  ; Set clock low during data set-up
+002F,037D,,        RLF     EEBYTE, F     ; Rotate left, high order bit into carry bit
+0030,04C6,,        BCF     I2C_PORT,SDA  ; Set data low, if rotated carry bit is
+0031,0603,,        SKPNC                 ;   a '1', then:
+0032,05C6,,        BSF     I2C_PORT,SDA  ; reset data pin to a one, otherwise leave low
+0033,0000,,        NOP
+0034,05E6,,        BSF     I2C_PORT,SCL  ; clock data into EEPROM
+0035,02FE,,        DECFSZ  COUNTER, F    ; Repeat until entire byte is sent
+0036,0A2E,,        GOTO    OUTPUT_BYTE
+0037,0000,,        NOP
+,,,
+,,,;**************************  Acknowledge Check *****************************
+,,,;***************************************************************************
+0038,04E6,,        BCF     I2C_PORT,SCL  ; Set SCL low, 0.5us < ack valid < 3us
+0039,0000,,        NOP
+003A,05C6,,        BSF     I2C_PORT,SDA
+,,,#ifdef  EMULATED
+,,,        movlw   (0x01 << SDA)   ; make SDA an input
+,,,        tris    I2C_PORT
+,,,#endif
+003B,0A3C,,        GOTO    $+1             ; May be necessary for SCL Tlow  at low voltage,
+003C,05E6,,        BSF     I2C_PORT,SCL  ; Raise SCL, EEPROM acknowledge still valid
+003D,06C6,,        BTFSC   I2C_PORT,SDA  ; Check SDA for acknowledge (low)
+003E,04FA,,        BCF     PC_OFFSET,EE_OK ; If SDA not low (no ack), set error flag
+003F,04E6,,        BCF     I2C_PORT,SCL    ; Lower SCL, EEPROM release bus
+0040,07FA,,        BTFSS   PC_OFFSET,EE_OK ; If no error continue, else stop bit
+0041,0A69,,        GOTO    STOP_BIT
+,,,#ifdef  EMULATED
+,,,        movlw   0x00            ; SDA back to an output
+,,,        tris    I2C_PORT
+,,,#endif
+,,,
+,,,
+,,,;*****  Set up program counter offset, based on EEPROM operating mode  *****
+,,,;***************************************************************************
+0042,021A,,        MOVF    PC_OFFSET,W
+0043,0E0F,,        ANDLW   B'00001111'
+0044,01E2,,        ADDWF   PCL, F
+0045,0A4C,,        GOTO    INIT_ADDRESS      ;PC offset=0, write control done, send address
+0046,0A4F,,        GOTO    INIT_WRITE_DATA   ;PC offset=1, write address done, send data
+0047,0A69,,        GOTO    STOP_BIT          ;PC offset=2, write done, send stop bit
+0048,0A4C,,        GOTO    INIT_ADDRESS      ;PC offset=3, write control done, send address
+0049,0A52,,        GOTO    INIT_READ_CONTROL ;PC offset=4, send read control
+004A,0A58,,        GOTO    READ_BIT_COUNTER  ;PC offset=5, set counter and read byte
+004B,0A69,,        GOTO    STOP_BIT          ;PC offset=6, random read done, send stop
+,,,
+,,,
+,,,;**********  Initalize EEPROM data (address, data, or control) bytes  ******
+,,,;***************************************************************************
+004C,,INIT_ADDRESS,INIT_ADDRESS
+004C,02BA,,        INCF    PC_OFFSET, F ; Increment PC offset to 2 (write) or to 4 (read)
+004D,021B,,        MOVF    EEADDR,W     ; Put EEPROM address in W, ready to send to EEPROM
+004E,0A2B,,        GOTO    PREP_TRANSFER_BYTE
+,,,
+,,,
+004F,,INIT_WRITE_DATA,INIT_WRITE_DATA
+004F,02BA,,        INCF    PC_OFFSET, F ; Increment PC offset to go to STOP_BIT next
+0050,021C,,        MOVF    EEDATA,W     ; Put EEPROM data in W, ready to send to EEPROM
+0051,0A2B,,        GOTO    PREP_TRANSFER_BYTE
+,,,
+0052,,INIT_READ_CONTROL,INIT_READ_CONTROL
+0052,05E6,,        BSF     I2C_PORT,SCL ; Raise SCL
+0053,0000,,        nop
+0054,05C6,,        BSF     I2C_PORT,SDA ; raise SDA
+0055,02BA,,        INCF    PC_OFFSET, F ; Increment PC offset to go to READ_BIT_COUNTER next
+0056,0CA1,,        MOVLW   B'10100001'  ; Set up read control byte, ready to send to EEPROM
+0057,0A2A,,        GOTO    START_BIT    ;   bit 0 = '1' for read operation
+,,,
+,,,
+,,,;**************************  Read EEPROM data  *****************************
+,,,;***************************************************************************
+0058,,READ_BIT_COUNTER,READ_BIT_COUNTER
+0058,05C6,,        BSF     I2C_PORT,SDA
+0059,0000,,        NOP
+005A,05E6,,        BSF     I2C_PORT,SCL ; set data bit to 1 so we're not pulling bus down.
+005B,0C08,,        MOVLW   .8           ; Set counter so 8 bits will be read into EEDATA
+005C,003E,,        MOVWF   COUNTER
+,,,#ifdef  EMULATED
+,,,        movlw   (0x01 << SDA)
+,,,        tris    I2C_PORT
+,,,#endif
+,,,
+005D,,READ_BYTE,READ_BYTE
+005D,05E6,,        BSF     I2C_PORT,SCL ; Raise SCL, SDA valid.  SDA still input from ack
+005E,0503,,        SETC                 ; Assume bit to be read = 1
+005F,07C6,,        BTFSS   I2C_PORT,SDA ; Check if SDA = 1
+0060,0403,,        CLRC                 ; if SDA not = 1 then clear carry bit
+0061,037C,,        RLF     EEDATA, F    ; rotate carry bit (=SDA) into EEDATA;
+0062,04E6,,        BCF     I2C_PORT,SCL ; Lower SCL
+0063,05C6,,        BSF     I2C_PORT,SDA ; reset SDA
+0064,02FE,,        DECFSZ  COUNTER, F   ; Decrement counter
+0065,0A5D,,        GOTO    READ_BYTE    ; Read next bit if not finished reading byte
+,,,
+0066,05E6,,        BSF     I2C_PORT,SCL
+0067,0000,,        NOP
+0068,04E6,,        BCF     I2C_PORT,SCL
+,,,;******************  Generate a STOP bit and RETURN  ***********************
+,,,;***************************************************************************
+0069,,STOP_BIT,STOP_BIT
+,,,#ifdef  EMULATED
+,,,        movlw   0x00    ; set SDA as output
+,,,        tris    I2C_PORT
+,,,#endif
+0069,04C6,,        BCF     I2C_PORT,SDA ; SDA=0, on TRIS, to prepare for transition to '1'
+006A,05E6,,        BSF     I2C_PORT,SCL ; SCL = 1 to prepare for STOP bit
+006B,0A6C,,        GOTO    $+1          ; 4 NOPs neccessary for I2C spec Tsu:sto = 4.7us
+006C,0A6D,,        GOTO    $+1
+006D,05C6,,        BSF     I2C_PORT,SDA ; Stop bit, SDA transition to '1' while SCL high
+,,,
+006E,07FA,,        BTFSS   PC_OFFSET,EE_OK ; Check for error
+006F,0800,,        RETLW   NO              ; if error, send back NO
+0070,0801,,        RETLW   OK              ; if no error, send back OK
+,,,
+,,,;Note: SDA and SCL still being driven by master, both set to outputs.
+,,,;****************************************************************************
+,,,;************************  End EEPROM Subroutines  **************************
+,,,
+,,,
+,,,        END

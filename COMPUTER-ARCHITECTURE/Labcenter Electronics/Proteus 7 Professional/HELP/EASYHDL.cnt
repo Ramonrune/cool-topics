@@ -1,0 +1,60 @@
+:Base EASYHDL.hlp
+:Title EasyHDL Language Reference Manual
+1 SCRIPTABLE GENERATORS
+2 Introduction=lrm_intro
+2 Creating and Editing EasyHDL Scripts=lrm_creatingeditingscripts
+2 Program Structure=lrm_programstructure
+2 Explanation of Syntax Layout=lrm_syntaxlayout
+2 Using EasyHDL to Specify Analog Signals
+3 Declaring the Outputs=declaring_analog_outputs
+3 Program Flow=analog_program_flow
+3 Specifying Output Transitions=specifying_output_transitions
+2 Using EasyHDL to Specify Digital Signals
+3 Declaring the Outputs=declaring_digital_outputs
+3 Program Flow=digital_program_flow
+3 Specifying Output Transitions=digital_output_transitions
+2 Variables
+3 Variable Declarations=variable_declarations
+3 Numeric Types=numeric_types
+3 String Types=string_types
+3 PIN and BOOL Types=bool_and_pin_types
+3 NODE Type=node_types
+3 Assigning Types to Variables=assigning_types_to_variables
+2 Expressions
+3 Operators=operators
+3 Values=expression_values
+3 Functions=functions
+2 System Constants and Variables
+3 Numeric Constants (PI)=system_constants_numeric
+3 Event Identification Constants=system_event_constants
+3 Net State Constants=Net_State_Constants
+3 PIN and BOOL Pin Activity Constants=pin_bool_constants
+3 TDSCALE System Variable=tdscale_system_variable
+3 RANDOM System Variable=random_system_variable
+3 REALTIME and EVTTIME System Variables=realtime_evttime_system_variables
+2 Command Reference
+3 ABORT Command=abort_command
+3 ALIAS Command=alias_command
+3 BREAK Command=break_command
+3 CALLBACK Command=callback_command
+3 CONTINUE Command=continue_command
+3 DATA Command=data_command
+3 END Command=end_command
+3 FOR...TO...STEP...NEXT Command=fortonextstep_command
+3 GOTO Command=goto_command
+3 IF...ELIF...ELSE...ENDIF Command=ifelifelseendif_command
+3 MAP ON...END MAP Command=maponendmap_command
+3 ON BOOT...ENDON Command=onbootendon_command
+3 ON EVENT...ENDON Command=oneventendon_command
+3 ON TIMER… ENDON Command=ontimerendon_command
+3 PRINT Command=print_command
+3 READ Command=read_command
+3 REM Command=rem_command
+3 REPEAT...UNTIL Command=repeatuntil_command
+3 RESTORE Command=restore_command
+3 SEED Command=seed_command
+3 SLEEP Command=sleep_command
+3 SWITCH...ENDSW Command=switchendsw_command
+3 TIMER Command=timer_command
+3 WAIT Command=wait_command
+3 WHILE...WEND Command=whilewend_command

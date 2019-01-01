@@ -1,0 +1,22 @@
+'{$STAMP BS2p}
+
+
+slot        var     nib
+value       var     byte
+
+
+start:
+    for slot = 0 to 7
+        store   slot
+        write   0,"A" + slot
+    next  
+    
+    for slot = 0 to 7
+        store   slot
+        read   0,value
+        debug "Slot: ", DEC slot," value: ",value,cr
+    next
+
+    end
+        
+    

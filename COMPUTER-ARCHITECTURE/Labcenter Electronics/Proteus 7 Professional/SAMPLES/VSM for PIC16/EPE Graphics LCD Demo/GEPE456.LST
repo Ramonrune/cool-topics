@@ -1,0 +1,2398 @@
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00001 ; CONVERTED TASM PIC16F877 C:\PIC\GEPE456.ASM TO MPASM C:\ASMCNV\GEPE456.ASM 01-22-2001 22:15:32
+                    00002 
+                    00003         list p=16F877,r=dec
+                    00004                             ;GEPE456.ASM 07SEP00 - JOHN BECKER - EPE LCD GRAPH DEMO 2 (MAIN DEMOS)
+                    00005                             
+                    00006 #DEFINE   PAGE0 BCF H'03',5;STATUS bit 5
+                    00007 #DEFINE   PAGE1 BSF H'03',5;STATUS bit 5
+                    00008                             
+  00000000          00009 INDF      EQU H'00'         ;page 0, 1, 2, 3
+  00000001          00010 OPSHUN    EQU H'01'         ;page 1, 3
+  00000002          00011 PCL       EQU H'02'         ;page 0, 1, 2, 3
+  00000003          00012 STATUS    EQU H'03'         ;page 0, 1, 2, 3
+  00000004          00013 FSR       EQU H'04'         ;page 0, 1, 2, 3
+                    00014                             
+  00000005          00015 PORTA     EQU H'05'         ;page 0
+  00000005          00016 TRISA     EQU H'05'         ;page 1
+  00000006          00017 PORTB     EQU H'06'         ;page 0, 2
+  00000006          00018 TRISB     EQU H'06'         ;page 1, 3
+  00000007          00019 PORTC     EQU H'07'         ;page 0
+  00000007          00020 TRISC     EQU H'07'         ;page 1
+  00000008          00021 PORTD     EQU H'08'         ;page 0
+  00000008          00022 TRISD     EQU H'08'         ;page 1
+  00000009          00023 PORTE     EQU H'09'         ;page 0
+  00000009          00024 TRISE     EQU H'09'         ;page 1
+  0000000B          00025 INTCON    EQU H'0B'         ;page 0, 1, 2, 3
+  0000000C          00026 EEDATA    EQU H'0C'         ;page 2
+  0000000C          00027 EECON1    EQU H'0C'         ;page 3
+  0000000D          00028 EEADR     EQU H'0D'         ;page 2
+                    00029                             
+  00000020          00030 LOOPB     EQU H'20'         ; general loop
+  00000021          00031 LOOPC     EQU H'21'         ; general loop
+  00000022          00032 LOOPD     EQU H'22'         ; general loop
+  00000023          00033 LOOPE     EQU H'23'         ; general loop
+  00000024          00034 STORE1    EQU H'24'         ; temp store
+  00000025          00035 TEMPA     EQU H'25'         ; temp store
+  00000026          00036 CLKCNT    EQU H'26'         ; counter for PAUSE val
+  00000027          00037 ADRLSB    EQU H'27'         ; low address
+  00000028          00038 ADRMSB    EQU H'28'         ; high address
+  00000029          00039 ATTRIB    EQU H'29'         ; ATTRIBUTE value
+  0000002A          00040 BITVAL    EQU H'2A'         ; val of bit to be set/reset
+  0000002B          00041 RDBYTE    EQU H'2B'         ; byte read from screen
+  0000002C          00042 COUNT     EQU H'2C'         ; counter for BIRD loop, used also for waveform
+  0000002D          00043 COLUMN    EQU H'2D'         ; column length holder
+  0000002E          00044 QCKCOL    EQU H'2E'         ; quack bill column
+  0000002F          00045 PEAKLO    EQU H'2F'         ; waveform peak lo (demo 11)
+  00000030          00046 PEAKHI    EQU H'30'         ; waveform peak hi (demo 11)
+  00000031          00047 LOBIT     EQU H'31'         ; waveform section (demo 11)
+  00000032          00048 LOOPLO    EQU H'32'         ; waveform section (demo 11)
+                    00049                             
+  00000034          00050 JOIN00    EQU H'34'         ; 1st store for BIRD roll-over join (right-hand edge bit)
+                    00051                             ; extends to $50 for JOIN32, used also for waveforms
+                    00052                             ; (64 for scope style)
+                    00053                             
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00054                             ;........FIXED VALUES FOR COMMANDS
+                    00055                             
+  00000040          00056 TXHOME    EQU H'40'         ; text home address command
+  00000041          00057 TXAREA    EQU H'41'         ; text area (columns) address command
+  00000042          00058 GRHOME    EQU H'42'         ; graphics home address command
+  00000043          00059 GRAREA    EQU H'43'         ; graphic area (columns) address command
+  000000B0          00060 AWRON     EQU H'B0'         ; autowrite on command
+  000000B2          00061 AWROFF    EQU H'B2'         ; autowrite off command
+  00000022          00062 OFFSET    EQU H'22'         ; offset command
+  00000024          00063 ADPSET    EQU H'24'         ; address set command
+  000000E0          00064 PEEK      EQU H'E0'         ; screen peek command
+  00000021          00065 CSRPOS    EQU H'21'         ; set cursor position ommand
+                    00066                             
+                    00067                             ;........BIT VALUES
+                    00068                             
+  00000000          00069 W         EQU 0             ; working reg
+  00000001          00070 F         EQU 1             ; file reg
+  00000002          00071 Z         EQU 2             ; zero status
+  00000000          00072 C         EQU 0             ; CARRY status
+  00000005          00073 RP0       EQU 5             ; STATUS bank reg
+  00000006          00074 RP1       EQU 6             ; STATUS bank reg
+  00000000          00075 RD        EQU 0             ; EEPROM read flag
+  00000007          00076 EEPGD     EQU 7             ; EECON1 reg
+  00000000          00077 FS        EQU B'00000000'   ;FS mode set by bit 5: 1 = 6x8, 0 = 8x8
+                    00078                             ;8x8 needed for EPE demos
+                    00079                             
+                    00080                             ;..........
+                    00081                             
+0000                00082           ORG 0      
+0000 2805           00083           GOTO 5
+                    00084 
+0005                00085           ORG 5
+                    00086                             
+0005 1283           00087           BCF STATUS,RP0    
+0006 1303           00088           BCF STATUS,RP1    
+0007 0185           00089           CLRF PORTA        
+0008 0186           00090           CLRF PORTB        
+0009 300F           00091           MOVLW B'00001111' ; FS low, RST low, CD CE RD WR high
+000A 0087           00092           MOVWF PORTC       
+000B 0188           00093           CLRF PORTD        
+000C 0189           00094           CLRF PORTE        
+000D 1683           00095           PAGE1             
+000E 30FF           00096           MOVLW 255         
+000F 0085           00097           MOVWF TRISA       ; PORTA as input
+0010 0186           00098           CLRF TRISB        ; PORTB as output
+0011 3000           00099           MOVLW FS          
+0012 0087           00100           MOVWF TRISC       ; PORTC as output GRAPHIC LCD control/FS
+0013 0188           00101           CLRF TRISD        ; PORTD as output GRAPHIC LCD D0-D7
+0014 0189           00102           CLRF TRISE        ; PORTE as output
+0015 3086           00103           MOVLW B'10000110' ; pull-up Rs off (bit 7 hi), timer 1/25 sec
+0016 0081           00104           MOVWF OPSHUN      ; (for 3.2768MHz xtal)
+0017 1283           00105           PAGE0             
+0018 301F           00106           MOVLW B'00011111' ; FS low, RST CD CE RD WR high
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0019 0087           00107           MOVWF PORTC       
+                    00108                             
+001A 256D           00109           CALL PAUSIT       
+001B 28F0           00110           GOTO GRAPHIC      
+                    00111                             
+001C 0782           00112 TABLE1    ADDWF PCL,F       
+001D 3447           00113           RETLW 'G'         
+001E 3452           00114           RETLW 'R'         
+001F 3441           00115           RETLW 'A'         
+0020 3450           00116           RETLW 'P'         
+0021 3448           00117           RETLW 'H'         
+0022 3449           00118           RETLW 'I'         
+0023 3443           00119           RETLW 'C'         
+0024 3420           00120           RETLW ' '         
+0025 344C           00121           RETLW 'L'         
+0026 3443           00122           RETLW 'C'         
+0027 3444           00123           RETLW 'D'         
+0028 3420           00124           RETLW ' '         
+0029 3444           00125           RETLW 'D'         
+002A 3445           00126           RETLW 'E'         
+002B 344D           00127           RETLW 'M'         
+002C 344F           00128           RETLW 'O'         
+                    00129                             
+002D 3445           00130           RETLW 'E'         
+002E 3450           00131           RETLW 'P'         
+002F 3445           00132           RETLW 'E'         
+0030 3420           00133           RETLW ' '         
+0031 3453           00134           RETLW 'S'         
+0032 3448           00135           RETLW 'H'         
+0033 344F           00136           RETLW 'O'         
+0034 3457           00137           RETLW 'W'         
+0035 3453           00138           RETLW 'S'         
+0036 3420           00139           RETLW ' '         
+0037 3459           00140           RETLW 'Y'         
+0038 344F           00141           RETLW 'O'         
+0039 3455           00142           RETLW 'U'         
+003A 3420           00143           RETLW ' '         
+003B 3448           00144           RETLW 'H'         
+003C 344F           00145           RETLW 'O'         
+003D 3457           00146           RETLW 'W'         
+003E 3421           00147           RETLW '!'         
+                    00148                             
+003F 3454           00149           RETLW 'T'         
+0040 3448           00150           RETLW 'H'         
+0041 3449           00151           RETLW 'I'         
+0042 3453           00152           RETLW 'S'         
+0043 3420           00153           RETLW ' '         
+0044 3449           00154           RETLW 'I'         
+0045 3453           00155           RETLW 'S'         
+0046 3420           00156           RETLW ' '         
+0047 3450           00157           RETLW 'P'         
+0048 3441           00158           RETLW 'A'         
+0049 3447           00159           RETLW 'G'         
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+004A 3445           00160           RETLW 'E'         
+004B 3420           00161           RETLW ' '         
+004C 3432           00162           RETLW '2'         
+                    00163                             
+004D 3451           00164           RETLW 'Q'         
+004E 3455           00165           RETLW 'U'         
+004F 3441           00166           RETLW 'A'         
+0050 3443           00167           RETLW 'C'         
+0051 344B           00168           RETLW 'K'         
+                    00169                             
+0052 0782           00170 AMPLIFIER ADDWF PCL,F       
+0053 3480           00171           RETLW H'80'       ; amp top left + first slope down (1
+                    00172                             
+0054 3483           00173           RETLW H'83'       ;amp input (2
+0055 3486           00174           RETLW H'86'       ;cap top
+0056 3483           00175           RETLW H'83'       ;amp input
+0057 3483           00176           RETLW H'83'       ;amp input
+0058 3481           00177           RETLW H'81'       ;amp left
+0059 3482           00178           RETLW H'82'       ;amp slope down
+005A 3483           00179           RETLW H'83'       ;amp output
+005B 3486           00180           RETLW H'86'       ;cap top
+005C 3483           00181           RETLW H'83'       ;amp output
+                    00182                             
+005D 348B           00183           RETLW H'8B'       ;word IN (3
+005E 3487           00184           RETLW H'87'       ;cap bot
+005F 3489           00185           RETLW H'89'       ;resistor top
+0060 3400           00186           RETLW H'00'       
+0061 3481           00187           RETLW H'81'       ;amp left
+0062 3484           00188           RETLW H'84'       ;amp slope up
+0063 3400           00189           RETLW H'00'       
+0064 3487           00190           RETLW H'87'       ;cap bot
+0065 348C           00191           RETLW H'8C'       ;1st part OUT
+0066 348D           00192           RETLW H'8D'       ;2nd part OUT
+                    00193                             
+0067 3488           00194           RETLW H'88'       ;resistor (4
+0068 3400           00195           RETLW H'00'       
+0069 3485           00196           RETLW H'85'       ;amp bot left + first slope up
+                    00197                             
+006A 3488           00198           RETLW H'88'       ;resistor (5
+006B 348A           00199           RETLW H'8A'       ;resistor bot (6
+006C 348E           00200           RETLW H'8E'       ;0V (7
+                    00201                             
+006D 0782           00202 CGTABLE   ADDWF PCL,F       ; EXTERNAL CG FONT DATA
+                    00203                             
+006E 3480           00204           RETLW B'10000000' ; CHARACTER $80
+006F 34C0           00205           RETLW B'11000000' ; amp top left + first slope down
+0070 34A0           00206           RETLW B'10100000' 
+0071 3490           00207           RETLW B'10010000' 
+0072 3488           00208           RETLW B'10001000' 
+0073 3484           00209           RETLW B'10000100' 
+0074 3482           00210           RETLW B'10000010' 
+0075 3481           00211           RETLW B'10000001' 
+                    00212                             
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0076 3480           00213           RETLW B'10000000' ; CHARACTER $81
+0077 3480           00214           RETLW B'10000000' ; amp left
+0078 3480           00215           RETLW B'10000000' 
+0079 3480           00216           RETLW B'10000000' 
+007A 3480           00217           RETLW B'10000000' 
+007B 3480           00218           RETLW B'10000000' 
+007C 3480           00219           RETLW B'10000000' 
+007D 3480           00220           RETLW B'10000000' 
+                    00221                             
+007E 3480           00222           RETLW B'10000000' ; CHARACTER $82
+007F 3440           00223           RETLW B'01000000' ; amp slope down
+0080 3420           00224           RETLW B'00100000' 
+0081 3410           00225           RETLW B'00010000' 
+0082 3408           00226           RETLW B'00001000' 
+0083 3404           00227           RETLW B'00000100' 
+0084 3402           00228           RETLW B'00000010' 
+0085 3401           00229           RETLW B'00000001' 
+                    00230                             
+0086 3400           00231           RETLW B'00000000' ; CHARACTER $83
+0087 3400           00232           RETLW B'00000000' ; amp output
+0088 3400           00233           RETLW B'00000000' 
+0089 3400           00234           RETLW B'00000000' 
+008A 3400           00235           RETLW B'00000000' 
+008B 3400           00236           RETLW B'00000000' 
+008C 3400           00237           RETLW B'00000000' 
+008D 34FF           00238           RETLW B'11111111' 
+                    00239                             
+008E 3401           00240           RETLW B'00000001' ; CHARACTER $84
+008F 3402           00241           RETLW B'00000010' ; amp slope up
+0090 3404           00242           RETLW B'00000100' 
+0091 3408           00243           RETLW B'00001000' 
+0092 3410           00244           RETLW B'00010000' 
+0093 3420           00245           RETLW B'00100000' 
+0094 3440           00246           RETLW B'01000000' 
+0095 3480           00247           RETLW B'10000000' 
+                    00248                             
+0096 3481           00249           RETLW B'10000001' ; CHARACTER $85
+0097 3482           00250           RETLW B'10000010' ; amp bot left + first slope up
+0098 3484           00251           RETLW B'10000100' 
+0099 3488           00252           RETLW B'10001000' 
+009A 3490           00253           RETLW B'10010000' 
+009B 34A0           00254           RETLW B'10100000' 
+009C 34C0           00255           RETLW B'11000000' 
+009D 3480           00256           RETLW B'10000000' 
+                    00257                             
+009E 3400           00258           RETLW B'00000000' ; CHARACTER $86
+009F 3400           00259           RETLW B'00000000' ; capacitor top
+00A0 347A           00260           RETLW B'01111010' 
+00A1 344A           00261           RETLW B'01001010' 
+00A2 344A           00262           RETLW B'01001010' 
+00A3 344A           00263           RETLW B'01001010' 
+00A4 344A           00264           RETLW B'01001010' 
+00A5 34CB           00265           RETLW B'11001011' 
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00266                             
+00A6 344A           00267           RETLW B'01001010' ; CHARACTER $87
+00A7 344A           00268           RETLW B'01001010' ; capacitor bot
+00A8 344A           00269           RETLW B'01001010' 
+00A9 344A           00270           RETLW B'01001010' 
+00AA 344A           00271           RETLW B'01001010' 
+00AB 347A           00272           RETLW B'01111010' 
+00AC 3400           00273           RETLW B'00000000' 
+00AD 3400           00274           RETLW B'00000000' 
+                    00275                             
+00AE 3408           00276           RETLW B'00001000' ; CHARACTER $88
+00AF 3404           00277           RETLW B'00000100' ; resistor
+00B0 3402           00278           RETLW B'00000010' 
+00B1 3401           00279           RETLW B'00000001' 
+00B2 3402           00280           RETLW B'00000010' 
+00B3 3404           00281           RETLW B'00000100' 
+00B4 3408           00282           RETLW B'00001000' 
+00B5 3410           00283           RETLW B'00010000' 
+                    00284                             
+00B6 3402           00285           RETLW B'00000010' ; CHARACTER $89
+00B7 3402           00286           RETLW B'00000010' ; resistor top
+00B8 3402           00287           RETLW B'00000010' 
+00B9 3402           00288           RETLW B'00000010' 
+00BA 3402           00289           RETLW B'00000010' 
+00BB 3404           00290           RETLW B'00000100' 
+00BC 3408           00291           RETLW B'00001000' 
+00BD 3410           00292           RETLW B'00010000' 
+                    00293                             
+00BE 3408           00294           RETLW B'00001000' ; CHARACTER $8A
+00BF 3404           00295           RETLW B'00000100' ; resistor bot
+00C0 3402           00296           RETLW B'00000010' 
+00C1 3402           00297           RETLW B'00000010' 
+00C2 3402           00298           RETLW B'00000010' 
+00C3 3402           00299           RETLW B'00000010' 
+00C4 3402           00300           RETLW B'00000010' 
+00C5 3400           00301           RETLW B'00000000' 
+                    00302                             
+00C6 3400           00303           RETLW B'00000000' ; CHARACTER $8B
+00C7 3400           00304           RETLW B'00000000' ; word IN
+00C8 3492           00305           RETLW B'10010010' 
+00C9 349A           00306           RETLW B'10011010' 
+00CA 3496           00307           RETLW B'10010110' 
+00CB 3492           00308           RETLW B'10010010' 
+00CC 3400           00309           RETLW B'00000000' 
+00CD 3400           00310           RETLW B'00000000' 
+                    00311                             
+00CE 3400           00312           RETLW B'00000000' ; CHARACTER $8C
+00CF 3400           00313           RETLW B'00000000' ; 1st half word OUT
+00D0 3432           00314           RETLW B'00110010' 
+00D1 344A           00315           RETLW B'01001010' 
+00D2 344A           00316           RETLW B'01001010' 
+00D3 3431           00317           RETLW B'00110001' 
+00D4 3400           00318           RETLW B'00000000' 
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00D5 3400           00319           RETLW B'00000000' 
+                    00320                             
+00D6 3400           00321           RETLW B'00000000' ; CHARACTER $8D
+00D7 3400           00322           RETLW B'00000000' ; 2nd half word OUT
+00D8 345F           00323           RETLW B'01011111' 
+00D9 3444           00324           RETLW B'01000100' 
+00DA 3444           00325           RETLW B'01000100' 
+00DB 3484           00326           RETLW B'10000100' 
+00DC 3400           00327           RETLW B'00000000' 
+00DD 3400           00328           RETLW B'00000000' 
+                    00329                             
+00DE 3400           00330           RETLW B'00000000' ; CHARACTER $8E
+00DF 3465           00331           RETLW B'01100101' ; word 0V
+00E0 3495           00332           RETLW B'10010101' 
+00E1 3495           00333           RETLW B'10010101' 
+00E2 3462           00334           RETLW B'01100010' 
+00E3 3400           00335           RETLW B'00000000' 
+00E4 3400           00336           RETLW B'00000000' 
+00E5 3400           00337           RETLW B'00000000' 
+                    00338                             
+00E6 3907           00339 BITSLO    ANDLW 7           
+00E7 0782           00340           ADDWF PCL,F       
+00E8 3480           00341           RETLW B'10000000' 
+00E9 3440           00342           RETLW B'01000000' 
+00EA 3420           00343           RETLW B'00100000' 
+00EB 3410           00344           RETLW B'00010000' 
+00EC 3408           00345           RETLW B'00001000' 
+00ED 3404           00346           RETLW B'00000100' 
+00EE 3402           00347           RETLW B'00000010' 
+00EF 3401           00348           RETLW B'00000001' 
+                    00349                             
+                    00350                             ;.............
+                    00351                             
+00F0 3022           00352 GRAPHIC   MOVLW 34          
+00F1 00AD           00353           MOVWF COLUMN      ;set column length
+00F2 257F           00354           CALL SETUP        
+                    00355                             
+00F3 210C           00356 DEM1      CALL DEMO1        ; basic circuit diagram
+00F4 2566           00357           CALL WAITSW       ; wait until switch pressed
+                    00358                             
+00F5 2156           00359 DEM2      CALL DEMO2        ; bit set/clear - square
+00F6 2569           00360           CALL WAITOFF      ; wait until switch released
+                    00361                             
+00F7 21C5           00362 DEM3      CALL DEMO3        ; text highlight
+00F8 2566           00363           CALL WAITSW       ; wait until switch pressed
+                    00364                             
+00F9 21E5           00365 DEM4      CALL DEMO4        ; cursor use
+00FA 2566           00366           CALL WAITSW       ; wait until switch pressed
+                    00367                             
+00FB 21EE           00368 DEM5      CALL DEMO5        ; pan between pages
+00FC 2569           00369           CALL WAITOFF      ; wait until switch released
+                    00370                             
+00FD 2213           00371 DEM6      CALL DEMO6        ; switch between pages
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00FE 2569           00372           CALL WAITOFF      ; wait until switch released
+                    00373                             
+00FF 2229           00374 DEM7      CALL DEMO7        ; setting AND-OR-XOR modes (superimpose)
+0100 2566           00375           CALL WAITSW       ; wait until switch pressed
+                    00376                             
+0101 2268           00377 DEM8      CALL DEMO8        ; bird - data from EEPROM, slow travel right
+0102 2569           00378           CALL WAITOFF      ; wait until switch released
+                    00379                             
+0103 2316           00380 DEM9      CALL DEMO9        ; full text character set
+0104 2566           00381           CALL WAITSW       ; wait until switch pressed
+                    00382                             
+0105 2326           00383 DEM10     CALL DEMO10       ; full graphics character set
+0106 2566           00384           CALL WAITSW       ; wait until switch pressed
+                    00385                             
+0107 2349           00386 DEM11     CALL DEMO11       ; shifting waveform demo - horizontal
+0108 2569           00387           CALL WAITOFF      ; wait until switch released
+                    00388                             
+0109 23C7           00389 DEM12     CALL DEMO12       ; shifting waveform demo - scope style
+010A 2569           00390           CALL WAITOFF      ; wait until switch released
+                    00391                             
+010B 28F0           00392           GOTO GRAPHIC      ; end of demo, restart from beginning
+                    00393                             
+                    00394                             ;****** DEMO 1 CREATE & SHOW SYMBOLS AS TEXT CHARACTERS **********
+                    00395                             
+010C 3094           00396 DEMO1     MOVLW B'10010100' ; text on, graphic off, cursor & blink off
+010D 2514           00397           CALL SENDCMD      ; send command
+                    00398                             
+                    00399                             ; SETUP USER CG RAM
+010E 3078           00400           MOVLW 120         ; 15 char x 8 byte = 120
+010F 00A1           00401           MOVWF LOOPC       ;
+0110 24A2           00402           CALL SETCG        ;
+                    00403                             
+0111 01A8           00404 CIRCUIT   CLRF ADRMSB       ; SHOW SYMBOLS
+0112 3005           00405           MOVLW 5           ; set column
+0113 254A           00406           CALL LINE1        ; set cell number for line stated
+0114 3001           00407           MOVLW 1           ; character quantity
+0115 00A1           00408           MOVWF LOOPC       ;
+0116 01A0           00409           CLRF LOOPB        ;
+0117 24C9           00410           CALL SHOWCG       ;
+                    00411                             
+0118 01A8           00412           CLRF ADRMSB       
+0119 3001           00413           MOVLW 1           ; set column
+011A 2547           00414           CALL LINE2        ; set cell number for line stated
+011B 3009           00415           MOVLW 9           ; character quantity
+011C 00A1           00416           MOVWF LOOPC       ;
+011D 24C9           00417           CALL SHOWCG       ;
+                    00418                             
+011E 01A8           00419           CLRF ADRMSB       
+011F 3001           00420           MOVLW 1           ; set column
+0120 2544           00421           CALL LINE3        ; set cell number for line stated
+0121 300A           00422           MOVLW 10          ; character quantity
+0122 00A1           00423           MOVWF LOOPC       ;
+0123 24C9           00424           CALL SHOWCG       ;
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00425                             
+0124 01A8           00426           CLRF ADRMSB       
+0125 3003           00427           MOVLW 3           ; set column
+0126 2541           00428           CALL LINE4        ; set cell number for line stated
+0127 3003           00429           MOVLW 3           ; character quantity
+0128 00A1           00430           MOVWF LOOPC       ;
+0129 24C9           00431           CALL SHOWCG       ;
+                    00432                             
+012A 01A8           00433           CLRF ADRMSB       
+012B 3003           00434           MOVLW 3           ; set column
+012C 253E           00435           CALL LINE5        ; set cell number for line stated
+012D 3001           00436           MOVLW 1           ; character quantity
+012E 00A1           00437           MOVWF LOOPC       ;
+012F 24C9           00438           CALL SHOWCG       ;
+                    00439                             
+0130 01A8           00440           CLRF ADRMSB       
+0131 3003           00441           MOVLW 3           ; set column
+0132 253B           00442           CALL LINE6        ; set cell number for line stated
+0133 3001           00443           MOVLW 1           ; character quantity
+0134 00A1           00444           MOVWF LOOPC       ;
+0135 24C9           00445           CALL SHOWCG       ;
+                    00446                             
+0136 01A8           00447           CLRF ADRMSB       
+0137 3003           00448           MOVLW 3           ; set column
+0138 2538           00449           CALL LINE7        ; set cell number for line stated
+0139 3001           00450           MOVLW 1           ; character quantity
+013A 00A1           00451           MOVWF LOOPC       ;
+013B 24C9           00452           CALL SHOWCG       ;
+                    00453                             
+013C                00454 WORDS                       ; SHOW TEXT
+013C 01A8           00455           CLRF ADRMSB       
+013D 3000           00456           MOVLW 0           ; set column
+013E 254D           00457           CALL LINE0        ; set cell number for line stated
+013F 3010           00458           MOVLW 16          ; character quantity
+0140 00A1           00459           MOVWF LOOPC       ;
+0141 01A0           00460           CLRF LOOPB        ; clear table loop counter
+0142 24B2           00461           CALL SHWTXT       ;
+                    00462                             
+0143 01A8           00463           CLRF ADRMSB       
+0144 3006           00464           MOVLW 6           ; set column
+0145 253B           00465           CALL LINE6        ; set cell number for line stated
+0146 300A           00466           MOVLW 10          ; character quantity
+0147 00A1           00467           MOVWF LOOPC       ; table loop counter remains at last call val
+0148 24B2           00468           CALL SHWTXT       ;
+                    00469                             
+0149 01A8           00470           CLRF ADRMSB       
+014A 3006           00471           MOVLW 6           ; set column
+014B 2538           00472           CALL LINE7        ; set cell number for line stated
+014C 3008           00473           MOVLW 8           ; character quantity
+014D 00A1           00474           MOVWF LOOPC       ; table loop counter remains at last call val
+014E 24B2           00475           CALL SHWTXT       ;
+                    00476                             
+014F 01A8           00477           CLRF ADRMSB       ; THIS GOES INTO PAGE 2
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0150 3011           00478           MOVLW 17          ; set column
+0151 2544           00479           CALL LINE3        ; set cell number for line stated
+0152 300E           00480           MOVLW 14          ; character quantity
+0153 00A1           00481           MOVWF LOOPC       ; table loop counter remains at last call val
+0154 24B2           00482           CALL SHWTXT       ;
+0155 0008           00483           RETURN            
+                    00484                             
+                    00485                             ;********** DEMO 2 BIT SETTING/CLEARING DEMO ****************
+                    00486                             
+0156 3080           00487 DEMO2     MOVLW B'10000000' ; internal CG RAM mode, OR mode
+0157 2514           00488           CALL SENDCMD      ; send command
+                    00489                             
+0158 01A8           00490           CLRF ADRMSB       ; TEXT HOME ADDRESS $00xx
+0159 01A7           00491           CLRF ADRLSB       ; set for PAGE 1
+015A 242B           00492           CALL CMDADR       ; send command address
+015B 3040           00493           MOVLW TXHOME      ;
+015C 2514           00494           CALL SENDCMD      ; send command
+                    00495                             
+015D 309C           00496           MOVLW B'10011100' ; text & graphic on, cursor & blink off
+015E 2514           00497           CALL SENDCMD      ; send command
+                    00498                             
+                    00499                             ; ** SET SINGLE CENTRE BIT **
+015F 300C           00500           MOVLW 12          ; set column number
+0160 00A7           00501           MOVWF ADRLSB      
+0161 3017           00502           MOVLW 23          ; set graph line
+0162 254F           00503           CALL GLINE        ; multiply by line length to get address
+0163 30F8           00504           MOVLW B'11111000' ; set bit 0
+0164 2417           00505           CALL BITWRITE     
+                    00506                             
+0165 30F8           00507           MOVLW B'11111000' ; bits 0-2 indicate bit affected
+0166 00A4           00508           MOVWF STORE1      ; bit 3 high set, low = clear
+                    00509                             
+                    00510                             ; ** DRAW SQUARE **
+0167 300B           00511 SQUARE    MOVLW 11          ; set column number
+0168 00A7           00512           MOVWF ADRLSB      
+0169 301E           00513           MOVLW 30          ; set graph line
+016A 254F           00514           CALL GLINE        ; multiply by line length to get address
+                    00515                             
+016B 3010           00516           MOVLW 16          
+016C 00A1           00517           MOVWF LOOPC       
+016D 0824           00518 SQ1       MOVF STORE1,W     ; draw up
+016E 2417           00519           CALL BITWRITE     
+016F 1E05           00520           BTFSS PORTA,4     ; check switch
+0170 29C4           00521           GOTO ENDDEMO2     
+                    00522                             
+0171 2576           00523           CALL PAUSE2       
+0172 082D           00524           MOVF COLUMN,W     
+0173 02A7           00525           SUBWF ADRLSB,F    
+0174 1C03           00526           BTFSS STATUS,C    
+0175 03A8           00527           DECF ADRMSB,F     
+0176 0BA1           00528           DECFSZ LOOPC,F    
+0177 296D           00529           GOTO SQ1          
+                    00530                             
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0178 1E05           00531           BTFSS PORTA,4     ; check switch
+0179 29C4           00532           GOTO ENDDEMO2     
+                    00533                             
+017A 082D           00534 SQ1A      MOVF COLUMN,W     ; draw right
+017B 3E01           00535           ADDLW 1           
+017C 07A7           00536           ADDWF ADRLSB,F    
+017D 1803           00537           BTFSC STATUS,C    
+017E 0AA8           00538           INCF ADRMSB,F     
+                    00539                             
+017F 3008           00540           MOVLW 8           
+0180 00A1           00541           MOVWF LOOPC       
+0181 0321           00542 SQ2       DECF LOOPC,W      
+0182 0424           00543           IORWF STORE1,W    
+0183 2417           00544           CALL BITWRITE     
+0184 1E05           00545           BTFSS PORTA,4     ; check switch
+0185 29C4           00546           GOTO ENDDEMO2     
+                    00547                             
+0186 2576           00548           CALL PAUSE2       
+0187 0BA1           00549           DECFSZ LOOPC,F    
+0188 2981           00550           GOTO SQ2          
+                    00551                             
+0189 0AA7           00552           INCF ADRLSB,F     
+018A 3008           00553           MOVLW 8           
+018B 00A1           00554           MOVWF LOOPC       
+018C 0321           00555 SQ3       DECF LOOPC,W      
+018D 0424           00556           IORWF STORE1,W    
+018E 2417           00557           CALL BITWRITE     
+018F 1E05           00558           BTFSS PORTA,4     ; check switch
+0190 29C4           00559           GOTO ENDDEMO2     
+                    00560                             
+0191 2576           00561           CALL PAUSE2       
+0192 0BA1           00562           DECFSZ LOOPC,F    
+0193 298C           00563           GOTO SQ3          
+                    00564                             
+0194 1E05           00565           BTFSS PORTA,4     ; check switch
+0195 29C4           00566           GOTO ENDDEMO2     
+                    00567                             
+0196 3010           00568 SQ3A      MOVLW 16          ; draw down
+0197 00A1           00569           MOVWF LOOPC       
+0198 0824           00570 SQ4       MOVF STORE1,W     
+0199 2417           00571           CALL BITWRITE     
+019A 1E05           00572           BTFSS PORTA,4     ; check switch
+019B 29C4           00573           GOTO ENDDEMO2     
+                    00574                             
+019C 2576           00575           CALL PAUSE2       
+019D 082D           00576           MOVF COLUMN,W     
+019E 07A7           00577           ADDWF ADRLSB,F    
+019F 1803           00578           BTFSC STATUS,C    
+01A0 0AA8           00579           INCF ADRMSB,F     
+01A1 0BA1           00580           DECFSZ LOOPC,F    
+01A2 2998           00581           GOTO SQ4          
+                    00582                             
+01A3 1E05           00583           BTFSS PORTA,4     ; check switch
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01A4 29C4           00584           GOTO ENDDEMO2     
+                    00585                             
+01A5 082D           00586 SQ4A      MOVF COLUMN,W     ; draw left
+01A6 02A7           00587           SUBWF ADRLSB,F    
+01A7 1C03           00588           BTFSS STATUS,C    
+01A8 03A8           00589           DECF ADRMSB,F     
+                    00590                             
+01A9 01A1           00591           CLRF LOOPC        
+01AA 0821           00592 SQ5       MOVF LOOPC,W      
+01AB 0424           00593           IORWF STORE1,W    
+01AC 2417           00594           CALL BITWRITE     
+01AD 1E05           00595           BTFSS PORTA,4     ; check switch
+01AE 29C4           00596           GOTO ENDDEMO2     
+                    00597                             
+01AF 2576           00598           CALL PAUSE2       
+01B0 0AA1           00599           INCF LOOPC,F      
+01B1 1DA1           00600           BTFSS LOOPC,3     
+01B2 29AA           00601           GOTO SQ5          
+                    00602                             
+01B3 03A7           00603           DECF ADRLSB,F     
+01B4 01A1           00604           CLRF LOOPC        
+01B5 0821           00605 SQ6       MOVF LOOPC,W      
+01B6 0424           00606           IORWF STORE1,W    
+01B7 2417           00607           CALL BITWRITE     
+01B8 1E05           00608           BTFSS PORTA,4     ; check switch
+01B9 29C4           00609           GOTO ENDDEMO2     
+                    00610                             
+01BA 2576           00611           CALL PAUSE2       
+01BB 0AA1           00612           INCF LOOPC,F      
+01BC 1DA1           00613           BTFSS LOOPC,3     
+01BD 29B5           00614           GOTO SQ6          
+                    00615                             
+01BE 3008           00616           MOVLW B'00001000' ; toggle between set/clear by bit 3
+01BF 0724           00617           ADDWF STORE1,W    
+01C0 38F0           00618           IORLW B'11110000' 
+01C1 00A4           00619           MOVWF STORE1      
+                    00620                             
+01C2 1A05           00621           BTFSC PORTA,4     ; check switch
+01C3 2967           00622           GOTO SQUARE       
+                    00623                             
+01C4 0008           00624 ENDDEMO2  RETURN            
+                    00625                             
+                    00626                             ;************* DEMO 3 HOW TO HIGHLIGHT TEXT ****************
+                    00627                             
+01C5                00628 DEMO3                       ; ** FILL SELECTED GRAPHIC AREA WITH SELECTED ATTRIBUTE VALUE **
+                    00629                             
+01C5 3002           00630           MOVLW 2           ; set graphic address ($02xx)
+01C6 00A8           00631           MOVWF ADRMSB      
+01C7 3000           00632           MOVLW 0           ; set column
+01C8 254D           00633           CALL LINE0        ; set cell number for line stated
+01C9 3010           00634           MOVLW 16          ; character quantity to be affected
+01CA 00A1           00635           MOVWF LOOPC       ;
+01CB 30F5           00636           MOVLW B'11110101' ; attribute reverse *
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01CC 00A9           00637           MOVWF ATTRIB      
+01CD 24BF           00638           CALL SETATTR      ;
+                    00639                             ; * TRY THESE ATTRIBUTE OPTIONS:
+                    00640                             ; movlw %00000000 ; attribute normal
+                    00641                             ; movlw %11110101 ; attribute reverse
+                    00642                             ; movlw %00001000 ; attribute blink normal
+                    00643                             ; movlw %00001101 ; attribute blink reverse
+                    00644                             
+01CE 3002           00645           MOVLW 2           ; set graphic address ($02xx)
+01CF 00A8           00646           MOVWF ADRMSB      
+01D0 3006           00647           MOVLW 6           ; set column
+01D1 253B           00648           CALL LINE6        ; set cell number for line stated
+01D2 3009           00649           MOVLW 9           ; character quantity
+01D3 00A1           00650           MOVWF LOOPC       ;
+01D4 300D           00651           MOVLW B'00001101' ; attribute blink reverse
+01D5 00A9           00652           MOVWF ATTRIB      
+01D6 24BF           00653           CALL SETATTR      ;
+                    00654                             
+01D7 3002           00655           MOVLW 2           ; set graphic address ($02xx)
+01D8 00A8           00656           MOVWF ADRMSB      
+01D9 3006           00657           MOVLW 6           ; set column
+01DA 2538           00658           CALL LINE7        ; set cell number for line stated
+01DB 3009           00659           MOVLW 9           ; character quantity
+01DC 00A1           00660           MOVWF LOOPC       ;
+01DD 300D           00661           MOVLW B'00001101' ; attribute blink reverse
+01DE 00A9           00662           MOVWF ATTRIB      
+01DF 24BF           00663           CALL SETATTR      ;
+                    00664                             
+                    00665                             ; ** SET FOR TEXT ATTRIBUTE MODE **
+01E0 3084           00666           MOVLW B'10000100' ; text attribute mode
+01E1 2514           00667           CALL SENDCMD      ; send command
+01E2 309C           00668           MOVLW B'10011100' ; text & graphic on, cursor & blink off
+01E3 2514           00669           CALL SENDCMD      ; send command
+01E4 0008           00670           RETURN            
+                    00671                             
+                    00672                             ;*********** DEMO 4 SETTING CURSOR ************
+                    00673                             
+01E5 3097           00674 DEMO4     MOVLW B'10010111' ; text on, graphic off, cursor & blink on
+01E6 2514           00675           CALL SENDCMD      ; send command
+                    00676                             
+                    00677                             ; set cursor position + type
+01E7 300F           00678           MOVLW 15          ; set column
+01E8 00A7           00679           MOVWF ADRLSB      
+01E9 3003           00680           MOVLW 3           ; set line
+01EA 00A8           00681           MOVWF ADRMSB      
+01EB 2456           00682           CALL CSRADR       
+01EC 245A           00683           CALL CSRTYP       ;set type (specified in sub-routine)
+01ED 0008           00684           RETURN            ; (from 1 to 8 lines high)
+                    00685                             
+                    00686                             ;*********** DEMO 5 PANNING BETWEEN PAGES ************
+                    00687                             
+01EE                00688 DEMO5                       ; ** SHIFT PAGE 1 LEFT TO REVEAL PAGE 2
+                    00689                             
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01EE 01A8           00690           CLRF ADRMSB       ; TEXT HOME ADDRESS $00xx
+01EF 3001           00691           MOVLW 1           
+01F0 00A7           00692           MOVWF ADRLSB      ; set for PAGE 1 col 1
+                    00693                             
+01F1 3010           00694           MOVLW 16          ;
+01F2 00A1           00695           MOVWF LOOPC       
+01F3 242B           00696 SL2       CALL CMDADR       ; send command address
+01F4 3040           00697           MOVLW TXHOME      ;
+01F5 2514           00698           CALL SENDCMD      ; send command
+                    00699                             
+01F6 3005           00700 SL2A      MOVLW 5           ; short pause
+01F7 00A0           00701           MOVWF LOOPB       
+01F8 1E05           00702 WAIT2     BTFSS PORTA,4     
+01F9 2A12           00703           GOTO ENDDEMO5     
+01FA 256D           00704           CALL PAUSIT       
+01FB 0BA0           00705           DECFSZ LOOPB,F    
+01FC 29F8           00706           GOTO WAIT2        
+                    00707                             
+01FD 0AA7           00708           INCF ADRLSB,F     
+01FE 0BA1           00709           DECFSZ LOOPC,F    
+01FF 29F3           00710           GOTO SL2          
+                    00711                             
+0200 3011           00712           MOVLW 17          ; ** SHIFT PAGE 2 RIGHT TO REVEAL PAGE 1
+0201 00A1           00713           MOVWF LOOPC       
+0202 3010           00714           MOVLW 16          
+0203 00A7           00715           MOVWF ADRLSB      ; set for PAGE 2
+0204 242B           00716 SL3       CALL CMDADR       ; send command address
+0205 3040           00717           MOVLW TXHOME      ;
+0206 2514           00718           CALL SENDCMD      ; send command
+                    00719                             
+0207 3005           00720 SL3A      MOVLW 5           ; short pause
+0208 00A0           00721           MOVWF LOOPB       
+0209 1E05           00722 WAIT3     BTFSS PORTA,4     
+020A 2A12           00723           GOTO ENDDEMO5     
+020B 256D           00724           CALL PAUSIT       
+020C 0BA0           00725           DECFSZ LOOPB,F    
+020D 2A09           00726           GOTO WAIT3        
+                    00727                             
+020E 03A7           00728           DECF ADRLSB,F     
+020F 0BA1           00729           DECFSZ LOOPC,F    
+0210 2A04           00730           GOTO SL3          
+0211 29EE           00731           GOTO DEMO5        
+                    00732                             
+0212 0008           00733 ENDDEMO5  RETURN            
+                    00734                             
+                    00735                             ;*********** DEMO 6 SWITCHING BETWEEN PAGES ************
+                    00736                             
+0213 3080           00737 DEMO6     MOVLW B'10000000' ; (OR mode, Internal CG mode)
+0214 2514           00738           CALL SENDCMD      ; send command
+                    00739                             
+0215                00740 DEMO6A                      ;** CHANGE PAGE **
+0215 01A8           00741           CLRF ADRMSB       ; TEXT HOME ADDRESS $00xx
+0216 3011           00742           MOVLW 17          ; set for PAGE 2
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0217 00A7           00743           MOVWF ADRLSB      
+0218 01A1           00744           CLRF LOOPC        
+0219 242B           00745 SL1       CALL CMDADR       ; send command address
+021A 3040           00746           MOVLW TXHOME      ;
+021B 2514           00747           CALL SENDCMD      ; send command
+                    00748                             
+021C 3005           00749 SL1A      MOVLW 5           ; short pause
+021D 00A0           00750           MOVWF LOOPB       
+021E 1E05           00751 WAIT      BTFSS PORTA,4     ; check switch press
+021F 2A28           00752           GOTO ENDDEMO6     
+0220 256D           00753           CALL PAUSIT       
+0221 0BA0           00754           DECFSZ LOOPB,F    
+0222 2A1E           00755           GOTO WAIT         
+                    00756                             
+0223 0AA1           00757           INCF LOOPC,F      
+0224 01A7           00758           CLRF ADRLSB       ; set for PAGE 1
+0225 1CA1           00759           BTFSS LOOPC,1     
+0226 2A19           00760           GOTO SL1          
+0227 2A15           00761           GOTO DEMO6A       
+                    00762                             
+0228 0008           00763 ENDDEMO6  RETURN            
+                    00764                             
+                    00765                             ;*********** DEMO 7 SETTING AND-OR-XOR MODES ***************
+                    00766                             
+0229                00767 DEMO7                       ; ** FILL SELECTED GRAPHIC SCREEN AREA WITH VALUES FOR AND-OR-XOR **
+                    00768                             
+                    00769                             ; first clear attribute data for text lines 0, 6 & 7 set in DEMO3
+                    00770                             ; but graphic data set in DEMO2 (SQUARE) not cleared
+                    00771                             
+0229 3080           00772           MOVLW B'10000000' ; clear text attribute mode
+022A 2514           00773           CALL SENDCMD      ; send command
+                    00774                             
+022B 309C           00775           MOVLW B'10011100' ; text & graphic on, cursor & blink off
+022C 2514           00776           CALL SENDCMD      ; send command
+                    00777                             
+022D 01A8           00778           CLRF ADRMSB       ; TEXT HOME ADDRESS $00xx
+022E 3000           00779           MOVLW 0           
+022F 00A7           00780           MOVWF ADRLSB      
+0230 242B           00781           CALL CMDADR       ; send command address
+0231 3040           00782           MOVLW TXHOME      ;
+0232 2514           00783           CALL SENDCMD      ; send command
+                    00784                             
+0233 3002           00785           MOVLW 2           ; set graphic address ($02xx)
+0234 00A8           00786           MOVWF ADRMSB      
+0235 3000           00787           MOVLW 0           ; set column
+0236 254D           00788           CALL LINE0        ; set cell number for line stated
+0237 3010           00789           MOVLW 16          ; character quantity to be affected
+0238 00A1           00790           MOVWF LOOPC       ;
+0239 01A9           00791           CLRF ATTRIB       
+023A 24BF           00792           CALL SETATTR      
+                    00793                             
+023B 3002           00794           MOVLW 2           ; set graphic address ($02xx)
+023C 00A8           00795           MOVWF ADRMSB      
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 16
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+023D 3006           00796           MOVLW 6           ; set column
+023E 253B           00797           CALL LINE6        ; set cell number for line stated
+023F 3009           00798           MOVLW 9           ; character quantity
+0240 00A1           00799           MOVWF LOOPC       ;
+0241 01A9           00800           CLRF ATTRIB       
+0242 24BF           00801           CALL SETATTR      ;
+                    00802                             
+0243 3002           00803           MOVLW 2           ; set graphic address ($02xx)
+0244 00A8           00804           MOVWF ADRMSB      
+0245 3006           00805           MOVLW 6           ; set column
+0246 2538           00806           CALL LINE7        ; set cell number for line stated
+0247 3009           00807           MOVLW 9           ; character quantity
+0248 00A1           00808           MOVWF LOOPC       ;
+0249 01A9           00809           CLRF ATTRIB       
+024A 24BF           00810           CALL SETATTR      ;
+                    00811                             
+                    00812                             ; ** start of AND-OR XOR mode proper **
+                    00813                             
+024B 01A8           00814           CLRF ADRMSB       ; TEXT HOME ADDRESS $00xx
+024C 3000           00815           MOVLW 0           
+024D 00A7           00816           MOVWF ADRLSB      
+024E 242B           00817           CALL CMDADR       ; send command address
+024F 3040           00818           MOVLW TXHOME      ;
+0250 2514           00819           CALL SENDCMD      ; send command
+                    00820                             
+0251 300F           00821           MOVLW 15          ;
+0252 00A2           00822           MOVWF LOOPD       ; set line start
+0253 3001           00823 AND2      MOVLW 1           ; set column number
+0254 00A7           00824           MOVWF ADRLSB      
+0255 0822           00825           MOVF LOOPD,W      ; set graph line
+0256 254F           00826           CALL GLINE        ; multiply by line length
+0257 300A           00827           MOVLW 10          ; character quantity
+0258 00A1           00828           MOVWF LOOPC       ;
+0259 30AA           00829           MOVLW B'10101010' ; fill graphic with val shown
+025A 1C22           00830           BTFSS LOOPD,0     
+025B 3055           00831           MOVLW B'01010101' ; fill graphic with val shown
+025C 00A9           00832           MOVWF ATTRIB      
+025D 24BF           00833           CALL SETATTR      ; send value
+025E 0AA2           00834           INCF LOOPD,F      ; inc line count
+025F 0822           00835           MOVF LOOPD,W      
+0260 3A21           00836           XORLW 33          ; has line count reached max?
+0261 1D03           00837           BTFSS STATUS,Z    
+0262 2A53           00838           GOTO AND2         
+                    00839                             
+0263                00840 SETAND                      ; ** SET AND-OR-XOR MODE ** TRY ANY OF THESE OPTIONS:
+0263 3081           00841           MOVLW B'10000001' ; internal CG RAM mode, XOR
+                    00842                             ; movlw %10000000 ; internal CG RAM mode, OR
+                    00843                             ; movlw %10000011 ; internal CG RAM mode, AND
+0264 2514           00844           CALL SENDCMD      ; send command
+                    00845                             
+                    00846                             ; ** CHANGE DISPLAY MODE ** TRY ANY OF THESE OPTIONS:
+0265 309C           00847           MOVLW B'10011100' ; text & graphic on, cursor & blink off
+                    00848                             ; movlw %10010100 ; text on, graphic off, cursor & blink off
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 17
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                    00849                             ; movlw %10011000 ; text off, graphic on, cursor & blink off
+0266 2514           00850           CALL SENDCMD      ; send command
+0267 0008           00851           RETURN            
+                    00852                             
+                    00853                             ;******* DEMO 8 GET GRAPHICS (BIRD) FROM EEPROM, DRAW & REPEAT SHIFT RIGHT ***
+                    00854                             
+0268 246A           00855 DEMO8     CALL CLRTXT       
+0269 247C           00856           CALL CLRGRAPH     
+                    00857                             
+026A 3010           00858           MOVLW 16          ; change column length to 16
+026B 00AD           00859           MOVWF COLUMN      
+026C 2448           00860           CALL TEXTAREA     ; SET TEXT AREA
+026D 244F           00861           CALL GRAPHAREA    ; SET GRAPHIC AREA
+                    00862                             
+026E 3080           00863           MOVLW B'10000000' ; internal CG RAM mode, OR
+026F 2514           00864           CALL SENDCMD      ; send command
+0270 309C           00865           MOVLW B'10011100' ; text & graphic on, cursor & blink off
+0271 2514           00866           CALL SENDCMD      ; send command
+                    00867                             
+0272 01A8           00868 EPE       CLRF ADRMSB       ; show EPE text PT1
+0273 3001           00869           MOVLW 1           ; set column
+0274 00A7           00870           MOVWF ADRLSB      
+0275 254D           00871           CALL LINE0        ; set line
+0276 3009           00872           MOVLW 9           ; character quantity
+0277 00A1           00873           MOVWF LOOPC       ;
+0278 3010           00874           MOVLW 16          ; position in table
+0279 00A0           00875           MOVWF LOOPB       ; set table loop counter
+027A 24B2           00876           CALL SHWTXT       ;
+                    00877                             
+027B 01A8           00878           CLRF ADRMSB       ; set and show EPE text PT2
+027C 300B           00879           MOVLW 11          ; set column
+027D 00A7           00880           MOVWF ADRLSB      
+027E 254D           00881           CALL LINE0        ; set line
+027F 3004           00882           MOVLW 4           ; character quantity
+0280 00A1           00883           MOVWF LOOPC       ;
+0281 301E           00884           MOVLW 30          ; position in table
+0282 00A0           00885           MOVWF LOOPB       ; set table loop counter
+0283 24B2           00886           CALL SHWTXT       ;
+                    00887                             
+0284 1703           00888           BSF STATUS,RP1    ; set PIC's Page 2 and EEPROM reading address
+0285 018D           00889           CLRF EEADR        
+0286 1303           00890           BCF STATUS,RP1    
+                    00891                             
+0287 01A2           00892           CLRF LOOPD        
+0288 01A3           00893           CLRF LOOPE        
+                    00894                             
+0289 0823           00895 BIRDX     MOVF LOOPE,W      
+028A 00A7           00896           MOVWF ADRLSB      ; set column
+028B 3014           00897           MOVLW 20          ; set line
+028C 254F           00898           CALL GLINE        ; multiply by line length to get address
+                    00899                             
+028D 3020           00900 BIRD2     MOVLW 32          ; get & show BIRD details from EEPROM
+028E 00A0           00901           MOVWF LOOPB       
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 18
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+028F 255D           00902 BIRD2A    CALL PRMGET       
+0290 241C           00903           CALL ONEWRITE     
+0291 082D           00904           MOVF COLUMN,W     
+0292 07A7           00905           ADDWF ADRLSB,F    
+0293 1803           00906           BTFSC STATUS,C    
+0294 0AA8           00907           INCF ADRMSB,F     
+0295 0BA0           00908           DECFSZ LOOPB,F    
+0296 2A8F           00909           GOTO BIRD2A       
+0297 0AA3           00910           INCF LOOPE,F      
+0298 1E23           00911           BTFSS LOOPE,4     
+0299 2A89           00912           GOTO BIRDX        
+                    00913                             
+029A 1703           00914 BEAK1     BSF STATUS,RP1    
+029B 30CA           00915           MOVLW 202         ; set for reading from EEPROM byte 202
+029C 008D           00916           MOVWF EEADR       
+029D 1303           00917           BCF STATUS,RP1    
+029E 3003           00918           MOVLW 3           ;
+029F 00A1           00919           MOVWF LOOPC       
+                    00920                             
+02A0 3014           00921           MOVLW H'14'       ; CG RAM start address $1400 + 128
+02A1 00A8           00922           MOVWF ADRMSB      ; (character code $90)
+02A2 3080           00923           MOVLW 128         ; 
+02A3 00A7           00924           MOVWF ADRLSB      ;
+02A4 2432           00925           CALL SCREENADR    ; set screen write address
+02A5 30B0           00926           MOVLW AWRON       ; AUTO WRITE ON
+02A6 2514           00927           CALL SENDCMD      ; send command
+                    00928                             
+02A7 255D           00929 BK2       CALL PRMGET       ; get BIRD beak details from EEPROM
+02A8 2426           00930           CALL AUTOWRITE    ; auto write beak as character $90 
+02A9 0A8D           00931           INCF EEADR,F      ; just 3 lines of eeprom taken as $90
+02AA 0BA1           00932           DECFSZ LOOPC,F    ; is assumed to have been cleared earlier
+02AB 2AA7           00933           GOTO BK2          
+02AC 30B2           00934           MOVLW AWROFF      ; AUTO WRITE OFF
+02AD 2514           00935           CALL SENDCMD      ; send command
+                    00936                             
+02AE 3033           00937           MOVLW 51          ; start line for water
+02AF 00A3           00938           MOVWF LOOPE       
+02B0 300C           00939           MOVLW 12          ; number of lines to be filled
+02B1 00A2           00940           MOVWF LOOPD       
+                    00941                             
+02B2 3000           00942 WATER     MOVLW 0           ; draw "WATER"
+02B3 00A7           00943           MOVWF ADRLSB      ; set column
+02B4 0823           00944           MOVF LOOPE,W      ; set line
+02B5 254F           00945           CALL GLINE        ; multiply by line length
+02B6 3010           00946           MOVLW 16          ; character quantity
+02B7 00A1           00947           MOVWF LOOPC       
+02B8 30AA           00948           MOVLW B'10101010' ; "WATER" pattern - try changing this value
+02B9 00A9           00949           MOVWF ATTRIB      
+02BA 24BF           00950           CALL SETATTR      
+02BB 0AA3           00951           INCF LOOPE,F      
+02BC 0BA2           00952           DECFSZ LOOPD,F    
+02BD 2AB2           00953           GOTO WATER        
+                    00954                             
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 19
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+02BE 301C           00955           MOVLW 28          
+02BF 00A3           00956           MOVWF LOOPE       
+02C0 3034           00957           MOVLW JOIN00      ; clear JOIN variables
+02C1 0084           00958           MOVWF FSR         
+02C2 0180           00959 CLRJOIN   CLRF INDF         ;JKJ: removed ',F'
+02C3 0A84           00960           INCF FSR,F        
+02C4 0BA3           00961           DECFSZ LOOPE,F    
+02C5 2AC2           00962           GOTO CLRJOIN      
+02C6 3006           00963           MOVLW 6           
+02C7 00AE           00964           MOVWF QCKCOL      ; set quack bill column
+02C8 3001           00965           MOVLW 1           ; loop period before next quack
+02C9 00AC           00966           MOVWF COUNT       
+                    00967                             
+02CA 3017           00968 BIRDZ     MOVLW 23          ; set start line for shift right of display
+02CB 00A3           00969           MOVWF LOOPE       
+02CC 01A7           00970           CLRF ADRLSB       ; set column
+02CD 0823           00971           MOVF LOOPE,W      ; set line
+02CE 254F           00972           CALL GLINE        ; multiply by line length
+02CF 2432           00973           CALL SCREENADR    ; set screen write address
+02D0 3034           00974           MOVLW JOIN00      ; set join variable for right-hand line bit
+02D1 0084           00975           MOVWF FSR         
+                    00976                             
+02D2 3010           00977 BIRDY     MOVLW 16          ;
+02D3 00A2           00978           MOVWF LOOPD       ; set loop val (number of columns to be shifted)
+                    00979                             
+02D4 251F           00980 BIRDY2    CALL DATAREAD     ; read screen, returns with val held in RDBYTE
+02D5 0D80           00981           RLF INDF,F        ; rotate STORE into CARRY
+02D6 0CAB           00982           RRF RDBYTE,F      ; rotate RDBYTE and bring in CARRY bit
+02D7 0C80           00983           RRF INDF,F        ; shift CARRY into STORE
+02D8 30B0           00984           MOVLW AWRON       ; AUTO WRITE ON
+02D9 2514           00985           CALL SENDCMD      ; send command
+02DA 24D5           00986           CALL CHECK3       ; read status for DA0/DA1 = 3
+02DB 082B           00987           MOVF RDBYTE,W     ; re-store RDBYTE on screen
+02DC 2505           00988           CALL OUTDATA      ;
+02DD 30B2           00989           MOVLW AWROFF      ; AUTO WRITE OFF
+02DE 2514           00990           CALL SENDCMD      ; send command
+02DF 0BA2           00991           DECFSZ LOOPD,F    
+02E0 2AD4           00992           GOTO BIRDY2       ; repeat until done
+                    00993                             
+02E1 1E05           00994           BTFSS PORTA,4     ; check switch
+02E2 0008           00995           RETURN            
+                    00996                             
+02E3 0A84           00997           INCF FSR,F        ; inc JOIN store address
+02E4 0AA3           00998           INCF LOOPE,F      ; inc line number
+02E5 0823           00999           MOVF LOOPE,W      
+02E6 3A33           01000           XORLW 51          
+02E7 1D03           01001           BTFSS STATUS,Z    ; has line limit been reached?
+02E8 2AD2           01002           GOTO BIRDY        ; no, so repeat for next line
+                    01003                             
+02E9 03AC           01004           DECF COUNT,F      ; dec counter
+02EA 1D03           01005           BTFSS STATUS,Z    ; is it zero?
+02EB 2ACA           01006           GOTO BIRDZ        ; no, so start again
+                    01007                             
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 20
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+02EC                01008 QUACK                       
+02EC 01A8           01009           CLRF ADRMSB       ; show beak
+02ED 082E           01010           MOVF QCKCOL,W     ; set column
+02EE 2541           01011           CALL LINE4        ; set line
+02EF 3090           01012           MOVLW H'90'       ; beak symbol
+02F0 241C           01013           CALL ONEWRITE     
+                    01014                             
+02F1 01A8           01015           CLRF ADRMSB       ; show QUACK text
+02F2 3005           01016           MOVLW 5           ; set column
+02F3 00A7           01017           MOVWF ADRLSB      
+02F4 254A           01018           CALL LINE1        ; set line
+02F5 3005           01019           MOVLW 5           ; character quantity
+02F6 00A1           01020           MOVWF LOOPC       ;
+02F7 3030           01021           MOVLW 48          
+02F8 00A0           01022           MOVWF LOOPB       ; set table loop counter
+02F9 24B2           01023           CALL SHWTXT       ;
+                    01024                             
+02FA 3003           01025           MOVLW 3           ; short pause
+02FB 00A0           01026           MOVWF LOOPB       
+02FC 256D           01027 QK2       CALL PAUSIT       
+02FD 0BA0           01028           DECFSZ LOOPB,F    
+02FE 2AFC           01029           GOTO QK2          
+                    01030                             
+02FF 01A8           01031           CLRF ADRMSB       ; clear QUACK text
+0300 3005           01032           MOVLW 5           ; set column
+0301 00A7           01033           MOVWF ADRLSB      
+0302 254A           01034           CALL LINE1        ; set line
+0303 3005           01035           MOVLW 5           ; character quantity
+0304 00A1           01036           MOVWF LOOPC       
+0305 3000           01037           MOVLW 0           ; clear QUACK
+0306 00A9           01038           MOVWF ATTRIB      
+0307 24BF           01039           CALL SETATTR      
+                    01040                             
+0308 01A8           01041           CLRF ADRMSB       ; clear QUACK bill
+0309 082E           01042           MOVF QCKCOL,W     ; set column
+030A 00A7           01043           MOVWF ADRLSB      
+030B 2541           01044           CALL LINE4        ; set line
+030C 3000           01045           MOVLW 0           
+030D 241C           01046           CALL ONEWRITE     
+030E 0AAE           01047           INCF QCKCOL,F     
+030F 122E           01048           BCF QCKCOL,4      
+                    01049                             
+0310 3008           01050           MOVLW 8           ; set QUACK period loop count
+0311 00AC           01051           MOVWF COUNT       
+0312 082E           01052           MOVF QCKCOL,W     
+0313 1903           01053           BTFSC STATUS,Z    
+0314 0AAC           01054           INCF COUNT,F      
+0315 2ACA           01055           GOTO BIRDZ        
+                    01056                             
+                    01057                             ;******* DEMO 9 SHOW FULL ALPHANUMERIC TEXT SET ***
+                    01058                             
+0316                01059 DEMO9                       ; ** WRITE FULL ASCII TEXT **
+0316 3094           01060           MOVLW B'10010100' ; text on, graphic off, cursor & blink off
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 21
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0317 2514           01061           CALL SENDCMD      ; send command
+                    01062                             
+0318 01A8           01063           CLRF ADRMSB       ;
+0319 01A7           01064           CLRF ADRLSB       ;
+031A 2432           01065           CALL SCREENADR    ; set screen write address
+031B 30B0           01066           MOVLW AWRON       ; AUTO WRITE ON
+031C 2514           01067           CALL SENDCMD      ; send command
+031D 01A0           01068           CLRF LOOPB        
+031E 0820           01069 DM9       MOVF LOOPB,W      ;
+031F 2426           01070           CALL AUTOWRITE    ; auto write and increment
+0320 0AA0           01071           INCF LOOPB,F      ;
+0321 1FA0           01072           BTFSS LOOPB,7     
+0322 2B1E           01073           GOTO DM9          ;
+0323 30B2           01074           MOVLW AWROFF      ; AUTO WRITE OFF
+0324 2514           01075           CALL SENDCMD      ; send command
+0325 0008           01076           RETURN            
+                    01077                             
+                    01078                             ;******* DEMO 10 SHOW CHARACTER GEN SYMBOL TEXT SET ***
+                    01079                             
+0326                01080 DEMO10                      ; ** FIRST COPY EEPROM INTO CG RAM **
+                    01081                             
+0326 1703           01082           BSF STATUS,RP1    ; set for PIC its Page 2 for EEPROM reading
+0327 018D           01083           CLRF EEADR        
+0328 1303           01084           BCF STATUS,RP1    
+                    01085                             
+0329 3014           01086           MOVLW H'14'       ; CG RAM start address $1400 + 136
+032A 00A8           01087           MOVWF ADRMSB      ;
+032B 3088           01088           MOVLW 136         
+032C 00A7           01089           MOVWF ADRLSB      ;
+032D 2432           01090           CALL SCREENADR    ; set screen write address
+032E 30B0           01091           MOVLW AWRON       ; SET DATA AUTO WRITE ON
+032F 2514           01092           CALL SENDCMD      ; send command
+0330 01A0           01093           CLRF LOOPB        ;
+0331 30E0           01094           MOVLW 224         
+0332 00A1           01095           MOVWF LOOPC       
+                    01096                             
+0333 0820           01097 SETEG2    MOVF LOOPB,W      ; WRITE TO EXTERNAL RAM
+0334 255D           01098           CALL PRMGET       
+0335 2426           01099           CALL AUTOWRITE    ; auto write and increment
+0336 0AA0           01100           INCF LOOPB,F      ; 
+0337 0BA1           01101           DECFSZ LOOPC,F    ; LOOPC val specified by calling routine
+0338 2B33           01102           GOTO SETEG2       ;
+0339 30B2           01103           MOVLW AWROFF      ; AUTO WRITE OFF
+033A 2514           01104           CALL SENDCMD      ; send command
+                    01105                             
+                    01106                             ; ** WRITE FULL NON-ASCII TEXT AS HELD IN CG RAM **
+033B 01A8           01107           CLRF ADRMSB       ;
+033C 01A7           01108           CLRF ADRLSB       ;
+033D 2432           01109           CALL SCREENADR    ; set screen write address
+033E 30B0           01110           MOVLW AWRON       ; AUTO WRITE ON
+033F 2514           01111           CALL SENDCMD      ; send command
+0340 3080           01112           MOVLW 128         ; first CG RAM character $80 = 128
+0341 00A0           01113           MOVWF LOOPB       
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 22
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0342 0820           01114 DM10      MOVF LOOPB,W      ;
+0343 2426           01115           CALL AUTOWRITE    ; auto write and increment
+0344 0FA0           01116           INCFSZ LOOPB,F    ;
+0345 2B42           01117           GOTO DM10         ;
+0346 30B2           01118           MOVLW AWROFF      ; AUTO WRITE OFF
+0347 2514           01119           CALL SENDCMD      ; send command
+0348 0008           01120           RETURN            
+                    01121                             
+                    01122                             ;******** DEMO 11 CREATE MOVING WAVEFORM - HORIZONTAL *************
+                    01123                             
+0349 246A           01124 DEMO11    CALL CLRTXT       
+034A 309C           01125           MOVLW B'10011100' ; text on, graphic on, cursor & blink off
+034B 2514           01126           CALL SENDCMD      ; send command
+                    01127                             
+034C 01A8           01128           CLRF ADRMSB       ; show EPE text PT1
+034D 3001           01129           MOVLW 1           ; set column
+034E 00A7           01130           MOVWF ADRLSB      
+034F 254D           01131           CALL LINE0        ; set line
+0350 3009           01132           MOVLW 9           ; character quantity
+0351 00A1           01133           MOVWF LOOPC       ;
+0352 3010           01134           MOVLW 16          ; position in table
+0353 00A0           01135           MOVWF LOOPB       ; set table loop counter
+0354 24B2           01136           CALL SHWTXT       ;
+                    01137                             
+0355 01A8           01138           CLRF ADRMSB       ; set and show EPE text PT2
+0356 300B           01139           MOVLW 11          ; set column
+0357 00A7           01140           MOVWF ADRLSB      
+0358 254D           01141           CALL LINE0        ; set line
+0359 3004           01142           MOVLW 4           ; character quantity
+035A 00A1           01143           MOVWF LOOPC       ;
+035B 301E           01144           MOVLW 30          ; position in table
+035C 00A0           01145           MOVWF LOOPB       ; set table loop counter
+035D 24B2           01146           CALL SHWTXT       ;
+                    01147                             
+035E 3010           01148           MOVLW 16          ; clear temp storage memory
+035F 00A2           01149           MOVWF LOOPD       
+0360 3034           01150           MOVLW JOIN00      
+0361 0084           01151           MOVWF FSR         
+0362 0180           01152 CLRMEM    CLRF INDF         
+0363 0A84           01153           INCF FSR,F        
+0364 0BA2           01154           DECFSZ LOOPD,F    
+0365 2B62           01155           GOTO CLRMEM       
+                    01156                             
+0366 01AC           01157           CLRF COUNT        ; volts simulator counter
+0367 01AF           01158           CLRF PEAKLO       
+                    01159                             
+0368 01A3           01160 WAVE0     CLRF LOOPE        ; set start line
+0369 01A8           01161 WAVE1     CLRF ADRMSB       
+036A 01A7           01162           CLRF ADRLSB       
+                    01163                             
+036B 082C           01164           MOVF COUNT,W      ; copy loop val into PEAKHI
+036C 00B0           01165           MOVWF PEAKHI      
+                    01166                             
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 23
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+036D 022F           01167           SUBWF PEAKLO,W    ; is PEAKHI > PEAKLO ?
+036E 1C03           01168           BTFSS STATUS,C    ; is there a borrow?
+036F 2B74           01169           GOTO WAVE2        ; yes
+                    01170                             
+0370 082F           01171           MOVF PEAKLO,W     ; no, so swap lo & hi
+0371 00B0           01172           MOVWF PEAKHI      
+0372 082C           01173           MOVF COUNT,W      
+0373 00AF           01174           MOVWF PEAKLO      
+                    01175                             
+0374 082F           01176 WAVE2     MOVF PEAKLO,W     ; get LO remainder less than 8
+0375 20E6           01177           CALL BITSLO       
+0376 00B1           01178           MOVWF LOBIT       
+                    01179                             
+0377 0D2F           01180           RLF PEAKLO,W      ; get LO integer (i.e. divide by 8)
+0378 00B2           01181           MOVWF LOOPLO      
+0379 0E32           01182           SWAPF LOOPLO,W    
+037A 390F           01183           ANDLW 15          
+037B 00B2           01184           MOVWF LOOPLO      
+                    01185                             
+037C 0832           01186           MOVF LOOPLO,W     ; set address for 1st temp store memory
+037D 3E34           01187           ADDLW JOIN00      
+037E 0084           01188           MOVWF FSR         
+                    01189                             
+037F 1003           01190           BCF STATUS,C      
+0380 082F           01191           MOVF PEAKLO,W     
+0381 00A2           01192           MOVWF LOOPD       
+                    01193                             
+0382 0822           01194 WAVE3     MOVF LOOPD,W      
+0383 062F           01195           XORWF PEAKLO,W    
+0384 1903           01196           BTFSC STATUS,Z    
+0385 2B93           01197           GOTO WAVE4        
+0386 0831           01198           MOVF LOBIT,W      
+0387 0480           01199           IORWF INDF,F      
+0388 0AA2           01200           INCF LOOPD,F      
+0389 1BA2           01201           BTFSC LOOPD,7     
+038A 2BA4           01202           GOTO WAVE5        
+038B 1003           01203           BCF STATUS,C      
+038C 0CB1           01204           RRF LOBIT,F       
+038D 1C03           01205           BTFSS STATUS,C    
+038E 2B82           01206           GOTO WAVE3        
+038F 0A84           01207           INCF FSR,F        
+0390 17B1           01208           BSF LOBIT,7       
+0391 1003           01209           BCF STATUS,C      
+0392 2B82           01210           GOTO WAVE3        
+                    01211                             
+0393 0822           01212 WAVE4     MOVF LOOPD,W      
+0394 0630           01213           XORWF PEAKHI,W    
+0395 1903           01214           BTFSC STATUS,Z    
+0396 2BA4           01215           GOTO WAVE5        
+0397 0831           01216           MOVF LOBIT,W      
+0398 0480           01217           IORWF INDF,F      
+0399 0AA2           01218           INCF LOOPD,F      
+039A 1BA2           01219           BTFSC LOOPD,7     
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 24
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+039B 2BA4           01220           GOTO WAVE5        
+039C 1003           01221           BCF STATUS,C      
+039D 0CB1           01222           RRF LOBIT,F       
+039E 1C03           01223           BTFSS STATUS,C    
+039F 2B93           01224           GOTO WAVE4        
+03A0 0A84           01225           INCF FSR,F        
+03A1 17B1           01226           BSF LOBIT,7       
+03A2 1003           01227           BCF STATUS,C      
+03A3 2B93           01228           GOTO WAVE4        
+                    01229                             
+03A4 3034           01230 WAVE5     MOVLW JOIN00      
+03A5 0084           01231           MOVWF FSR         
+03A6 01A2           01232           CLRF LOOPD        
+03A7 01A7           01233           CLRF ADRLSB       ; set column
+03A8 0823           01234           MOVF LOOPE,W      ; set line
+03A9 254F           01235           CALL GLINE        ; multiply by line length
+03AA 2432           01236           CALL SCREENADR    ; set screen write address
+                    01237                             
+03AB 30B0           01238           MOVLW AWRON       ; AUTO WRITE ON
+03AC 2514           01239           CALL SENDCMD      ; send command
+                    01240                             
+03AD 0800           01241 WAVE6     MOVF INDF,W       ; send data to LCD
+03AE 2505           01242           CALL OUTDATA      
+03AF 0180           01243           CLRF INDF         ; JKJ: removed ',F'
+03B0 0A84           01244           INCF FSR,F        
+03B1 0AA2           01245           INCF LOOPD,F      
+03B2 1E22           01246           BTFSS LOOPD,4     
+03B3 2BAD           01247           GOTO WAVE6        
+03B4 082C           01248           MOVF COUNT,W      
+03B5 00AF           01249           MOVWF PEAKLO      
+03B6 30B2           01250           MOVLW AWROFF      ; AUTO WRITE OFF
+03B7 2514           01251           CALL SENDCMD      ; send command
+                    01252                             
+03B8 3004           01253 WAVE7     MOVLW 4           
+03B9 07AC           01254           ADDWF COUNT,F     ; add to volts loop
+03BA 13AC           01255           BCF COUNT,7       
+03BB 1E05           01256           BTFSS PORTA,4     ; is switch on?
+03BC 0008           01257           RETURN            ; yes
+03BD 0AA3           01258           INCF LOOPE,F      ; no, inc line number
+03BE 0823           01259           MOVF LOOPE,W      
+03BF 3A40           01260           XORLW 64          
+03C0 1D03           01261           BTFSS STATUS,Z    ; has line limit been reached?
+03C1 2B69           01262           GOTO WAVE1        ; no, so repeat for next line
+03C2 03AC           01263           DECF COUNT,F      ; introduce a displacement to uniform count
+03C3 03AC           01264           DECF COUNT,F      ; JKJ: taking off 4 makes it smoother.
+03C4 03AC           01265           DECF COUNT,F      ; 
+03C5 03AC           01266           DECF COUNT,F      ; 
+03C6 2B68           01267           GOTO WAVE0        ; yes so start again
+                    01268                             
+                    01269                             ;******** DEMO 12 CREATE MOVING WAVEFORM - SCOPE STYLE *************
+                    01270                             
+03C7 309C           01271 DEMO12    MOVLW B'10011100' ; text on, graphic on, cursor & blink off
+03C8 2514           01272           CALL SENDCMD      ; send command
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 25
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+03C9 01AC           01273           CLRF COUNT        ; volts simulator counter
+03CA 01AF           01274           CLRF PEAKLO       
+03CB 01A2           01275           CLRF LOOPD        
+                    01276                             
+03CC 3080           01277 SCOPE0    MOVLW B'10000000' ; indicates which bit of column is affected
+03CD 00B1           01278           MOVWF LOBIT       
+                    01279                             
+03CE 082C           01280 SCOPE1    MOVF COUNT,W      ; copy loop val into PEAKHI
+03CF 00B0           01281           MOVWF PEAKHI      
+03D0 022F           01282           SUBWF PEAKLO,W    ; is PEAKHI > PEAKLO ? (subtract hi from lo)
+03D1 1C03           01283           BTFSS STATUS,C    ; is there a borrow?
+03D2 2BD7           01284           GOTO SCOPE2       ; yes
+                    01285                             
+03D3 082F           01286           MOVF PEAKLO,W     ; no, so swap lo & hi
+03D4 00B0           01287           MOVWF PEAKHI      
+03D5 082C           01288           MOVF COUNT,W      
+03D6 00AF           01289           MOVWF PEAKLO      
+                    01290                             
+03D7 3034           01291 SCOPE2    MOVLW JOIN00      ; set address for 1st affected temp store memory
+03D8 072F           01292           ADDWF PEAKLO,W    
+03D9 0084           01293           MOVWF FSR         
+03DA 082F           01294           MOVF PEAKLO,W     ; set loop to val of PEAKLO
+03DB 00A3           01295           MOVWF LOOPE       
+03DC 0831           01296           MOVF LOBIT,W      
+03DD 0480           01297           IORWF INDF,F      ; set new bit
+                    01298                             
+03DE 0823           01299 SCOPE3    MOVF LOOPE,W      ; is loop = peakhi?
+03DF 0630           01300           XORWF PEAKHI,W    
+03E0 1903           01301           BTFSC STATUS,Z    
+03E1 2BE9           01302           GOTO SCOPE4       ; yes
+03E2 0831           01303           MOVF LOBIT,W      ; no
+03E3 0480           01304           IORWF INDF,F      ; set new bit
+03E4 0AA3           01305           INCF LOOPE,F      
+03E5 1B23           01306           BTFSC LOOPE,6     
+03E6 2BE9           01307           GOTO SCOPE4       
+03E7 0A84           01308           INCF FSR,F        
+03E8 2BDE           01309           GOTO SCOPE3       
+                    01310                             
+03E9 082C           01311 SCOPE4    MOVF COUNT,W      
+03EA 00AF           01312           MOVWF PEAKLO      
+03EB 3002           01313           MOVLW 2           
+03EC 07AC           01314           ADDWF COUNT,F     ; inc wavform counter
+03ED 132C           01315           BCF COUNT,6       ; limit to 63 max
+03EE 1003           01316           BCF STATUS,C      
+03EF 0CB1           01317           RRF LOBIT,F       ; shift right bitting setting val
+03F0 1C03           01318           BTFSS STATUS,C    ; is CARRY set? (stating all 8 bits of col done)
+03F1 2BCE           01319           GOTO SCOPE1       ; no
+                    01320                             
+03F2 3034           01321           MOVLW JOIN00      ; send 8-bit column to screen
+03F3 0084           01322           MOVWF FSR         
+03F4 3040           01323           MOVLW 64          
+03F5 00A3           01324           MOVWF LOOPE       ; set loop val (number of columns)
+03F6 3002           01325           MOVLW 2           ; set graphic base address ($02xx)
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 26
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+03F7 00A8           01326           MOVWF ADRMSB      
+03F8 0822           01327           MOVF LOOPD,W      ; set column
+03F9 00A7           01328           MOVWF ADRLSB      
+                    01329                             
+03FA 2432           01330 SCOPE5    CALL SCREENADR    ; set screen write address
+03FB 30B0           01331           MOVLW AWRON       ; AUTO WRITE ON
+03FC 2514           01332           CALL SENDCMD      ; send command
+03FD 24D5           01333           CALL CHECK3       ; read status for DA0/DA1 = 3
+03FE 0800           01334           MOVF INDF,W       ; get val from STORE
+03FF 2505           01335           CALL OUTDATA      ;
+0400 0180           01336           CLRF INDF         ; JKJ: removed ',F'
+0401 30B2           01337           MOVLW AWROFF      ; AUTO WRITE OFF
+0402 2514           01338           CALL SENDCMD      ; send command
+0403 0A84           01339           INCF FSR,F        
+0404 03A3           01340           DECF LOOPE,F      
+0405 1903           01341           BTFSC STATUS,Z    
+0406 2C0C           01342           GOTO SCOPE6       
+0407 082D           01343           MOVF COLUMN,W     ; set for next line
+0408 07A7           01344           ADDWF ADRLSB,F    
+0409 1803           01345           BTFSC STATUS,0    ; add CARRY (if any) to MSB
+040A 0AA8           01346           INCF ADRMSB,F     
+040B 2BFA           01347           GOTO SCOPE5       ; repeat until done
+                    01348                             
+040C 0AA2           01349 SCOPE6    INCF LOOPD,F      ; inc to next column
+040D 1E22           01350           BTFSS LOOPD,4     
+040E 2BCC           01351           GOTO SCOPE0       
+                    01352                             
+040F 01A2           01353           CLRF LOOPD        ; start again at screen left
+0410 3003           01354           MOVLW 3           ; add displacement factor to waveform loop
+0411 022C           01355           SUBWF COUNT,W     
+                    01356                             
+0412 393F           01357           ANDLW B'00111111' 
+0413 00AC           01358           MOVWF COUNT       
+0414 1A05           01359           BTFSC PORTA,4     ; is switch on?
+0415 2BCC           01360           GOTO SCOPE0       ; no, so repeat
+0416 0008           01361           RETURN            ; yes
+                    01362                             
+                    01363                             ;********** END DEMOS - START OF SUB-ROUTINES ***************
+                    01364                             
+0417                01365 BITWRITE                    ; ** WRITE SINGLE SINGLE BIT DATA ROUTINE **
+0417 00AA           01366           MOVWF BITVAL      
+0418 2432           01367           CALL SCREENADR    ; set screen write address
+0419 082A           01368           MOVF BITVAL,W     
+041A 2514           01369           CALL SENDCMD      ; send command
+041B 0008           01370           RETURN            ;
+                    01371                             
+                    01372                             ;.........
+                    01373                             
+041C                01374 ONEWRITE                    ; ** WRITE SINGLE BYTE **
+041C 00A9           01375           MOVWF ATTRIB      ; temp store val brought in on W
+041D 2432           01376           CALL SCREENADR    ; set screen write address - vals preset at call
+041E 30B0           01377           MOVLW AWRON       ; AUTO WRITE ON
+041F 2514           01378           CALL SENDCMD      ; send command
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 27
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0420 24D5           01379           CALL CHECK3       ; read status for DA0/DA1 = 3
+0421 0829           01380           MOVF ATTRIB,W     
+0422 2505           01381           CALL OUTDATA      ;
+0423 30B2           01382           MOVLW AWROFF      ; AUTO WRITE OFF
+0424 2514           01383           CALL SENDCMD      ; send command
+0425 0008           01384           RETURN            
+                    01385                             ;............
+                    01386                             
+0426                01387 AUTOWRITE                   ; ** AUTO WRITE ROUTINE **
+0426 00A5           01388           MOVWF TEMPA       ; temp store value brought in on W
+0427 24F6           01389           CALL CHECK8       ; read status for DA3 = 8
+0428 0825           01390           MOVF TEMPA,W      ; WRITE DATA
+0429 2505           01391           CALL OUTDATA      ;
+042A 0008           01392           RETURN            ;
+                    01393                             
+                    01394                             ;..............
+                    01395                             
+042B                01396 CMDADR                      ; ** SET ADDRESS FOR COMMAND SENDING **
+042B 24D5           01397           CALL CHECK3       ; read status for DA0/DA1 = 3
+042C 0827           01398           MOVF ADRLSB,W     ; WRITE DATA D1
+042D 2505           01399           CALL OUTDATA      ;
+042E 24D5           01400           CALL CHECK3       ; read status for DA0/DA1 = 3
+042F 0828           01401           MOVF ADRMSB,W     ; WRITE DATA D2
+0430 2505           01402           CALL OUTDATA      ;
+0431 0008           01403           RETURN            ;
+                    01404                             
+                    01405                             ;.........
+                    01406                             
+0432                01407 SCREENADR                   ; ** SET ADDRESS FOR WRITE/READ TO/FROM SCREEN
+0432 24D5           01408           CALL CHECK3       ; read status for DA0/DA1 = 3
+0433 0827           01409           MOVF ADRLSB,W     ; WRITE ADDRESS LSB
+0434 2505           01410           CALL OUTDATA      ;
+0435 24D5           01411           CALL CHECK3       ; read status for DA0/DA1 = 3
+0436 0828           01412           MOVF ADRMSB,W     ; WRITE ADDRESS MSB
+0437 2505           01413           CALL OUTDATA      ;
+0438 3024           01414           MOVLW ADPSET      ; SET ADDRESS POINTER
+0439 2514           01415           CALL SENDCMD      ; send command
+043A 0008           01416           RETURN            ;
+                    01417                             
+                    01418                             ;.............
+                    01419                             
+043B                01420 TEXTHOME                    ; ** SET TEXT HOME ADDRESS **
+043B 01A8           01421           CLRF ADRMSB       ; TEXT HOME ADDRESS $0000
+043C 01A7           01422           CLRF ADRLSB       ;
+043D 242B           01423           CALL CMDADR       ; send command address
+043E 3040           01424           MOVLW TXHOME      ;
+043F 2514           01425           CALL SENDCMD      ; send command
+0440 0008           01426           RETURN            
+                    01427                             
+                    01428                             ;...........
+                    01429                             
+0441                01430 GRAPHHOME                   ; ** SET GRAPHIC HOME ADDRESS **
+0441 3002           01431           MOVLW H'02'       ; GRAPHIC HOME ADDRESS $0200
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 28
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0442 00A8           01432           MOVWF ADRMSB      
+0443 01A7           01433           CLRF ADRLSB       
+0444 242B           01434           CALL CMDADR       ; send command address
+0445 3042           01435           MOVLW GRHOME      ;
+0446 2514           01436           CALL SENDCMD      ; send command
+0447 0008           01437           RETURN            
+                    01438                             
+                    01439                             ;...........
+                    01440                             
+0448                01441 TEXTAREA                    ; ** SET TEXT AREA **
+0448 01A8           01442           CLRF ADRMSB       ;
+0449 082D           01443           MOVF COLUMN,W     ; columns length
+044A 00A7           01444           MOVWF ADRLSB      ;
+044B 242B           01445           CALL CMDADR       ; send command address
+044C 3041           01446           MOVLW TXAREA      ; text area command
+044D 2514           01447           CALL SENDCMD      ; send command
+044E 0008           01448           RETURN            
+                    01449                             
+                    01450                             ;...........
+                    01451                             
+044F                01452 GRAPHAREA                   ; ** SET GRAPHIC AREA **
+044F 01A8           01453           CLRF ADRMSB       ;
+0450 082D           01454           MOVF COLUMN,W     ; columns length
+0451 00A7           01455           MOVWF ADRLSB      ;
+0452 242B           01456           CALL CMDADR       ; send command address
+0453 3043           01457           MOVLW GRAREA      ; graphic area command
+0454 2514           01458           CALL SENDCMD      ; send command
+0455 0008           01459           RETURN            
+                    01460                             
+                    01461                             ;...........
+                    01462                             
+0456                01463 CSRADR                      ; ** SET CURSOR POSITION **
+0456 242B           01464           CALL CMDADR       ; send command address
+0457 3021           01465           MOVLW CSRPOS      ; cursor position command
+0458 2514           01466           CALL SENDCMD      ; send command
+0459 0008           01467           RETURN            
+                    01468                             
+                    01469                             ;...........
+                    01470                             
+045A                01471 CSRTYP                      ; ** SET CURSOR TYPE **
+045A 30A7           01472           MOVLW B'10100111' ; 8-line
+045B 2514           01473           CALL SENDCMD      ; send command
+045C 0008           01474           RETURN            ; OPTIONS:
+                    01475                             ; %10100000 ; 1-line
+                    01476                             ; %10100001 ; 2-line
+                    01477                             ; %10100010 ; 3-line
+                    01478                             ; %10100011 ; 4-line
+                    01479                             ; %10100100 ; 5-line
+                    01480                             ; %10100101 ; 6-line
+                    01481                             ; %10100110 ; 7-line
+                    01482                             ; %10100111 ; 8-line
+                    01483                             ;...........
+                    01484                             
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 29
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+045D                01485 SETMODE                     ; ** SET MODE - MANY OPTIONS, see EPE text **
+045D 3080           01486           MOVLW B'10000000' ; (OR mode, Internal CG mode)
+                    01487                             ; movlw %10000000 ; External CG RAM mode, OR
+                    01488                             ; movlw %10000011 ; External CG RAM mode, AND
+                    01489                             ; movlw %10000001 ; External CG RAM mode, XOR
+                    01490                             ; movlw %10000100 ; text attribute mode
+045E 2514           01491           CALL SENDCMD      ; send command
+045F 0008           01492           RETURN            
+                    01493                             ; %1000x000 ; OR mode
+                    01494                             ; %1000x001 ; XOR mode
+                    01495                             ; %1000x011 ; AND mode
+                    01496                             ; %1000x100 ; Text Attribute mode
+                    01497                             ; %10000xxx ; Internal CG ROM mode
+                    01498                             ; %10001xxx ; External CG RAM mode
+                    01499                             
+                    01500                             ;...........
+                    01501                             
+0460                01502 SETOFFSET                   ; ** SET OFFSET REGISTER **
+                    01503                             ; setting OFFSET address at 2 selects
+                    01504                             ; CG RAM START ADDRESS = $1400 where
+                    01505                             ; $80 is character number of 1st graphic byte
+                    01506                             ; values below that call ASCII text characters
+0460 01A8           01507           CLRF ADRMSB       ;
+0461 3002           01508           MOVLW 2           ;
+0462 00A7           01509           MOVWF ADRLSB      ;
+0463 242B           01510           CALL CMDADR       ; send command address
+0464 3022           01511           MOVLW OFFSET      ;
+0465 2514           01512           CALL SENDCMD      ; send command
+0466 0008           01513           RETURN            
+                    01514                             
+                    01515                             ;...........
+                    01516                             
+0467                01517 SETDISPLAY                  ; ** DISPLAY MODE ** SOME OPTIONS:
+0467 3094           01518           MOVLW B'10010100' ; text on, graphic off, cursor & blink off
+                    01519                             ; movlw %10011100 ; text on, graphic on, cursor & blink off
+                    01520                             ; movlw %10011000 ; text off, graphic on, cursor & blink off
+0468 2514           01521           CALL SENDCMD      ; send command
+0469 0008           01522           RETURN            ; OTHER OPTIONS:
+                    01523                             ; %10010000 display off
+                    01524                             ; %1001xx10 cursor on, blink off
+                    01525                             ; %1001xx11 cursor on, blink on
+                    01526                             ; %100101xx text on, graphic off
+                    01527                             ; %100110xx text off, graphic on
+                    01528                             ; %100111xx text on, graphic on
+                    01529                             
+                    01530                             ;...........
+                    01531                             
+046A                01532 CLRTXT                      ; ** CLEAR TEXT AREA ($0000) **
+046A 01A8           01533           CLRF ADRMSB       ; clear all text screen lines, length as set
+046B 01A7           01534           CLRF ADRLSB       ;
+046C 2432           01535           CALL SCREENADR    ; set screen write address
+046D 30B0           01536           MOVLW AWRON       ; AUTO WRITE ON
+046E 2514           01537           CALL SENDCMD      ; send command
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 30
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+046F 3008           01538           MOVLW 8           ; number of lines
+0470 00A1           01539           MOVWF LOOPC       
+0471 082D           01540 CLR2      MOVF COLUMN,W     ; column length
+0472 00A0           01541           MOVWF LOOPB       ;
+0473 3000           01542 CLR3      MOVLW 0           ; write 0
+0474 2426           01543           CALL AUTOWRITE    ; auto write and increment
+0475 0BA0           01544           DECFSZ LOOPB,F    ;
+0476 2C73           01545           GOTO CLR3         ;
+0477 0BA1           01546           DECFSZ LOOPC,F    ;
+0478 2C71           01547           GOTO CLR2         ;
+0479 30B2           01548           MOVLW AWROFF      ; AUTO WRITE OFF
+047A 2514           01549           CALL SENDCMD      ; send command
+047B 0008           01550           RETURN            
+                    01551                             
+                    01552                             ;............
+                    01553                             
+047C                01554 CLRGRAPH                    ; ** CLEAR GRAPH AREA ($0200) **
+047C 3002           01555           MOVLW H'02'       
+047D 00A8           01556           MOVWF ADRMSB      ;
+047E 01A7           01557           CLRF ADRLSB       ;
+047F 2432           01558           CALL SCREENADR    ; set screen write address
+0480 30B0           01559           MOVLW AWRON       ; AUTO WRITE ON
+0481 2514           01560           CALL SENDCMD      ; send command
+0482 3040           01561           MOVLW 64          ; number of lines
+0483 00A1           01562           MOVWF LOOPC       
+0484 082D           01563 CLRG2     MOVF COLUMN,W     ; column length
+0485 00A0           01564           MOVWF LOOPB       ;
+0486 3000           01565 CLRG3     MOVLW 0           ; write 0
+0487 2426           01566           CALL AUTOWRITE    ; auto write and increment
+0488 0BA0           01567           DECFSZ LOOPB,F    ;
+0489 2C86           01568           GOTO CLRG3        ;
+048A 0BA1           01569           DECFSZ LOOPC,F    ;
+048B 2C84           01570           GOTO CLRG2        ;
+048C 30B2           01571           MOVLW AWROFF      ; AUTO RESET OFF
+048D 2514           01572           CALL SENDCMD      ; send command
+048E 0008           01573           RETURN            
+                    01574                             
+                    01575                             ;..............
+                    01576                             
+048F                01577 CLRCG                       ; ** CLEAR CG RAM AREA ($1400) **
+048F 3014           01578           MOVLW H'14'       
+0490 00A8           01579           MOVWF ADRMSB      ;
+0491 01A7           01580           CLRF ADRLSB       ;
+0492 2432           01581           CALL SCREENADR    ; set screen write address
+0493 30B0           01582           MOVLW AWRON       ; AUTO WRITE ON
+0494 2514           01583           CALL SENDCMD      ; send command
+0495 3040           01584           MOVLW 64          ; number of lines
+0496 00A1           01585           MOVWF LOOPC       
+0497 082D           01586 CLRCG2    MOVF COLUMN,W     ; column length
+0498 00A0           01587           MOVWF LOOPB       ;
+0499 3000           01588 CLRCG3    MOVLW 0           ; write 0
+049A 2426           01589           CALL AUTOWRITE    ; auto write and increment
+049B 0BA0           01590           DECFSZ LOOPB,F    ;
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 31
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+049C 2C99           01591           GOTO CLRCG3       ;
+049D 0BA1           01592           DECFSZ LOOPC,F    ;
+049E 2C97           01593           GOTO CLRCG2       ;
+049F 30B2           01594           MOVLW AWROFF      ; AUTO RESET OFF
+04A0 2514           01595           CALL SENDCMD      ; send command
+04A1 0008           01596           RETURN            
+                    01597                             
+                    01598                             ;............
+                    01599                             
+04A2                01600 SETCG                       ; ** SETUP USER CG RAM **
+04A2 3014           01601           MOVLW H'14'       ; CG RAM start address 1400H
+04A3 00A8           01602           MOVWF ADRMSB      ;
+04A4 01A7           01603           CLRF ADRLSB       ;
+04A5 2432           01604           CALL SCREENADR    ; set screen write address
+04A6 30B0           01605           MOVLW AWRON       ; SET DATA AUTO WRITE ON
+04A7 2514           01606           CALL SENDCMD      ; send command
+04A8 01A0           01607           CLRF LOOPB        ;
+                    01608                             
+04A9 0820           01609 SETCG2    MOVF LOOPB,W      ; WRITE TO EXTERNAL RAM
+04AA 206D           01610           CALL CGTABLE      ; get table data
+04AB 2426           01611           CALL AUTOWRITE    ; auto write and increment
+04AC 0AA0           01612           INCF LOOPB,F      ; 
+04AD 0BA1           01613           DECFSZ LOOPC,F    ; LOOPC val specified by calling routine
+04AE 2CA9           01614           GOTO SETCG2       ;
+04AF 30B2           01615           MOVLW AWROFF      ; AUTO WRITE OFF
+04B0 2514           01616           CALL SENDCMD      ; send command
+04B1 0008           01617           RETURN            
+                    01618                             
+                    01619                             ;..............
+                    01620                             
+04B2                01621 SHWTXT                      ; ** SHOW TEXT HELD IN TABLE **
+04B2 2432           01622           CALL SCREENADR    ; set screen write address - vals preset at call
+04B3 30B0           01623           MOVLW AWRON       ; SET AUTO WRITE ON
+04B4 2514           01624           CALL SENDCMD      ; send command
+04B5 0820           01625 SHTXT1    MOVF LOOPB,W      ; LOOPB val specified by calling routine
+04B6 201C           01626           CALL TABLE1       ; get table data and convert to graphic LCD val
+04B7 3EE0           01627           ADDLW 224         ; +224 is same as -32 for conversion from ASCII
+04B8 2426           01628           CALL AUTOWRITE    ; auto write and increment
+04B9 0AA0           01629           INCF LOOPB,F      ;
+04BA 0BA1           01630           DECFSZ LOOPC,F    ; LOOPC val specified by calling routine
+04BB 2CB5           01631           GOTO SHTXT1       ;
+04BC 30B2           01632           MOVLW AWROFF      ; AUTO WRITE OFF
+04BD 2514           01633           CALL SENDCMD      ; send command
+04BE 0008           01634           RETURN            
+                    01635                             
+                    01636                             ;..............
+                    01637                             
+04BF                01638 SETATTR                     ; ** SEND ATTRIBUTE & OTHER DATA TO SCREEN AS 1 CHARACTER, LOOPED
+04BF 2432           01639           CALL SCREENADR    ; set screen write address - vals preset at call
+04C0 30B0           01640           MOVLW AWRON       ; AUTO WRITE ON
+04C1 2514           01641           CALL SENDCMD      ; send command
+04C2 0829           01642 SETAT     MOVF ATTRIB,W     ; val to be sent preset at call
+04C3 2426           01643           CALL AUTOWRITE    ; auto write and increment
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 32
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+04C4 0BA1           01644           DECFSZ LOOPC,F    ; LOOPC val specified by calling routine
+04C5 2CC2           01645           GOTO SETAT        ;
+04C6 30B2           01646           MOVLW AWROFF      ; AUTO WRITE OFF
+04C7 2514           01647           CALL SENDCMD      ; send command
+04C8 0008           01648           RETURN            
+                    01649                             
+                    01650                             ;............
+                    01651                             
+04C9                01652 SHOWCG                      ; ** SHOW USER CG RAM IN ORDER HELD BY TABLE **
+04C9 2432           01653           CALL SCREENADR    ; set screen write address - vals preset at call
+04CA 30B0           01654           MOVLW AWRON       ; AUTO WRITE ON
+04CB 2514           01655           CALL SENDCMD      ; send command
+04CC 0820           01656 SHWCG2    MOVF LOOPB,W      ;
+04CD 2052           01657           CALL AMPLIFIER    ; get table data
+04CE 2426           01658           CALL AUTOWRITE    ; auto write and increment
+04CF 0AA0           01659           INCF LOOPB,F      ;
+04D0 0BA1           01660           DECFSZ LOOPC,F    ; LOOPC val specified by calling routine
+04D1 2CCC           01661           GOTO SHWCG2       ;
+04D2 30B2           01662           MOVLW AWROFF      ; AUTO WRITE OFF
+04D3 2514           01663           CALL SENDCMD      ; send command
+04D4 0008           01664           RETURN            
+                    01665                             
+                    01666                             ;.........
+                    01667                             
+04D5 1683           01668 CHECK3    PAGE1             ; STATUS CHECK for DA0/DA1 = 3
+04D6 30FF           01669           MOVLW 255         ;
+04D7 0088           01670           MOVWF TRISD       ; set PORTD as inputs
+04D8 1283           01671           PAGE0             ; RST CD CE RD WR 
+04D9 3019           01672           MOVLW B'00011001' ; 1 1 0 0 1 
+04DA 0087           01673           MOVWF PORTC       ; set CE, RD low
+04DB 0000           01674           NOP               
+04DC 1C08           01675 CK3       BTFSS PORTD,0     ; PORTD bit 0 set?
+04DD 2CDC           01676           GOTO CK3          ; no
+04DE 1C88           01677 CK3A      BTFSS PORTD,1     ; PORTD bit 1 set?
+04DF 2CDE           01678           GOTO CK3A         ; no RST CD CE RD WR 
+04E0 301F           01679           MOVLW B'00011111' ; 1 1 1 1 1
+04E1 0087           01680           MOVWF PORTC       ; set controls
+04E2 0000           01681           NOP               
+04E3 1683           01682           PAGE1             ;
+04E4 0188           01683           CLRF TRISD        ; set PORTD as outputs
+04E5 1283           01684           PAGE0             ;
+04E6 0008           01685           RETURN            
+                    01686                             
+                    01687                             ;............
+                    01688                             
+04E7 1683           01689 CHECK6    PAGE1             ; STATUS CHECK for DA6 low
+04E8 1708           01690           BSF TRISD,6       ; set PORTD bit as input
+04E9 1283           01691           PAGE0             ; RST CD CE RD WR
+04EA 3019           01692           MOVLW B'00011001' ; 1 1 0 0 1
+04EB 0087           01693           MOVWF PORTC       ; set CE, RD low
+04EC 0000           01694           NOP               
+04ED 1B08           01695 CK6       BTFSC PORTD,6     ; is PORTD bit 6 low?
+04EE 2CED           01696           GOTO CK6          ; no RST CD CE RD WR
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 33
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+04EF 301F           01697           MOVLW B'00011111' ; 1 1 1 1 1
+04F0 0087           01698           MOVWF PORTC       ; set controls
+04F1 0000           01699           NOP               
+04F2 1683           01700           PAGE1             ;
+04F3 1308           01701           BCF TRISD,6       ; set PORTD bit 6 as output
+04F4 1283           01702           PAGE0             ;
+04F5 0008           01703           RETURN            
+                    01704                             
+                    01705                             ;............
+                    01706                             
+04F6 1683           01707 CHECK8    PAGE1             ; STATUS CHECK for DA3 = 8
+04F7 1588           01708           BSF PORTD,3       ; set PORTD bit 3 as input
+04F8 1283           01709           PAGE0             ; RST CD CE RD WR
+04F9 3019           01710           MOVLW B'00011001' ; 1 1 0 0 1
+04FA 0087           01711           MOVWF PORTC       ; set CE, RD low
+04FB 0000           01712           NOP               
+04FC 1D88           01713 CK8       BTFSS PORTD,3     ; is PORTD,3 high?
+04FD 2CFC           01714           GOTO CK8          ; no RST CD CE RD WR
+04FE 301F           01715           MOVLW B'00011111' ; 1 1 1 1 1
+04FF 0087           01716           MOVWF PORTC       ; set controls
+0500 0000           01717           NOP               
+0501 1683           01718           PAGE1             ;
+0502 1188           01719           BCF TRISD,3       ; set PORTD bit 3 as output
+0503 1283           01720           PAGE0             ;
+0504 0008           01721           RETURN            
+                    01722                             
+                    01723                             ;........
+                    01724                             
+0505                01725 OUTDATA                     ; ** SEND DATA ROUTINE **
+0505 00A5           01726           MOVWF TEMPA       ; temp store val brought in on W
+                    01727                             ; RST CD CE RD WR
+0506 3017           01728           MOVLW B'00010111' ; 1 0 1 1 1
+0507 0087           01729           MOVWF PORTC       ; set CD low
+0508 0825           01730           MOVF TEMPA,W      ; get stored data
+0509 0088           01731           MOVWF PORTD       ; send data
+050A 0000           01732           NOP               ; RST CD CE RD WR
+050B 3012           01733           MOVLW B'00010010' ; 1 0 0 1 0
+050C 0087           01734           MOVWF PORTC       ; set CD, CE, WR low
+050D 0000           01735           NOP               ; RST CD CE RD WR
+050E 3017           01736           MOVLW B'00010111' ; 1 0 1 1 1
+050F 0087           01737           MOVWF PORTC       ; set CE, WR high
+0510 0000           01738           NOP               ; RST CD CE RD WR
+0511 301F           01739           MOVLW B'00011111' ; 1 1 1 1 1
+0512 0087           01740           MOVWF PORTC       ; set CD high
+0513 0008           01741           RETURN            
+                    01742                             
+                    01743                             ;..........
+                    01744                             
+0514                01745 SENDCMD                     ; ** COMMAND WRITE ROUTINE **
+0514 00A5           01746           MOVWF TEMPA       ; temp store val brought in on W
+0515 24D5           01747           CALL CHECK3       ; read status for DA0/DA1 = 3
+0516 0825           01748           MOVF TEMPA,W      ; WRITE COMMAND
+0517 0088           01749           MOVWF PORTD       ; send stored data
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 34
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0518 0000           01750           NOP               ; RST CD CE RD WR
+0519 301A           01751           MOVLW B'00011010' ; 1 1 0 1 0
+051A 0087           01752           MOVWF PORTC       ; set CE, WR low
+051B 0000           01753           NOP               ; RST CD CE RD WR
+051C 301F           01754           MOVLW B'00011111' ; 1 1 1 1 1
+051D 0087           01755           MOVWF PORTC       ; set all high
+051E 0008           01756           RETURN            
+                    01757                             
+                    01758                             ;.............
+                    01759                             
+051F                01760 DATAREAD                    ; ** DATA READ ROUTINE **
+051F 30E0           01761           MOVLW PEEK        ; screen peek command
+0520 2514           01762           CALL SENDCMD      ; send command
+0521 1683           01763           PAGE1             ;
+0522 30FF           01764           MOVLW 255         ;
+0523 0088           01765           MOVWF TRISD       ; set PORTD as inputs
+0524 1283           01766           PAGE0             ; RST CD CE RD WR
+0525 3019           01767           MOVLW B'00011001' ; 1 1 0 0 1
+0526 0087           01768           MOVWF PORTC       ; set CE, RD low
+0527 0000           01769           NOP               
+                    01770                             
+0528 1B08           01771 DR1       BTFSC PORTD,6     ; is PORTD STATUS bit 6 low?
+0529 2D28           01772           GOTO DR1          ; no
+052A 1C08           01773 DR2       BTFSS PORTD,0     ; is PORTD STATUS bit 0 high?
+052B 2D2A           01774           GOTO DR2          ; no
+052C 1C88           01775 DR3       BTFSS PORTD,1     ; is PORTD STATUS bit 1 high?
+052D 2D2C           01776           GOTO DR3          ; no
+052E 1187           01777           BCF PORTC,3       ; set CD low
+052F 0000           01778           NOP               
+0530 0808           01779           MOVF PORTD,W      ; read data value
+0531 00AB           01780           MOVWF RDBYTE      ; store read value
+                    01781                             
+                    01782                             ; RST CD CE RD WR 
+0532 301F           01783           MOVLW B'00011111' ; 1 1 1 1 1
+0533 0087           01784           MOVWF PORTC       ; set controls
+0534 1683           01785           PAGE1             ;
+0535 0188           01786           CLRF TRISD        ; set PORTD as outputs
+0536 1283           01787           PAGE0             ;
+0537 0008           01788           RETURN            
+                    01789                             
+                    01790                             ;...........
+                    01791                             
+0538 072D           01792 LINE7     ADDWF COLUMN,W    ; sets line addresses for text screen
+0539 1803           01793           BTFSC STATUS,C    
+053A 0AA8           01794           INCF ADRMSB,F     
+053B 072D           01795 LINE6     ADDWF COLUMN,W    
+053C 1803           01796           BTFSC STATUS,C    
+053D 0AA8           01797           INCF ADRMSB,F     
+053E 072D           01798 LINE5     ADDWF COLUMN,W    
+053F 1803           01799           BTFSC STATUS,C    
+0540 0AA8           01800           INCF ADRMSB,F     
+0541 072D           01801 LINE4     ADDWF COLUMN,W    
+0542 1803           01802           BTFSC STATUS,C    
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 35
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0543 0AA8           01803           INCF ADRMSB,F     
+0544 072D           01804 LINE3     ADDWF COLUMN,W    
+0545 1803           01805           BTFSC STATUS,C    
+0546 0AA8           01806           INCF ADRMSB,F     
+0547 072D           01807 LINE2     ADDWF COLUMN,W    
+0548 1803           01808           BTFSC STATUS,C    
+0549 0AA8           01809           INCF ADRMSB,F     
+054A 072D           01810 LINE1     ADDWF COLUMN,W    
+054B 1803           01811           BTFSC STATUS,C    
+054C 0AA8           01812           INCF ADRMSB,F     
+054D 00A7           01813 LINE0     MOVWF ADRLSB      ; COLUMN sets number of cells per line
+054E 0008           01814           RETURN            ; ADRMSB is set/cleared before routine called
+                    01815                             
+                    01816                             ;..............
+                    01817                             
+054F                01818 GLINE                       ;** GET GRAPHIC LINE ADDRESS **
+054F 00A0           01819           MOVWF LOOPB       ; store line val
+0550 3002           01820           MOVLW 2           ; set graphic base address ($02xx)
+0551 00A8           01821           MOVWF ADRMSB      
+0552 0820           01822           MOVF LOOPB,W      ; line val = 0?
+0553 1903           01823           BTFSC STATUS,Z    
+0554 0008           01824           RETURN            ; yes
+0555 082D           01825 GLIN2     MOVF COLUMN,W     ; no, multiply line length by line val
+0556 07A7           01826           ADDWF ADRLSB,F    
+0557 3001           01827           MOVLW 1           
+0558 0503           01828           ANDWF STATUS,W    ; extract and add CARRY (if any) to MSB
+0559 07A8           01829           ADDWF ADRMSB,F    
+055A 0BA0           01830           DECFSZ LOOPB,F    
+055B 2D55           01831           GOTO GLIN2        
+055C 0008           01832           RETURN            
+                    01833                             
+                    01834                             ;............
+                    01835                             
+                    01836                             ;READ DATA FROM EEPROM ROUTINE modified for PIC16F87x devices
+                    01837                             ; according to data sheet DS30292A page 43
+                    01838                             ; Routine entered with eeprom byte address preset
+                    01839                             
+055D 1703           01840 PRMGET    BSF STATUS,RP1    ; set for Page 2
+055E 1683           01841           BSF STATUS,RP0    ; set for Page 3
+055F 138C           01842           BCF EECON1,EEPGD  ; point to data memory
+0560 140C           01843           BSF EECON1,RD     ; enable read flag
+0561 1283           01844           BCF STATUS,RP0    ; set for Page 2 
+0562 080C           01845           MOVF EEDATA,W     ; read eeprom data into W
+0563 0A8D           01846           INCF EEADR,F      ; inc address
+0564 1303           01847           BCF STATUS,RP1    ; set for Page 0
+0565 0008           01848           RETURN            
+                    01849                             
+                    01850                             ;.........
+                    01851                             
+0566 1A05           01852 WAITSW    BTFSC PORTA,4     ; wait for switch press
+0567 2D66           01853           GOTO WAITSW       
+0568 256D           01854           CALL PAUSIT       ; allow for switch bounce, then wait switch release
+                    01855                             
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 36
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0569                01856 WAITOFF                     ; wait for switch release
+0569 1E05           01857 WT2       BTFSS PORTA,4     
+056A 2D69           01858           GOTO WT2          
+056B 256D           01859           CALL PAUSIT       ; allow for switch bounce
+056C 0008           01860           RETURN            
+                    01861                             
+                    01862                             ;................
+                    01863                             
+056D 3005           01864 PAUSIT    MOVLW 5           ; pause routine, 1/5th sec
+056E 00A6           01865           MOVWF CLKCNT      
+056F 018B           01866           CLRF INTCON       
+0570 1D0B           01867 PAUSE     BTFSS INTCON,2    
+0571 2D70           01868           GOTO PAUSE        
+0572 110B           01869           BCF INTCON,2      
+0573 0BA6           01870           DECFSZ CLKCNT,F   
+0574 2D70           01871           GOTO PAUSE        
+0575 0008           01872           RETURN            
+                    01873                             
+                    01874                             ;................
+                    01875                             
+0576 3001           01876 PAUSE2    MOVLW 1           ; pause routine, 1/25th sec
+0577 00A6           01877           MOVWF CLKCNT      
+0578 018B           01878           CLRF INTCON       
+0579 1D0B           01879 PAUS2     BTFSS INTCON,2    
+057A 2D70           01880           GOTO PAUSE        
+057B 110B           01881           BCF INTCON,2      
+057C 0BA6           01882           DECFSZ CLKCNT,F   
+057D 2D79           01883           GOTO PAUS2        
+057E 0008           01884           RETURN            
+                    01885                             
+                    01886                             ;..............
+                    01887                             
+057F                01888 SETUP                       ; RST CD CE RD WR GENERAL SETUP
+057F 301F           01889           MOVLW B'00011111' ; 1 1 1 1 1
+0580 0087           01890           MOVWF PORTC       ; set controls high (off)
+0581 243B           01891           CALL TEXTHOME     ; SET TEXT HOME ADDRESS
+0582 2441           01892           CALL GRAPHHOME    ; SET GRAPHIC HOME ADDRESS
+0583 2448           01893           CALL TEXTAREA     ; SET TEXT AREA
+0584 244F           01894           CALL GRAPHAREA    ; SET GRAPHIC AREA
+0585 245D           01895           CALL SETMODE      ; SET MODE (INT/EXT/AND-OR-XOR etc)
+0586 2460           01896           CALL SETOFFSET    ; SET OFFSET (see EPE text)
+0587 2467           01897           CALL SETDISPLAY   ; DISPLAY MODE (text, graph on/off etc)
+0588 246A           01898           CALL CLRTXT       ; WRITE TEXT BLANK CODE $0000
+0589 247C           01899           CALL CLRGRAPH     ; WRITE GRAPH BLANK CODE $0200
+058A 248F           01900           CALL CLRCG        ; WRITE CGRAM BLANK CODE $1400
+058B 0008           01901           RETURN            
+                    01902                             
+                    01903                             ;..............
+                    01904                             
+                    01905           END               
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 37
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADPSET                            00000024
+ADRLSB                            00000027
+ADRMSB                            00000028
+AMPLIFIER                         00000052
+AND2                              00000253
+ATTRIB                            00000029
+AUTOWRITE                         00000426
+AWROFF                            000000B2
+AWRON                             000000B0
+BEAK1                             0000029A
+BIRD2                             0000028D
+BIRD2A                            0000028F
+BIRDX                             00000289
+BIRDY                             000002D2
+BIRDY2                            000002D4
+BIRDZ                             000002CA
+BITSLO                            000000E6
+BITVAL                            0000002A
+BITWRITE                          00000417
+BK2                               000002A7
+C                                 00000000
+CGTABLE                           0000006D
+CHECK3                            000004D5
+CHECK6                            000004E7
+CHECK8                            000004F6
+CIRCUIT                           00000111
+CK3                               000004DC
+CK3A                              000004DE
+CK6                               000004ED
+CK8                               000004FC
+CLKCNT                            00000026
+CLR2                              00000471
+CLR3                              00000473
+CLRCG                             0000048F
+CLRCG2                            00000497
+CLRCG3                            00000499
+CLRG2                             00000484
+CLRG3                             00000486
+CLRGRAPH                          0000047C
+CLRJOIN                           000002C2
+CLRMEM                            00000362
+CLRTXT                            0000046A
+CMDADR                            0000042B
+COLUMN                            0000002D
+COUNT                             0000002C
+CSRADR                            00000456
+CSRPOS                            00000021
+CSRTYP                            0000045A
+DATAREAD                          0000051F
+DEM1                              000000F3
+DEM10                             00000105
+DEM11                             00000107
+DEM12                             00000109
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 38
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+DEM2                              000000F5
+DEM3                              000000F7
+DEM4                              000000F9
+DEM5                              000000FB
+DEM6                              000000FD
+DEM7                              000000FF
+DEM8                              00000101
+DEM9                              00000103
+DEMO1                             0000010C
+DEMO10                            00000326
+DEMO11                            00000349
+DEMO12                            000003C7
+DEMO2                             00000156
+DEMO3                             000001C5
+DEMO4                             000001E5
+DEMO5                             000001EE
+DEMO6                             00000213
+DEMO6A                            00000215
+DEMO7                             00000229
+DEMO8                             00000268
+DEMO9                             00000316
+DM10                              00000342
+DM9                               0000031E
+DR1                               00000528
+DR2                               0000052A
+DR3                               0000052C
+EEADR                             0000000D
+EECON1                            0000000C
+EEDATA                            0000000C
+EEPGD                             00000007
+ENDDEMO2                          000001C4
+ENDDEMO5                          00000212
+ENDDEMO6                          00000228
+EPE                               00000272
+F                                 00000001
+FS                                00000000
+FSR                               00000004
+GLIN2                             00000555
+GLINE                             0000054F
+GRAPHAREA                         0000044F
+GRAPHHOME                         00000441
+GRAPHIC                           000000F0
+GRAREA                            00000043
+GRHOME                            00000042
+INDF                              00000000
+INTCON                            0000000B
+JOIN00                            00000034
+LINE0                             0000054D
+LINE1                             0000054A
+LINE2                             00000547
+LINE3                             00000544
+LINE4                             00000541
+LINE5                             0000053E
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 39
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+LINE6                             0000053B
+LINE7                             00000538
+LOBIT                             00000031
+LOOPB                             00000020
+LOOPC                             00000021
+LOOPD                             00000022
+LOOPE                             00000023
+LOOPLO                            00000032
+OFFSET                            00000022
+ONEWRITE                          0000041C
+OPSHUN                            00000001
+OUTDATA                           00000505
+PAGE0                             BCF H'03',5
+PAGE1                             BSF H'03',5
+PAUS2                             00000579
+PAUSE                             00000570
+PAUSE2                            00000576
+PAUSIT                            0000056D
+PCL                               00000002
+PEAKHI                            00000030
+PEAKLO                            0000002F
+PEEK                              000000E0
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PRMGET                            0000055D
+QCKCOL                            0000002E
+QK2                               000002FC
+QUACK                             000002EC
+RD                                00000000
+RDBYTE                            0000002B
+RP0                               00000005
+RP1                               00000006
+SCOPE0                            000003CC
+SCOPE1                            000003CE
+SCOPE2                            000003D7
+SCOPE3                            000003DE
+SCOPE4                            000003E9
+SCOPE5                            000003FA
+SCOPE6                            0000040C
+SCREENADR                         00000432
+SENDCMD                           00000514
+SETAND                            00000263
+SETAT                             000004C2
+SETATTR                           000004BF
+SETCG                             000004A2
+SETCG2                            000004A9
+SETDISPLAY                        00000467
+SETEG2                            00000333
+SETMODE                           0000045D
+SETOFFSET                         00000460
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 40
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SETUP                             0000057F
+SHOWCG                            000004C9
+SHTXT1                            000004B5
+SHWCG2                            000004CC
+SHWTXT                            000004B2
+SL1                               00000219
+SL1A                              0000021C
+SL2                               000001F3
+SL2A                              000001F6
+SL3                               00000204
+SL3A                              00000207
+SQ1                               0000016D
+SQ1A                              0000017A
+SQ2                               00000181
+SQ3                               0000018C
+SQ3A                              00000196
+SQ4                               00000198
+SQ4A                              000001A5
+SQ5                               000001AA
+SQ6                               000001B5
+SQUARE                            00000167
+STATUS                            00000003
+STORE1                            00000024
+TABLE1                            0000001C
+TEMPA                             00000025
+TEXTAREA                          00000448
+TEXTHOME                          0000043B
+TRISA                             00000005
+TRISB                             00000006
+TRISC                             00000007
+TRISD                             00000008
+TRISE                             00000009
+TXAREA                            00000041
+TXHOME                            00000040
+W                                 00000000
+WAIT                              0000021E
+WAIT2                             000001F8
+WAIT3                             00000209
+WAITOFF                           00000569
+WAITSW                            00000566
+WATER                             000002B2
+WAVE0                             00000368
+WAVE1                             00000369
+WAVE2                             00000374
+WAVE3                             00000382
+WAVE4                             00000393
+WAVE5                             000003A4
+WAVE6                             000003AD
+WAVE7                             000003B8
+WORDS                             0000013C
+WT2                               00000569
+Z                                 00000002
+__16F877                          00000001
+MPASM 02.30 Released          GEPE456.ASM   1-25-2001  12:25:31         PAGE 41
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+0000 : X----XXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+01C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0200 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0240 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0280 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+02C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0300 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0340 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0380 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+03C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0400 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0440 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0480 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+04C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0500 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0540 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0580 : XXXXXXXXXXXX---- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:  1416
+Program Memory Words Free:  6776
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

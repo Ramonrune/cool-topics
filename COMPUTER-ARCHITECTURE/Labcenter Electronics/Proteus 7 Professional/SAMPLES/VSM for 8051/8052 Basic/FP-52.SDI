@@ -1,0 +1,1610 @@
+,,,;************************************************************
+,,,;
+,,,; This is a complete BCD floating point package for the 8051 micro-
+,,,; controller. It provides 8 digits of accuracy with exponents that
+,,,; range from +127 to -127. The mantissa is in packed BCD, while the
+,,,; exponent is expressed in pseudo-twos complement. A ZERO exponent
+,,,; is used to express the number ZERO. An exponent value of 80H or
+,,,; greater than means the exponent is positive, i.e. 80H = E 0,
+,,,; 81H = E+1, 82H = E+2 and so on. If the exponent is 7FH or less,
+,,,; the exponent is negative, 7FH = E-1, 7EH = E-2, and so on.
+,,,; ALL NUMBERS ARE ASSUMED TO BE NORMALIZED and all results are
+,,,; normalized after calculation. A normalized mantissa is >=.10 and
+,,,; <=.99999999.
+,,,;
+,,,; The numbers in memory assumed to be stored as follows:
+,,,;
+,,,; EXPONENT OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE
+,,,; SIGN OF ARGUMENT 2       =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-1
+,,,; DIGIT 78 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-2
+,,,; DIGIT 56 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-3
+,,,; DIGIT 34 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-4
+,,,; DIGIT 12 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-5
+,,,;
+,,,; EXPONENT OF ARGUMENT 1   =   VALUE OF ARG_STACK
+,,,; SIGN OF ARGUMENT 1       =   VALUE OF ARG_STACK-1
+,,,; DIGIT 78 OF ARGUMENT 1   =   VALUE OF ARG_STACK-2
+,,,; DIGIT 56 OF ARGUMENT 1   =   VALUE OF ARG_STACK-3
+,,,; DIGIT 34 OF ARGUMENT 1   =   VALUE OF ARG_STACK-4
+,,,; DIGIT 12 OF ARGUMENT 1   =   VALUE OF ARG_STACK-5
+,,,;
+,,,; The operations are performed thusly:
+,,,;
+,,,; ARG_STACK+FP_NUMBER_SIZE = ARG_STACK+FP_NUMBER_SIZE # ARG_STACK
+,,,;
+,,,; Which is ARGUMENT 2 = ARGUMENT 2 # ARGUMENT 1
+,,,;
+,,,; Where # can be ADD, SUBTRACT, MULTIPLY OR DIVIDE.
+,,,;
+,,,; Note that the stack gets popped after an operation.
+,,,;
+,,,; The FP_COMP instruction POPS the ARG_STACK TWICE and returns status.
+,,,;
+,,,;**********************************************************************
+,,,;
+,,,$EJECT
+,,,;**********************************************************************
+,,,;
+,,,; STATUS ON RETURN - After performing an operation (+, -, *, /)
+,,,;                    the accumulator contains the following status
+,,,;
+,,,; ACCUMULATOR - BIT 0 - FLOATING POINT UNDERFLOW OCCURED
+,,,;
+,,,;             - BIT 1 - FLOATING POINT OVERFLOW OCCURED
+,,,;
+,,,;             - BIT 2 - RESULT WAS ZER0
+,,,;
+,,,;             - BIT 3 - DIVIDE BY ZERO ATTEMPTED
+,,,;
+,,,;             - BIT 4 - NOT USED, 0 RETURNED
+,,,;
+,,,;             - BIT 5 - NOT USED, 0 RETURNED
+,,,;
+,,,;             - BIT 6 - NOT USED, 0 RETURNED
+,,,;
+,,,;             - BIT 7 - NOT USED, 0 RETURNED
+,,,;
+,,,; NOTE: When underflow occures, a ZERO result is returned.
+,,,;       When overflow or divide by zero occures, a result of
+,,,;       .99999999 E+127 is returned and it is up to the user
+,,,;       to handle these conditions as needed in the program.
+,,,;
+,,,; NOTE: The Compare instruction returns F0 = 0 if ARG 1 = ARG 2
+,,,;       and returns a CARRY FLAG = 1 if ARG 1 is > ARG 2
+,,,;
+,,,;***********************************************************************
+,,,;
+,,,$EJECT
+,,,;***********************************************************************
+,,,;
+,,,; The following values MUST be provided by the user
+,,,;
+,,,;***********************************************************************
+,,,;
+,,,ARG_STACK       EQU     9       ;ARGUMENT STACK POINTER
+,,,ARG_STACK_PAGE  EQU     1
+,,,FORMAT          EQU     23      ;LOCATION OF OUTPUT FORMAT BYTE
+,,,OUTPUT          EQU     1990H   ;CALL LOCATION TO OUTPUT A CHARACTER
+,,,CONVT           EQU     58H     ;LOCATION TO CONVERT NUMBERS
+,,,INTGRC          BIT     25      ;BIT SET IF INTGER ERROR
+,,,ZSURP           BIT     54      ;ZERO SUPRESSION FOR HEX PRINT
+,,,;
+,,,;***********************************************************************
+,,,;
+,,,; The following equates are used internally
+,,,;
+,,,;***********************************************************************
+,,,;
+,,,FP_NUMBER_SIZE  EQU     6
+,,,DIGIT           EQU     FP_NUMBER_SIZE-2
+,,,R0B0            EQU     0
+,,,R1B0            EQU     1
+,,,UNDERFLOW       EQU     0
+,,,OVERFLOW        EQU     1
+,,,ZERO            EQU     2
+,,,ZERO_DIVIDE     EQU     3
+,,,;
+,,,;***********************************************************************
+,,,$EJECT
+,,,        ;**************************************************************
+,,,        ;
+,,,        ; The following internal locations are used by the math pack
+,,,        ; ordering is important and the FP_DIGITS must be bit
+,,,        ; addressable
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+,,,FP_STATUS       EQU     28H             ;NOT USED
+,,,FP_TEMP         EQU     FP_STATUS+1     ;NOT USED
+,,,FP_CARRY        EQU     FP_STATUS+2     ;USED FOR BITS
+,,,ADD_IN          BIT     35              ;DCMPXZ IN BASIC BACKAGE
+000B,,,XSIGN           BIT     FP_CARRY.0
+000B,,,FOUND_RADIX     BIT     FP_CARRY.1
+000B,,,FIRST_RADIX     BIT     FP_CARRY.2
+000B,,,DONE_LOAD       BIT     FP_CARRY.3
+,,,FP_DIG12        EQU     FP_CARRY+1
+,,,FP_DIG34        EQU     FP_CARRY+2
+,,,FP_DIG56        EQU     FP_CARRY+3
+,,,FP_DIG78        EQU     FP_CARRY+4
+,,,FP_SIGN         EQU     FP_CARRY+5
+000B,,,MSIGN           BIT     FP_SIGN.0
+,,,FP_EXP          EQU     FP_CARRY+6
+,,,FP_NIB1         EQU     FP_DIG12
+,,,FP_NIB2         EQU     FP_NIB1+1
+,,,FP_NIB3         EQU     FP_NIB1+2
+,,,FP_NIB4         EQU     FP_NIB1+3
+,,,FP_NIB5         EQU     FP_NIB1+4
+,,,FP_NIB6         EQU     FP_NIB1+5
+,,,FP_NIB7         EQU     FP_NIB1+6
+,,,FP_NIB8         EQU     FP_NIB1+7
+,,,FP_ACCX         EQU     FP_NIB1+8
+,,,FP_ACCC         EQU     FP_NIB1+9
+,,,FP_ACC1         EQU     FP_NIB1+10
+,,,FP_ACC2         EQU     FP_NIB1+11
+,,,FP_ACC3         EQU     FP_NIB1+12
+,,,FP_ACC4         EQU     FP_NIB1+13
+,,,FP_ACC5         EQU     FP_NIB1+14
+,,,FP_ACC6         EQU     FP_NIB1+15
+,,,FP_ACC7         EQU     FP_NIB1+16
+,,,FP_ACC8         EQU     FP_NIB1+17
+,,,FP_ACCS         EQU     FP_NIB1+18
+,,,        ;
+,,,$EJECT
+,,,        ORG     1993H
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+,,,        ; The floating point entry points and jump table
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+1993,21 B7,,        AJMP    FLOATING_ADD
+1995,21 AD,,        AJMP    FLOATING_SUB
+1997,41 6A,,        AJMP    FLOATING_COMP
+1999,41 9A,,        AJMP    FLOATING_MUL
+199B,41 CF,,        AJMP    FLOATING_DIV
+199D,81 96,,        AJMP    HEXSCAN
+199F,81 CF,,        AJMP    FLOATING_POINT_INPUT
+19A1,A1 87,,        AJMP    FLOATING_POINT_OUTPUT
+19A3,E1 04,,        AJMP    CONVERT_BINARY_TO_ASCII_STRING
+19A5,C1 AB,,        AJMP    CONVERT_ASCII_STRING_TO_BINARY
+19A7,C1 E0,,        AJMP    MULNUM10
+19A9,E1 4C,,        AJMP    HEXOUT
+19AB,81 C3,,        AJMP    PUSHR2R0
+,,,        ;
+,,,$EJECT
+,,,        ;
+19AD,,FLOATING_SUB,FLOATING_SUB:
+,,,        ;
+19AD,75 A0 01,,        MOV     P2,#ARG_STACK_PAGE
+19B0,A8 09,,        MOV     R0,ARG_STACK
+19B2,18,,        DEC     R0              ;POINT TO SIGN
+19B3,E2,,        MOVX    A,@R0           ;READ SIGN
+19B4,B2 E0,,        CPL     ACC.0
+19B6,F2,,        MOVX    @R0,A
+,,,        ;
+,,,        ;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+,,,        ;
+19B7,,FLOATING_ADD,FLOATING_ADD:
+,,,        ;
+,,,        ;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+,,,        ;
+,,,        ;
+19B7,91 77,,        ACALL   MDES1           ;R7=TOS EXP, R6=TOS-1 EXP, R4=TOS SIGN
+,,,                                ;R3=TOS-1 SIGN, OPERATION IS R1 # R0
+,,,        ;
+19B9,EF,,        MOV     A,R7            ;GET TOS EXPONENT
+19BA,60 0D,,        JZ      POP_AND_EXIT    ;IF TOS=0 THEN POP AND EXIT
+19BC,BE 00 12,,        CJNE    R6,#0,LOAD1     ;CLEAR CARRY EXIT IF ZERO
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+19BF,,SWAP_AND_EXIT,SWAP_AND_EXIT:  ; Swap external args and return
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+19BF,91 6B,,        ACALL   LOAD_POINTERS
+19C1,7F 06,,        MOV     R7,#FP_NUMBER_SIZE
+,,,        ;
+19C3,E2,SE1,SE1:    MOVX    A,@R0           ;SWAP THE ARGUMENTS
+19C4,F3,,        MOVX    @R1,A
+19C5,18,,        DEC     R0
+19C6,19,,        DEC     R1
+19C7,DF FA,,        DJNZ    R7,SE1
+,,,        ;
+19C9,,POP_AND_EXIT,POP_AND_EXIT:
+,,,        ;
+19C9,E5 09,,        MOV     A,ARG_STACK     ;POP THE STACK
+19CB,24 06,,        ADD     A,#FP_NUMBER_SIZE
+19CD,F5 09,,        MOV     ARG_STACK,A
+19CF,E4,,        CLR     A
+19D0,22,,        RET
+,,,        ;
+,,,        ;
+19D1,9E,LOAD1,LOAD1:  SUBB    A,R6            ;A = ARG 1 EXP - ARG 2 EXP
+19D2,8F 30,,        MOV     FP_EXP,R7       ;SAVE EXPONENT AND SIGN
+19D4,8C 2F,,        MOV     FP_SIGN,R4
+19D6,50 09,,        JNC     LOAD2           ;ARG1 EXPONENT IS LARGER OR SAME
+19D8,8E 30,,        MOV     FP_EXP,R6
+19DA,8B 2F,,        MOV     FP_SIGN,R3
+19DC,F4,,        CPL     A
+19DD,04,,        INC     A               ;COMPENSATE FOR EXP DELTA
+19DE,C8,,        XCH     A,R0            ;FORCE R0 TO POINT AT THE LARGEST
+19DF,C9,,        XCH     A,R1            ;EXPONENT
+19E0,C8,,        XCH     A,R0
+,,,        ;
+19E1,FF,LOAD2,LOAD2:  MOV     R7,A            ;SAVE THE EXPONENT DELTA IN R7
+19E2,C2 23,,        CLR     ADD_IN
+19E4,BD 00 02,,        CJNE    R5,#0,$+5
+19E7,D2 23,,        SETB    ADD_IN
+,,,        ;
+,,,$EJECT
+,,,        ; Load the R1 mantissa
+,,,        ;
+19E9,91 88,,        ACALL   LOADR1_MANTISSA ;LOAD THE SMALLEST NUMBER
+,,,        ;
+,,,        ; Now align the number to the delta exponent
+,,,        ; R4 points to the string of the last digits lost
+,,,        ;
+19EB,BF 0B 00,,        CJNE    R7,#DIGIT+DIGIT+3,$+3
+19EE,40 02,,        JC      $+4
+19F0,7F 0A,,        MOV     R7,#DIGIT+DIGIT+2
+,,,        ;
+19F2,75 2A 00,,        MOV     FP_CARRY,#00    ;CLEAR THE CARRY
+19F5,71 C8,,        ACALL   RIGHT           ;SHIFT THE NUMBER
+,,,        ;
+,,,        ; Set up for addition and subtraction
+,,,        ;
+19F7,7F 04,,        MOV     R7,#DIGIT       ;LOOP COUNT
+19F9,79 2E,,        MOV     R1,#FP_DIG78
+19FB,74 9E,,        MOV     A,#9EH
+19FD,C3,,        CLR     C
+19FE,9C,,        SUBB    A,R4
+19FF,D4,,        DA      A
+1A00,CC,,        XCH     A,R4
+1A01,70 01,,        JNZ     $+3
+1A03,FC,,        MOV     R4,A
+1A04,B4 50 00,,        CJNE    A,#50H,$+3      ;TEST FOR SUBTRACTION
+1A07,30 23 18,,        JNB     ADD_IN,SUBLP    ;DO SUBTRACTION IF NO ADD_IN
+1A0A,B3,,        CPL     C               ;FLIP CARRY FOR ADDITION
+1A0B,51 19,,        ACALL   ADDLP           ;DO ADDITION
+,,,        ;
+1A0D,50 08,,        JNC     ADD_R
+1A0F,05 2A,,        INC     FP_CARRY
+1A11,7F 01,,        MOV     R7,#1
+1A13,71 C8,,        ACALL   RIGHT
+1A15,71 7F,,        ACALL   INC_FP_EXP      ;SHIFT AND BUMP EXPONENT
+,,,        ;
+1A17,61 70,ADD_R,ADD_R:  AJMP    STORE_ALIGN_TEST_AND_EXIT
+,,,        ;
+1A19,E2,ADDLP,ADDLP:  MOVX    A,@R0
+1A1A,37,,        ADDC    A,@R1
+1A1B,D4,,        DA      A
+1A1C,F7,,        MOV     @R1,A
+1A1D,18,,        DEC     R0
+1A1E,19,,        DEC     R1
+1A1F,DF F8,,        DJNZ    R7,ADDLP        ;LOOP UNTIL DONE
+1A21,22,,        RET
+,,,        ;
+,,,$EJECT
+,,,        ;
+1A22,E2,SUBLP,SUBLP:  MOVX    A,@R0           ;NOW DO SUBTRACTION
+1A23,FE,,        MOV     R6,A
+1A24,E4,,        CLR     A
+1A25,34 99,,        ADDC    A,#99H
+1A27,97,,        SUBB    A,@R1
+1A28,2E,,        ADD     A,R6
+1A29,D4,,        DA      A
+1A2A,F7,,        MOV     @R1,A
+1A2B,18,,        DEC     R0
+1A2C,19,,        DEC     R1
+1A2D,DF F3,,        DJNZ    R7,SUBLP
+1A2F,40 11,,        JC      FSUB6
+,,,        ;
+,,,$EJECT
+,,,        ;
+,,,        ; Need to complement the result and sign because the floating
+,,,        ; point accumulator mantissa was larger than the external
+,,,        ; memory and their signs were equal.
+,,,        ;
+1A31,B2 78,,        CPL     FP_SIGN.0
+1A33,79 2E,,        MOV     R1,#FP_DIG78
+1A35,7F 04,,        MOV     R7,#DIGIT       ;LOOP COUNT
+,,,        ;
+1A37,74 9A,FSUB5,FSUB5:  MOV     A,#9AH
+1A39,97,,        SUBB    A,@R1
+1A3A,24 00,,        ADD     A,#0
+1A3C,D4,,        DA      A
+1A3D,F7,,        MOV     @R1,A
+1A3E,19,,        DEC     R1
+1A3F,B3,,        CPL     C
+1A40,DF F5,,        DJNZ    R7,FSUB5        ;LOOP
+,,,        ;
+,,,        ; Now see how many zeros their are
+,,,        ;
+1A42,78 2B,FSUB6,FSUB6:  MOV     R0,#FP_DIG12
+1A44,7F 00,,        MOV     R7,#0
+,,,        ;
+1A46,E6,FSUB7,FSUB7:  MOV     A,@R0
+1A47,70 08,,        JNZ     FSUB8
+1A49,0F,,        INC     R7
+1A4A,0F,,        INC     R7
+1A4B,08,,        INC     R0
+1A4C,B8 2F F7,,        CJNE    R0,#FP_SIGN,FSUB7
+1A4F,61 B8,,        AJMP    ZERO_AND_EXIT
+,,,        ;
+1A51,B4 10 00,FSUB8,FSUB8:  CJNE    A,#10H,$+3
+1A54,50 01,,        JNC     FSUB9
+1A56,0F,,        INC     R7
+,,,        ;
+,,,        ; Now R7 has the number of leading zeros in the FP ACC
+,,,        ;
+1A57,E5 30,FSUB9,FSUB9:  MOV     A,FP_EXP        ;GET THE OLD EXPONENT
+1A59,C3,,        CLR     C
+1A5A,9F,,        SUBB    A,R7            ;SUBTRACT FROM THE NUMBER OF ZEROS
+1A5B,60 0B,,        JZ      FSUB10
+1A5D,40 09,,        JC      FSUB10
+,,,        ;
+1A5F,F5 30,,        MOV     FP_EXP,A        ;SAVE THE NEW EXPONENT
+,,,        ;
+1A61,91 02,,        ACALL   LEFT1           ;SHIFT THE FP ACC
+1A63,75 2A 00,,        MOV     FP_CARRY,#0
+1A66,61 70,,        AJMP    STORE_ALIGN_TEST_AND_EXIT
+,,,        ;
+1A68,61 B2,FSUB10,FSUB10: AJMP    UNDERFLOW_AND_EXIT
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+1A6A,,FLOATING_COMP,FLOATING_COMP:  ; Compare two floating point numbers
+,,,                ; used for relational operations and is faster
+,,,                ; than subtraction. ON RETURN, The carry is set
+,,,                ; if ARG1 is > ARG2, else carry is not set
+,,,                ; if ARG1 = ARG2, F0 gets set
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1A6A,91 77,,        ACALL   MDES1           ;SET UP THE REGISTERS
+1A6C,E5 09,,        MOV     A,ARG_STACK
+1A6E,24 0C,,        ADD     A,#FP_NUMBER_SIZE+FP_NUMBER_SIZE
+1A70,F5 09,,        MOV     ARG_STACK,A     ;POP THE STACK TWICE, CLEAR THE CARRY
+1A72,EE,,        MOV     A,R6            ;CHECK OUT EXPONENTS
+1A73,C2 D5,,        CLR     F0
+1A75,9F,,        SUBB    A,R7
+1A76,60 0A,,        JZ      EXPONENTS_EQUAL
+1A78,40 03,,        JC      ARG1_EXP_IS_LARGER
+,,,        ;
+,,,        ; Now the ARG2 EXPONENT is > ARG1 EXPONENT
+,,,        ;
+1A7A,,SIGNS_DIFFERENT,SIGNS_DIFFERENT:
+,,,        ;
+1A7A,EB,,        MOV     A,R3            ;SEE IF SIGN OF ARG2 IS POSITIVE
+1A7B,80 01,,        SJMP    $+3
+,,,        ;
+1A7D,,ARG1_EXP_IS_LARGER,ARG1_EXP_IS_LARGER:
+,,,        ;
+1A7D,EC,,        MOV     A,R4            ;GET THE SIGN OF ARG1 EXPONENT
+1A7E,60 01,,        JZ      $+3
+1A80,B3,,        CPL     C
+1A81,22,,        RET
+,,,        ;
+1A82,,EXPONENTS_EQUAL,EXPONENTS_EQUAL:
+,,,        ;
+,,,        ; First, test the sign, then the mantissa
+,,,        ;
+1A82,BD 00 F5,,        CJNE    R5,#0,SIGNS_DIFFERENT
+,,,        ;
+1A85,,BOTH_PLUS,BOTH_PLUS:
+,,,        ;
+1A85,7F 04,,        MOV     R7,#DIGIT       ;POINT AT MS DIGIT
+1A87,18,,        DEC     R0
+1A88,18,,        DEC     R0
+1A89,18,,        DEC     R0
+1A8A,19,,        DEC     R1
+1A8B,19,,        DEC     R1
+1A8C,19,,        DEC     R1
+,,,        ;
+,,,        ; Now do the compare
+,,,        ;
+1A8D,E2,CLOOP,CLOOP:  MOVX    A,@R0
+1A8E,FE,,        MOV     R6,A
+1A8F,E3,,        MOVX    A,@R1
+1A90,9E,,        SUBB    A,R6
+1A91,70 EA,,        JNZ     ARG1_EXP_IS_LARGER
+1A93,08,,        INC     R0
+1A94,09,,        INC     R1
+1A95,DF F6,,        DJNZ    R7,CLOOP
+,,,        ;
+,,,        ; If here, the numbers are the same, the carry is cleared
+,,,        ;
+1A97,D2 D5,,        SETB    F0
+1A99,22,,        RET                     ;EXIT WITH EQUAL
+,,,        ;
+,,,$EJECT
+,,,;MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+,,,;
+1A9A,,FLOATING_MUL,FLOATING_MUL:   ; Floating point multiply
+,,,;
+,,,;MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+,,,;
+1A9A,91 75,,        ACALL   MUL_DIV_EXP_AND_SIGN
+,,,        ;
+,,,        ; check for zero exponents
+,,,        ;
+1A9C,BE 00 02,,        CJNE    R6,#00,$+5      ;ARG 2 EXP ZERO?
+1A9F,61 B8,,        AJMP    ZERO_AND_EXIT
+,,,        ;
+,,,        ; calculate the exponent
+,,,        ;
+1AA1,8D 2F,FMUL1,FMUL1:  MOV     FP_SIGN,R5      ;SAVE THE SIGN, IN CASE OF FAILURE
+,,,        ;
+1AA3,EF,,        MOV     A,R7
+1AA4,60 F9,,        JZ      FMUL1-2
+1AA6,2E,,        ADD     A,R6            ;ADD THE EXPONENTS
+1AA7,20 E7 05,,        JB      ACC.7,FMUL_OVER
+1AAA,10 D7 06,,        JBC     CY,FMUL2        ;SEE IF CARRY IS SET
+,,,        ;
+1AAD,61 B2,,        AJMP    UNDERFLOW_AND_EXIT
+,,,        ;
+1AAF,,FMUL_OVER,FMUL_OVER:
+,,,        ;
+1AAF,50 02,,        JNC     FMUL2           ;OK IF SET
+,,,        ;
+1AB1,61 A1,FOV,FOV:    AJMP    OVERFLOW_AND_EXIT
+,,,        ;
+1AB3,94 81,FMUL2,FMUL2:  SUBB    A,#129          ;SUBTRACT THE EXPONENT BIAS
+1AB5,FE,,        MOV     R6,A            ;SAVE IT FOR LATER
+,,,        ;
+,,,        ; Unpack and load R0
+,,,        ;
+1AB6,71 8B,,        ACALL   UNPACK_R0
+,,,        ;
+,,,        ; Now set up for loop multiply
+,,,        ;
+1AB8,7B 04,,        MOV     R3,#DIGIT
+1ABA,AC 01,,        MOV     R4,R1B0
+,,,        ;
+,,,$EJECT
+,,,        ;
+,,,        ; Now, do the multiply and accumulate the product
+,,,        ;
+1ABC,8C 01,FMUL3,FMUL3:  MOV     R1B0,R4
+1ABE,E3,,        MOVX    A,@R1
+1ABF,FA,,        MOV     R2,A
+1AC0,91 38,,        ACALL   MUL_NIBBLE
+,,,        ;
+1AC2,EA,,        MOV     A,R2
+1AC3,C4,,        SWAP    A
+1AC4,91 38,,        ACALL   MUL_NIBBLE
+1AC6,1C,,        DEC     R4
+1AC7,DB F3,,        DJNZ    R3,FMUL3
+,,,        ;
+,,,        ; Now, pack and restore the sign
+,,,        ;
+1AC9,8E 30,,        MOV     FP_EXP,R6
+1ACB,8D 2F,,        MOV     FP_SIGN,R5
+1ACD,61 30,,        AJMP    PACK            ;FINISH IT OFF
+,,,        ;
+,,,$EJECT
+,,,        ;DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+,,,        ;
+1ACF,,FLOATING_DIV,FLOATING_DIV:
+,,,        ;
+,,,        ;DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+,,,        ;
+1ACF,91 77,,        ACALL   MDES1
+,,,        ;
+,,,        ; Check the exponents
+,,,        ;
+1AD1,8D 2F,,        MOV     FP_SIGN,R5      ;SAVE THE SIGN
+1AD3,BF 00 06,,        CJNE    R7,#0,DIV0      ;CLEARS THE CARRY
+1AD6,71 A1,,        ACALL   OVERFLOW_AND_EXIT
+1AD8,E4,,        CLR     A
+1AD9,D2 E3,,        SETB    ACC.ZERO_DIVIDE
+1ADB,22,,        RET
+,,,        ;
+1ADC,EE,DIV0,DIV0:   MOV     A,R6            ;GET EXPONENT
+1ADD,60 C0,,        JZ      FMUL1-2         ;EXIT IF ZERO
+1ADF,9F,,        SUBB    A,R7            ;DELTA EXPONENT
+1AE0,20 E7 04,,        JB      ACC.7,D_UNDER
+1AE3,50 04,,        JNC     DIV3
+1AE5,61 B2,,        AJMP    UNDERFLOW_AND_EXIT
+,,,        ;
+1AE7,50 C8,D_UNDER,D_UNDER:JNC     FOV
+,,,        ;
+1AE9,24 81,DIV3,DIV3:   ADD     A,#129          ;CORRECTLY BIAS THE EXPONENT
+1AEB,F5 30,,        MOV     FP_EXP,A        ;SAVE THE EXPONENT
+1AED,91 88,,        ACALL   LOADR1_MANTISSA ;LOAD THE DIVIDED
+,,,        ;
+1AEF,7A 34,,        MOV     R2,#FP_ACCC     ;SAVE LOCATION
+1AF1,AB 00,,        MOV     R3,R0B0         ;SAVE POINTER IN R3
+1AF3,75 2A 00,,        MOV     FP_CARRY,#0     ;ZERO CARRY BYTE
+,,,        ;
+1AF6,7D FF,DIV4,DIV4:   MOV     R5,#0FFH        ;LOOP COUNT
+1AF8,D3,,        SETB    C
+,,,        ;
+1AF9,8B 00,DIV5,DIV5:   MOV     R0B0,R3         ;RESTORE THE EXTERNAL POINTER
+1AFB,79 2E,,        MOV     R1,#FP_DIG78    ;SET UP INTERNAL POINTER
+1AFD,7F 04,,        MOV     R7,#DIGIT       ;LOOP COUNT
+1AFF,50 17,,        JNC     DIV7            ;EXIT IF NO CARRY
+,,,        ;
+1B01,E2,DIV6,DIV6:   MOVX    A,@R0           ;DO ACCUMLATION
+1B02,FE,,        MOV     R6,A
+1B03,E4,,        CLR     A
+1B04,34 99,,        ADDC    A,#99H
+1B06,9E,,        SUBB    A,R6
+1B07,27,,        ADD     A,@R1
+1B08,D4,,        DA      A
+1B09,F7,,        MOV     @R1,A
+1B0A,18,,        DEC     R0
+1B0B,19,,        DEC     R1
+1B0C,DF F3,,        DJNZ    R7,DIV6         ;LOOP
+,,,        ;
+1B0E,0D,,        INC     R5              ;SUBTRACT COUNTER
+1B0F,40 E8,,        JC      DIV5            ;KEEP LOOPING IF CARRY
+1B11,E7,,        MOV     A,@R1           ;GET CARRY
+1B12,94 01,,        SUBB    A,#1            ;CARRY IS CLEARED
+1B14,F7,,        MOV     @R1,A           ;SAVE CARRY DIGIT
+1B15,B3,,        CPL     C
+1B16,80 E1,,        SJMP    DIV5            ;LOOP
+,,,        ;
+,,,        ; Restore the result if carry was found
+,,,        ;
+1B18,51 19,DIV7,DIV7:   ACALL   ADDLP           ;ADD NUMBER BACK
+1B1A,77 00,,        MOV     @R1,#0          ;CLEAR CARRY
+1B1C,8A 00,,        MOV     R0B0,R2         ;GET SAVE COUNTER
+1B1E,A6 05,,        MOV     @R0,5           ;SAVE COUNT BYTE
+,,,        ;
+1B20,0A,,        INC     R2              ;ADJUST SAVE COUNTER
+1B21,7F 01,,        MOV     R7,#1           ;BUMP DIVIDEND
+1B23,91 00,,        ACALL   LEFT
+1B25,BA 3E CE,,        CJNE    R2,#FP_ACC8+2,DIV4
+,,,        ;
+1B28,D5 30 02,,        DJNZ    FP_EXP,DIV8
+1B2B,61 B2,,        AJMP    UNDERFLOW_AND_EXIT
+,,,        ;
+1B2D,75 2A 00,DIV8,DIV8:   MOV     FP_CARRY,#0
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+1B30,,PACK,PACK:   ; Pack the mantissa
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+,,,        ; First, set up the pointers
+,,,        ;
+1B30,78 34,,        MOV     R0,#FP_ACCC
+1B32,E6,,        MOV     A,@R0           ;GET FP_ACCC
+1B33,FE,,        MOV     R6,A            ;SAVE FOR ZERO COUNT
+1B34,60 03,,        JZ      PACK0           ;JUMP OVER IF ZERO
+1B36,71 7F,,        ACALL   INC_FP_EXP      ;BUMP THE EXPONENT
+1B38,18,,        DEC     R0
+,,,        ;
+1B39,08,PACK0,PACK0:  INC     R0              ;POINT AT FP_ACC1
+,,,        ;
+1B3A,74 08,PACK1,PACK1:  MOV     A,#8            ;ADJUST NIBBLE POINTER
+1B3C,F9,,        MOV     R1,A
+1B3D,28,,        ADD     A,R0
+1B3E,F8,,        MOV     R0,A
+1B3F,B6 05 00,,        CJNE    @R0,#5,$+3      ;SEE IF ADJUSTING NEEDED
+1B42,40 13,,        JC      PACK3+1
+,,,        ;
+1B44,D3,PACK2,PACK2:  SETB    C
+1B45,E4,,        CLR     A
+1B46,18,,        DEC     R0
+1B47,36,,        ADDC    A,@R0
+1B48,D4,,        DA      A
+1B49,D6,,        XCHD    A,@R0           ;SAVE THE VALUE
+1B4A,30 E4 09,,        JNB     ACC.4,PACK3
+1B4D,D9 F5,,        DJNZ    R1,PACK2
+,,,        ;
+1B4F,18,,        DEC     R0
+1B50,76 01,,        MOV     @R0,#1
+1B52,71 7F,,        ACALL   INC_FP_EXP
+1B54,80 06,,        SJMP    PACK4
+,,,        ;
+1B56,19,PACK3,PACK3:  DEC     R1
+1B57,E9,,        MOV     A,R1
+1B58,C3,,        CLR     C
+1B59,C8,,        XCH     A,R0
+1B5A,98,,        SUBB    A,R0
+1B5B,F8,,        MOV     R0,A
+,,,        ;
+1B5C,79 2B,PACK4,PACK4:  MOV     R1,#FP_DIG12
+,,,        ;
+,,,        ; Now, pack
+,,,        ;
+1B5E,E6,PLOOP,PLOOP:  MOV     A,@R0
+1B5F,C4,,        SWAP    A               ;FLIP THE DIGITS
+1B60,08,,        INC     R0
+1B61,D6,,        XCHD    A,@R0
+1B62,42 06,,        ORL     6,A             ;ACCUMULATE THE OR'ED DIGITS
+1B64,F7,,        MOV     @R1,A
+1B65,08,,        INC     R0
+1B66,09,,        INC     R1
+1B67,B9 2F F4,,        CJNE    R1,#FP_SIGN,PLOOP
+1B6A,EE,,        MOV     A,R6
+1B6B,70 03,,        JNZ     STORE_ALIGN_TEST_AND_EXIT
+1B6D,75 30 00,,        MOV     FP_EXP,#0       ;ZERO EXPONENT
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+1B70,,STORE_ALIGN_TEST_AND_EXIT,STORE_ALIGN_TEST_AND_EXIT:      ;Save the number align carry and exit
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+1B70,91 6B,,        ACALL   LOAD_POINTERS
+1B72,89 09,,        MOV     ARG_STACK,R1    ;SET UP THE NEW STACK
+1B74,78 30,,        MOV     R0,#FP_EXP
+,,,        ;
+,,,        ; Now load the numbers
+,,,        ;
+1B76,E6,STORE2,STORE2: MOV     A,@R0
+1B77,F3,,        MOVX    @R1,A           ;SAVE THE NUMBER
+1B78,18,,        DEC     R0
+1B79,19,,        DEC     R1
+1B7A,B8 2A F9,,        CJNE    R0,#FP_CARRY,STORE2
+,,,        ;
+1B7D,E4,,        CLR     A               ;NO ERRORS
+,,,        ;
+1B7E,22,PRET,PRET:   RET                     ;EXIT
+,,,        ;
+,,,$EJECT
+1B7F,,INC_FP_EXP,INC_FP_EXP:
+,,,        ;
+1B7F,05 30,,        INC     FP_EXP
+1B81,E5 30,,        MOV     A,FP_EXP
+1B83,70 F9,,        JNZ     PRET            ;EXIT IF NOT ZERO
+1B85,D0 E0,,        POP     ACC             ;WASTE THE CALLING STACK
+1B87,D0 E0,,        POP     ACC
+1B89,61 A1,,        AJMP    OVERFLOW_AND_EXIT
+,,,        ;
+,,,;***********************************************************************
+,,,;
+1B8B,,UNPACK_R0,UNPACK_R0:      ; Unpack BCD digits and load into nibble locations
+,,,;
+,,,;***********************************************************************
+,,,        ;
+1B8B,C0 01,,        PUSH    R1B0
+1B8D,79 32,,        MOV     R1,#FP_NIB8
+,,,        ;
+1B8F,E2,ULOOP,ULOOP:  MOVX    A,@R0
+1B90,54 0F,,        ANL     A,#0FH
+1B92,F7,,        MOV     @R1,A           ;SAVE THE NIBBLE
+1B93,E2,,        MOVX    A,@R0
+1B94,C4,,        SWAP    A
+1B95,54 0F,,        ANL     A,#0FH
+1B97,19,,        DEC     R1
+1B98,F7,,        MOV     @R1,A           ;SAVE THE NIBBLE AGAIN
+1B99,18,,        DEC     R0
+1B9A,19,,        DEC     R1
+1B9B,B9 2A F1,,        CJNE    R1,#FP_NIB1-1,ULOOP
+,,,        ;
+1B9E,D0 01,,        POP     R1B0
+,,,        ;
+1BA0,22,LOAD7,LOAD7:  RET
+,,,        ;
+,,,$EJECT
+,,,        ;**************************************************************
+,,,        ;
+1BA1,,OVERFLOW_AND_EXIT,OVERFLOW_AND_EXIT:      ;LOAD 99999999 E+127,  SET OV BIT, AND EXIT
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+1BA1,78 2E,,        MOV     R0,#FP_DIG78
+1BA3,74 99,,        MOV     A,#99H
+,,,        ;
+1BA5,F6,OVE1,OVE1:   MOV     @R0,A
+1BA6,18,,        DEC     R0
+1BA7,B8 2A FB,,        CJNE    R0,#FP_CARRY,OVE1
+,,,        ;
+1BAA,75 30 FF,,        MOV     FP_EXP,#0FFH
+1BAD,71 70,,        ACALL   STORE_ALIGN_TEST_AND_EXIT
+,,,        ;
+1BAF,D2 E1,,        SETB    ACC.OVERFLOW
+1BB1,22,,        RET
+,,,        ;
+,,,$EJECT
+,,,        ;**************************************************************
+,,,        ;
+1BB2,,UNDERFLOW_AND_EXIT,UNDERFLOW_AND_EXIT:     ;LOAD 0, SET UF BIT, AND EXIT
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+1BB2,71 B8,,        ACALL   ZERO_AND_EXIT
+1BB4,E4,,        CLR     A
+1BB5,D2 E0,,        SETB    ACC.UNDERFLOW
+1BB7,22,,        RET
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+1BB8,,ZERO_AND_EXIT,ZERO_AND_EXIT:          ;LOAD 0, SET ZERO BIT, AND EXIT
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+1BB8,71 BF,,        ACALL   FP_CLEAR
+1BBA,71 70,,        ACALL   STORE_ALIGN_TEST_AND_EXIT
+1BBC,D2 E2,,        SETB    ACC.ZERO
+1BBE,22,,        RET                     ;EXIT
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+1BBF,,FP_CLEAR,FP_CLEAR:
+,,,        ;
+,,,        ; Clear internal storage
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+1BBF,E4,,        CLR     A
+1BC0,78 3D,,        MOV     R0,#FP_ACC8+1
+,,,        ;
+1BC2,F6,FPC1,FPC1:   MOV     @R0,A
+1BC3,18,,        DEC     R0
+1BC4,B8 29 FB,,        CJNE    R0,#FP_TEMP,FPC1
+1BC7,22,,        RET
+,,,        ;
+,,,$EJECT
+,,,        ;**************************************************************
+,,,        ;
+1BC8,,RIGHT,RIGHT:  ; Shift ACCUMULATOR RIGHT the number of nibbles in R7
+,,,        ; Save the shifted values in R4 if SAVE_ROUND is set
+,,,        ;
+,,,        ;**************************************************************
+,,,        ;
+1BC8,7C 00,,        MOV     R4,#0           ;IN CASE OF NO SHIFT
+,,,        ;
+1BCA,C3,RIGHT1,RIGHT1: CLR     C
+1BCB,EF,,        MOV     A,R7            ;GET THE DIGITS TO SHIFT
+1BCC,60 22,,        JZ      RIGHT5-1        ;EXIT IF ZERO
+1BCE,94 02,,        SUBB    A,#2            ;TWO TO DO?
+1BD0,50 1F,,        JNC     RIGHT5          ;SHIFT TWO NIBBLES
+,,,        ;
+,,,        ; Swap one nibble then exit
+,,,        ;
+1BD2,C0 00,RIGHT3,RIGHT3: PUSH    R0B0            ;SAVE POINTER REGISTER
+1BD4,C0 01,,        PUSH    R1B0
+,,,        ;
+1BD6,79 2E,,        MOV     R1,#FP_DIG78    ;LOAD THE POINTERS
+1BD8,78 2D,,        MOV     R0,#FP_DIG56
+1BDA,EC,,        MOV     A,R4            ;GET THE OVERFLOW REGISTER
+1BDB,D7,,        XCHD    A,@R1           ;GET DIGIT 8
+1BDC,C4,,        SWAP    A               ;FLIP FOR LOAD
+1BDD,FC,,        MOV     R4,A
+,,,        ;
+1BDE,E7,RIGHTL,RIGHTL: MOV     A,@R1           ;GET THE LOW ORDER BYTE
+1BDF,D6,,        XCHD    A,@R0           ;SWAP NIBBLES
+1BE0,C4,,        SWAP    A               ;FLIP FOR STORE
+1BE1,F7,,        MOV     @R1,A           ;SAVE THE DIGITS
+1BE2,18,,        DEC     R0              ;BUMP THE POINTERS
+1BE3,19,,        DEC     R1
+1BE4,B9 2A F7,,        CJNE    R1,#FP_DIG12-1,RIGHTL   ;LOOP
+,,,        ;
+1BE7,E7,,        MOV     A,@R1           ;ACC = CH8
+1BE8,C4,,        SWAP    A               ;ACC = 8CH
+1BE9,54 0F,,        ANL     A,#0FH          ;ACC = 0CH
+1BEB,F7,,        MOV     @R1,A           ;CARRY DONE
+1BEC,D0 01,,        POP     R1B0            ;EXIT
+1BEE,D0 00,,        POP     R0B0            ;RESTORE REGISTER
+1BF0,22,,        RET
+,,,        ;
+1BF1,FF,RIGHT5,RIGHT5: MOV     R7,A            ;SAVE THE NEW SHIFT NUMBER
+1BF2,E4,,        CLR     A
+1BF3,C5 2A,,        XCH     A,FP_CARRY      ;SWAP THE NIBBLES
+1BF5,C5 2B,,        XCH     A,FP_DIG12
+1BF7,C5 2C,,        XCH     A,FP_DIG34
+1BF9,C5 2D,,        XCH     A,FP_DIG56
+1BFB,C5 2E,,        XCH     A,FP_DIG78
+1BFD,FC,,        MOV     R4,A            ;SAVE THE LAST DIGIT SHIFTED
+1BFE,80 CB,,        SJMP    RIGHT1+1
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+1C00,,LEFT,LEFT:   ; Shift ACCUMULATOR LEFT the number of nibbles in R7
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1C00,7C 00,,        MOV     R4,#00H         ;CLEAR FOR SOME ENTRYS
+,,,        ;
+1C02,C3,LEFT1,LEFT1:  CLR     C
+1C03,EF,,        MOV     A,R7            ;GET SHIFT VALUE
+1C04,60 22,,        JZ      LEFT5-1         ;EXIT IF ZERO
+1C06,94 02,,        SUBB    A,#2            ;SEE HOW MANY BYTES TO SHIFT
+1C08,50 1F,,        JNC     LEFT5
+,,,        ;
+1C0A,C0 00,LEFT3,LEFT3:  PUSH    R0B0            ;SAVE POINTER
+1C0C,C0 01,,        PUSH    R1B0
+1C0E,78 2A,,        MOV     R0,#FP_CARRY
+1C10,79 2B,,        MOV     R1,#FP_DIG12
+,,,        ;
+1C12,E6,,        MOV     A,@R0           ;ACC=CHCL
+1C13,C4,,        SWAP    A               ;ACC = CLCH
+1C14,F6,,        MOV     @R0,A           ;ACC = CLCH, @R0 = CLCH
+,,,        ;
+1C15,E7,LEFTL,LEFTL:  MOV     A,@R1           ;DIG 12
+1C16,C4,,        SWAP    A               ;DIG 21
+1C17,D6,,        XCHD    A,@R0
+1C18,F7,,        MOV     @R1,A           ;SAVE IT
+1C19,08,,        INC     R0              ;BUMP POINTERS
+1C1A,09,,        INC     R1
+1C1B,B8 2E F7,,        CJNE    R0,#FP_DIG78,LEFTL
+,,,        ;
+1C1E,EC,,        MOV     A,R4
+1C1F,C4,,        SWAP    A
+1C20,D6,,        XCHD    A,@R0
+1C21,54 F0,,        ANL     A,#0F0H
+1C23,FC,,        MOV     R4,A
+,,,        ;
+1C24,D0 01,,        POP     R1B0
+1C26,D0 00,,        POP     R0B0            ;RESTORE
+1C28,22,,        RET                     ;DONE
+,,,        ;
+1C29,FF,LEFT5,LEFT5:  MOV     R7,A            ;RESTORE COUNT
+1C2A,E4,,        CLR     A
+1C2B,CC,,        XCH     A,R4            ;GET THE RESTORATION BYTE
+1C2C,C5 2E,,        XCH     A,FP_DIG78      ;DO THE SWAP
+1C2E,C5 2D,,        XCH     A,FP_DIG56
+1C30,C5 2C,,        XCH     A,FP_DIG34
+1C32,C5 2B,,        XCH     A,FP_DIG12
+1C34,C5 2A,,        XCH     A,FP_CARRY
+1C36,80 CB,,        SJMP    LEFT1+1
+,,,        ;
+,,,$EJECT
+1C38,,MUL_NIBBLE,MUL_NIBBLE:
+,,,        ;
+,,,        ; Multiply the nibble in R7 by the FP_NIB locations
+,,,        ; accumulate the product in FP_ACC
+,,,        ;
+,,,        ; Set up the pointers for multiplication
+,,,        ;
+1C38,54 0F,,        ANL     A,#0FH          ;STRIP OFF MS NIBBLE
+1C3A,FF,,        MOV     R7,A
+1C3B,78 3C,,        MOV     R0,#FP_ACC8
+1C3D,79 32,,        MOV     R1,#FP_NIB8
+1C3F,E4,,        CLR     A
+1C40,F5 33,,        MOV     FP_ACCX,A
+,,,        ;
+1C42,18,MNLOOP,MNLOOP: DEC     R0              ;BUMP POINTER TO PROPAGATE CARRY
+1C43,26,,        ADD     A,@R0           ;ATTEMPT TO FORCE CARRY
+1C44,D4,,        DA      A               ;BCD ADJUST
+1C45,30 E4 03,,        JNB     ACC.4,MNL0      ;DON'T ADJUST IF NO NEED
+1C48,18,,        DEC     R0              ;PROPAGATE CARRY TO THE NEXT DIGIT
+1C49,06,,        INC     @R0             ;DO THE ADJUSTING
+1C4A,08,,        INC     R0              ;RESTORE R0
+,,,        ;
+1C4B,D6,MNL0,MNL0:   XCHD    A,@R0           ;RESTORE INITIAL NUMBER
+1C4C,8F F0,,        MOV     B,R7            ;GET THE NUBBLE TO MULTIPLY
+1C4E,E7,,        MOV     A,@R1           ;GET THE OTHER NIBBLE
+1C4F,A4,,        MUL     AB              ;DO THE MULTIPLY
+1C50,75 F0 0A,,        MOV     B,#10           ;NOW BCD ADJUST
+1C53,84,,        DIV     AB
+1C54,C5 F0,,        XCH     A,B             ;GET THE REMAINDER
+1C56,26,,        ADD     A,@R0           ;PROPAGATE THE PARTIAL PRODUCTS
+1C57,D4,,        DA      A               ;BCD ADJUST
+1C58,30 E4 02,,        JNB     ACC.4,MNL1      ;PROPAGATE PARTIAL PRODUCT CARRY
+1C5B,05 F0,,        INC     B
+,,,        ;
+1C5D,08,MNL1,MNL1:   INC     R0
+1C5E,D6,,        XCHD    A,@R0           ;SAVE THE NEW PRODUCT
+1C5F,18,,        DEC     R0
+1C60,E5 F0,,        MOV     A,B             ;GET BACK THE QUOTIENT
+1C62,19,,        DEC     R1
+1C63,B9 2A DC,,        CJNE    R1,#FP_NIB1-1,MNLOOP
+,,,        ;
+1C66,25 33,,        ADD     A,FP_ACCX       ;GET THE OVERFLOW
+1C68,D4,,        DA      A               ;ADJUST
+1C69,F6,,        MOV     @R0,A           ;SAVE IT
+1C6A,22,,        RET                     ;EXIT
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+1C6B,,LOAD_POINTERS,LOAD_POINTERS:  ; Load the ARG_STACK into R0 and bump R1
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1C6B,75 A0 01,,        MOV     P2,#ARG_STACK_PAGE
+1C6E,A8 09,,        MOV     R0,ARG_STACK
+1C70,74 06,,        MOV     A,#FP_NUMBER_SIZE
+1C72,28,,        ADD     A,R0
+1C73,F9,,        MOV     R1,A
+1C74,22,,        RET
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1C75,,MUL_DIV_EXP_AND_SIGN,MUL_DIV_EXP_AND_SIGN:
+,,,        ;
+,,,        ; Load the sign into R7, R6. R5 gets the sign for
+,,,        ; multiply and divide.
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1C75,71 BF,,        ACALL   FP_CLEAR        ;CLEAR INTERNAL MEMORY
+,,,        ;
+1C77,91 6B,MDES1,MDES1:  ACALL   LOAD_POINTERS   ;LOAD REGISTERS
+1C79,E2,,        MOVX    A,@R0           ;ARG 1 EXP
+1C7A,FF,,        MOV     R7,A            ;SAVED IN R7
+1C7B,E3,,        MOVX    A,@R1           ;ARG 2 EXP
+1C7C,FE,,        MOV     R6,A            ;SAVED IN R6
+1C7D,18,,        DEC     R0              ;BUMP POINTERS TO SIGN
+1C7E,19,,        DEC     R1
+1C7F,E2,,        MOVX    A,@R0           ;GET THE SIGN
+1C80,FC,,        MOV     R4,A            ;SIGN OF ARG1
+1C81,E3,,        MOVX    A,@R1           ;GET SIGN OF NEXT ARG
+1C82,FB,,        MOV     R3,A            ;SIGN OF ARG2
+1C83,6C,,        XRL     A,R4            ;ACC GETS THE NEW SIGN
+1C84,FD,,        MOV     R5,A            ;R5 GETS THE NEW SIGN
+,,,        ;
+,,,        ; Bump the pointers to point at the LS digit
+,,,        ;
+1C85,18,,        DEC     R0
+1C86,19,,        DEC     R1
+,,,        ;
+1C87,22,,        RET
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+1C88,,LOADR1_MANTISSA,LOADR1_MANTISSA:
+,,,        ;
+,,,        ; Load the mantissa of R0 into FP_Digits
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1C88,C0 00,,        PUSH    R0B0            ;SAVE REGISTER 1
+1C8A,78 2E,,        MOV     R0,#FP_DIG78    ;SET UP THE POINTER
+,,,        ;
+1C8C,E3,LOADR1,LOADR1: MOVX    A,@R1
+1C8D,F6,,        MOV     @R0,A
+1C8E,19,,        DEC     R1
+1C8F,18,,        DEC     R0
+1C90,B8 2A F9,,        CJNE    R0,#FP_CARRY,LOADR1
+,,,        ;
+1C93,D0 00,,        POP     R0B0
+1C95,22,,        RET
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+1C96,,HEXSCAN,HEXSCAN:        ; Scan a string to determine if it is a hex number
+,,,                ; set carry if hex, else carry = 0
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1C96,B1 6C,,        ACALL   GET_DPTR_CHARACTER
+1C98,C0 83,,        PUSH    DPH
+1C9A,C0 82,,        PUSH    DPL             ;SAVE THE POINTER
+,,,        ;
+1C9C,E0,HEXSC1,HEXSC1: MOVX    A,@DPTR         ;GET THE CHARACTER
+1C9D,F1 ED,,        ACALL   DIGIT_CHECK     ;SEE IF A DIGIT
+1C9F,40 12,,        JC      HS1             ;CONTINUE IF A DIGIT
+1CA1,91 B6,,        ACALL   HEX_CHECK       ;SEE IF HEX
+1CA3,40 0E,,        JC      HS1
+,,,        ;
+1CA5,C2 E5,,        CLR     ACC.5           ;NO LOWER CASE
+1CA7,B4 48 03,,        CJNE    A,#'H',HEXDON
+1CAA,D3,,        SETB    C
+1CAB,80 01,,        SJMP    HEXDO1          ;NUMBER IS VALID HEX, MAYBE
+,,,        ;
+1CAD,C3,HEXDON,HEXDON: CLR     C
+,,,        ;
+1CAE,D0 82,HEXDO1,HEXDO1: POP     DPL             ;RESTORE POINTER
+1CB0,D0 83,,        POP     DPH
+1CB2,22,,        RET
+,,,        ;
+1CB3,A3,HS1,HS1:    INC     DPTR            ;BUMP TO NEXT CHARACTER
+1CB4,80 E6,,        SJMP    HEXSC1          ;LOOP
+,,,        ;
+1CB6,,HEX_CHECK,HEX_CHECK:      ;CHECK FOR A VALID ASCII HEX, SET CARRY IF FOUND
+,,,        ;
+1CB6,C2 E5,,        CLR     ACC.5           ;WASTE LOWER CASE
+1CB8,B4 47 00,,        CJNE    A,#'F'+1,$+3    ;SEE IF F OR LESS
+1CBB,40 01,,        JC      HC1
+1CBD,22,,        RET
+,,,        ;
+1CBE,B4 41 00,HC1,HC1:    CJNE    A,#'A',$+3      ;SEE IF A OR GREATER
+1CC1,B3,,        CPL     C
+1CC2,22,,        RET
+,,,        ;
+,,,$EJECT
+,,,        ;
+1CC3,,PUSHR2R0,PUSHR2R0:
+,,,        ;
+1CC3,7B 00,,        MOV     R3,#HIGH CONVT  ;CONVERSION LOCATION
+1CC5,79 58,,        MOV     R1,#LOW CONVT
+1CC7,F1 04,,        ACALL   CONVERT_BINARY_TO_ASCII_STRING
+1CC9,74 0D,,        MOV     A,#0DH          ;A CR TO TERMINATE
+1CCB,F3,,        MOVX    @R1,A           ;SAVE THE CR
+1CCC,90 00 58,,        MOV     DPTR,#CONVT
+,,,        ;
+,,,        ; Falls thru to FLOATING INPUT
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+1CCF,,FLOATING_POINT_INPUT,FLOATING_POINT_INPUT:   ; Input a floating point number pointed to by
+,,,                        ; the DPTR
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1CCF,71 BF,,        ACALL   FP_CLEAR        ;CLEAR EVERYTHING
+1CD1,B1 6C,,        ACALL   GET_DPTR_CHARACTER
+1CD3,B1 72,,        ACALL   PLUS_MINUS_TEST
+1CD5,92 78,,        MOV     MSIGN,C         ;SAVE THE MANTISSA SIGN
+,,,        ;
+,,,        ; Now, set up for input loop
+,,,        ;
+1CD7,78 34,,        MOV     R0,#FP_ACCC
+1CD9,7E 7F,,        MOV     R6,#7FH         ;BASE EXPONENT
+1CDB,D2 D5,,        SETB    F0              ;SET INITIAL FLAG
+,,,        ;
+1CDD,F1 EB,INLOOP,INLOOP: ACALL   GET_DIGIT_CHECK
+1CDF,50 07,,        JNC     GTEST           ;IF NOT A CHARACTER, WHAT IS IT?
+1CE1,54 0F,,        ANL     A,#0FH          ;STRIP ASCII
+1CE3,B1 45,,        ACALL   STDIG           ;STORE THE DIGITS
+,,,        ;
+1CE5,A3,INLPIK,INLPIK: INC     DPTR            ;BUMP POINTER FOR LOOP
+1CE6,80 F5,,        SJMP    INLOOP          ;LOOP FOR INPUT
+,,,        ;
+1CE8,B4 2E 0C,GTEST,GTEST:  CJNE    A,#'.',GT1      ;SEE IF A RADIX
+1CEB,20 51 63,,        JB      FOUND_RADIX,INERR
+1CEE,D2 51,,        SETB    FOUND_RADIX
+1CF0,B8 34 F2,,        CJNE    R0,#FP_ACCC,INLPIK
+1CF3,D2 52,,        SETB    FIRST_RADIX     ;SET IF FIRST RADIX
+1CF5,80 EE,,        SJMP    INLPIK          ;GET ADDITIONAL DIGITS
+,,,        ;
+1CF7,20 D5 57,GT1,GT1:    JB      F0,INERR        ;ERROR IF NOT CLEARED
+1CFA,B4 65 02,,        CJNE    A,#'e',$+5      ;CHECK FOR LOWER CASE
+1CFD,80 03,,        SJMP    $+5
+1CFF,B4 45 33,,        CJNE    A,#'E',FINISH_UP
+1D02,B1 6B,,        ACALL   INC_AND_GET_DPTR_CHARACTER
+1D04,B1 72,,        ACALL   PLUS_MINUS_TEST
+1D06,92 50,,        MOV     XSIGN,C         ;SAVE SIGN STATUS
+1D08,F1 EB,,        ACALL   GET_DIGIT_CHECK
+1D0A,50 45,,        JNC     INERR
+,,,        ;
+1D0C,54 0F,,        ANL     A,#0FH          ;STRIP ASCII BIAS OFF THE CHARACTER
+1D0E,FD,,        MOV     R5,A            ;SAVE THE CHARACTER IN R5
+,,,        ;
+1D0F,A3,GT2,GT2:    INC     DPTR
+1D10,F1 EB,,        ACALL   GET_DIGIT_CHECK
+1D12,50 0D,,        JNC     FINISH1
+1D14,54 0F,,        ANL     A,#0FH          ;STRIP OFF BIAS
+1D16,CD,,        XCH     A,R5            ;GET THE LAST DIGIT
+1D17,75 F0 0A,,        MOV     B,#10           ;MULTIPLY BY TEN
+1D1A,A4,,        MUL     AB
+1D1B,2D,,        ADD     A,R5            ;ADD TO ORIGINAL VALUE
+1D1C,FD,,        MOV     R5,A            ;SAVE IN R5
+1D1D,50 F0,,        JNC     GT2             ;LOOP IF NO CARRY
+1D1F,7D FF,,        MOV     R5,#0FFH        ;FORCE AN ERROR
+,,,        ;
+1D21,ED,FINISH1,FINISH1:MOV     A,R5            ;GET THE SIGN
+1D22,30 50 09,,        JNB     XSIGN,POSNUM    ;SEE IF EXPONENT IS POS OR NEG
+1D25,C3,,        CLR     C
+1D26,9E,,        SUBB    A,R6
+1D27,F4,,        CPL     A
+1D28,04,,        INC     A
+1D29,40 09,,        JC      FINISH2
+1D2B,74 01,,        MOV     A,#01H
+1D2D,22,,        RET
+,,,        ;
+1D2E,2E,POSNUM,POSNUM: ADD     A,R6            ;ADD TO EXPONENT
+1D2F,50 03,,        JNC     FINISH2
+,,,        ;
+1D31,74 02,POSNM1,POSNM1: MOV     A,#02H
+1D33,22,,        RET
+,,,        ;
+1D34,CE,FINISH2,FINISH2:XCH     A,R6            ;SAVE THE EXPONENT
+,,,        ;
+1D35,,FINISH_UP,FINISH_UP:
+,,,        ;
+1D35,8E 30,,        MOV     FP_EXP,R6       ;SAVE EXPONENT
+1D37,B8 34 02,,        CJNE    R0,#FP_ACCC,$+5
+1D3A,71 BF,,        ACALL   FP_CLEAR        ;CLEAR THE MEMORY IF 0
+1D3C,E5 09,,        MOV     A,ARG_STACK     ;GET THE ARG STACK
+1D3E,C3,,        CLR     C
+1D3F,94 0C,,        SUBB    A,#FP_NUMBER_SIZE+FP_NUMBER_SIZE
+1D41,F5 09,,        MOV     ARG_STACK,A     ;ADJUST FOR STORE
+1D43,61 30,,        AJMP    PACK
+,,,        ;
+1D45,C2 D5,STDIG,STDIG:  CLR     F0              ;CLEAR INITIAL DESIGNATOR
+1D47,70 0B,,        JNZ     STDIG1          ;CONTINUE IF NOT ZERO
+1D49,B8 34 08,,        CJNE    R0,#FP_ACCC,STDIG1
+1D4C,30 52 04,,        JNB     FIRST_RADIX,RET_X
+,,,        ;
+1D4F,DE 02,DECX,DECX:   DJNZ    R6,RET_X
+,,,        ;
+1D51,74 FF,INERR,INERR:  MOV     A,#0FFH
+,,,        ;
+1D53,22,RET_X,RET_X:  RET
+,,,        ;
+1D54,20 53 02,STDIG1,STDIG1: JB      DONE_LOAD,FRTEST
+1D57,C2 52,,        CLR     FIRST_RADIX
+,,,        ;
+1D59,20 52 F3,FRTEST,FRTEST: JB      FIRST_RADIX,DECX
+,,,        ;
+1D5C,20 51 01,FDTEST,FDTEST: JB      FOUND_RADIX,FDT1
+1D5F,0E,,        INC     R6
+,,,        ;
+1D60,20 53 F0,FDT1,FDT1:   JB      DONE_LOAD,RET_X
+1D63,B8 3D 02,,        CJNE    R0,#FP_ACC8+1,FDT2
+1D66,D2 53,,        SETB    DONE_LOAD
+,,,        ;
+1D68,F6,FDT2,FDT2:   MOV     @R0,A           ;SAVE THE STRIPPED ACCUMULATOR
+1D69,08,,        INC     R0              ;BUMP THE POINTER
+1D6A,22,,        RET                     ;EXIT
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+,,,        ; I/O utilities
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1D6B,,INC_AND_GET_DPTR_CHARACTER,INC_AND_GET_DPTR_CHARACTER:
+,,,        ;
+1D6B,A3,,        INC     DPTR
+,,,        ;
+1D6C,,GET_DPTR_CHARACTER,GET_DPTR_CHARACTER:
+,,,        ;
+1D6C,E0,,        MOVX    A,@DPTR         ;GET THE CHARACTER
+1D6D,B4 20 16,,        CJNE    A,#' ',PMT1     ;SEE IF A SPACE
+,,,        ;
+,,,        ; Kill spaces
+,,,        ;
+1D70,80 F9,,        SJMP    INC_AND_GET_DPTR_CHARACTER
+,,,        ;
+1D72,,PLUS_MINUS_TEST,PLUS_MINUS_TEST:
+,,,        ;
+1D72,B4 E3 02,,        CJNE    A,#0E3H,$+5     ;SEE IF A PLUS, PLUS TOKEN FROM BASIC
+1D75,80 0E,,        SJMP    PMT3
+1D77,B4 2B 02,,        CJNE    A,#'+',$+5
+1D7A,80 09,,        SJMP    PMT3
+1D7C,B4 E5 02,,        CJNE    A,#0E5H,$+5     ;SEE IF MINUS, MINUS TOKEN FROM BASIC
+1D7F,80 03,,        SJMP    PMT2
+1D81,B4 2D 02,,        CJNE    A,#'-',PMT1
+,,,        ;
+1D84,D3,PMT2,PMT2:   SETB    C
+,,,        ;
+1D85,A3,PMT3,PMT3:   INC     DPTR
+,,,        ;
+1D86,22,PMT1,PMT1:   RET
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+1D87,,FLOATING_POINT_OUTPUT,FLOATING_POINT_OUTPUT:  ; Output the number, format is in location 23
+,,,        ;
+,,,        ; IF FORMAT = 00 - FREE FLOATING
+,,,        ;           = FX - EXPONENTIAL (X IS THE NUMBER OF SIG DIGITS)
+,,,        ;           = NX - N = NUM BEFORE RADIX, X = NUM AFTER RADIX
+,,,        ;                  N + X = 8 MAX
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1D87,91 77,,        ACALL   MDES1           ;GET THE NUMBER TO OUTPUT, R0 IS POINTER
+1D89,31 C9,,        ACALL   POP_AND_EXIT    ;OUTPUT POPS THE STACK
+1D8B,EF,,        MOV     A,R7
+1D8C,FE,,        MOV     R6,A            ;PUT THE EXPONENT IN R6
+1D8D,71 8B,,        ACALL   UNPACK_R0       ;UNPACK THE NUMBER
+1D8F,78 2B,,        MOV     R0,#FP_NIB1     ;POINT AT THE NUMBER
+1D91,E5 17,,        MOV     A,FORMAT        ;GET THE FORMAT
+1D93,FB,,        MOV     R3,A            ;SAVE IN CASE OF EXP FORMAT
+1D94,60 49,,        JZ      FREE            ;FREE FLOATING?
+1D96,B4 F0 00,,        CJNE    A,#0F0H,$+3     ;SEE IF EXPONENTIAL
+1D99,50 73,,        JNC     EXPOUT
+,,,        ;
+,,,        ; If here, must be integer USING format
+,,,        ;
+1D9B,EE,,        MOV     A,R6            ;GET THE EXPONENT
+1D9C,70 02,,        JNZ     $+4
+1D9E,7E 80,,        MOV     R6,#80H
+1DA0,EB,,        MOV     A,R3            ;GET THE FORMAT
+1DA1,C4,,        SWAP    A               ;SPLIT INTEGER AND FRACTION
+1DA2,54 0F,,        ANL     A,#0FH
+1DA4,FA,,        MOV     R2,A            ;SAVE INTEGER
+1DA5,D1 74,,        ACALL   NUM_LT          ;GET THE NUMBER OF INTEGERS
+1DA7,CA,,        XCH     A,R2            ;FLIP FOR SUBB
+1DA8,C3,,        CLR     C
+1DA9,9A,,        SUBB    A,R2
+1DAA,FF,,        MOV     R7,A
+1DAB,50 06,,        JNC     $+8
+1DAD,7D 3F,,        MOV     R5,#'?'         ;OUTPUT A QUESTION MARK
+1DAF,D1 A9,,        ACALL   SOUT1           ;NUMBER IS TOO LARGE FOR FORMAT
+1DB1,A1 DF,,        AJMP    FREE
+1DB3,BA 00 07,,        CJNE    R2,#00,USING0   ;SEE IF ZERO
+1DB6,1F,,        DEC     R7
+1DB7,D1 96,,        ACALL   SS7
+1DB9,D1 A3,,        ACALL   ZOUT            ;OUTPUT A ZERO
+1DBB,80 06,,        SJMP    USING1
+,,,        ;
+1DBD,D1 96,USING0,USING0: ACALL   SS7             ;OUTPUT SPACES, IF NEED TO
+1DBF,EA,,        MOV     A,R2            ;OUTPUT DIGITS
+1DC0,FF,,        MOV     R7,A
+1DC1,D1 58,,        ACALL   OUTR0
+,,,        ;
+1DC3,EB,USING1,USING1: MOV     A,R3
+1DC4,54 0F,,        ANL     A,#0FH          ;GET THE NUMBER RIGHT OF DP
+1DC6,FA,,        MOV     R2,A            ;SAVE IT
+1DC7,60 BD,,        JZ      PMT1            ;EXIT IF ZERO
+1DC9,D1 9F,,        ACALL   ROUT            ;OUTPUT DP
+1DCB,D1 7D,,        ACALL   NUM_RT
+1DCD,B5 02 03,,        CJNE    A,2,USINGX      ;COMPARE A TO R2
+,,,        ;
+1DD0,EA,USINGY,USINGY: MOV     A,R2
+1DD1,C1 8D,,        AJMP    Z7R7
+,,,        ;
+1DD3,50 FB,USINGX,USINGX: JNC     USINGY
+,,,        ;
+1DD5,CA,USING2,USING2: XCH     A,R2
+1DD6,C3,,        CLR     C
+1DD7,9A,,        SUBB    A,R2
+1DD8,CA,,        XCH     A,R2
+1DD9,D1 8D,,        ACALL   Z7R7            ;OUTPUT ZEROS IF NEED TO
+1DDB,EA,,        MOV     A,R2
+1DDC,FF,,        MOV     R7,A
+1DDD,C1 58,,        AJMP    OUTR0
+,,,        ;
+,,,        ; First, force exponential output, if need to
+,,,        ;
+1DDF,EE,FREE,FREE:   MOV     A,R6            ;GET THE EXPONENT
+1DE0,70 04,,        JNZ     FREE1           ;IF ZERO, PRINT IT
+1DE2,D1 A7,,        ACALL   SOUT
+1DE4,C1 A3,,        AJMP    ZOUT
+,,,        ;
+1DE6,7B F0,FREE1,FREE1:  MOV     R3,#0F0H        ;IN CASE EXP NEEDED
+1DE8,74 77,,        MOV     A,#80H-DIGIT-DIGIT-1
+1DEA,2E,,        ADD     A,R6
+1DEB,40 21,,        JC      EXPOUT
+1DED,94 F7,,        SUBB    A,#0F7H
+1DEF,40 1D,,        JC      EXPOUT
+,,,        ;
+,,,        ; Now, just print the number
+,,,        ;
+1DF1,D1 98,,        ACALL   SINOUT          ;PRINT THE SIGN OF THE NUMBER
+1DF3,D1 74,,        ACALL   NUM_LT          ;GET THE NUMBER LEFT OF DP
+1DF5,B4 08 02,,        CJNE    A,#8,FREE4
+1DF8,C1 58,,        AJMP    OUTR0
+,,,        ;
+1DFA,D1 58,FREE4,FREE4:  ACALL   OUTR0
+1DFC,D1 6A,,        ACALL   ZTEST           ;TEST FOR TRAILING ZEROS
+1DFE,60 57,,        JZ      U_RET           ;DONE IF ALL TRAILING ZEROS
+1E00,D1 9F,,        ACALL   ROUT            ;OUTPUT RADIX
+,,,        ;
+1E02,7F 01,FREE2,FREE2:  MOV     R7,#1           ;OUTPUT ONE DIGIT
+1E04,D1 58,,        ACALL   OUTR0
+1E06,70 4F,,        JNZ     U_RET
+1E08,D1 6A,,        ACALL   ZTEST
+1E0A,60 4B,,        JZ      U_RET
+1E0C,80 F4,,        SJMP    FREE2           ;LOOP
+,,,        ;
+1E0E,D1 98,EXPOUT,EXPOUT: ACALL   SINOUT          ;PRINT THE SIGN
+1E10,7F 01,,        MOV     R7,#1           ;OUTPUT ONE CHARACTER
+1E12,D1 58,,        ACALL   OUTR0
+1E14,D1 9F,,        ACALL   ROUT            ;OUTPUT RADIX
+1E16,EB,,        MOV     A,R3            ;GET FORMAT
+1E17,54 0F,,        ANL     A,#0FH          ;STRIP INDICATOR
+1E19,60 06,,        JZ      EXPOTX
+,,,        ;
+1E1B,FF,,        MOV     R7,A            ;OUTPUT THE NUMBER OF DIGITS
+1E1C,1F,,        DEC     R7              ;ADJUST BECAUSE ONE CHAR ALREADY OUT
+1E1D,D1 58,,        ACALL   OUTR0
+1E1F,80 02,,        SJMP    EXPOT4
+,,,        ;
+1E21,D1 02,EXPOTX,EXPOTX: ACALL   FREE2           ;OUTPUT UNTIL TRAILING ZEROS
+,,,        ;
+1E23,D1 A7,EXPOT4,EXPOT4: ACALL   SOUT            ;OUTPUT A SPACE
+1E25,7D 45,,        MOV     R5,#'E'
+1E27,D1 A9,,        ACALL   SOUT1           ;OUTPUT AN E
+1E29,EE,,        MOV     A,R6            ;GET THE EXPONENT
+1E2A,60 04,,        JZ      XOUT0           ;EXIT IF ZERO
+1E2C,14,,        DEC     A               ;ADJUST FOR THE DIGIT ALREADY OUTPUT
+1E2D,B4 80 05,,        CJNE    A,#80H,XOUT2    ;SEE WHAT IT IS
+,,,        ;
+1E30,D1 A7,XOUT0,XOUT0:  ACALL   SOUT
+1E32,E4,,        CLR     A
+1E33,80 0C,,        SJMP    XOUT4
+,,,        ;
+1E35,40 06,XOUT2,XOUT2:  JC      XOUT3           ;NEGATIVE EXPONENT
+1E37,7D 2B,,        MOV     R5,#'+'         ;OUTPUT A PLUS SIGN
+1E39,D1 A9,,        ACALL   SOUT1
+1E3B,80 04,,        SJMP    XOUT4
+,,,        ;
+1E3D,D1 9B,XOUT3,XOUT3:  ACALL   MOUT
+1E3F,F4,,        CPL     A               ;FLIP BITS
+1E40,04,,        INC     A               ;BUMP
+,,,        ;
+1E41,C2 E7,XOUT4,XOUT4:  CLR     ACC.7
+1E43,F8,,        MOV     R0,A
+1E44,7A 00,,        MOV     R2,#0
+1E46,79 58,,        MOV     R1,#LOW CONVT   ;CONVERSION LOCATION
+1E48,7B 00,,        MOV     R3,#HIGH CONVT
+1E4A,F1 04,,        ACALL   CONVERT_BINARY_TO_ASCII_STRING
+1E4C,78 58,,        MOV     R0,#LOW CONVT   ;NOW, OUTPUT EXPONENT
+,,,        ;
+1E4E,E2,EXPOT5,EXPOT5: MOVX    A,@R0           ;GET THE CHARACTER
+1E4F,FD,,        MOV     R5,A            ;OUTPUT IT
+1E50,D1 A9,,        ACALL   SOUT1
+1E52,08,,        INC     R0              ;BUMP THE POINTER
+1E53,E8,,        MOV     A,R0            ;GET THE POINTER
+1E54,B5 01 F7,,        CJNE    A,R1B0,EXPOT5   ;LOOP
+,,,        ;
+1E57,22,U_RET,U_RET:  RET                     ;EXIT
+,,,        ;
+1E58,,OUTR0,OUTR0:  ; Output the characters pointed to by R0, also bias ascii
+,,,        ;
+1E58,EF,,        MOV     A,R7            ;GET THE COUNTER
+1E59,60 0E,,        JZ      OUTR            ;EXIT IF DONE
+1E5B,E6,,        MOV     A,@R0           ;GET THE NUMBER
+1E5C,44 30,,        ORL     A,#30H          ;ASCII BIAS
+1E5E,08,,        INC     R0              ;BUMP POINTER AND COUNTER
+1E5F,1F,,        DEC     R7
+1E60,FD,,        MOV     R5,A            ;PUT CHARACTER IN OUTPUT REGISTER
+1E61,D1 A9,,        ACALL   SOUT1           ;OUTPUT THE CHARACTER
+1E63,E4,,        CLR     A               ;JUST FOR TEST
+1E64,B8 33 F1,,        CJNE    R0,#FP_NIB8+1,OUTR0
+1E67,74 55,,        MOV     A,#55H          ;KNOW WHERE EXIT OCCURED
+,,,        ;
+1E69,22,OUTR,OUTR:   RET
+,,,        ;
+1E6A,A9 00,ZTEST,ZTEST:  MOV     R1,R0B0         ;GET POINTER REGISTER
+,,,        ;
+1E6C,E7,ZT0,ZT0:    MOV     A,@R1           ;GET THE VALUE
+1E6D,70 04,,        JNZ     ZT1
+1E6F,09,,        INC     R1              ;BUMP POINTER
+1E70,B9 33 F9,,        CJNE    R1,#FP_NIB8+1,ZT0
+,,,        ;
+1E73,22,ZT1,ZT1:    RET
+,,,        ;
+1E74,EE,NUM_LT,NUM_LT: MOV     A,R6            ;GET EXPONENT
+1E75,C3,,        CLR     C               ;GET READY FOR SUBB
+1E76,94 80,,        SUBB    A,#80H          ;SUB EXPONENT BIAS
+1E78,50 01,,        JNC     NL1             ;OK IF NO CARRY
+1E7A,E4,,        CLR     A               ;NO DIGITS LEFT
+,,,        ;
+1E7B,FF,NL1,NL1:    MOV     R7,A            ;SAVE THE COUNT
+1E7C,22,,        RET
+,,,        ;
+1E7D,C3,NUM_RT,NUM_RT: CLR     C               ;SUBB AGAIN
+1E7E,74 80,,        MOV     A,#80H          ;EXPONENT BIAS
+1E80,9E,,        SUBB    A,R6            ;GET THE BIASED EXPONENT
+1E81,50 01,,        JNC     NR1
+1E83,E4,,        CLR     A
+,,,        ;
+1E84,22,NR1,NR1:    RET                     ;EXIT
+,,,        ;
+1E85,EF,SPACE7,SPACE7: MOV     A,R7            ;GET THE NUMBER OF SPACES
+1E86,60 FC,,        JZ      NR1             ;EXIT IF ZERO
+1E88,D1 A7,,        ACALL   SOUT            ;OUTPUT A SPACE
+1E8A,1F,,        DEC     R7              ;BUMP COUNTER
+1E8B,80 F8,,        SJMP    SPACE7          ;LOOP
+,,,        ;
+1E8D,FF,Z7R7,Z7R7:   MOV     R7,A
+,,,        ;
+1E8E,EF,ZERO7,ZERO7:  MOV     A,R7            ;GET COUNTER
+1E8F,60 F3,,        JZ      NR1             ;EXIT IF ZERO
+1E91,D1 A3,,        ACALL   ZOUT            ;OUTPUT A ZERO
+1E93,1F,,        DEC     R7              ;BUMP COUNTER
+1E94,80 F8,,        SJMP    ZERO7           ;LOOP
+,,,        ;
+1E96,D1 85,SS7,SS7:    ACALL   SPACE7
+,,,        ;
+1E98,EC,SINOUT,SINOUT: MOV     A,R4            ;GET THE SIGN
+1E99,60 0C,,        JZ      SOUT            ;OUTPUT A SPACE IF ZERO
+,,,        ;
+1E9B,7D 2D,MOUT,MOUT:   MOV     R5,#'-'
+1E9D,80 0A,,        SJMP    SOUT1           ;OUTPUT A MINUS IF NOT
+,,,        ;
+1E9F,7D 2E,ROUT,ROUT:   MOV     R5,#'.'         ;OUTPUT A RADIX
+1EA1,80 06,,        SJMP    SOUT1
+,,,        ;
+1EA3,7D 30,ZOUT,ZOUT:   MOV     R5,#'0'         ;OUTPUT A ZERO
+1EA5,80 02,,        SJMP    SOUT1
+,,,        ;
+1EA7,7D 20,SOUT,SOUT:   MOV     R5,#' '         ;OUTPUT A SPACE
+,,,        ;
+1EA9,21 90,SOUT1,SOUT1:  AJMP    OUTPUT
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+1EAB,,CONVERT_ASCII_STRING_TO_BINARY,CONVERT_ASCII_STRING_TO_BINARY:
+,,,        ;
+,,,        ;DPTR POINTS TO ASCII STRING
+,,,        ;PUT THE BINARY NUMBER IN R2:R0, ERROR IF >64K
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1EAB,91 96,CASB,CASB:   ACALL   HEXSCAN         ;SEE IF HEX NUMBER
+1EAD,92 23,,        MOV     ADD_IN,C        ;IF ADD_IN IS SET, THE NUMBER IS HEX
+1EAF,F1 EB,,        ACALL   GET_DIGIT_CHECK
+1EB1,B3,,        CPL     C               ;FLIP FOR EXIT
+1EB2,40 28,,        JC      RCASB
+1EB4,7B 00,,        MOV     R3,#00H         ;ZERO R3:R1 FOR LOOP
+1EB6,79 00,,        MOV     R1,#00H
+1EB8,80 15,,        SJMP    CASB5
+,,,        ;
+1EBA,A3,CASB2,CASB2:  INC     DPTR
+1EBB,89 00,,        MOV     R0B0,R1         ;SAVE THE PRESENT CONVERTED VALUE
+1EBD,8B 02,,        MOV     R0B0+2,R3       ;IN R2:R0
+1EBF,F1 EB,,        ACALL   GET_DIGIT_CHECK
+1EC1,40 0C,,        JC      CASB5
+1EC3,30 23 16,,        JNB     ADD_IN,RCASB    ;CONVERSION COMPLETE
+1EC6,91 B6,,        ACALL   HEX_CHECK       ;SEE IF HEX NUMBER
+1EC8,40 03,,        JC      CASB4           ;PROCEED IF GOOD
+1ECA,A3,,        INC     DPTR            ;BUMP PAST H
+1ECB,80 0F,,        SJMP    RCASB
+,,,        ;
+1ECD,24 09,CASB4,CASB4:  ADD     A,#9            ;ADJUST HEX ASCII BIAS
+,,,        ;
+1ECF,75 F0 0A,CASB5,CASB5:  MOV     B,#10
+1ED2,30 23 03,,        JNB     ADD_IN,CASB6
+1ED5,75 F0 10,,        MOV     B,#16           ;HEX MODE
+,,,        ;
+1ED8,D1 E3,CASB6,CASB6:  ACALL   MULNUM          ;ACCUMULATE THE DIGITS
+1EDA,50 DE,,        JNC     CASB2           ;LOOP IF NO CARRY
+,,,        ;
+1EDC,E4,RCASB,RCASB:  CLR     A               ;RESET ACC
+1EDD,92 E1,,        MOV     ACC.OVERFLOW,C  ;IF OVERFLOW, SAY SO
+1EDF,22,,        RET                     ;EXIT
+,,,        ;
+,,,$EJECT
+,,,        ;
+1EE0,75 F0 0A,MULNUM10,MULNUM10:MOV    B,#10
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1EE3,,MULNUM,MULNUM: ; Take the next digit in the acc (masked to 0FH)
+,,,        ; accumulate in R3:R1
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1EE3,C0 E0,,        PUSH    ACC             ;SAVE ACC
+1EE5,C0 F0,,        PUSH    B               ;SAVE MULTIPLIER
+1EE7,E9,,        MOV     A,R1            ;PUT LOW ORDER BITS IN ACC
+1EE8,A4,,        MUL     AB              ;DO THE MULTIPLY
+1EE9,F9,,        MOV     R1,A            ;PUT THE RESULT BACK
+1EEA,EB,,        MOV     A,R3            ;GET THE HIGH ORDER BYTE
+1EEB,AB F0,,        MOV     R3,B            ;SAVE THE OVERFLOW
+1EED,D0 F0,,        POP     B               ;GET THE MULTIPLIER
+1EEF,A4,,        MUL     AB              ;DO IT
+1EF0,A2 D2,,        MOV     C,OV            ;SAVE OVERFLOW IN F0
+1EF2,92 D5,,        MOV     F0,C
+1EF4,2B,,        ADD     A,R3            ;ADD OVERFLOW TO HIGH RESULT
+1EF5,FB,,        MOV     R3,A            ;PUT IT BACK
+1EF6,D0 E0,,        POP     ACC             ;GET THE ORIGINAL ACC BACK
+1EF8,72 D5,,        ORL     C,F0            ;OR CARRY AND OVERFLOW
+1EFA,40 07,,        JC      MULX            ;NO GOOD IF THE CARRY IS SET
+,,,        ;
+1EFC,54 0F,MUL11,MUL11:  ANL     A,#0FH          ;MASK OFF HIGH ORDER BITS
+1EFE,29,,        ADD     A,R1            ;NOW ADD THE ACC
+1EFF,F9,,        MOV     R1,A            ;PUT IT BACK
+1F00,E4,,        CLR     A               ;PROPAGATE THE CARRY
+1F01,3B,,        ADDC    A,R3
+1F02,FB,,        MOV     R3,A            ;PUT IT BACK
+,,,        ;
+1F03,22,MULX,MULX:   RET                     ;EXIT WITH OR WITHOUT CARRY
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1F04,,CONVERT_BINARY_TO_ASCII_STRING,CONVERT_BINARY_TO_ASCII_STRING:
+,,,        ;
+,,,        ;R3:R1 contains the address of the string
+,,,        ;R2:R0 contains the value to convert
+,,,        ;DPTR, R7, R6, and ACC gets clobbered
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1F04,E4,,        CLR     A               ;NO LEADING ZEROS
+1F05,90 27 10,,        MOV     DPTR,#10000     ;SUBTRACT 10000
+1F08,F1 21,,        ACALL   RSUB            ;DO THE SUBTRACTION
+1F0A,90 03 E8,,        MOV     DPTR,#1000      ;NOW 1000
+1F0D,F1 21,,        ACALL   RSUB
+1F0F,90 00 64,,        MOV     DPTR,#100       ;NOW 100
+1F12,F1 21,,        ACALL   RSUB
+1F14,90 00 0A,,        MOV     DPTR,#10        ;NOW 10
+1F17,F1 21,,        ACALL   RSUB
+1F19,90 00 01,,        MOV     DPTR,#1         ;NOW 1
+1F1C,F1 21,,        ACALL   RSUB
+1F1E,60 20,,        JZ      RSUB2           ;JUMP OVER RET
+,,,        ;
+1F20,22,RSUB_R,RSUB_R: RET
+,,,        ;
+1F21,7E FF,RSUB,RSUB:   MOV     R6,#-1          ;SET UP THE COUNTER
+,,,        ;
+1F23,0E,RSUB1,RSUB1:  INC     R6              ;BUMP THE COUNTER
+1F24,CA,,        XCH     A,R2            ;DO A FAST COMPARE
+1F25,B5 83 00,,        CJNE    A,DPH,$+3
+1F28,CA,,        XCH     A,R2
+1F29,40 12,,        JC      FAST_DONE
+1F2B,C8,,        XCH     A,R0            ;GET LOW BYTE
+1F2C,95 82,,        SUBB    A,DPL           ;SUBTRACT, CARRY IS CLEARED
+1F2E,C8,,        XCH     A,R0            ;PUT IT BACK
+1F2F,CA,,        XCH     A,R2            ;GET THE HIGH BYTE
+1F30,95 83,,        SUBB    A,DPH           ;ADD THE HIGH BYTE
+1F32,CA,,        XCH     A,R2            ;PUT IT BACK
+1F33,50 EE,,        JNC     RSUB1           ;LOOP UNTIL CARRY
+,,,        ;
+1F35,C8,,        XCH     A,R0
+1F36,25 82,,        ADD     A,DPL           ;RESTORE R2:R0
+1F38,C8,,        XCH     A,R0
+1F39,CA,,        XCH     A,R2
+1F3A,35 83,,        ADDC    A,DPH
+1F3C,CA,,        XCH     A,R2
+,,,        ;
+1F3D,,FAST_DONE,FAST_DONE:
+,,,        ;
+1F3D,4E,,        ORL     A,R6            ;OR THE COUNT VALUE
+1F3E,60 E0,,        JZ      RSUB_R          ;RETURN IF ZERO
+,,,        ;
+1F40,74 30,RSUB2,RSUB2:  MOV     A,#'0'          ;GET THE ASCII BIAS
+1F42,2E,,        ADD     A,R6            ;ADD THE COUNT
+,,,        ;
+1F43,8B A0,RSUB4,RSUB4:  MOV     P2,R3           ;SET UP P2
+1F45,F3,,        MOVX    @R1,A           ;PLACE THE VALUE IN MEMORY
+1F46,09,,        INC     R1
+1F47,B9 00 01,,        CJNE    R1,#00H,RSUB3   ;SEE IF RAPPED AROUND
+1F4A,0B,,        INC     R3              ;BUMP HIGH BYTE
+,,,        ;
+1F4B,22,RSUB3,RSUB3:  RET                     ;EXIT
+,,,        ;
+,,,$EJECT
+,,,        ;***************************************************************
+,,,        ;
+1F4C,,HEXOUT,HEXOUT: ; Output the hex number in R3:R1, supress leading zeros, if set
+,,,        ;
+,,,        ;***************************************************************
+,,,        ;
+1F4C,D1 A7,,        ACALL   SOUT            ;OUTPUT A SPACE
+1F4E,A2 36,,        MOV     C,ZSURP         ;GET ZERO SUPPRESSION BIT
+1F50,92 23,,        MOV     ADD_IN,C
+1F52,EB,,        MOV     A,R3            ;GET HIGH NIBBLE AND PRINT IT
+1F53,F1 6F,,        ACALL   HOUTHI
+1F55,EB,,        MOV     A,R3
+1F56,F1 70,,        ACALL   HOUTLO
+,,,        ;
+1F58,C2 23,HEX2X,HEX2X:  CLR     ADD_IN          ;DON'T SUPPRESS ZEROS
+1F5A,E9,,        MOV     A,R1            ;GET LOW NIBBLE AND PRINT IT
+1F5B,F1 6F,,        ACALL   HOUTHI
+1F5D,E9,,        MOV     A,R1
+1F5E,F1 70,,        ACALL   HOUTLO
+1F60,7D 48,,        MOV     R5,#'H'         ;OUTPUT H TO INDICATE HEX MODE
+,,,        ;
+1F62,C1 A9,SOUT_1,SOUT_1: AJMP    SOUT1
+,,,        ;
+1F64,C2 23,HOUT1,HOUT1:  CLR     ADD_IN          ;PRINTED SOMETHING, SO CLEAR ADD_IN
+1F66,24 90,,        ADD     A,#90H          ;CONVERT TO ASCII
+1F68,D4,,        DA      A
+1F69,34 40,,        ADDC    A,#40H
+1F6B,D4,,        DA      A               ;GOT IT HERE
+1F6C,FD,,        MOV     R5,A            ;OUTPUT THE BYTE
+1F6D,80 F3,,        SJMP    SOUT_1
+,,,        ;
+1F6F,C4,HOUTHI,HOUTHI: SWAP    A               ;SWAP TO OUTPUT HIGH NIBBLE
+,,,        ;
+1F70,54 0F,HOUTLO,HOUTLO: ANL     A,#0FH          ;STRIP
+1F72,70 F0,,        JNZ     HOUT1           ;PRINT IF NOT ZERO
+1F74,30 23 ED,,        JNB     ADD_IN,HOUT1    ;OUTPUT A ZERO IF NOT SUPRESSED
+1F77,22,,        RET
+,,,        ;
+,,,$EJECT
+,,,        ORG     1FEBH           ;FOR LINK COMPATABILITY
+,,,        ;
+,,,        ;
+1FEB,,GET_DIGIT_CHECK,GET_DIGIT_CHECK:        ; Get a character, then check for digit
+,,,        ;
+1FEB,B1 6C,,        ACALL   GET_DPTR_CHARACTER
+,,,        ;
+1FED,,DIGIT_CHECK,DIGIT_CHECK:    ;CHECK FOR A VALID ASCII DIGIT, SET CARRY IF FOUND
+,,,        ;
+1FED,B4 3A 00,,        CJNE    A,#'9'+1,$+3    ;SEE IF ASCII 9 OR LESS
+1FF0,40 01,,        JC      DC1
+1FF2,22,,        RET
+,,,        ;
+1FF3,B4 30 00,DC1,DC1:    CJNE    A,#'0',$+3      ;SEE IF ASCII 0 OR GREATER
+1FF6,B3,,        CPL     C
+1FF7,22,,        RET
+,,,        ;
+,,,
+000E,,,        END

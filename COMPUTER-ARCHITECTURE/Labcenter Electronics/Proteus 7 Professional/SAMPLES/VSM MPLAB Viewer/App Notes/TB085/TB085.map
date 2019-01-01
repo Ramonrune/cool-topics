@@ -1,0 +1,122 @@
+MPLINK 4.11, Linker
+Linker Map File - Created Mon Jun 18 11:41:52 2007
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000132
+                   .cinit    romdata   0x000099    program   0x000004
+                  .config       code   0x000fff    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x00009a      
+                            0x000fff    0x000fff      
+            156 out of 517 program addresses used, program memory utilization is 30%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    Delay   0x000012    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+              HiTmp_delay   0x000093    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+                High_temp   0x000092    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+               Last_pulse   0x000074    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+               LoVo_delay   0x00008c    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+                     Loop   0x000010    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+              Low_voltage   0x00008b    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+                 Power_up   0x000000    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+               Soft_start   0x00000c    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+               StCt_delay   0x000008    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+                    Start   0x00000a    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+                    Table   0x000017    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0019   0x000019    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_001C   0x00001c    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_001F   0x00001f    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0022   0x000022    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0025   0x000025    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0028   0x000028    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_002B   0x00002b    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_002E   0x00002e    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0031   0x000031    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0034   0x000034    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0037   0x000037    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_003A   0x00003a    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_003D   0x00003d    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0040   0x000040    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0043   0x000043    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0046   0x000046    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0049   0x000049    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_004C   0x00004c    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_004F   0x00004f    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0052   0x000052    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0055   0x000055    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0058   0x000058    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_005B   0x00005b    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_005E   0x00005e    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0061   0x000061    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0064   0x000064    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0067   0x000067    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_006A   0x00006a    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_006D   0x00006d    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0070   0x000070    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0073   0x000073    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0076   0x000076    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             loop_forever   0x00007c    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                 Power_up   0x000000    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+               StCt_delay   0x000008    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+                    Start   0x00000a    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+               Soft_start   0x00000c    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+                     Loop   0x000010    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+                    Delay   0x000012    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+                    Table   0x000017    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0019   0x000019    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_001C   0x00001c    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_001F   0x00001f    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0022   0x000022    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0025   0x000025    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0028   0x000028    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_002B   0x00002b    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_002E   0x00002e    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0031   0x000031    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0034   0x000034    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0037   0x000037    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_003A   0x00003a    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_003D   0x00003d    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0040   0x000040    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0043   0x000043    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0046   0x000046    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0049   0x000049    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_004C   0x00004c    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_004F   0x00004f    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0052   0x000052    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0055   0x000055    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0058   0x000058    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_005B   0x00005b    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_005E   0x00005e    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0061   0x000061    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0064   0x000064    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0067   0x000067    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_006A   0x00006a    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_006D   0x00006d    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0070   0x000070    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0073   0x000073    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+               Last_pulse   0x000074    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             _.org_0_0076   0x000076    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+             loop_forever   0x00007c    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+              Low_voltage   0x00008b    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+               LoVo_delay   0x00008c    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+                High_temp   0x000092    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+              HiTmp_delay   0x000093    program     static K:\PRODEV\IMAGE\Samples\Microchip\App Notes\TB085\MCP1630.asm
+
+

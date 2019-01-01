@@ -1,0 +1,2310 @@
+MPASM 03.20.07 Released                          GLCD_T~1.ASM   3-7-2003  16:03:09         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;*******************************************************
+                      00002 ;*                 Code Produced by the                *
+                      00003 ;*            PROTON+ Compiler. Ver 1.24d              *
+                      00004 ;* Copyright Rosetta Technologies/Crownhill Associates *
+                      00005 ;*              Written by Les Johnson. 2002           *
+                      00006 ;*******************************************************
+                      00001 LIST
+                      00002 ;{
+                      00003 ;FILE F1 = S:\JKJ\CROWNH~2\GLCD_T~1.BAS
+                      00004 ;FILE F2 = S:\JKJ\CROWNH~2\PROTON_G4.INT
+                      00005 ;FILE F3 = C:\Program Files\PIC BASIC Plus\INC\FONT.INC
+                      00006 ;}
+                      00007 ;[Variable Listing]
+                      00008 ;XPOS,0036,DT_BYTE,1
+                      00009 ;YPOS,0037,DT_BYTE,1
+                      00010 ;[End Listing]
+                      00018 LIST
+Message[308]: Warning level superceded by command line value. (2)
+                      00019         LIST  P = 16F877,F = INHX8M ,W = 2, X = ON, R = DEC, MM = ON, N = 0, C = 255
+                      00020         #INCLUDE C:\PROGRA~1\PICBAS~1\INC\P16F877.LPB
+                      00001 
+                      00334         LIST
+  00000004            00021 XTAL = 4
+  0000000E            00022 _CORE = 14
+  00002000            00023 _MAXMEM = 8192
+  00000008            00024 _ADC = 8
+  0000000A            00025 _ADC_RES = 10
+  00000100            00026 _EEPROM = 256
+  00000004            00027 _PAGES = 4
+  00000003            00028 _BANKS = 3
+  00000004            00029 RAM_BANKS = 4
+  00000001            00030 _USART = 1
+  00000000            00031 _USB = 0
+  00000001            00032 _FLASH = 1
+  00000020            00033 BANK0_START = 32
+  0000007F            00034 BANK0_END = 127
+  000000A0            00035 BANK1_START = 160
+  000000EF            00036 BANK1_END = 239
+  00000110            00037 BANK2_START = 272
+  0000016F            00038 BANK2_END = 367
+  00000190            00039 BANK3_START = 400
+  000001EF            00040 BANK3_END = 495
+  00000000            00041 RAM_BANK = 0
+                      00042 F@CALL MACRO DEST
+                      00043         IF (DEST < 1)
+                      00044         IF ((DEST & 2048) == 0)
+                      00045         BCF 10,3
+                      00046         ELSE
+                      00047         BSF 10,3
+                      00048         ENDIF
+                      00049         IF ((DEST & 4096) == 0)
+                      00050         BCF 10,4
+                      00051         ELSE
+                      00052         BSF 10,4
+                      00053         ENDIF
+                      00054         ELSE
+                      00055         IF (DEST > $)
+                      00056         IF ((DEST & 2048) == 0)
+                      00057         BCF 10,3
+                      00058         ELSE
+                      00059         BSF 10,3
+                      00060         ENDIF
+                      00061         IF ((DEST & 4096) == 0)
+                      00062         BCF 10,4
+                      00063         ELSE
+                      00064         BSF 10,4
+                      00065         ENDIF
+                      00066         ELSE
+                      00067         IF ((DEST & 6144) == 0)
+                      00068         CLRF 10
+                      00069         ELSE
+                      00070         IF ((DEST & 2048) == 0)
+                      00071         BCF 10,3
+                      00072         ELSE
+                      00073         BSF 10,3
+                      00074         ENDIF
+                      00075         IF ((DEST & 4096) == 0)
+                      00076         BCF 10,4
+                      00077         ELSE
+                      00078         BSF 10,4
+                      00079         ENDIF
+                      00080         ENDIF
+                      00081         ENDIF
+                      00082         ENDIF
+                      00083         CALL DEST
+                      00084         ENDM
+                      00085 F@JUMP MACRO DEST
+                      00086         IF (DEST < 1)
+                      00087         IF ((DEST & 2048) == 0)
+                      00088         BCF 10,3
+                      00089         ELSE
+                      00090         BSF 10,3
+                      00091         ENDIF
+                      00092         IF ((DEST & 4096) == 0)
+                      00093         BCF 10,4
+                      00094         ELSE
+                      00095         BSF 10,4
+                      00096         ENDIF
+                      00097         ELSE
+                      00098         IF (DEST > $)
+                      00099         IF ((DEST & 2048) == 0)
+                      00100         BCF 10,3
+                      00101         ELSE
+                      00102         BSF 10,3
+                      00103         ENDIF
+                      00104         IF ((DEST & 4096) == 0)
+                      00105         BCF 10,4
+                      00106         ELSE
+                      00107         BSF 10,4
+                      00108         ENDIF
+                      00109         ELSE
+                      00110         IF ((DEST & 6144) == 0)
+                      00111         CLRF 10
+                      00112         ELSE
+                      00113         IF ((DEST & 2048) == 0)
+                      00114         BCF 10,3
+                      00115         ELSE
+                      00116         BSF 10,3
+                      00117         ENDIF
+                      00118         IF ((DEST & 4096) == 0)
+                      00119         BCF 10,4
+                      00120         ELSE
+                      00121         BSF 10,4
+                      00122         ENDIF
+                      00123         ENDIF
+                      00124         ENDIF
+                      00125         ENDIF
+                      00126         GOTO DEST
+                      00127         ENDM
+                      00128 SET@PAGE MACRO DEST
+                      00129         IF ((DEST & 2048) == 0)
+                      00130         BCF 10,3
+                      00131         ELSE
+                      00132         BSF 10,3
+                      00133         ENDIF
+                      00134         IF ((DEST & 4096) == 0)
+                      00135         BCF 10,4
+                      00136         ELSE
+                      00137         BSF 10,4
+                      00138         ENDIF
+                      00139         ENDM
+                      00140 S@B     MACRO VARIN
+                      00141         IF((VARIN & 384) == 0)
+                      00142         IF(RAM_BANK == 1)
+                      00143         BCF 3,5
+                      00144         ENDIF
+                      00145         IF(RAM_BANK == 2)
+                      00146         BCF 3,6
+                      00147         ENDIF
+                      00148         IF(RAM_BANK == 3)
+                      00149         BCF 3,5
+                      00150         BCF 3,6
+                      00151         ENDIF
+                      00152 RAM_BANK = 0
+                      00153         ENDIF
+                      00154         IF((VARIN & 384) == 128)
+                      00155         IF(RAM_BANK == 0)
+                      00156         BSF 3,5
+                      00157         ENDIF
+                      00158         IF(RAM_BANK == 2)
+                      00159         BSF 3,5
+                      00160         BCF 3,6
+                      00161         ENDIF
+                      00162         IF(RAM_BANK == 3)
+                      00163         BCF 3,6
+                      00164         ENDIF
+                      00165 RAM_BANK = 1
+                      00166         ENDIF
+                      00167         IF((VARIN & 384) == 256)
+                      00168         IF(RAM_BANK == 0)
+                      00169         BSF 3,6
+                      00170         ENDIF
+                      00171         IF(RAM_BANK == 1)
+                      00172         BCF 3,5
+                      00173         BSF 3,6
+                      00174         ENDIF
+                      00175         IF(RAM_BANK == 3)
+                      00176         BCF 3,5
+                      00177         ENDIF
+                      00178 RAM_BANK = 2
+                      00179         ENDIF
+                      00180         IF((VARIN & 384) == 384)
+                      00181         IF(RAM_BANK == 0)
+                      00182         BSF 3,5
+                      00183         BSF 3,6
+                      00184         ENDIF
+                      00185         IF(RAM_BANK == 1)
+                      00186         BSF 3,6
+                      00187         ENDIF
+                      00188         IF(RAM_BANK == 2)
+                      00189         BSF 3,5
+                      00190         ENDIF
+                      00191 RAM_BANK = 3
+                      00192         ENDIF
+                      00193         ENDM
+                      00194 R@B     MACRO
+                      00195         IF((RAM_BANK & 1) != 0)
+                      00196         BCF 3,5
+                      00197         ENDIF
+                      00198         IF((RAM_BANK & 2) != 0)
+                      00199         BCF 3,6
+                      00200         ENDIF
+                      00201 RAM_BANK = 0
+                      00202         ENDM
+                      00203         #INCLUDE C:\PROGRA~1\PICBAS~1\INC\REG_LD14.INC
+                      00001 JUMP MACRO LABEL
+                      00002         GOTO LABEL
+                      00003         ENDM
+                      00004 ;-------------------------------------------------------------------------------------------------
+                      00005 WREG_BYTE MACRO BYTOUT
+                      00006     S@B BYTOUT
+                      00007     MOVWF BYTOUT
+                      00008     R@B                                                 ; Reset the bank when the macro is finished
+                      00009     ENDM
+                      00010 ;-------------------------------------------------------------------------------------------------
+                      00011 WREG_BIT MACRO VAROUT,BITOUT
+                      00012     S@B VAROUT
+                      00013     ANDLW 1
+                      00014     SKPNZ
+                      00015     BCF VAROUT,BITOUT
+                      00016     SKPZ
+                      00017     BSF VAROUT,BITOUT
+                      00018     R@B                                                 ; Reset the bank when the macro is finished
+                      00019     ENDM
+                      00020 ;-------------------------------------------------------------------------------------------------
+                      00021 WREG_WORD MACRO WRDOUT
+                      00022     S@B WRDOUT
+                      00023     MOVWF WRDOUT
+                      00024     S@B WRDOUT + 1
+                      00025     CLRF WRDOUT + 1
+                      00026     R@B                                                 ; Reset the bank when the macro is finished
+                      00027     ENDM
+                      00028 ;-------------------------------------------------------------------------------------------------
+                      00029 WREG_DWORD MACRO DWDOUT
+                      00030     S@B DWDOUT + 3
+                      00031     CLRF DWDOUT + 3
+                      00032     S@B DWDOUT + 2
+                      00033     CLRF DWDOUT + 2
+                      00034     S@B DWDOUT + 1
+                      00035     CLRF DWDOUT + 1
+                      00036     S@B DWDOUT
+                      00037     MOVWF DWDOUT
+                      00038     R@B                                                 ; Reset the bank when the macro is finished
+                      00039     ENDM
+                      00040 ;-------------------------------------------------------------------------------------------------
+                      00041 BYTE_WREG MACRO BYTIN
+                      00042     S@B BYTIN
+                      00043     MOVFW BYTIN
+                      00044     R@B                                                 ; Reset the bank when the macro is finished
+                      00045     ENDM
+                      00046 ;-------------------------------------------------------------------------------------------------
+                      00047 NUM_WREG MACRO NMIN
+                      00048     MOVLW (NMIN & 255)
+                      00049     ENDM
+                      00050 ;-------------------------------------------------------------------------------------------------
+                      00051 NUM_BYTE MACRO NMIN,BYTOUT
+                      00052     S@B BYTOUT
+                      00053     IF(NMIN == 0)
+                      00054         CLRF BYTOUT
+                      00055     ELSE
+                      00056         MOVLW (NMIN & 255)
+                      00057         MOVWF BYTOUT
+                      00058     ENDIF
+                      00059     R@B                                                 ; Reset the bank when the macro is finished
+                      00060     ENDM
+                      00061 ;-------------------------------------------------------------------------------------------------
+                      00062 NUM_BIT MACRO NMIN,VAROUT,BITOUT
+                      00063     S@B VAROUT
+                      00064     IF((NMIN & 1) == 1)
+                      00065         BSF VAROUT,BITOUT
+                      00066     ELSE
+                      00067         BCF VAROUT,BITOUT
+                      00068         ENDIF
+                      00069     R@B                                                 ; Reset the bank when the macro is finished
+                      00070     ENDM
+                      00071 ;-------------------------------------------------------------------------------------------------
+                      00072 NUM_WORD MACRO NMIN,WRDOUT
+                      00073     IF((NMIN & 255) == 0)
+                      00074         S@B WRDOUT
+                      00075         CLRF WRDOUT
+                      00076     ELSE
+                      00077         S@B WRDOUT
+                      00078         MOVLW (NMIN & 255)
+                      00079         MOVWF WRDOUT
+                      00080     ENDIF
+                      00081     IF(((NMIN >> 8) & 255) == 0)
+                      00082         S@B WRDOUT + 1
+                      00083         CLRF WRDOUT + 1
+                      00084     ELSE
+                      00085         S@B WRDOUT + 1
+                      00086         MOVLW ((NMIN >> 8) & 255)
+                      00087         MOVWF WRDOUT + 1
+                      00088     ENDIF
+                      00089     R@B                                                 ; Reset the bank when the macro is finished
+                      00090     ENDM
+                      00091 ;-------------------------------------------------------------------------------------------------
+                      00092 NUM_DWORD MACRO NMIN,DWDOUT
+                      00093 
+                      00094     IF ((NMIN >> 24 & 255) == 0)
+                      00095         S@B DWDOUT + 3
+                      00096         CLRF DWDOUT + 3
+                      00097     ELSE
+                      00098         S@B DWDOUT + 3
+                      00099         MOVLW ((NMIN >> 24) & 255)
+                      00100         MOVWF DWDOUT + 3
+                      00101     ENDIF
+                      00102  
+                      00103     IF( ((NMIN >> 16) & 255) == 0)
+                      00104         S@B DWDOUT + 2
+                      00105         CLRF DWDOUT + 2
+                      00106     ELSE
+                      00107         S@B DWDOUT + 2
+                      00108         MOVLW ((NMIN >> 16) & 255)
+                      00109         MOVWF DWDOUT + 2
+                      00110     ENDIF
+                      00111 
+                      00112     IF( ((NMIN >> 8) & 255) == 0)
+                      00113         S@B DWDOUT + 1
+                      00114         CLRF DWDOUT + 1
+                      00115     ELSE
+                      00116         S@B DWDOUT + 1
+                      00117         MOVLW ((NMIN >> 8) & 255)
+                      00118         MOVWF DWDOUT + 1
+                      00119     ENDIF
+                      00120 
+                      00121     IF((NMIN & 255) == 0)
+                      00122         S@B DWDOUT
+                      00123         CLRF DWDOUT
+                      00124     ELSE
+                      00125         S@B DWDOUT
+                      00126         MOVLW (NMIN & 255)
+                      00127         MOVWF DWDOUT
+                      00128     ENDIF
+                      00129     R@B                                                 ; Reset the bank when the macro is finished
+                      00130     ENDM
+                      00131 ;-------------------------------------------------------------------------------------------------
+                      00132 BIT_WREG MACRO VARIN,BITIN
+                      00133     S@B VARIN
+                      00134     CLRW
+                      00135     BTFSC VARIN,BITIN
+                      00136     MOVLW 1
+                      00137     R@B                                                 ; Reset the bank when the macro is finished
+                      00138     ENDM
+                      00139 ;-------------------------------------------------------------------------------------------------
+                      00140 BIT_BYTE MACRO VARIN,BITIN,BYTOUT
+                      00141     S@B VARIN
+                      00142     CLRW
+                      00143     BTFSC VARIN,BITIN
+                      00144     MOVLW 1
+                      00145     S@B BYTOUT
+                      00146     MOVWF BYTOUT
+                      00147     R@B                                                 ; Reset the bank when the macro is finished
+                      00148     ENDM
+                      00149 ;-------------------------------------------------------------------------------------------------
+                      00150 BIT_BIT MACRO VARIN,BITIN,VAROUT,BITOUT
+                      00151     IF((VARIN & 65408) == (VAROUT & 65408))
+                      00152         S@B VAROUT
+                      00153         BTFSC VARIN,BITIN
+                      00154         BSF VAROUT,BITOUT
+                      00155         BTFSS VARIN,BITIN
+                      00156         BCF VAROUT,BITOUT
+                      00157     ELSE
+                      00158         S@B VARIN
+                      00159         CLRDC
+                      00160         BTFSC VARIN,BITIN
+                      00161         SETDC
+                      00162         S@B VAROUT
+                      00163         SKPNDC
+                      00164         BSF VAROUT,BITOUT
+                      00165         SKPDC
+                      00166         BCF VAROUT,BITOUT
+                      00167     ENDIF
+                      00168     ENDM
+                      00169 ;-------------------------------------------------------------------------------------------------
+                      00170 BIT_WORD MACRO VARIN,BITIN,WRDOUT
+                      00171     S@B WRDOUT + 1
+                      00172     CLRF WRDOUT + 1
+                      00173     BIT_BYTE VARIN,BITIN,WRDOUT
+                      00174     ENDM
+                      00175 ;-------------------------------------------------------------------------------------------------
+                      00176 BIT_DWORD MACRO VARIN,BITIN,DWDOUT
+                      00177     S@B DWDOUT + 3
+                      00178     CLRF DWDOUT + 3
+                      00179     S@B DWDOUT + 2
+                      00180     CLRF DWDOUT + 2
+                      00181     S@B DWDOUT + 1
+                      00182     CLRF DWDOUT + 1
+                      00183         BIT_BYTE VARIN,BITIN,DWDOUT
+                      00184     ENDM
+                      00185 ;-------------------------------------------------------------------------------------------------
+                      00186 WORD_WREG MACRO WRDIN
+                      00187     BYTE_WREG WRDIN
+                      00188     ENDM
+                      00189 ;-------------------------------------------------------------------------------------------------
+                      00190 WORD_BYTE MACRO WRDIN,BYTOUT
+                      00191     BYTE_BYTE WRDIN,BYTOUT
+                      00192     ENDM
+                      00193 ;-------------------------------------------------------------------------------------------------
+                      00194 WORD_BIT MACRO WRDIN,VAROUT,BITOUT
+                      00195     BYTE_BIT WRDIN, VAROUT, BITOUT
+                      00196     ENDM
+                      00197 ;-------------------------------------------------------------------------------------------------
+                      00198 WORD_WORD MACRO WRDIN,WRDOUT
+                      00199     S@B WRDIN + 1
+                      00200     MOVFW WRDIN + 1
+                      00201     S@B WRDOUT + 1
+                      00202     MOVWF WRDOUT + 1
+                      00203     BYTE_BYTE WRDIN,WRDOUT
+                      00204     ENDM
+                      00205 ;-------------------------------------------------------------------------------------------------
+                      00206 WORD_DWORD MACRO WRDIN,DWDOUT
+                      00207     S@B DWDOUT + 3
+                      00208     CLRF DWDOUT + 3
+                      00209     S@B DWDOUT + 2
+                      00210     CLRF DWDOUT + 2
+                      00211     BYTE_BYTE WRDIN + 1,DWDOUT + 1
+                      00212     BYTE_BYTE WRDIN,DWDOUT
+                      00213     ENDM
+                      00214 ;-------------------------------------------------------------------------------------------------
+                      00215 BYTE_BYTE MACRO BYTIN,BYTOUT
+                      00216     S@B BYTIN
+                      00217     MOVFW BYTIN
+                      00218     S@B BYTOUT
+                      00219     MOVWF BYTOUT
+                      00220     R@B                                                 ; Reset the bank when the macro is finished
+                      00221     ENDM
+                      00222 ;-------------------------------------------------------------------------------------------------
+                      00223 BYTE_WORD MACRO BYTIN,WRDOUT
+                      00224     S@B WRDOUT + 1
+                      00225     CLRF WRDOUT + 1
+                      00226     BYTE_BYTE BYTIN,WRDOUT
+                      00227     ENDM
+                      00228 ;-------------------------------------------------------------------------------------------------
+                      00229 BYTE_DWORD MACRO BYTIN,DWDOUT
+                      00230     S@B DWDOUT + 3
+                      00231     CLRF DWDOUT + 3
+                      00232     S@B DWDOUT + 2
+                      00233     CLRF DWDOUT + 2
+                      00234     S@B DWDOUT + 1
+                      00235     CLRF DWDOUT + 1
+                      00236     BYTE_BYTE BYTIN,DWDOUT
+                      00237     ENDM
+                      00238 ;-------------------------------------------------------------------------------------------------
+                      00239         BYTE_BIT MACRO BYTIN,VAROUT,BITOUT
+                      00240     IF((BYTIN & 65408) == (VAROUT & 65408))
+                      00241         S@B BYTIN
+                      00242         BTFSC BYTIN,0
+                      00243         BSF VAROUT,BITOUT
+                      00244         BTFSS BYTIN,0
+                      00245         BCF VAROUT,BITOUT
+                      00246     ELSE
+                      00247         S@B BYTIN
+                      00248         RRF BYTIN,W
+                      00249         S@B VAROUT
+                      00250         SKPNC
+                      00251         BSF VAROUT,BITOUT
+                      00252         SKPC
+                      00253         BCF VAROUT,BITOUT
+                      00254     ENDIF
+                      00255     R@B                                                 ; Reset the bank when the macro is finished
+                      00256     ENDM
+                      00257 ;-------------------------------------------------------------------------------------------------
+                      00258 DWORD_WREG MACRO DWDIN
+                      00259     BYTE_WREG DWDIN
+                      00260         ENDM
+                      00261 ;-------------------------------------------------------------------------------------------------
+                      00262 DWORD_BYTE MACRO DWDIN,BYTOUT
+                      00263     BYTE_BYTE DWDIN,BYTOUT
+                      00264         ENDM
+                      00265 ;-------------------------------------------------------------------------------------------------
+                      00266 DWORD_WORD MACRO DWDIN,WRDOUT
+                      00267     S@B DWDIN + 1
+                      00268     MOVFW DWDIN + 1
+                      00269     S@B WRDOUT + 1
+                      00270     MOVWF WRDOUT + 1
+                      00271     BYTE_BYTE DWDIN,WRDOUT
+                      00272         ENDM
+                      00273 ;-------------------------------------------------------------------------------------------------
+                      00274 DWORD_DWORD MACRO DWDIN,DWDOUT
+                      00275     BYTE_BYTE DWDIN + 3,DWDOUT + 3
+                      00276     BYTE_BYTE DWDIN + 2,DWDOUT + 2
+                      00277     BYTE_BYTE DWDIN + 1,DWDOUT + 1
+                      00278     BYTE_BYTE DWDIN,DWDOUT
+                      00279         ENDM
+                      00280 ;-------------------------------------------------------------------------------------------------
+                      00281 DWORD_BIT MACRO DWDIN,VAROUT,BITOUT
+                      00282     BYTE_BIT DWDIN,VAROUT,BITOUT
+                      00283         ENDM
+  00000020            00204 BPF = 32
+  00000021            00205 BPFH = 33
+  00000022            00206 GEN = 34
+  00000023            00207 GEN3 = 35
+  00000024            00208 GEN3H = 36
+  00000025            00209 GLCD_XPOS = 37
+  00000026            00210 GPR = 38
+  00000027            00211 PP0 = 39
+  00000028            00212 PP0H = 40
+  00000029            00213 PP1 = 41
+  0000002A            00214 PP1H = 42
+  0000002B            00215 PP2 = 43
+  0000002C            00216 PP2H = 44
+  0000002D            00217 PP3 = 45
+  0000002E            00218 PP3H = 46
+  0000002F            00219 PP4 = 47
+  00000030            00220 PP4H = 48
+  00000031            00221 PP5 = 49
+  00000032            00222 PP5H = 50
+  00000033            00223 PP6 = 51
+  00000034            00224 PP6H = 52
+  00000035            00225 PP7H = 53
+  00000CF1            00226 T300 = 3313
+  0000000C            00227 T300H = 12
+  00004CF1            00228 N300 = 19697
+  0000004C            00229 N300H = 76
+  0000066E            00230 T600 = 1646
+  00000006            00231 T600H = 6
+  0000466E            00232 N600 = 18030
+  00000046            00233 N600H = 70
+  0000032D            00234 T1200 = 813
+  00000003            00235 T1200H = 3
+  0000432D            00236 N1200 = 17197
+  00000043            00237 N1200H = 67
+  00000190            00238 T2400 = 400
+  00000001            00239 T2400H = 1
+  0000418C            00240 N2400 = 16780
+  00000041            00241 N2400H = 65
+  000000BC            00242 T4800 = 188
+  000040BC            00243 N4800 = 16572
+  00000040            00244 N4800H = 64
+  00000054            00245 T9600 = 84
+  00004054            00246 N9600 = 16468
+  00000040            00247 N9600H = 64
+  0000818C            00248 OT2400 = 33164
+  000000A0            00249 OT2400H = 160
+  0000832D            00250 OT1200 = 33581
+  000000A0            00251 OT1200H = 160
+  00008054            00252 OT9600 = 32852
+  000000A0            00253 OT9600H = 160
+  00008CF1            00254 OT300 = 36081
+  000000A0            00255 OT300H = 160
+  0000C18C            00256 ON2400 = 49548
+  000000C1            00257 ON2400H = 193
+  0000C32D            00258 ON1200 = 49965
+  000000C3            00259 ON1200H = 195
+  0000C054            00260 ON9600 = 49236
+  000000C0            00261 ON9600H = 192
+  0000CCF1            00262 ON300 = 52465
+  000000CC            00263 ON300H = 204
+  00000001            00264 HOME = 1
+  00000007            00265 BELL = 7
+  00000008            00266 BKSP = 8
+  00000009            00267 TAB = 9
+  0000000D            00268 CR = 13
+0000                  00269         ORG 0
+0000   0000           00270         NOP
+0001   3001           00271         MOVLW HIGH START@
+0002   008A           00272         MOVWF 10
+0003   298F           00273         GOTO START@
+0004                  00274         ORG 4
+0004   00A7           00275 SIN MOVWF 39
+0005   397F           00276 SIN@A ANDLW 127
+0006   1B27           00277         BTFSC 39,6
+0007   3C80           00278         SUBLW 128
+0008   200D           00279         CALL SI@G
+0009   1BA7           00280         BTFSC 39,7
+000A   3C00           00281         SUBLW 0
+000B   00A7           00282         MOVWF 39
+000C   0008           00283         RETURN
+000D   018A           00284 SI@G CLRF 10
+000E   0782           00285         ADDWF 2,F
+000F   3400 3403 3406 00286         DT 0,3,6,9,12,16,19,22,25,28,31
+       3409 340C 3410 
+       3413 3416 3419 
+       341C 341F 
+001A   3422 3425 3428 00287         DT 34,37,40,43,46,49,51,54,57,60
+       342B 342E 3431 
+       3433 3436 3439 
+       343C 
+0024   343F 3441 3444 00288         DT 63,65,68,71,73,76,78,81,83,85
+       3447 3449 344C 
+       344E 3451 3453 
+       3455 
+002E   3458 345A 345C 00289         DT 88,90,92,94,96,98,100,102,104
+       345E 3460 3462 
+       3464 3466 3468 
+0037   346A 346B 346D 00290         DT 106,107,109,111,112,113,115,116,117
+       346F 3470 3471 
+       3473 3474 3475 
+0040   3476 3478 3479 00291         DT 118,120,121,122,122,123,124,125
+       347A 347A 347B 
+       347C 347D 
+0048   347D 347E 347E 00292         DT 125,126,126,126,127,127,127,127
+       347E 347F 347F 
+       347F 347F 
+0050                  00293 GLCD@CLS
+0050   10A0           00294         BCF 32,1
+0051   2112           00295         CALL SETUP@LCD
+0052   1089           00296         BCF PORTE,1
+0053   1109           00297         BCF PORTE,2
+0054   303E           00298         MOVLW 00111110B
+0055   213D           00299         CALL TG@L
+0056   01B3           00300         CLRF 51
+0057   1087           00301 GLD@L1 BCF PORTC,1
+0058   0833           00302         MOVFW 51
+0059   38B8           00303         IORLW 10111000B
+005A   2142           00304         CALL READ@STATUS
+005B   213D           00305         CALL TG@L
+005C   01B4           00306         CLRF 52
+005D   1087           00307 GLCD@L2 BCF PORTC,1
+005E   0834           00308         MOVFW 52
+005F   3840           00309         IORLW 01000000B
+0060   2142           00310         CALL READ@STATUS
+0061   213D           00311         CALL TG@L
+0062   0103           00312         CLRW
+0063   1087           00313         BCF PORTC,1
+0064   2142           00314         CALL READ@STATUS
+0065   1487           00315         BSF PORTC,1
+0066   213D           00316         CALL TG@L
+0067   0AB4           00317         INCF 52,F
+0068   1F34           00318         BTFSS 52,6
+0069   285D           00319         GOTO GLCD@L2
+006A   0AB3           00320         INCF 51,F
+006B   1DB3           00321         BTFSS 51,3
+006C   2857           00322         GOTO GLD@L1
+006D   1087           00323         BCF PORTC,1
+006E   10A0           00324         BCF 32,1
+006F   2112           00325         CALL SETUP@LCD
+0070   298A           00326         GOTO I@NT
+0071                  00327 GLCD_CUR
+0071   2112           00328         CALL SETUP@LCD
+0072   00A5           00329         MOVWF GLCD_XPOS
+0073   1089           00330         BCF PORTE,1
+0074   0000           00331         NOP
+0075   1109           00332         BCF PORTE,2
+0076   14A0           00333         BSF 32,1
+0077   303F           00334         MOVLW 00111111B
+0078   213D           00335         CALL TG@L
+0079   30B8           00336         MOVLW 10111000B
+007A   0422           00337         IORWF 34,W
+007B   2142           00338         CALL READ@STATUS
+007C   213D           00339         CALL TG@L
+007D   0825           00340         MOVFW GLCD_XPOS
+007E   00B3           00341         MOVWF 51
+007F   3006           00342         MOVLW 6
+0080   2155           00343         CALL MUL@8X8
+0081   0833           00344         MOVFW 51
+0082   2130           00345         CALL CHECK@PAGE
+0083   0833           00346         MOVFW 51
+0084   397F           00347         ANDLW 127
+0085   00A5           00348         MOVWF GLCD_XPOS
+0086   3840           00349         IORLW 01000000B
+0087   2142           00350         CALL READ@STATUS
+0088   213D           00351         CALL TG@L
+0089   298A           00352         GOTO I@NT
+  00000008            00353 LCD_DTPORT = PORTD
+  00000004            00354 LCD_DTPIN = 4
+  00000007            00355 LCD_RSPORT = PORTC
+  00000001            00356 LCD_RSPIN = 1
+  00000007            00357 LCD_RWPORT = PORTC
+  00000000            00358 LCD_RWPIN = 0
+  00000009            00359 LCD_ENPORT = PORTE
+  00000000            00360 LCD_ENPIN = 0
+  00000009            00361 LCD_CS1PORT = PORTE
+  00000001            00362 LCD_CS1PIN = 1
+  00000009            00363 LCD_CS2PORT = PORTE
+  00000002            00364 LCD_CS2PIN = 2
+  00000001            00365 LCD_TYPE = 1
+  00000000            00366 LCD_CS_INVERTED = 0
+008A   2112           00367 PRINT CALL SETUP@LCD
+008B   00AE           00368         MOVWF 46
+008C   0825           00369         MOVFW GLCD_XPOS
+008D   2130           00370         CALL CHECK@PAGE
+008E   082B           00371         MOVFW 43
+008F   00A3           00372         MOVWF 35
+0090   082C           00373         MOVFW 44
+0091   00A4           00374         MOVWF 36
+0092   082E           00375         MOVFW 46
+0093   00B3           00376         MOVWF 51
+0094   3006           00377         MOVLW 6
+0095   2155           00378         CALL MUL@8X8
+0096   30FC           00379         MOVLW LOW FONT
+0097   0733           00380         ADDWF 51,W
+0098   1703           00381         BSF 3,6
+0099   008D           00382         MOVWF 269
+009A   3001           00383         MOVLW HIGH FONT
+009B   1803           00384         SKPNC
+009C   3E01           00385         ADDLW 1
+009D   1303           00386         BCF 3,6
+009E   0734           00387         ADDWF 52,W
+009F   1703           00388         BSF 3,6
+00A0   008F           00389         MOVWF 271
+00A1   1303           00390         BCF 3,6
+00A2   3006           00391         MOVLW 6
+00A3   00B3           00392         MOVWF 51
+00A4   2160           00393 GLCD_L2 CALL C@READ
+00A5   00AB           00394         MOVWF 43
+00A6   20B6           00395         CALL LCDWRITE
+00A7   1703           00396         BSF 3,6
+00A8   0A8D           00397         INCF 269,F
+00A9   1903           00398         SKPNZ
+00AA   0A8F           00399         INCF 271,F
+00AB   1303           00400         BCF 3,6
+00AC   0BB3           00401         DECFSZ 51,F
+00AD   28A4           00402         GOTO GLCD_L2
+00AE   1489           00403         BSF PORTE,1
+00AF   1509           00404         BSF PORTE,2
+00B0   0823           00405         MOVFW 35
+00B1   00AB           00406         MOVWF 43
+00B2   0824           00407         MOVFW 36
+00B3   00AC           00408         MOVWF 44
+00B4                  00409 LCD_DONE
+00B4   082E           00410         MOVFW 46
+00B5   298A           00411         GOTO I@NT
+00B6                  00412 LCDWRITE
+00B6   082B           00413         MOVFW 43
+00B7   1087           00414         BCF PORTC,1
+00B8   2142           00415         CALL READ@STATUS
+00B9   1487           00416         BSF PORTC,1
+00BA   213D           00417         CALL TG@L
+00BB   0AA5           00418         INCF GLCD_XPOS,F
+00BC   3080           00419         MOVLW 128
+00BD   0225           00420         SUBWF GLCD_XPOS,W
+00BE   1803           00421         SKPNC
+00BF   01A5           00422         CLRF GLCD_XPOS
+00C0   0825           00423         MOVFW GLCD_XPOS
+00C1   2130           00424         CALL CHECK@PAGE
+00C2   1087           00425         BCF PORTC,1
+00C3   0825           00426         MOVFW GLCD_XPOS
+00C4   2142           00427         CALL READ@STATUS
+00C5   293D           00428         GOTO TG@L
+00C6                  00429 LCD@PLOT
+00C6   1520           00430         BSF 32,2
+00C7   28C9           00431         GOTO $ + 2
+00C8                  00432 LCD@UNPLOT
+00C8   1120           00433         BCF 32,2
+00C9   2112           00434         CALL SETUP@LCD
+00CA   20DD           00435         CALL GETBIT@POS
+00CB   01B0           00436         CLRF 48
+00CC   0AA2           00437         INCF 34,F
+00CD   1403           00438         SETC
+00CE   0DB0           00439         RLF 48,F
+00CF   0BA2           00440         DECFSZ 34,F
+00D0   28CE           00441         GOTO $ - 2
+00D1   0830           00442         MOVFW 48
+00D2   1D20           00443         BTFSS 32,2
+00D3   28D6           00444         GOTO $ + 3
+00D4   0431           00445         IORWF 49,W
+00D5   28D8           00446         GOTO $ + 3
+00D6   3AFF           00447         XORLW 255
+00D7   0531           00448         ANDWF 49,W
+00D8   1087           00449         BCF PORTC,1
+00D9   2142           00450         CALL READ@STATUS
+00DA   1487           00451         BSF PORTC,1
+00DB   213D           00452         CALL TG@L
+00DC   298A           00453         GOTO I@NT
+00DD                  00454 GETBIT@POS
+00DD   00AE           00455         MOVWF 46
+00DE   2130           00456         CALL CHECK@PAGE
+00DF   1003           00457         CLRC
+00E0   0C22           00458         RRF 34,W
+00E1   00AF           00459         MOVWF 47
+00E2   1003           00460         CLRC
+00E3   0CAF           00461         RRF 47,F
+00E4   1003           00462         CLRC
+00E5   0CAF           00463         RRF 47,F
+00E6   3007           00464         MOVLW 7
+00E7   05A2           00465         ANDWF 34,F
+00E8   30B8           00466         MOVLW 10111000B
+00E9   042F           00467         IORWF 47,W
+00EA   2142           00468         CALL READ@STATUS
+00EB   213D           00469         CALL TG@L
+00EC   3040           00470         MOVLW 01000000B
+00ED   042E           00471         IORWF 46,W
+00EE   2142           00472         CALL READ@STATUS
+00EF   213D           00473         CALL TG@L
+00F0   082E           00474         MOVFW 46
+00F1   28F2           00475         GOTO READ@BYTE
+00F2                  00476 READ@BYTE
+00F2   00B2           00477         MOVWF 50
+00F3   2100           00478         CALL READ@IT
+00F4   3040           00479         MOVLW 01000000B
+00F5   0432           00480         IORWF 50,W
+00F6   2142           00481         CALL READ@STATUS
+00F7   213D           00482         CALL TG@L
+00F8   2100           00483         CALL READ@IT
+00F9   3040           00484         MOVLW 01000000B
+00FA   0432           00485         IORWF 50,W
+00FB   2142           00486         CALL READ@STATUS
+00FC   213D           00487         CALL TG@L
+00FD   1487           00488         BSF PORTC,1
+00FE   0831           00489         MOVFW 49
+00FF   0008           00490         RETURN
+0100                  00491 READ@IT
+0100   2142           00492         CALL READ@STATUS
+0101   1487           00493         BSF PORTC,1
+0102   1407           00494         BSF PORTC,0
+0103   1683           00495         BSF 3,5
+0104   30FF           00496         MOVLW 255
+0105   0088           00497         MOVWF PORTD
+0106   1283           00498         BCF 3,5
+0107   1409           00499         BSF PORTE,0
+0108   2909           00500         GOTO $ + 1
+0109   0808           00501         MOVFW PORTD
+010A   00B1           00502         MOVWF 49
+010B   1009           00503         BCF PORTE,0
+010C   1683           00504         BSF 3,5
+010D   0188           00505         CLRF PORTD
+010E   1283           00506         BCF 3,5
+010F   1007           00507         BCF PORTC,0
+0110   1087           00508         BCF PORTC,1
+0111   0008           00509         RETURN
+0112                  00510 SETUP@LCD
+0112   0064           00511         CLRWDT
+0113   00B5           00512         MOVWF 53
+0114   18A0           00513         BTFSC 32,1
+0115   292D           00514         GOTO SKP@GCSIN
+0116   1683           00515         BSF 3,5
+0117   1009           00516         BCF PORTE,0
+0118   1087           00517         BCF PORTC,1
+0119   1007           00518         BCF PORTC,0
+011A   1089           00519         BCF PORTE,1
+011B   1109           00520         BCF PORTE,2
+011C   0188           00521         CLRF PORTD
+011D   1283           00522         BCF 3,5
+011E   14A0           00523         BSF 32,1
+011F   1009           00524         BCF PORTE,0
+0120   1007           00525         BCF PORTC,0
+0121   1087           00526         BCF PORTC,1
+0122   01A5           00527         CLRF GLCD_XPOS
+0123   30B8           00528         MOVLW 10111000B
+0124   2142           00529         CALL READ@STATUS
+0125   213D           00530         CALL TG@L
+0126   3040           00531         MOVLW 01000000B
+0127   2142           00532         CALL READ@STATUS
+0128   213D           00533         CALL TG@L
+0129   30C0           00534         MOVLW 11000000B
+012A   213D           00535         CALL TG@L
+012B   303F           00536         MOVLW 00111111B
+012C   213D           00537         CALL TG@L
+012D                  00538 SKP@GCSIN
+012D   1087           00539         BCF PORTC,1
+012E   0835           00540         MOVFW 53
+012F   0008           00541         RETURN
+0130                  00542 CHECK@PAGE
+0130   00A6           00543         MOVWF 38
+0131   3040           00544         MOVLW 64
+0132   0226           00545         SUBWF 38,W
+0133   1803           00546         SKPNC
+0134   2939           00547         GOTO SKP@GCHK
+0135   1089           00548         BCF PORTE,1
+0136   0000           00549         NOP
+0137   1509           00550         BSF PORTE,2
+0138   0008           00551         RETURN
+0139                  00552 SKP@GCHK
+0139   1489           00553         BSF PORTE,1
+013A   0000           00554         NOP
+013B   1109           00555         BCF PORTE,2
+013C   0008           00556         RETURN
+013D   1409           00557 TG@L BSF PORTE,0
+013E   0088           00558         MOVWF PORTD
+013F   2940           00559         GOTO $ + 1
+0140   1009           00560         BCF PORTE,0
+0141   0008           00561         RETURN
+0142   1407           00562 READ@STATUS BSF PORTC,0
+0143   1683           00563         BSF 3,5
+0144   0188           00564         CLRF PORTD
+0145   0388           00565         DECF PORTD,F
+0146   1283           00566         BCF 3,5
+0147   01A7           00567         CLRF 39
+0148   1409           00568 R@SLP1 BSF PORTE,0
+0149   294A           00569         GOTO $ + 1
+014A   1009           00570         BCF PORTE,0
+014B   294C           00571         GOTO $ + 1
+014C   1F88           00572         BTFSS PORTD,7
+014D   2950           00573         GOTO $ + 3
+014E   0FA7           00574         INCFSZ 39,F
+014F   2948           00575         GOTO R@SLP1
+0150   1683           00576         BSF 3,5
+0151   0188           00577         CLRF PORTD
+0152   1283           00578         BCF 3,5
+0153   1007           00579         BCF PORTC,0
+0154   0008           00580         RETURN
+0155                  00581 MUL@8X8
+0155   01B4           00582         CLRF 52
+0156   01A7           00583         CLRF 39
+0157   15A7           00584         BSF 39,3
+0158   0CB3           00585         RRF 51,F
+0159                  00586 MPY@LP1
+0159   1803           00587         SKPNC
+015A   07B4           00588         ADDWF 52,F
+015B   0CB4           00589         RRF 52,F
+015C   0CB3           00590         RRF 51,F
+015D   0BA7           00591         DECFSZ 39,F
+015E   2959           00592         GOTO MPY@LP1
+015F   0008           00593         RETURN
+0160                  00594 RSOUT@
+0160                  00595 C@READ
+0160   1683           00596         BSF 3,5
+0161   1703           00597         BSF 3,6
+0162   178C           00598         BSF 396,EEPGD
+0163   140C           00599         BSF 396,RD
+0164   2965           00600         GOTO $ + 1
+0165   1283           00601         BCF 3,5
+0166   080C           00602         MOVFW 268
+0167   298A           00603         GOTO I@NT
+0168   01AA           00604 DL@MS CLRF 42
+0169   00A9           00605 DLY@W MOVWF 41
+016A   30FF           00606         MOVLW 255
+016B   07A9           00607         ADDWF 41,F
+016C   1C03           00608         SKPC
+016D   07AA           00609         ADDWF 42,F
+016E   1C03           00610         SKPC
+016F   298A           00611         GOTO I@NT
+0170   3003           00612         MOVLW 3
+0171   00A8           00613         MOVWF 40
+0172   30DF           00614         MOVLW 223
+0173   2176           00615         CALL DLUS@W
+0174   296A           00616         GOTO $ - 10
+0175   01A8           00617 DL@US CLRF 40
+0176   3EE8           00618 DLUS@W ADDLW 232
+0177   00A7           00619         MOVWF 39
+0178   09A8           00620         COMF 40,F
+0179   30FC           00621         MOVLW 252
+017A   1C03           00622         SKPC
+017B   297F           00623         GOTO $ + 4
+017C   07A7           00624         ADDWF 39,F
+017D   1803           00625         SKPNC
+017E   297C           00626         GOTO $ - 2
+017F   07A7           00627         ADDWF 39,F
+0180   0000           00628         NOP
+0181   0FA8           00629         INCFSZ 40,F
+0182   297C           00630         GOTO $ - 6
+0183   1827           00631         BTFSC 39,0
+0184   2985           00632         GOTO $ + 1
+0185   1CA7           00633         BTFSS 39,1
+0186   2989           00634         GOTO $ + 3
+0187   0000           00635         NOP
+0188   2989           00636         GOTO $ + 1
+0189   0008           00637         RETURN
+018A   1383           00638 I@NT BCF 3,7
+018B   1283           00639         BCF 3,5
+018C   1303           00640         BCF 3,6
+018D   0000           00641         NOP
+018E   0008           00642         RETURN
+018F                  00643 START@
+018F   01A0           00644         CLRF 32
+                      00010 
+                      00011 LIST
+  00000036            00012 XPOS EQU 54
+  00000037            00013 YPOS EQU 55
+  00000190            00014 F1_SOF EQU $ ; GLCD_T~1.BAS
+  00000190            00015 F2_SOF EQU $ ; PROTON_G4.INT
+  00000190            00016 F2_000069 EQU $ ; in [PROTON_G4.INT] ADCON1 = 7      ' Set PORTA and PORTE to all digital
+0190   3007           00017         MOVLW 7
+0191   1683           00018         BSF STATUS,5
+  00000001            00019 RAM_BANK = 1
+0192   009F           00020         MOVWF ADCON1
+  00000193            00021 F2_EOF EQU $ ; PROTON_G4.INT
+  00000193            00022 F1_000010 EQU $ ; in [GLCD_T~1.BAS] Cls
+0193   1283           00023         BCF STATUS,5
+  00000000            00024 RAM_BANK = 0
+                      00025         F@CALL GLCD@CLS
+  00000196            00026 F1_000011 EQU $ ; in [GLCD_T~1.BAS] Print at 0 , 2 , "Graphic LCD Test"
+0196   01A2           00027         CLRF GEN
+0197   3002           00028         MOVLW 2
+                      00029         F@CALL GLCD_CUR
+019A   3047           00030         MOVLW 'G'
+                      00031         F@CALL PRINT
+019D   3072           00032         MOVLW 'r'
+                      00033         F@CALL PRINT
+01A0   3061           00034         MOVLW 'a'
+                      00035         F@CALL PRINT
+01A3   3070           00036         MOVLW 'p'
+                      00037         F@CALL PRINT
+01A6   3068           00038         MOVLW 'h'
+                      00039         F@CALL PRINT
+01A9   3069           00040         MOVLW 'i'
+                      00041         F@CALL PRINT
+01AC   3063           00042         MOVLW 'c'
+                      00043         F@CALL PRINT
+01AF   3020           00044         MOVLW ' '
+                      00045         F@CALL PRINT
+01B2   304C           00046         MOVLW 'L'
+                      00047         F@CALL PRINT
+01B5   3043           00048         MOVLW 'C'
+                      00049         F@CALL PRINT
+01B8   3044           00050         MOVLW 'D'
+                      00051         F@CALL PRINT
+01BB   3020           00052         MOVLW ' '
+                      00053         F@CALL PRINT
+01BE   3054           00054         MOVLW 'T'
+                      00055         F@CALL PRINT
+01C1   3065           00056         MOVLW 'e'
+                      00057         F@CALL PRINT
+01C4   3073           00058         MOVLW 's'
+                      00059         F@CALL PRINT
+01C7   3074           00060         MOVLW 't'
+                      00061         F@CALL PRINT
+01CA                  00062 AGAIN
+  000001CA            00063 F1_000014 EQU $ ; in [GLCD_T~1.BAS] For Xpos = 0 to 63
+01CA   01B6           00064         CLRF XPOS
+01CB                  00065 FR@LB2
+01CB   3040           00066         MOVLW 64
+01CC   0236           00067         SUBWF XPOS,W
+                      00068         SET@PAGE NX@LB3
+01CF   1803           00069         BTFSC STATUS,0
+01D0   29E2           00070         GOTO NX@LB3
+  000001D1            00071 F1_000015 EQU $ ; in [GLCD_T~1.BAS] Ypos = SIN Xpos
+01D1   0836           00072         MOVFW XPOS
+                      00073         F@CALL SIN
+01D4   00B7           00074         MOVWF YPOS
+  000001D5            00075 F1_000016 EQU $ ; in [GLCD_T~1.BAS] Plot Xpos , Ypos
+01D5   0836           00076         MOVFW XPOS
+01D6   00A2           00077         MOVWF GEN
+01D7   0837           00078         MOVFW YPOS
+                      00079         F@CALL LCD@PLOT
+  000001DA            00080 F1_000017 EQU $ ; in [GLCD_T~1.BAS] Delayms 10
+01DA   300A           00081         MOVLW 10
+                      00082         F@CALL DL@MS
+  000001DD            00083 F1_000018 EQU $ ; in [GLCD_T~1.BAS] Next
+01DD   0AB6           00084         INCF XPOS,F
+                      00085         SET@PAGE FR@LB2
+01E0   1D03           00086         BTFSS STATUS,2
+01E1   29CB           00087         GOTO FR@LB2
+01E2                  00088 NX@LB3
+  000001E2            00089 F1_000019 EQU $ ; in [GLCD_T~1.BAS] For Xpos = 0 to 63
+01E2   01B6           00090         CLRF XPOS
+01E3                  00091 FR@LB4
+01E3   3040           00092         MOVLW 64
+01E4   0236           00093         SUBWF XPOS,W
+                      00094         SET@PAGE NX@LB5
+01E7   1803           00095         BTFSC STATUS,0
+01E8   29FA           00096         GOTO NX@LB5
+  000001E9            00097 F1_000020 EQU $ ; in [GLCD_T~1.BAS] Ypos = SIN Xpos
+01E9   0836           00098         MOVFW XPOS
+                      00099         F@CALL SIN
+01EC   00B7           00100         MOVWF YPOS
+  000001ED            00101 F1_000021 EQU $ ; in [GLCD_T~1.BAS] UnPlot Xpos , Ypos
+01ED   0836           00102         MOVFW XPOS
+01EE   00A2           00103         MOVWF GEN
+01EF   0837           00104         MOVFW YPOS
+                      00105         F@CALL LCD@UNPLOT
+  000001F2            00106 F1_000022 EQU $ ; in [GLCD_T~1.BAS] Delayms 10
+01F2   300A           00107         MOVLW 10
+                      00108         F@CALL DL@MS
+  000001F5            00109 F1_000023 EQU $ ; in [GLCD_T~1.BAS] Next
+01F5   0AB6           00110         INCF XPOS,F
+                      00111         SET@PAGE FR@LB4
+01F8   1D03           00112         BTFSS STATUS,2
+01F9   29E3           00113         GOTO FR@LB4
+01FA                  00114 NX@LB5
+  000001FA            00115 F1_000024 EQU $ ; in [GLCD_T~1.BAS] Goto Again
+                      00116         F@JUMP AGAIN
+  000001FC            00117 F3_SOF EQU $ ; FONT.INC
+01FC                  00118 FONT
+01FC   0000           00119         DATA 0
+01FD   0000           00120         DATA 0
+01FE   0000           00121         DATA 0
+01FF   0000           00122         DATA 0
+0200   0000           00123         DATA 0
+0201   0000           00124         DATA 0
+0202   00FF           00125         DATA 255
+0203   00FF           00126         DATA 255
+0204   00FF           00127         DATA 255
+0205   00FF           00128         DATA 255
+0206   00FF           00129         DATA 255
+0207   00FF           00130         DATA 255
+0208   0007           00131         DATA 7
+0209   0007           00132         DATA 7
+020A   0007           00133         DATA 7
+020B   0000           00134         DATA 0
+020C   0000           00135         DATA 0
+020D   0000           00136         DATA 0
+020E   0000           00137         DATA 0
+020F   0000           00138         DATA 0
+0210   0000           00139         DATA 0
+0211   0007           00140         DATA 7
+0212   0007           00141         DATA 7
+0213   0007           00142         DATA 7
+0214   00E0           00143         DATA 224
+0215   00E0           00144         DATA 224
+0216   00E0           00145         DATA 224
+0217   0000           00146         DATA 0
+0218   0000           00147         DATA 0
+0219   0000           00148         DATA 0
+021A   0000           00149         DATA 0
+021B   0000           00150         DATA 0
+021C   0000           00151         DATA 0
+021D   00E0           00152         DATA 224
+021E   00E0           00153         DATA 224
+021F   00E0           00154         DATA 224
+0220   00FF           00155         DATA 255
+0221   00FF           00156         DATA 255
+0222   00FF           00157         DATA 255
+0223   0000           00158         DATA 0
+0224   0000           00159         DATA 0
+0225   0000           00160         DATA 0
+0226   0000           00161         DATA 0
+0227   0000           00162         DATA 0
+0228   0000           00163         DATA 0
+0229   00FF           00164         DATA 255
+022A   00FF           00165         DATA 255
+022B   00FF           00166         DATA 255
+022C   0007           00167         DATA 7
+022D   0007           00168         DATA 7
+022E   0007           00169         DATA 7
+022F   0007           00170         DATA 7
+0230   0007           00171         DATA 7
+0231   0007           00172         DATA 7
+0232   00E0           00173         DATA 224
+0233   00E0           00174         DATA 224
+0234   00E0           00175         DATA 224
+0235   00E0           00176         DATA 224
+0236   00E0           00177         DATA 224
+0237   00E0           00178         DATA 224
+0238   00E0           00179         DATA 224
+0239   00E0           00180         DATA 224
+023A   00E0           00181         DATA 224
+023B   0007           00182         DATA 7
+023C   0007           00183         DATA 7
+023D   0007           00184         DATA 7
+023E   0007           00185         DATA 7
+023F   0007           00186         DATA 7
+0240   0007           00187         DATA 7
+0241   00E0           00188         DATA 224
+0242   00E0           00189         DATA 224
+0243   00E0           00190         DATA 224
+0244   00FF           00191         DATA 255
+0245   00FF           00192         DATA 255
+0246   00FF           00193         DATA 255
+0247   00E0           00194         DATA 224
+0248   00E0           00195         DATA 224
+0249   00E0           00196         DATA 224
+024A   00E0           00197         DATA 224
+024B   00E0           00198         DATA 224
+024C   00E0           00199         DATA 224
+024D   00FF           00200         DATA 255
+024E   00FF           00201         DATA 255
+024F   00FF           00202         DATA 255
+0250   0007           00203         DATA 7
+0251   0007           00204         DATA 7
+0252   0007           00205         DATA 7
+0253   00FF           00206         DATA 255
+0254   00FF           00207         DATA 255
+0255   00FF           00208         DATA 255
+0256   00FF           00209         DATA 255
+0257   00FF           00210         DATA 255
+0258   00FF           00211         DATA 255
+0259   0007           00212         DATA 7
+025A   0007           00213         DATA 7
+025B   0007           00214         DATA 7
+025C   0055           00215         DATA 85
+025D   00AA           00216         DATA 170
+025E   0055           00217         DATA 85
+025F   00AA           00218         DATA 170
+0260   0055           00219         DATA 85
+0261   00AA           00220         DATA 170
+0262   00AA           00221         DATA 170
+0263   0055           00222         DATA 85
+0264   00AA           00223         DATA 170
+0265   0055           00224         DATA 85
+0266   00AA           00225         DATA 170
+0267   0055           00226         DATA 85
+0268   0001           00227         DATA 1
+0269   0001           00228         DATA 1
+026A   0001           00229         DATA 1
+026B   0001           00230         DATA 1
+026C   0001           00231         DATA 1
+026D   0001           00232         DATA 1
+026E   0080           00233         DATA 128
+026F   0080           00234         DATA 128
+0270   0080           00235         DATA 128
+0271   0080           00236         DATA 128
+0272   0080           00237         DATA 128
+0273   0080           00238         DATA 128
+0274   00FF           00239         DATA 255
+0275   0000           00240         DATA 0
+0276   0000           00241         DATA 0
+0277   0000           00242         DATA 0
+0278   0000           00243         DATA 0
+0279   0000           00244         DATA 0
+027A   0000           00245         DATA 0
+027B   0000           00246         DATA 0
+027C   0000           00247         DATA 0
+027D   0000           00248         DATA 0
+027E   0000           00249         DATA 0
+027F   00FF           00250         DATA 255
+0280   00FF           00251         DATA 255
+0281   0001           00252         DATA 1
+0282   0001           00253         DATA 1
+0283   0001           00254         DATA 1
+0284   0001           00255         DATA 1
+0285   0001           00256         DATA 1
+0286   0001           00257         DATA 1
+0287   0001           00258         DATA 1
+0288   0001           00259         DATA 1
+0289   0001           00260         DATA 1
+028A   0001           00261         DATA 1
+028B   00FF           00262         DATA 255
+028C   00FF           00263         DATA 255
+028D   0080           00264         DATA 128
+028E   0080           00265         DATA 128
+028F   0080           00266         DATA 128
+0290   0080           00267         DATA 128
+0291   0080           00268         DATA 128
+0292   0080           00269         DATA 128
+0293   0080           00270         DATA 128
+0294   0080           00271         DATA 128
+0295   0080           00272         DATA 128
+0296   0080           00273         DATA 128
+0297   00FF           00274         DATA 255
+0298   0000           00275         DATA 0
+0299   0000           00276         DATA 0
+029A   0006           00277         DATA 6
+029B   0009           00278         DATA 9
+029C   0009           00279         DATA 9
+029D   0006           00280         DATA 6
+029E   0000           00281         DATA 0
+029F   0000           00282         DATA 0
+02A0   0000           00283         DATA 0
+02A1   0000           00284         DATA 0
+02A2   0000           00285         DATA 0
+02A3   0000           00286         DATA 0
+02A4   0000           00287         DATA 0
+02A5   0000           00288         DATA 0
+02A6   0000           00289         DATA 0
+02A7   0000           00290         DATA 0
+02A8   0000           00291         DATA 0
+02A9   0000           00292         DATA 0
+02AA   0000           00293         DATA 0
+02AB   0000           00294         DATA 0
+02AC   0000           00295         DATA 0
+02AD   0000           00296         DATA 0
+02AE   0000           00297         DATA 0
+02AF   0000           00298         DATA 0
+02B0   0000           00299         DATA 0
+02B1   0000           00300         DATA 0
+02B2   0000           00301         DATA 0
+02B3   0000           00302         DATA 0
+02B4   0000           00303         DATA 0
+02B5   0000           00304         DATA 0
+02B6   0000           00305         DATA 0
+02B7   0000           00306         DATA 0
+02B8   0000           00307         DATA 0
+02B9   0000           00308         DATA 0
+02BA   0000           00309         DATA 0
+02BB   0000           00310         DATA 0
+02BC   0000           00311         DATA 0
+02BD   0000           00312         DATA 0
+02BE   0000           00313         DATA 0
+02BF   0000           00314         DATA 0
+02C0   0000           00315         DATA 0
+02C1   0000           00316         DATA 0
+02C2   0000           00317         DATA 0
+02C3   0000           00318         DATA 0
+02C4   004F           00319         DATA 79
+02C5   0000           00320         DATA 0
+02C6   0000           00321         DATA 0
+02C7   0000           00322         DATA 0
+02C8   0000           00323         DATA 0
+02C9   0007           00324         DATA 7
+02CA   0000           00325         DATA 0
+02CB   0007           00326         DATA 7
+02CC   0000           00327         DATA 0
+02CD   0000           00328         DATA 0
+02CE   0014           00329         DATA 20
+02CF   007F           00330         DATA 127
+02D0   0014           00331         DATA 20
+02D1   007F           00332         DATA 127
+02D2   0014           00333         DATA 20
+02D3   0000           00334         DATA 0
+02D4   0024           00335         DATA 36
+02D5   002A           00336         DATA 42
+02D6   007F           00337         DATA 127
+02D7   002A           00338         DATA 42
+02D8   0012           00339         DATA 18
+02D9   0000           00340         DATA 0
+02DA   0023           00341         DATA 35
+02DB   0013           00342         DATA 19
+02DC   0008           00343         DATA 8
+02DD   0064           00344         DATA 100
+02DE   0062           00345         DATA 98
+02DF   0000           00346         DATA 0
+02E0   0036           00347         DATA 54
+02E1   0049           00348         DATA 73
+02E2   0055           00349         DATA 85
+02E3   0022           00350         DATA 34
+02E4   0050           00351         DATA 80
+02E5   0000           00352         DATA 0
+02E6   0000           00353         DATA 0
+02E7   0005           00354         DATA 5
+02E8   0003           00355         DATA 3
+02E9   0000           00356         DATA 0
+02EA   0000           00357         DATA 0
+02EB   0000           00358         DATA 0
+02EC   001C           00359         DATA 28
+02ED   0022           00360         DATA 34
+02EE   0041           00361         DATA 65
+02EF   0000           00362         DATA 0
+02F0   0000           00363         DATA 0
+02F1   0000           00364         DATA 0
+02F2   0000           00365         DATA 0
+02F3   0000           00366         DATA 0
+02F4   0041           00367         DATA 65
+02F5   0022           00368         DATA 34
+02F6   001C           00369         DATA 28
+02F7   0000           00370         DATA 0
+02F8   0014           00371         DATA 20
+02F9   0008           00372         DATA 8
+02FA   003E           00373         DATA 62
+02FB   0008           00374         DATA 8
+02FC   0014           00375         DATA 20
+02FD   0000           00376         DATA 0
+02FE   0008           00377         DATA 8
+02FF   0008           00378         DATA 8
+0300   003E           00379         DATA 62
+0301   0008           00380         DATA 8
+0302   0008           00381         DATA 8
+0303   0000           00382         DATA 0
+0304   0000           00383         DATA 0
+0305   0050           00384         DATA 80
+0306   0030           00385         DATA 48
+0307   0000           00386         DATA 0
+0308   0000           00387         DATA 0
+0309   0000           00388         DATA 0
+030A   0008           00389         DATA 8
+030B   0008           00390         DATA 8
+030C   0008           00391         DATA 8
+030D   0008           00392         DATA 8
+030E   0008           00393         DATA 8
+030F   0000           00394         DATA 0
+0310   0000           00395         DATA 0
+0311   0060           00396         DATA 96
+0312   0060           00397         DATA 96
+0313   0000           00398         DATA 0
+0314   0000           00399         DATA 0
+0315   0000           00400         DATA 0
+0316   0020           00401         DATA 32
+0317   0010           00402         DATA 16
+0318   0008           00403         DATA 8
+0319   0004           00404         DATA 4
+031A   0002           00405         DATA 2
+031B   0000           00406         DATA 0
+031C   003E           00407         DATA 62
+031D   0051           00408         DATA 81
+031E   0049           00409         DATA 73
+031F   0045           00410         DATA 69
+0320   003E           00411         DATA 62
+0321   0000           00412         DATA 0
+0322   0000           00413         DATA 0
+0323   0042           00414         DATA 66
+0324   007F           00415         DATA 127
+0325   0040           00416         DATA 64
+0326   0000           00417         DATA 0
+0327   0000           00418         DATA 0
+0328   0042           00419         DATA 66
+0329   0061           00420         DATA 97
+032A   0051           00421         DATA 81
+032B   0049           00422         DATA 73
+032C   0046           00423         DATA 70
+032D   0000           00424         DATA 0
+032E   0021           00425         DATA 33
+032F   0041           00426         DATA 65
+0330   0045           00427         DATA 69
+0331   004B           00428         DATA 75
+0332   0031           00429         DATA 49
+0333   0000           00430         DATA 0
+0334   0018           00431         DATA 24
+0335   0014           00432         DATA 20
+0336   0012           00433         DATA 18
+0337   007F           00434         DATA 127
+0338   0010           00435         DATA 16
+0339   0000           00436         DATA 0
+033A   0027           00437         DATA 39
+033B   0045           00438         DATA 69
+033C   0045           00439         DATA 69
+033D   0045           00440         DATA 69
+033E   0039           00441         DATA 57
+033F   0000           00442         DATA 0
+0340   003C           00443         DATA 60
+0341   004A           00444         DATA 74
+0342   0049           00445         DATA 73
+0343   0049           00446         DATA 73
+0344   0030           00447         DATA 48
+0345   0000           00448         DATA 0
+0346   0001           00449         DATA 1
+0347   0071           00450         DATA 113
+0348   0009           00451         DATA 9
+0349   0005           00452         DATA 5
+034A   0003           00453         DATA 3
+034B   0000           00454         DATA 0
+034C   0036           00455         DATA 54
+034D   0049           00456         DATA 73
+034E   0049           00457         DATA 73
+034F   0049           00458         DATA 73
+0350   0036           00459         DATA 54
+0351   0000           00460         DATA 0
+0352   0006           00461         DATA 6
+0353   0049           00462         DATA 73
+0354   0049           00463         DATA 73
+0355   0049           00464         DATA 73
+0356   003E           00465         DATA 62
+0357   0000           00466         DATA 0
+0358   0000           00467         DATA 0
+0359   0036           00468         DATA 54
+035A   0036           00469         DATA 54
+035B   0000           00470         DATA 0
+035C   0000           00471         DATA 0
+035D   0000           00472         DATA 0
+035E   0000           00473         DATA 0
+035F   0056           00474         DATA 86
+0360   0036           00475         DATA 54
+0361   0000           00476         DATA 0
+0362   0000           00477         DATA 0
+0363   0000           00478         DATA 0
+0364   0008           00479         DATA 8
+0365   0014           00480         DATA 20
+0366   0022           00481         DATA 34
+0367   0041           00482         DATA 65
+0368   0000           00483         DATA 0
+0369   0000           00484         DATA 0
+036A   0014           00485         DATA 20
+036B   0014           00486         DATA 20
+036C   0014           00487         DATA 20
+036D   0014           00488         DATA 20
+036E   0014           00489         DATA 20
+036F   0000           00490         DATA 0
+0370   0000           00491         DATA 0
+0371   0041           00492         DATA 65
+0372   0022           00493         DATA 34
+0373   0014           00494         DATA 20
+0374   0008           00495         DATA 8
+0375   0000           00496         DATA 0
+0376   0002           00497         DATA 2
+0377   0001           00498         DATA 1
+0378   0051           00499         DATA 81
+0379   0009           00500         DATA 9
+037A   0006           00501         DATA 6
+037B   0000           00502         DATA 0
+037C   0032           00503         DATA 50
+037D   0049           00504         DATA 73
+037E   0079           00505         DATA 121
+037F   0041           00506         DATA 65
+0380   003E           00507         DATA 62
+0381   0000           00508         DATA 0
+0382   007E           00509         DATA 126
+0383   0011           00510         DATA 17
+0384   0011           00511         DATA 17
+0385   0011           00512         DATA 17
+0386   007E           00513         DATA 126
+0387   0000           00514         DATA 0
+0388   007F           00515         DATA 127
+0389   0049           00516         DATA 73
+038A   0049           00517         DATA 73
+038B   0049           00518         DATA 73
+038C   0036           00519         DATA 54
+038D   0000           00520         DATA 0
+038E   003E           00521         DATA 62
+038F   0041           00522         DATA 65
+0390   0041           00523         DATA 65
+0391   0041           00524         DATA 65
+0392   0022           00525         DATA 34
+0393   0000           00526         DATA 0
+0394   007F           00527         DATA 127
+0395   0041           00528         DATA 65
+0396   0041           00529         DATA 65
+0397   0022           00530         DATA 34
+0398   001C           00531         DATA 28
+0399   0000           00532         DATA 0
+039A   007F           00533         DATA 127
+039B   0049           00534         DATA 73
+039C   0049           00535         DATA 73
+039D   0049           00536         DATA 73
+039E   0041           00537         DATA 65
+039F   0000           00538         DATA 0
+03A0   007F           00539         DATA 127
+03A1   0009           00540         DATA 9
+03A2   0009           00541         DATA 9
+03A3   0009           00542         DATA 9
+03A4   0001           00543         DATA 1
+03A5   0000           00544         DATA 0
+03A6   003E           00545         DATA 62
+03A7   0041           00546         DATA 65
+03A8   0049           00547         DATA 73
+03A9   0049           00548         DATA 73
+03AA   007A           00549         DATA 122
+03AB   0000           00550         DATA 0
+03AC   007F           00551         DATA 127
+03AD   0008           00552         DATA 8
+03AE   0008           00553         DATA 8
+03AF   0008           00554         DATA 8
+03B0   007F           00555         DATA 127
+03B1   0000           00556         DATA 0
+03B2   0000           00557         DATA 0
+03B3   0041           00558         DATA 65
+03B4   007F           00559         DATA 127
+03B5   0041           00560         DATA 65
+03B6   0000           00561         DATA 0
+03B7   0000           00562         DATA 0
+03B8   0020           00563         DATA 32
+03B9   0040           00564         DATA 64
+03BA   0041           00565         DATA 65
+03BB   003F           00566         DATA 63
+03BC   0001           00567         DATA 1
+03BD   0000           00568         DATA 0
+03BE   007F           00569         DATA 127
+03BF   0008           00570         DATA 8
+03C0   0014           00571         DATA 20
+03C1   0022           00572         DATA 34
+03C2   0041           00573         DATA 65
+03C3   0000           00574         DATA 0
+03C4   007F           00575         DATA 127
+03C5   0040           00576         DATA 64
+03C6   0040           00577         DATA 64
+03C7   0040           00578         DATA 64
+03C8   0040           00579         DATA 64
+03C9   0000           00580         DATA 0
+03CA   007F           00581         DATA 127
+03CB   0002           00582         DATA 2
+03CC   000C           00583         DATA 12
+03CD   0002           00584         DATA 2
+03CE   007F           00585         DATA 127
+03CF   0000           00586         DATA 0
+03D0   007F           00587         DATA 127
+03D1   0004           00588         DATA 4
+03D2   0008           00589         DATA 8
+03D3   0010           00590         DATA 16
+03D4   007F           00591         DATA 127
+03D5   0000           00592         DATA 0
+03D6   003E           00593         DATA 62
+03D7   0041           00594         DATA 65
+03D8   0041           00595         DATA 65
+03D9   0041           00596         DATA 65
+03DA   003E           00597         DATA 62
+03DB   0000           00598         DATA 0
+03DC   007F           00599         DATA 127
+03DD   0009           00600         DATA 9
+03DE   0009           00601         DATA 9
+03DF   0009           00602         DATA 9
+03E0   0006           00603         DATA 6
+03E1   0000           00604         DATA 0
+03E2   003E           00605         DATA 62
+03E3   0041           00606         DATA 65
+03E4   0051           00607         DATA 81
+03E5   0021           00608         DATA 33
+03E6   005E           00609         DATA 94
+03E7   0000           00610         DATA 0
+03E8   007F           00611         DATA 127
+03E9   0009           00612         DATA 9
+03EA   0019           00613         DATA 25
+03EB   0029           00614         DATA 41
+03EC   0046           00615         DATA 70
+03ED   0000           00616         DATA 0
+03EE   0046           00617         DATA 70
+03EF   0049           00618         DATA 73
+03F0   0049           00619         DATA 73
+03F1   0049           00620         DATA 73
+03F2   0031           00621         DATA 49
+03F3   0000           00622         DATA 0
+03F4   0001           00623         DATA 1
+03F5   0001           00624         DATA 1
+03F6   007F           00625         DATA 127
+03F7   0001           00626         DATA 1
+03F8   0001           00627         DATA 1
+03F9   0000           00628         DATA 0
+03FA   003F           00629         DATA 63
+03FB   0040           00630         DATA 64
+03FC   0040           00631         DATA 64
+03FD   0040           00632         DATA 64
+03FE   003F           00633         DATA 63
+03FF   0000           00634         DATA 0
+0400   001F           00635         DATA 31
+0401   0020           00636         DATA 32
+0402   0040           00637         DATA 64
+0403   0020           00638         DATA 32
+0404   001F           00639         DATA 31
+0405   0000           00640         DATA 0
+0406   003F           00641         DATA 63
+0407   0040           00642         DATA 64
+0408   0038           00643         DATA 56
+0409   0040           00644         DATA 64
+040A   003F           00645         DATA 63
+040B   0000           00646         DATA 0
+040C   0063           00647         DATA 99
+040D   0014           00648         DATA 20
+040E   0008           00649         DATA 8
+040F   0014           00650         DATA 20
+0410   0063           00651         DATA 99
+0411   0000           00652         DATA 0
+0412   0007           00653         DATA 7
+0413   0008           00654         DATA 8
+0414   0070           00655         DATA 112
+0415   0008           00656         DATA 8
+0416   0007           00657         DATA 7
+0417   0000           00658         DATA 0
+0418   0061           00659         DATA 97
+0419   0051           00660         DATA 81
+041A   0049           00661         DATA 73
+041B   0045           00662         DATA 69
+041C   0043           00663         DATA 67
+041D   0000           00664         DATA 0
+041E   007F           00665         DATA 127
+041F   0041           00666         DATA 65
+0420   0041           00667         DATA 65
+0421   0000           00668         DATA 0
+0422   0000           00669         DATA 0
+0423   0000           00670         DATA 0
+0424   0002           00671         DATA 2
+0425   0004           00672         DATA 4
+0426   0008           00673         DATA 8
+0427   0010           00674         DATA 16
+0428   0020           00675         DATA 32
+0429   0000           00676         DATA 0
+042A   0000           00677         DATA 0
+042B   0000           00678         DATA 0
+042C   0041           00679         DATA 65
+042D   0041           00680         DATA 65
+042E   007F           00681         DATA 127
+042F   0000           00682         DATA 0
+0430   0004           00683         DATA 4
+0431   0002           00684         DATA 2
+0432   0001           00685         DATA 1
+0433   0002           00686         DATA 2
+0434   0004           00687         DATA 4
+0435   0000           00688         DATA 0
+0436   0040           00689         DATA 64
+0437   0040           00690         DATA 64
+0438   0040           00691         DATA 64
+0439   0040           00692         DATA 64
+043A   0040           00693         DATA 64
+043B   0000           00694         DATA 0
+043C   0000           00695         DATA 0
+043D   0001           00696         DATA 1
+043E   0002           00697         DATA 2
+043F   0004           00698         DATA 4
+0440   0000           00699         DATA 0
+0441   0000           00700         DATA 0
+0442   0020           00701         DATA 32
+0443   0054           00702         DATA 84
+0444   0054           00703         DATA 84
+0445   0054           00704         DATA 84
+0446   0078           00705         DATA 120
+0447   0000           00706         DATA 0
+0448   007F           00707         DATA 127
+0449   0048           00708         DATA 72
+044A   0044           00709         DATA 68
+044B   0044           00710         DATA 68
+044C   0038           00711         DATA 56
+044D   0000           00712         DATA 0
+044E   0038           00713         DATA 56
+044F   0044           00714         DATA 68
+0450   0044           00715         DATA 68
+0451   0044           00716         DATA 68
+0452   0020           00717         DATA 32
+0453   0000           00718         DATA 0
+0454   0038           00719         DATA 56
+0455   0044           00720         DATA 68
+0456   0044           00721         DATA 68
+0457   0048           00722         DATA 72
+0458   007F           00723         DATA 127
+0459   0000           00724         DATA 0
+045A   0038           00725         DATA 56
+045B   0054           00726         DATA 84
+045C   0054           00727         DATA 84
+045D   0054           00728         DATA 84
+045E   0018           00729         DATA 24
+045F   0000           00730         DATA 0
+0460   0008           00731         DATA 8
+0461   007E           00732         DATA 126
+0462   0009           00733         DATA 9
+0463   0001           00734         DATA 1
+0464   0002           00735         DATA 2
+0465   0000           00736         DATA 0
+0466   000C           00737         DATA 12
+0467   0052           00738         DATA 82
+0468   0052           00739         DATA 82
+0469   0052           00740         DATA 82
+046A   003E           00741         DATA 62
+046B   0000           00742         DATA 0
+046C   007F           00743         DATA 127
+046D   0008           00744         DATA 8
+046E   0004           00745         DATA 4
+046F   0004           00746         DATA 4
+0470   0078           00747         DATA 120
+0471   0000           00748         DATA 0
+0472   0000           00749         DATA 0
+0473   0044           00750         DATA 68
+0474   007D           00751         DATA 125
+0475   0040           00752         DATA 64
+0476   0000           00753         DATA 0
+0477   0000           00754         DATA 0
+0478   0000           00755         DATA 0
+0479   0020           00756         DATA 32
+047A   0040           00757         DATA 64
+047B   0044           00758         DATA 68
+047C   003D           00759         DATA 61
+047D   0000           00760         DATA 0
+047E   007F           00761         DATA 127
+047F   0010           00762         DATA 16
+0480   0028           00763         DATA 40
+0481   0044           00764         DATA 68
+0482   0000           00765         DATA 0
+0483   0000           00766         DATA 0
+0484   0000           00767         DATA 0
+0485   0041           00768         DATA 65
+0486   007F           00769         DATA 127
+0487   0040           00770         DATA 64
+0488   0000           00771         DATA 0
+0489   0000           00772         DATA 0
+048A   007C           00773         DATA 124
+048B   0004           00774         DATA 4
+048C   0018           00775         DATA 24
+048D   0004           00776         DATA 4
+048E   0078           00777         DATA 120
+048F   0000           00778         DATA 0
+0490   007C           00779         DATA 124
+0491   0008           00780         DATA 8
+0492   0004           00781         DATA 4
+0493   0004           00782         DATA 4
+0494   0078           00783         DATA 120
+0495   0000           00784         DATA 0
+0496   0038           00785         DATA 56
+0497   0044           00786         DATA 68
+0498   0044           00787         DATA 68
+0499   0044           00788         DATA 68
+049A   0038           00789         DATA 56
+049B   0000           00790         DATA 0
+049C   007C           00791         DATA 124
+049D   0014           00792         DATA 20
+049E   0014           00793         DATA 20
+049F   0014           00794         DATA 20
+04A0   0008           00795         DATA 8
+04A1   0000           00796         DATA 0
+04A2   0008           00797         DATA 8
+04A3   0014           00798         DATA 20
+04A4   0014           00799         DATA 20
+04A5   0018           00800         DATA 24
+04A6   007C           00801         DATA 124
+04A7   0000           00802         DATA 0
+04A8   007C           00803         DATA 124
+04A9   0008           00804         DATA 8
+04AA   0004           00805         DATA 4
+04AB   0004           00806         DATA 4
+04AC   0008           00807         DATA 8
+04AD   0000           00808         DATA 0
+04AE   0048           00809         DATA 72
+04AF   0054           00810         DATA 84
+04B0   0054           00811         DATA 84
+04B1   0054           00812         DATA 84
+04B2   0020           00813         DATA 32
+04B3   0000           00814         DATA 0
+04B4   0004           00815         DATA 4
+04B5   003F           00816         DATA 63
+04B6   0044           00817         DATA 68
+04B7   0040           00818         DATA 64
+04B8   0020           00819         DATA 32
+04B9   0000           00820         DATA 0
+04BA   003C           00821         DATA 60
+04BB   0040           00822         DATA 64
+04BC   0040           00823         DATA 64
+04BD   0020           00824         DATA 32
+04BE   007C           00825         DATA 124
+04BF   0000           00826         DATA 0
+04C0   001C           00827         DATA 28
+04C1   0020           00828         DATA 32
+04C2   0040           00829         DATA 64
+04C3   0020           00830         DATA 32
+04C4   001C           00831         DATA 28
+04C5   0000           00832         DATA 0
+04C6   003C           00833         DATA 60
+04C7   0040           00834         DATA 64
+04C8   0030           00835         DATA 48
+04C9   0040           00836         DATA 64
+04CA   003C           00837         DATA 60
+04CB   0000           00838         DATA 0
+04CC   0044           00839         DATA 68
+04CD   0028           00840         DATA 40
+04CE   0010           00841         DATA 16
+04CF   0028           00842         DATA 40
+04D0   0044           00843         DATA 68
+04D1   0000           00844         DATA 0
+04D2   000C           00845         DATA 12
+04D3   0050           00846         DATA 80
+04D4   0050           00847         DATA 80
+04D5   0050           00848         DATA 80
+04D6   003C           00849         DATA 60
+04D7   0000           00850         DATA 0
+04D8   0044           00851         DATA 68
+04D9   0064           00852         DATA 100
+04DA   0054           00853         DATA 84
+04DB   004C           00854         DATA 76
+04DC   0044           00855         DATA 68
+04DD   0000           00856         DATA 0
+04DE   0008           00857         DATA 8
+04DF   0036           00858         DATA 54
+04E0   0041           00859         DATA 65
+04E1   0000           00860         DATA 0
+04E2   0000           00861         DATA 0
+04E3   0000           00862         DATA 0
+04E4   0000           00863         DATA 0
+04E5   0000           00864         DATA 0
+04E6   007F           00865         DATA 127
+04E7   0000           00866         DATA 0
+04E8   0000           00867         DATA 0
+04E9   0000           00868         DATA 0
+04EA   0000           00869         DATA 0
+04EB   0000           00870         DATA 0
+04EC   0041           00871         DATA 65
+04ED   0036           00872         DATA 54
+04EE   0008           00873         DATA 8
+04EF   0000           00874         DATA 0
+04F0   0000           00875         DATA 0
+04F1   0008           00876         DATA 8
+04F2   0004           00877         DATA 4
+04F3   0008           00878         DATA 8
+04F4   0004           00879         DATA 4
+04F5   0000           00880         DATA 0
+  000004F6            00881 F3_EOF EQU $ ; FONT.INC
+  000004F6            00882 F1_EOF EQU $ ; GLCD_T~1.BAS
+                      00883         END
+MPASM 03.20.07 Released                          GLCD_T~1.ASM   3-7-2003  16:03:09         PAGE  2
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRES                             0000009E
+ADRESH                            0000001E
+ADRESL                            0000009E
+ADRESLH                           0000001E
+AGAIN                             000001CA
+BANK0_END                         0000007F
+BANK0_START                       00000020
+BANK1_END                         000000EF
+BANK1_START                       000000A0
+BANK2_END                         0000016F
+BANK2_START                       00000110
+BANK3_END                         000001EF
+BANK3_START                       00000190
+BCLIE                             00000003
+BCLIF                             00000003
+BELL                              00000007
+BF                                00000000
+BIT_BIT                           
+BIT_BYTE                          
+BIT_DWORD                         
+BIT_WORD                          
+BIT_WREG                          
+BKSP                              00000008
+BODEN_OFF                         00003FBF
+BODEN_ON                          00003FFF
+BPF                               00000020
+BPFH                              00000021
+BRGH                              00000002
+BYTE_BIT                          
+BYTE_BYTE                         
+BYTE_DWORD                        
+BYTE_WORD                         
+BYTE_WREG                         
+C                                 00000000
+C@READ                            00000160
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR1LH                           00000016
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CCPR2LH                           0000001C
+CHECK@PAGE                        00000130
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CKE                               00000006
+CKP                               00000004
+CPD_OFF                           00003FFF
+CPD_ON                            00003EFF
+CP_ALL                            00000FCF
+CP_HALF                           00001FDF
+CP_OFF                            00003FFF
+CP_UPPER_256                      00002FEF
+CR                                0000000D
+CREN                              00000004
+CSRC                              00000007
+D                                 00000005
+DATA_ADDR                         00000005
+DC                                00000001
+DEBUG_OFF                         00003FFF
+DEBUG_ON                          000037FF
+DL@MS                             00000168
+DL@US                             00000175
+DLUS@W                            00000176
+DLY@W                             00000169
+DWORD_BIT                         
+DWORD_BYTE                        
+DWORD_DWORD                       
+DWORD_WORD                        
+DWORD_WREG                        
+D_A                               00000005
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDAT                             0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+F                                 00000001
+F1_000010                         00000193
+F1_000011                         00000196
+F1_000014                         000001CA
+F1_000015                         000001D1
+F1_000016                         000001D5
+F1_000017                         000001DA
+F1_000018                         000001DD
+F1_000019                         000001E2
+F1_000020                         000001E9
+F1_000021                         000001ED
+F1_000022                         000001F2
+F1_000023                         000001F5
+F1_000024                         000001FA
+F1_EOF                            000004F6
+F1_SOF                            00000190
+F2_000069                         00000190
+F2_EOF                            00000193
+F2_SOF                            00000190
+F3_EOF                            000004F6
+F3_SOF                            000001FC
+F@CALL                            
+F@JUMP                            
+FERR                              00000002
+FONT                              000001FC
+FR@LB2                            000001CB
+FR@LB4                            000001E3
+FSR                               00000004
+GCEN                              00000007
+GEN                               00000022
+GEN3                              00000023
+GEN3H                             00000024
+GETBIT@POS                        000000DD
+GIE                               00000007
+GLCD@CLS                          00000050
+GLCD@L2                           0000005D
+GLCD_CUR                          00000071
+GLCD_L2                           000000A4
+GLCD_XPOS                         00000025
+GLD@L1                            00000057
+GO                                00000002
+GO_DONE                           00000002
+GPR                               00000026
+HOME                              00000001
+HS_OSC                            00003FFE
+I2C_DTA                           00000005
+I2C_RD                            00000002
+I2C_STP                           00000004
+I2C_STRT                          00000003
+I@NT                              0000018A
+IBF                               00000007
+IBOV                              00000005
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+JUMP                              
+LCD@PLOT                          000000C6
+LCD@UNPLOT                        000000C8
+LCDWRITE                          000000B6
+LCD_CS1PIN                        00000001
+LCD_CS1PORT                       00000009
+LCD_CS2PIN                        00000002
+LCD_CS2PORT                       00000009
+LCD_CS_INVERTED                   00000000
+LCD_DONE                          000000B4
+LCD_DTPIN                         00000004
+LCD_DTPORT                        00000008
+LCD_ENPIN                         00000000
+LCD_ENPORT                        00000009
+LCD_RSPIN                         00000001
+LCD_RSPORT                        00000007
+LCD_RWPIN                         00000000
+LCD_RWPORT                        00000007
+LCD_TYPE                          00000001
+LP_OSC                            00003FFC
+LVP_OFF                           00003F7F
+LVP_ON                            00003FFF
+MPY@LP1                           00000159
+MUL@8X8                           00000155
+N1200                             0000432D
+N1200H                            00000043
+N2400                             0000418C
+N2400H                            00000041
+N300                              00004CF1
+N300H                             0000004C
+N4800                             000040BC
+N4800H                            00000040
+N600                              0000466E
+N600H                             00000046
+N9600                             00004054
+N9600H                            00000040
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRT                           00000002
+NUM_BIT                           
+NUM_BYTE                          
+NUM_DWORD                         
+NUM_WORD                          
+NUM_WREG                          
+NX@LB3                            000001E2
+NX@LB5                            000001FA
+OBF                               00000006
+OERR                              00000001
+ON1200                            0000C32D
+ON1200H                           000000C3
+ON2400                            0000C18C
+ON2400H                           000000C1
+ON300                             0000CCF1
+ON300H                            000000CC
+ON9600                            0000C054
+ON9600H                           000000C0
+OPTION_REG                        00000081
+OT1200                            0000832D
+OT1200H                           000000A0
+OT2400                            0000818C
+OT2400H                           000000A0
+OT300                             00008CF1
+OT300H                            000000A0
+OT9600                            00008054
+OT9600H                           000000A0
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PP0                               00000027
+PP0H                              00000028
+PP1                               00000029
+PP1H                              0000002A
+PP2                               0000002B
+PP2H                              0000002C
+PP3                               0000002D
+PP3H                              0000002E
+PP4                               0000002F
+PP4H                              00000030
+PP5                               00000031
+PP5H                              00000032
+PP6                               00000033
+PP6H                              00000034
+PP7H                              00000035
+PR2                               00000092
+PRINT                             0000008A
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+PWRTE_OFF                         00003FFF
+PWRTE_ON                          00003FF7
+R                                 00000002
+R@B                               
+R@SLP1                            00000148
+RAM_BANK                          00000000
+RAM_BANKS                         00000004
+RBIE                              00000003
+RBIF                              00000000
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RC_OSC                            00003FFF
+RD                                00000000
+READ@BYTE                         000000F2
+READ@IT                           00000100
+READ@STATUS                       00000142
+READ_WRT                          00000002
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RSOUT@                            00000160
+RX9                               00000006
+RX9D                              00000000
+R_W                               00000002
+S                                 00000003
+S@B                               
+SEN                               00000000
+SET@PAGE                          
+SETUP@LCD                         00000112
+SI@G                              0000000D
+SIN                               00000004
+SIN@A                             00000005
+SKP@GCHK                          00000139
+SKP@GCSIN                         0000012D
+SMP                               00000007
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+START@                            0000018F
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1200                             0000032D
+T1200H                            00000003
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2400                             00000190
+T2400H                            00000001
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+T300                              00000CF1
+T300H                             0000000C
+T4800                             000000BC
+T600                              0000066E
+T600H                             00000006
+T9600                             00000054
+TAB                               00000009
+TG@L                              0000013D
+TMR0                              00000001
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1LH                            0000000F
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISB                             00000086
+TRISC                             00000087
+TRISD                             00000088
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+W                                 00000000
+WCOL                              00000007
+WDT_OFF                           00003FFB
+WDT_ON                            00003FFF
+WORD_BIT                          
+WORD_BYTE                         
+WORD_DWORD                        
+WORD_WORD                         
+WORD_WREG                         
+WR                                00000001
+WREG_BIT                          
+WREG_BYTE                         
+WREG_DWORD                        
+WREG_WORD                         
+WREN                              00000002
+WRERR                             00000003
+WRTE_OFF                          00003DFF
+WRTE_ON                           00003FFF
+XPOS                              00000036
+XTAL                              00000004
+XT_OSC                            00003FFD
+YPOS                              00000037
+Z                                 00000002
+_ADC                              00000008
+_ADC_RES                          0000000A
+_BANKS                            00000003
+_CORE                             0000000E
+_EEPROM                           00000100
+_FLASH                            00000001
+_MAXMEM                           00002000
+_PAGES                            00000004
+_USART                            00000001
+_USB                              00000000
+__16F877                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+01C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0200 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0240 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0280 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+02C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0300 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0340 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0380 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+03C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0400 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0440 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0480 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+04C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXX----------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:  1270
+Program Memory Words Free:  6922
+
+
+Errors   :     0
+Warnings :     0 reported,     6 suppressed
+Messages :     1 reported,     9 suppressed
+
+

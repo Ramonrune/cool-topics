@@ -1,0 +1,137 @@
+A51 MACRO ASSEMBLER  LCD                                                                  11/03/2000 12:22:31 PAGE     1
+
+
+MACRO ASSEMBLER A51 V6.02
+OBJECT MODULE PLACED IN .\lcd.OBJ
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE .\lcd.asm SET(SMALL) DEBUG EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     
+                       2      
+                       3     
+                       4     
+                       5     
+                       6     
+                       7     
+                       8     NAME    LCD
+                       9     
+                      10     ;Set up Code Segment and exports:
+                      11     
+                      12     LCD              SEGMENT CODE
+----                  13     RSEG             LCD
+                      14     
+                      15                      PUBLIC  _output
+                      16                      PUBLIC  initialise
+                      17                      PUBLIC  clearscreen
+                      18     
+                      19     
+                      20     ;LCD Register Addresses.
+  0000                21     LCD_CMD_WR      equ     00h
+  0001                22     LCD_DATA_WR     equ     01h
+  0002                23     LCD_BUSY_RD     equ     02h
+  0003                24     LCD_DATA_RD     equ     03h
+  0080                25     LCD_PAGE        equ     80h
+                      26     
+                      27     ;LCD Commands
+  0001                28     LCD_CLS         equ     1
+  0002                29     LCD_HOME        equ     2
+  0004                30     LCD_SETMODE     equ     4
+  0008                31     LCD_SETVISIBLE  equ     8
+  0010                32     LCD_SHIFT       equ     16
+  0020                33     LCD_SETFUNCTION equ     32
+  0040                34     LCD_SETCGADDR   equ     64
+  0080                35     LCD_SETDDADDR   equ     128
+                      36     
+                      37     
+                      38     
+                      39     
+                      40     ; Initialisation Routine for the LCD display.
+0000 7430             41     initialise:     mov A,#030h                     ;1 line, 8 bits
+0002 120000   F       42                     call wrcmd
+0005 740C             43                     mov A,#LCD_SETVISIBLE + 4
+0007 120000   F       44                     call wrcmd
+000A 748F             45                     mov A,#LCD_SETDDADDR+15         ; Start at right hand side of the display
+000C 120000   F       46                     call wrcmd
+000F 7407             47                     mov A,#LCD_SETMODE + 3          ; Automatic Increment - Display shift left.
+                               
+0011 120000   F       48                     call wrcmd
+0014 22               49                     ret
+                      50     
+                      51     ; We move the parameter (held in R7) into the Accumulator prior to writing it.
+0015 EF               52     _output:        mov A,R7        
+0016 120000   F       53                     call wrdata
+0019 22               54                     ret
+                      55     
+                      56     
+                      57     ;Clears the LCD display and sets the initialisation conditions.
+A51 MACRO ASSEMBLER  LCD                                                                  11/03/2000 12:22:31 PAGE     2
+
+001A 7401             58     clearscreen:    mov A,#LCD_CLS
+001C 120000   F       59                     call wrcmd
+001F 748F             60                     mov A,#LCD_SETDDADDR + 15
+0021 120000   F       61                     call wrcmd
+0024 22               62                     ret
+                      63     
+                      64                     
+                      65                     
+                      66     ;*****************************
+                      67     ;******** SUBROUTINES ********
+                      68     ;*****************************
+                      69     
+                      70     ;Sub routine to write command:
+0025 75A080           71     wrcmd:          mov P2,#LCD_PAGE
+0028 7800             72                     mov R0,#LCD_CMD_WR
+002A F2               73                     movx @R0,A
+002B 8007             74                     jmp wtbusy
+                      75     
+                      76     ; Subroutine to Write a Character to the LCD Display.
+002D 75A080           77     wrdata:         MOV P2,#LCD_PAGE                                
+0030 7801             78                     MOV R0,#LCD_DATA_WR
+0032 EF               79                     MOV A,R7
+0033 F2               80                     MOVX @R0,A
+                      81     
+                      82     
+                      83     ; Subroutine to wait for a busy clear.  
+0034 7902             84     wtbusy:         MOV R1,#LCD_BUSY_RD
+0036 E3               85                     MOVX A,@R1
+0037 20E7FA           86                     JB ACC.7,wtbusy
+003A 22               87                     ret
+                      88     
+                      89                     END
+A51 MACRO ASSEMBLER  LCD                                                                  11/03/2000 12:22:31 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+ACC. . . . . . . .  D ADDR   00E0H   A   
+CLEARSCREEN. . . .  C ADDR   001AH   R   SEG=LCD
+INITIALISE . . . .  C ADDR   0000H   R   SEG=LCD
+LCD. . . . . . . .  C SEG    003BH       REL=UNIT
+LCD_BUSY_RD. . . .  N NUMB   0002H   A   
+LCD_CLS. . . . . .  N NUMB   0001H   A   
+LCD_CMD_WR . . . .  N NUMB   0000H   A   
+LCD_DATA_RD. . . .  N NUMB   0003H   A   
+LCD_DATA_WR. . . .  N NUMB   0001H   A   
+LCD_HOME . . . . .  N NUMB   0002H   A   
+LCD_PAGE . . . . .  N NUMB   0080H   A   
+LCD_SETCGADDR. . .  N NUMB   0040H   A   
+LCD_SETDDADDR. . .  N NUMB   0080H   A   
+LCD_SETFUNCTION. .  N NUMB   0020H   A   
+LCD_SETMODE. . . .  N NUMB   0004H   A   
+LCD_SETVISIBLE . .  N NUMB   0008H   A   
+LCD_SHIFT. . . . .  N NUMB   0010H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+WRCMD. . . . . . .  C ADDR   0025H   R   SEG=LCD
+WRDATA . . . . . .  C ADDR   002DH   R   SEG=LCD
+WTBUSY . . . . . .  C ADDR   0034H   R   SEG=LCD
+_OUTPUT. . . . . .  C ADDR   0015H   R   SEG=LCD
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

@@ -1,0 +1,18 @@
+#
+# Labcenter Electronics
+#
+# C++ syntax highlighter definition file.
+#
+line_comment=//.*$
+block_comment_open=/\*
+block_comment_close=\*/
+string="([^"\\]|\\.)*"
+constant=\b((0(x|X)[\da-fA-F]*)|((\d+\.?\d*)|(\.\d+))((e|E)(\+|-)?\d+)?)(L|l|UL|ul|u|U|F|f)?\b
+constant='([^'\\]|\\.)*'
+constant=\b(false|true)\b
+keyword=\b(auto|bool|break|case|catch|char|class|const|const_cast|continue|default|delete|do|double|else|enum|explicit|export|extern|float|for|friend|goto|if|inline|int|long|mutable|namespace|new|operator|private|protected|public|register|reinterpret_cast|return|short|signed|sizeof|static|static_cast|struct|switch|template|this|throw|try|typedef|typeid|typename|union|unsigned|using|virtual|void|volatile|wchar_t|while)\b
+extensions=\b(asm|_cs|cdecl|_ds|_es|far|fortran|huge|interrupt|near|pascal|_ss)\b
+macro=^\w*#(define|include|if|endif|else).*$
+operator=(\?|:|\|\||&&|~|\+\+|--)
+operator=(&|\^|\||<<|>>|\*|/|%|\+|-|=|!|<|>)(=)?
+

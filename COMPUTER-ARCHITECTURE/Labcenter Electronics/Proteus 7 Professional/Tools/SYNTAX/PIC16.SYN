@@ -1,0 +1,21 @@
+#
+# Labcenter Electronics
+#
+# Microchip PIC16 syntax highlighter definition file.
+#
+line_comment=;.*$
+string='([^'\\]|\\.)*'
+constant=((0(x|X)[\da-fA-F]*)|((\d+\.?\d*)|(\.\d+))((e|E)(\+|-)?\d+)?)(L|l|UL|ul|u|U|F|f)?
+#PIC16C5
+keyword=\b(addwf|andlw|andwf|bcf|bsf|btfsc|btfss|call|clrf|clrw|clrwdt|comf|decf|decfsz|goto|incf|incfsz|iorlw|iorwf|movf|movlw|movwf|nop|option|retlw|rlf|rrf|sleep|subwf|swapf|tris|xorlw|xorwf)\b
+#PIC16C
+keyword=\b(addlw|retfie|return|sublw)\b
+#PIC17C
+keyword=\b(addwfc|btg|cpfseq|cpfsgt|cpfslt|daw|dcfsnz|infsnz|lcall|movfp|movlb|movlr|movpf|mullw|mulwf|negw|rlcf|rlncf|rrcf|rrncf|setf|subwfb|tablrd|tablwt|tlrd|tlwt|tstfsz)\b
+extensions=\b(ADCON[0-1]|ADRES|CCP[1-2]CON|CCPR[1-2](L|H)|CMCON|EEADR|EECON[1-2]|EEDATA|F(SR)?|GPIO|INDF|INTCON|LCDCON|LCDD(0[0-0]|1[0-5])|LCDPS|LCDSE|OSCCAL|PCL|PCLATH|PCON|PIE[1-2]|PIR[1-2]|PORT[A-G]|PR2|RCREG|RCSTA|RTCC|SPBRG|SSP(ADD|BUF|CON|STAT)|STATUS|T[1-2]CON|TMR((0|2)|1(H|L))|TRIS[A-G]|TXREG|TXSTA|VRCON|WREG|W)\b
+extensions=\b(AD(CS[0-1]|IE|IF|ON)|BF|BO|BRGH|C([1-2]OUT)?|CAL[0-5]|CCP[1-2](IE|IF|M[0-3]|X|Y)|CHS[0-2]|CK(E|P)|CM[0-2]|CIS|CMI(E|F)|CREN|CS[0-1]|CSRC|D(A|C)|EEI(E|F)|FERR|GIE|GO_DONE|IBF|IBOV|INT(F|E(DG)?)|IRP|LCD(EN|I(E|F))|LMUX[0-1]|LP[0-3]|NOT(_PD|_RBPU|_RBWU|_TO)|OBF|OERR|PA[0-1]|PCFG[0-2]|PEIE|POR|P|PS([0-2]|A|P(IE|IF|MODE))|RBI(E|F)|RBWUF|RCI(E|F)|RD|RP[0-1]|RW|RX9(D)?|S(E(0|5|9|12|16|20|27|29))?|SLPEN|SMP|SPEN|SREN|SSP(EN|IE|IF|M[0-3]|OV)|SYNC|T0(CS|IE|IF|SE)|T[1-2]CKPS[0-1]|T1OSCEN|TMR(1CS|[1-2]IE|[1-2]IF|[1-2]ON)|TOUTPS[0-3]|TRISE[0-2]|TRMT|TX(89|9|9D|D8|EN|I(E|F))|UA|VGEN|VR([0-3]|EN|OE|R)|WCOL|WR(EN|ERR)?|Z)\b
+macro=\b(ADDCF|ADDDCF|BC|BNC|BNDC|BZ|BNZ|CLRC|CLRDC|CLRZ|MOVFN|NEGF|SETC|SETDC|SETZ|SKPC|SKPNC|SKPDC|SKPNDC|SKPZ|SKPNZ|SUBCF|SUBDCF|TSTF)\b
+macro=\b(#DEFINE|#INCLUDE|#UNDEFINE|BANKISEL|BANKSEL|CBLOCK|CODE|CONSTANT|DATA|DB|DE|DT|DW|ELSE|END|ENDC|ENDIF|ENDM|ENDW|EQU|ERROR|ERRORLEVEL|EXITM|EXPAND|EXTERN|FILL|GLOBAL|IDATA|IF|IFDEF|IFNDEF|LIST|LOCAL|MACRO|MESSG|NOEXPAND|NOLIST|ORG|PAGE|PAGESEL|PROCESSOR|RADIX|RES|SET|SPACE|SUBTITLE|TITLE|UDATA|UDATA_OVR|UDATA_SHR|VARIABLE|WHILE|__BADRAM|__CONFIG|__IDLOCS|__MAXRAM)\b
+operator=(\+|-|<|>|/(/)?)
+
+

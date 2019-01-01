@@ -1,0 +1,47 @@
+:Base INSTRUMENTS.HLP
+1 VIRTUAL INSTRUMENTS
+2 Virtual Oscilloscope
+3 Overview=Scope_Overview
+3 Using the Oscilloscope=Using_the_Oscilloscope
+3 Modes of Operation=Modes_of_Operation
+3 Triggering=Triggering_the_Oscilloscope
+3 Input Coupling=Input_Coupling
+2 Virtual Logic Analyser
+3 Overview=Logan_Overview
+3 Using the Logic Analyser=Using_the_Logic_Analyser
+3 Panning and Zooming=Panning_and_Zooming
+3 Taking Measurements=Taking_Measurements
+2 Virtual Signal Generator
+3 Overview=Siggen_Overview
+3 Using the Signal Generator=Using_the_Signal_Generator
+3 Using the AM & FM Modulation Inputs=Using_Modulation_Inputs
+2 Virtual Pattern Generator
+3 Overview=Pattgen_Overview
+3 Using the Pattern Generator=pattgen_usage
+3 Pattern Generator Pins=patgen_pins
+3 Clocking Modes=Clocking_Modes
+3 Trigger Modes=Reset_Modes
+3 External Hold=holdmode
+3 Additional Functionality=patgen_addtitional_features
+2 Virtual Counter Timer
+3 Overview=CTimer_Overview
+3 Using the Timer Modes=Using_the_Timer_Modes
+3 Using the Frequency Mode=Using_the_Frequency_Mode
+3 Using the Counter Mode=Using_the_Counter_Mode
+2 Virtual Terminal Model
+3 Overview=VT_Overview
+3 Using the Virtual Terminal=Using_the_Virtual_Terminal
+3 MAX232 Line Driver=MAX232_Model
+2 SPI Debugger
+3 Overview=SPI_Overview
+3 The SPI Debugger Window=SPI_Window
+3 SPI Model Properties=SPI_Model_Properties
+3 Using the SPI Debugger=SPI_Using
+2 I2C Debugger
+3 Overview=I2C_Overview
+3 The I2C Schematic Part=I2C_COMPONENT
+3 The I2C Debugger Window=I2C_WINDOW
+3 I2C Model Properties=I2C_Properties
+3 Using the I2C Debugger=I2C_Using
+2 Voltmeters and Ammeters
+3 Overview=Meters_Overview

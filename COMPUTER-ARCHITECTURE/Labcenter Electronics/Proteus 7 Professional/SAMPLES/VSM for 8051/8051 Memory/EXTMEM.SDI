@@ -1,0 +1,16 @@
+,,,; Test program for external memory.
+,,,; Write data to memory, then read it back.
+,,,; The program loops forever.
+,,,
+,,,                org 0
+,,,
+,,,
+0000,90 12 34,loop1,loop1:          mov DPTR,#1234h
+0003,74 AA,,                mov A,#0AAh
+0005,F0,,                movx @DPTR,A
+0006,E0,,                movx A,@DPTR
+,,,
+0007,80 F7,,                jmp loop1
+,,,
+000E,,,                END
+,,,

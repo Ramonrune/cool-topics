@@ -1,0 +1,6 @@
+#Syntax Highlight Extension Mappings for PIC18
+SDI=PIC18.SYN
+ASM=PIC18.SYN
+BAS=PROTON.SYN
+H=C.SYN
+C=C.SYN

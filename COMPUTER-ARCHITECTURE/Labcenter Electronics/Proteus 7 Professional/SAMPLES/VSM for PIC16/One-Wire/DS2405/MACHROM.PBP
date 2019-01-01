@@ -1,0 +1,303 @@
+ NOLIST
+;*******************************************************
+;*                 Code Produced by the                *
+;*           PROTON+ LITE Compiler. Version 3.0        *
+;* Copyright Rosetta Technologies/Crownhill Associates *
+;*              Written by Les Johnson. 2004           *
+;*******************************************************
+	LIST
+;{
+;FILE F1 = D:\PROTEUS\MYFILES\LABCENTER\1WIRE\DS2405\MACHROM.BAS
+;}
+;[Variable Listing]
+;_B#VR1,002A,DT_BYTE,1
+;DQ,0006.7,DT_BIT
+;STAT,002A.0,DT_BIT
+;[End Listing]
+ LIST  P = 16F628A,f = INHX8M ,w = 2, x = on, r = DEC, mm = ON, n = 0, c = 255
+ #include "c:\PROGRA~1\CROWNH~1\pdslite\INC\P16F628A.lpb"
+ #define XTAL 4
+ #define _CORE 14
+ #define _MAXRAM 224
+ #define _RAM_END 335
+ #define _MAXMEM 2048
+ #define _ADC 0
+ #define _ADC_RES 0
+ #define _EEPROM 128
+ #define _PAGES 1
+ #define _BANKS 3
+ #define RAM_BANKS 3
+ #define _USART 1
+ #define _USB 0
+ #define _FLASH 0
+ #define BANK0_START 32
+ #define BANK0_END 127
+ #define BANK1_START 160
+ #define BANK1_END 239
+ #define BANK2_START 288
+ #define BANK2_END 335
+ #define _SYSTEM_VARIABLE_COUNT 11
+ram_bank = 0
+ #define LCD#TYPE 0
+ #define CF_ADPORT_MASK#REQ 1
+f@call macro dest
+	if (dest < 1)
+	else
+	if (dest > $)
+	else
+	endif
+	endif
+	call dest
+	endm
+f@jump macro dest
+	if (dest < 1)
+	else
+	if (dest > $)
+	else
+	endif
+	endif
+	goto dest
+	endm
+set@page macro dest
+	endm
+s@b	macro varin
+	if((varin & 384) == 0)
+	if(ram_bank == 1)
+	bcf 3,5
+	endif
+	if(ram_bank == 2)
+	bcf 3,6
+	endif
+	if(ram_bank == 3)
+	bcf 3,5
+	bcf 3,6
+	endif
+ram_bank = 0
+	endif
+	if((varin & 384) == 128)
+	if(ram_bank == 0)
+	bsf 3,5
+	endif
+	if(ram_bank == 2)
+	bsf 3,5
+	bcf 3,6
+	endif
+	if(ram_bank == 3)
+	bcf 3,6
+	endif
+ram_bank = 1
+	endif
+	if((varin & 384) == 256)
+	if(ram_bank == 0)
+	bsf 3,6
+	endif
+	if(ram_bank == 1)
+	bcf 3,5
+	bsf 3,6
+	endif
+	if(ram_bank == 3)
+	bcf 3,5
+	endif
+ram_bank = 2
+	endif
+	if((varin & 384) == 384)
+	if(ram_bank == 0)
+	bsf 3,5
+	bsf 3,6
+	endif
+	if(ram_bank == 1)
+	bsf 3,6
+	endif
+	if(ram_bank == 2)
+	bsf 3,5
+	endif
+ram_bank = 3
+	endif
+	endm
+r@b	macro
+	if((ram_bank & 1) != 0)
+	bcf 3,5
+	endif
+	if((ram_bank & 2) != 0)
+	bcf 3,6
+	endif
+ram_bank = 0
+	endm
+ #include "c:\PROGRA~1\CROWNH~1\pdslite\INC\REG_LD14.INC"
+BPF = 32
+BPFH = 33
+GEN = 34
+GENH = 35
+GPR = 36
+PP0 = 37
+PP0H = 38
+PP1 = 39
+PP1H = 40
+PP5 = 41
+_B#VR1 = 42
+	org 0
+	goto Start@
+lcd@cls movlw 128
+	movwf 33
+cls movlw 254
+	call ch@snd
+	movlw 1
+	call ch@snd
+	movlw 117
+	movwf 38
+	movlw 48
+	goto dlus@w
+lcd@crs clrf 33
+	bsf 33,7
+curs@ movwf 41
+	movlw 254
+	call ch@snd
+	movfw 41
+	goto ch@snd
+RSOUT_PORT = PORTA
+RSOUT_PIN = 0
+RSOUT_MODE = 0
+SERIAL_BAUD = 9600
+rsout movwf 36
+	movwf PP1
+	bsf 3,5
+	bcf PORTA,0
+	bcf 3,5
+	movlw 9
+	movwf 40
+	clrc
+	call rso@bit
+	rrf 39,f
+	decfsz 40,f
+	goto $ - 3
+	setc
+	call rso@bit
+	movfw 36
+	goto i@nt
+rso@bit skpnc
+	goto $ + 4
+	nop
+	bcf PORTA,0
+	goto Sr@dly
+	bsf PORTA,0
+	goto Sr@dly
+sr@dly movlw 0
+	movwf 38
+	movlw 91
+	goto dlus@w
+ch@snd
+	btfsc 33,6
+	goto rsout
+ow@out movwf 39
+	movlw 8
+	btfsc 36,2
+	movlw 1
+	movwf 40
+ow@otlp rrf 39,f
+	movfw 34
+	movwf 4
+	movfw 35
+	xorlw 255
+	andwf 0,f
+	bsf 4,7
+	andwf 0,f
+	movfw 35
+	skpnc
+	iorwf 0,f
+	movlw 60
+	call dl@us
+	movfw 35
+	iorwf 0,f
+	decfsz 40,f
+	goto ow@otlp
+	setc
+	goto i@nt
+ow@in movlw 8
+	btfsc 36,2
+	movlw 1
+	movwf 40
+	clrf 39
+	movfw 34
+	movwf 4
+ow@inlp movfw 35
+	xorlw 255
+	andwf 0,f
+	bsf 4,7
+	andwf 0,f
+	movfw 35
+	iorwf 0,f
+	bcf 4,7
+	andwf 0,w
+	addlw 255
+	btfss 36,2
+	rrf 39,f
+	btfsc 36,2
+	rlf 39,f
+	movlw 50
+	call dl@us
+	decfsz 40,f
+	goto ow@inlp
+	movfw 39
+	setc
+	goto i@nt
+ow@rst2 movwf 36
+	btfss 36,0
+	goto i@nt
+ow@rst movfw 34
+	movwf 4
+	movfw 35
+	xorlw 255
+	andwf 0,f
+	bsf 4,7
+	andwf 0,f
+	movlw 1
+	movwf 38
+	movlw 244
+	call dlus@w
+	movfw 35
+	iorwf 0,f
+	movlw 1
+	movwf 38
+	movlw 244
+	goto dlus@w
+dl@ms clrf 40
+dly@w movwf 39
+dly@p movlw 255
+	addwf 39,f
+	skpc
+	addwf 40,f
+	skpc
+	goto i@nt
+	movlw 3
+	movwf 38
+	movlw 223
+	call dlus@w
+	goto $ - 10
+dl@us clrf 38
+dlus@w addlw 232
+	movwf 37
+	comf 38,f
+	movlw 252
+	skpc
+	goto $ + 4
+	addwf 37,f
+	skpnc
+	goto $ - 2
+	addwf 37,f
+	nop
+	incfsz 38,f
+	goto $ - 6
+	btfsc 37,0
+	goto $ + 1
+	btfss 37,1
+	goto $ + 3
+	nop
+	goto $ + 1
+	return
+i@nt bcf 3,7
+i@nt2 bcf 3,5
+	bcf 3,6
+	nop
+	return
+Start@
+	clrf 32

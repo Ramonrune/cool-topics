@@ -1,0 +1,138 @@
+' DS18S20.bsp
+' This program demonstrates interfacing to a Dallas Semiconductor DS18S20
+' 1-Wire Digital Thermometer chip using the BS2p's 1-Wire commands. Connect
+' the BS2p, BS2pe, or BS2px to the DS18S20 as shown in the diagram in the
+' OWIN or OWOUT command description. This program uses a simplified
+' approach that ignores the fractional portion of the temperature.
+
+' {$STAMP BS2p}
+' {$PBASIC 2.5}
+
+DQ              PIN     0               ' 1-Wire buss pin
+
+RdROM           CON     $33             ' read serial number
+MatchROM        CON     $55             ' match SN -- for multiple devices
+SkipROM         CON     $CC             ' ignore SN -- use for one device
+OSkipROM        CON     $3C
+CvrtTmp         CON     $44             ' start temperature conversion
+RdSP            CON     $BE             ' read DS18S20 scratch pad
+WrSP            CON     $4E             ' write DS18S20 scratch pad
+ErE2            CON     $48             ' copy DS18S20 scratch pad into e2prom
+RdPs            CON     $B4             ' read Power Supply status. 0=parassite
+                                        '                           1=ext power.
+
+tempIn          VAR     Word            ' raw temperature
+sign            VAR     tempIn.BIT11    ' 1 = negative temperature
+tLo             VAR     tempIn.BYTE0
+tHi             VAR     tempIn.BYTE1
+TH              VAR     Word            ' Temperature Treeshold High value
+TL              VAR     Word            ' Temperature Treeshold Low Value
+CPC             VAR     Byte            ' COUNT PER °C
+CRE             VAR     Byte            ' COUNT REMAIN
+tSign           VAR     Bit             ' saved sign bit
+pstatus         VAR     Bit             ' power status
+tempC           VAR     Word            ' final Celsius temp
+tempF           VAR     Word            ' final Fahrenheit temp
+AlH             VAR     Word
+AlL             VAR     Word
+Asign           VAR     Bit
+AHsign          VAR     TH.BIT7
+ALsign          VAR     TL.BIT7
+e2pin           VAR     Bit
+dummy           VAR     Byte
+alarm           VAR     Bit
+
+Main:
+  DO
+    GOSUB Get_Parameters
+    GOSUB Get_Temperature               ' read temperature from DS18S20
+    DEBUG HOME,                         ' display
+          "DS1822", CR,
+          "------", CR,
+          SDEC tempC, " C ", CR,
+          SDEC tempF, " F ", CR,
+          "Alarm H value: ", SDEC AlH, " C ",CR,
+          "Alarm L value: ", SDEC AlL, " C ",CR
+
+    IF (alarm) THEN
+      DEBUG "Temperature Alarm: ON ",CR
+    ELSE
+      DEBUG "Temperature Alarm: OFF",CR
+    ENDIF
+
+    IF (pstatus) THEN
+      DEBUG "Power Supply: ACTIVE   ",CR, CR
+    ELSE
+      DEBUG "Power Supply: PARASSITE",CR, CR
+    ENDIF
+
+    PAUSE 1000
+  LOOP
+  END
+
+Get_Temperature:
+  OWOUT DQ, 1, [SkipROM, CvrtTmp]              ' send convert temperature command
+  '
+  ''''' NOTE: modify this do while for passive mode
+  '
+  DO                                           ' wait on conversion
+    PAUSE 15                                   ' small loop pad
+    OWIN DQ, 4, [tempIn]                       ' check status (bit transfer)
+  LOOP UNTIL (tempIn)                          ' 1 when complete
+
+  OWOUT DQ, 1, [SkipROM, RdSP]                 ' read DS18S20 scratch pad
+
+  OWIN  DQ, 2, [tLo, tHi,                      ' get raw temp data
+                TH, TL]                        ' get allarm sets
+
+  tSign = sign                                 ' save sign bit
+  tempC = tempIn >> 1                          ' round to whole degrees
+  tempC.BYTE1 = $FF * tSign                    ' correct twos complement bits
+
+  tempF = (ABS tempC) * 9 / 5                  ' start F conversion
+  IF (tSign) THEN                              ' finish F conversion
+    tempF = 32 - tempF                         ' C was negative
+  ELSE
+    tempF = tempF + 32                         ' C was positive
+  ENDIF
+
+  IF (tempC > AlH) OR (tempC < AlL) THEN
+    alarm = 1
+  ELSE
+    alarm = 0
+  ENDIF
+
+  RETURN
+
+Get_Parameters:
+  ' Read the configuration present into the scratch pad
+  '
+  OWOUT DQ, 1, [SkipROM, RdSP]                 ' read DS18S20 scratch pad
+  OWIN  DQ, 2, [dummy, dummy, TH, TL]          ' get data
+
+  ' Convert allarm setting
+  ASign = AHsign
+  AlH   = TH  - (256 * ASign)
+  ASign = ALsign
+  AlL   = TL  - (256 * ASign)
+
+  ' Read the power supply status.
+  OWOUT DQ, 1, [SkipROM, RdPs]                 ' send rd power supply command
+  OWIN  DQ, 4, [pstatus]                       ' check power status
+
+  ' Write scratch pad with new alarms configuration
+  OWOUT DQ, 1, [SkipROM, WrSP, 50, 10]         ' Write DS18S20 scratch pad
+
+  ' Copy the contents of scractch pad memory
+  ' to e2prom. The check loop needs that DS1822
+  ' is powered externally.
+  '
+  ''''' NOTE: modify this do while for passive mode
+  '
+  OWOUT DQ, 1, [SkipROM, ErE2]                 ' Copy DS18S20 scratch pad in e2prom
+  DO                                           ' wait on e2prom writing
+    PAUSE 1                                    ' small sample loop
+    OWIN DQ, 4, [e2pin]                        ' check status (bit transfer)
+  LOOP UNTIL (e2pin)                           ' 1 when complete
+
+  RETURN

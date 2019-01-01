@@ -1,0 +1,95 @@
+
+                      L I C E N S E   A G R E E M E N T
+                      =================================
+
+                                                             January 22, 1996
+
+                            *********************
+                            *                   *
+                            *   A S E M - 5 1   *
+                            *                   *
+                            *    Version 1.2    *
+                            *                   *
+                            *********************
+
+                 A fast, reliable, and handy cross assembler
+                 for the MCS-51 family of microcontrollers
+                 that is running on every IBM-PC with MS-DOS.
+
+
+                   Copyright (c) 1994, 1996 by W.W. Heinz
+
+                            All rights reserved.
+
+
+
+     Author:                    W.W. Heinz
+     -------                    Bolzweg 3
+                                D-82041 Deisenhofen
+                                Germany
+
+                                phone   +49/89/6136115
+                                email   ww@andiunx.m.isar.de
+
+
+     Distribution Policy:
+     --------------------
+     All the ASEM-51 programs, data and documentation files are copyright-
+     reserved free software.  You may use, copy and distribute it free of
+     charge under the following conditions:
+
+     1. Never change the copyright statement!
+
+     2. The ASEM-51 package must be distributed in absolutely unmodified
+        form, including all program, data and documentation files.
+        If you distribute ASEM-51 to friends, associates, ftp servers,
+        CD-ROM publishers, or to computer bulletin board systems (BBS),
+        be sure to distribute it entirely and unchanged!
+
+     3. Do not distribute ASEM-51 together with protected software!
+
+     4. ASEM-51 must not be sold for profit!
+        No charge or payment may be levied or accepted for it.
+        Of course this only applies to the ASEM-51 package itself, and
+        not to the distribution media (i.e. BBS, disk, network, CD-ROM).
+
+     5. Exceptions are only possible with a written permission of the author!
+
+
+     Implementation:
+     ---------------
+     All executable programs of the ASEM-51 package have been developed with:
+
+            Turbo-Pascal 7.01 for DOS (c) Borland International 1992
+
+     ASEM-51 has not been produced according to ISO 9001 standards !!!
+     No formal process has been used during development, and there were
+     no efforts in quality assurance or quality management!
+
+
+     Disclaimer:
+     -----------
+     This software is provided as it is, without warranty of any kind,
+     expressed or implied, including but not limited to the implied
+     warranties of merchantability and fitness for a particular purpose.
+     The person using the software bears all risk as to the quality and
+     performance of the software.  The author will not be liable for any
+     special, incidental, consequential, indirect or similar damages due
+     to loss of data, time or profit or any other reason, even if the
+     author or an agent of the author has been advised of the possibility
+     of such damages.
+
+                             -----------------
+
+     ASEM-51 software, data and documentation are subject to change
+     without notice!
+
+
+     ASEM-51       is a trademark of:       W.W. Heinz
+     MCS-51        is a trademark of:       Intel Corporation
+     Turbo-Pascal  is a trademark of:       Borland International, Inc.
+     IBM-PC        is a trademark of:       IBM Corporation
+     MS-DOS        is a trademark of:       Microsoft Corporation
+
+     Trademarks of other companies mentioned appear for identification
+     purposes only and are the property of their respective companies.

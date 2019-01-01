@@ -1,0 +1,51 @@
+[Header]
+MagicCookie={0b13fe8c-dfe0-40eb-8900-6712719559a7}
+Version=1.0
+[File000]
+Location=K:\PRODEV\MTOUCH\Four Button\main.obj
+Folder=Intermediary
+[File001]
+Location=K:\PRODEV\MTOUCH\Four Button\main.sdb
+Folder=Intermediary
+[File002]
+Location=K:\PRODEV\MTOUCH\Four Button\main.rlf
+Folder=Intermediary
+[File003]
+Location=K:\PRODEV\MTOUCH\Four Button\main.lst
+Folder=Intermediary
+[File004]
+Location=K:\PRODEV\MTOUCH\Four Button\ssp.obj
+Folder=Intermediary
+[File005]
+Location=K:\PRODEV\MTOUCH\Four Button\ssp.sdb
+Folder=Intermediary
+[File006]
+Location=K:\PRODEV\MTOUCH\Four Button\ssp.rlf
+Folder=Intermediary
+[File007]
+Location=K:\PRODEV\MTOUCH\Four Button\ssp.lst
+Folder=Intermediary
+[File008]
+Location=K:\PRODEV\MTOUCH\Four Button\Four Button.cof
+Folder=Output
+[File009]
+Location=K:\PRODEV\MTOUCH\Four Button\Four Button.hex
+Folder=Output
+[File010]
+Location=K:\PRODEV\MTOUCH\Four Button\Four Button.sym
+Folder=Output
+[File011]
+Location=K:\PRODEV\MTOUCH\Four Button\Four Button.map
+Folder=Output
+[File012]
+Location=K:\PRODEV\MTOUCH\Four Button\Four Button.hxl
+Folder=Output
+[File013]
+Location=K:\PRODEV\MTOUCH\Four Button\startup.lst
+Folder=Output
+[File014]
+Location=K:\PRODEV\MTOUCH\Four Button\startup.rlf
+Folder=Output
+[File015]
+Location=K:\PRODEV\MTOUCH\Four Button\startup.as
+Folder=Output

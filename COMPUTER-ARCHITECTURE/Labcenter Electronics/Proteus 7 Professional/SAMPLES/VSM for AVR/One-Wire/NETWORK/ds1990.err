@@ -1,0 +1,15 @@
+Creating   'ds1990.eep'
+Creating   'ds1990.obj'
+Creating   'ds1990.lst'
+
+Assembling 'ds1990.asm'
+Including  'ds1990.vec'
+Including  'ds1990.inc'
+
+Program memory usage:
+Code             :  917 words
+Constants (dw/db):  132 words
+Unused           :    0 words
+Total            : 1049 words
+
+Assembly complete with no errors.

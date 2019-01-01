@@ -1,0 +1,14 @@
+'{$STAMP BS2p} 
+
+
+int     var     byte
+
+init:
+    pollin      0,1
+    pollout     1,1
+    pollmode    2
+
+loop:
+    goto        loop
+    
+    

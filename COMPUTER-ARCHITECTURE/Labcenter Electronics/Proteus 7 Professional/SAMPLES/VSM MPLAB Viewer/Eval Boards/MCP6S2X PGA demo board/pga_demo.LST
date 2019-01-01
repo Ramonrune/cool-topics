@@ -1,0 +1,454 @@
+MPASM  5.03                      PGA_DEMO.ASM   7-15-2006  10:53:14         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 
+                      00002 ;--------------------------------------------------------------------------
+                      00003 ;       This firmware is developed for the MCP6S2X PGA demo board.
+                      00004 ;
+                      00005 ;       The firmware reads the user interface dip and push-button switch 
+                      00006 ;       settings and programs the PGA accordingly.
+                      00007 ;
+                      00008 ;
+                      00009 ;       File name:      pga_demo.asm
+                      00010 ;       Date:           08/09/04
+                      00011 ;       File Version:   1.00
+                      00012 ;
+                      00013 ;       Programmer:     MPLAB ICE 2
+                      00014 ;       File Required:  PIC16F676.inc
+                      00015 ;       
+                      00016 ;       Demo Board:
+                      00017 ;               Name:   MCP6S2X Eval. Bd.
+                      00018 ;               Number: 102-00018R4
+                      00019 ;               Rev.:   R4
+                      00020 ;               PGAs:   MCP6S21 (or MCP6S91), MCP6S26
+                      00021 ;
+                      00022 ;       Author:         Ezana Haile
+                      00023 ;       Company:        Microchip Technology, Inc.
+                      00024 ;
+                      00025 ;--------------------------------------------------------------------------
+                      00026 
+                      00027         ERRORLEVEL -302
+                      00028         ERRORLEVEL -305
+                      00029 
+                      00030           LIST    p=16F676
+                      00031  
+                      00032 #INCLUDE <P16F676.INC>          
+                      00001         LIST
+                      00002 ; P16F676.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+                      00261         LIST
+                      00033 
+2007   3FB4           00034         __CONFIG        _MCLRE_ON & _WDT_OFF & _INTRC_OSC_NOCLKOUT & _PWRTE_OFF & _BODEN_OFF & _CPD_OFF
+                      00035 
+                      00036 ; definitions
+                      00037 
+                      00038                 #DEFINE                 CS                              PORTC, 4                ; CHIP S
+                            ELECT
+                      00039                 #DEFINE                 SCK                     PORTC, 5                ; CLOCK
+                      00040                 #DEFINE                 DO                              PORTC, 3                ; DATA O
+                            UT
+                      00041                 #DEFINE                 PUSH                    PORTA, 0                ; READ PUSH BUTT
+                            ON
+                      00042                 #DEFINE                 SW1                     PORTC, 2                ; SWITCH 1
+                      00043                 #DEFINE         SW2                     PORTC, 1                ; SWITCH 2
+                      00044                 #DEFINE                 SW3                     PORTC, 0                ; SWITCH 3
+                      00045                 #DEFINE                 SW4                     PORTA, 2                ; SWITCH 4
+                      00046                 #DEFINE                 SW5                     PORTA, 5                ; SWITCH 5
+                      00047                 #DEFINE                 PRG_GAIN                B'01000000'     ; PROGRAM GAIN
+MPASM  5.03                      PGA_DEMO.ASM   7-15-2006  10:53:14         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00048                 #DEFINE                 PRG_CHANNEL     B'01000001'     ; PROGRAM CHANNEL
+                      00049                 #DEFINE                 PGA_SHDN                B'00100000'     ; SHUTDOWN PGA
+                      00050 
+                      00051 ; reserve memory byte
+                      00052 
+                      00053                 CBLOCK  0X20
+  00000020            00054                 COUNTER, BUFFER
+                      00055                 ENDC
+                      00056 
+                      00057 
+                      00058 ;============================================================
+                      00059 ;==========     PROGRAM         =============================
+                      00060 ;============================================================
+                      00061 
+0000                  00062 PGA_DEMO                                                        ; CODE NAME
+                      00063                 ORG             0X00
+0000   2???           00064                 GOTO            START
+                      00065 
+                      00066 START   ORG             0X05
+                      00067         
+0005   1283           00068                 BCF             STATUS, RP0     ; BANK 0
+0006   3007           00069                 MOVLW           H'07'
+0007   0099           00070                 MOVWF           CMCON                   ; DIGITAL I/O
+0008   1683           00071                 BSF             STATUS, RP0     ; BANK 1        
+0009   0191           00072                 CLRF            ANSEL                   ; DIGITAL I/O
+000A   0195           00073                 CLRF            WPUA
+000B   303F           00074                 MOVLW           H'3F'
+000C   0085           00075                 MOVWF           TRISA                   ; SET PORT A AS INPUT
+000D   3007           00076                 MOVLW           H'07'                   ; SET RC<5,4,3> OUTPUT AND RC<2,1,0> INPUT
+000E   0087           00077                 MOVWF           TRISC                   ; SET PORT C AS INPUT
+000F   1283           00078                 BCF             STATUS, RP0     ; BANK 0
+                      00079 
+0010   1805           00080 READ    BTFSC           PUSH                    ; CHECK TO SEE IF THE READ BUTTON IS PRESSED
+0011   2???           00081                 GOTO            READ
+0012   1C05           00082 RDING   BTFSS           PUSH                    ; WAIT UNTIL THE BUTTON IS RELEASED
+0013   2???           00083                 GOTO            RDING                   ; LOOP
+                      00084 
+0014   1607           00085                 BSF             CS                              ; UNSELECT THE DEVICES
+0015   1187           00086                 BCF             DO                              ; KEEP THE DATAOUT (DO) LOW
+0016   1287           00087                 BCF             SCK                     ; SET CLOCK
+0017   01A1           00088                 CLRF            BUFFER          ; CLEAR BUFFER
+                      00089         
+0018   1A85           00090                 BTFSC           SW5     
+0019   2???           00091                 GOTO            CHANNEL_SHDN    ; DETERMINE IF IT'S FOR CHANNEL OR 
+                      00092                                                                 ; SHUTDOWN OTHERWISE PROGRAM GAIN
+                      00093 
+                      00094 ; PROGRAM THE GAIN OF PGA 1 (MCP6S26) OR PGA 2 (MCP6S21)
+                      00095 
+001A   1905           00096                 BTFSC           SW4
+001B   2???           00097                 GOTO            PGA_2_GAIN      ; DETERMINE THE DEVICE
+                      00098 
+001C                  00099 PGA_1_GAIN      
+001C   1207           00100                 BCF             CS                              ; SELECT PGA
+MPASM  5.03                      PGA_DEMO.ASM   7-15-2006  10:53:14         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001D   3040           00101                 MOVLW           PRG_GAIN                ; PROGRAM GAIN CONFIGURATION
+001E   00A1           00102                 MOVWF           BUFFER  
+001F   2???           00103                 CALL            BITBANG         ; SEND IT THROUGH SPI
+0020   2???           00104                 CALL            READ_SWITCH     ; READ SWITCH SETTINGS
+0021   2???           00105                 CALL            BITBANG         ; SEND IT THROUGH SPI AND PROGRAM PGA
+0022   1607           00106                 BSF             CS                              ; UNSELECT THE DEVICES
+0023   2???           00107                 GOTO            READ    
+                      00108 
+0024                  00109 PGA_2_GAIN
+0024   1207           00110                 BCF             CS                              ; SELECT PGA
+0025   3040           00111                 MOVLW           PRG_GAIN                ; PROGRAM GAIN CONFIGURATION
+0026   00A1           00112                 MOVWF           BUFFER  
+0027   2???           00113                 CALL            BITBANG         ; SEND IT THROUGH SPI AND PROGRAM PGA
+0028   2???           00114                 CALL            READ_SWITCH     ; READ SWITCH SETTINGS
+0029   2???           00115                 CALL            BITBANG         ; SEND IT THROUGH SPI
+002A   01A1           00116                 CLRF            BUFFER          ; SEND ZEROS TO PUSH OUT THE DATA TO PGA 2
+002B   2???           00117                 CALL            BITBANG         ; SEND 8 DUMMY BITS
+002C   2???           00118                 CALL            BITBANG         ; SEND 8 DUMMY BITS
+002D   1607           00119                 BSF             CS                              ; UNSELECT THE DEVICES
+002E   2???           00120                 GOTO            READ
+                      00121         
+                      00122 ; PROGRAM THE CHANNEL OR SHUTDOWN PGA 1 (MCP6S26) OR PGA 2 (MCP6S21)
+                      00123 
+002F                  00124 CHANNEL_SHDN
+002F   1905           00125                 BTFSC           SW4
+0030   2???           00126                 GOTO            SHDN                    ; GOTO SHUTDOWN
+                      00127 
+0031                  00128 CHANNEL 
+0031   1207           00129                 BCF             CS                              ; SELECT PGA
+0032   3041           00130                 MOVLW           PRG_CHANNEL     ; PROGRAM CHANNEL CONFIGURATION
+0033   00A1           00131                 MOVWF           BUFFER  
+0034   2???           00132                 CALL            BITBANG         ; SEND IT THROUGH SPI
+0035   2???           00133                 CALL            READ_SWITCH     ; READ SWITCH SETTINGS
+0036   2???           00134                 CALL            BITBANG         ; SEND IT THROUGH SPI AND PROGRAM PGA
+0037   1607           00135                 BSF             CS                              ; UNSELECT THE DEVICES
+0038   2???           00136                 GOTO            READ
+                      00137 
+0039                  00138 SHDN    
+0039   1807           00139                 BTFSC           SW3                     ; IF THE 3RD SWITCH IS HIGH THEN DON'T SHUTDOWN
+003A   2???           00140                 GOTO            READ
+                      00141         
+003B   1887           00142                 BTFSC           SW2                     ; DETERMINE WHICH DEVICE
+003C   2???           00143                 GOTO            SHDN_BOTH       ; SHUTDOWN BOTH PGAS
+003D   1907           00144                 BTFSC           SW1
+003E   2???           00145                 GOTO            SHDN_PGA_2      ; IF THE 1RD SWITCH IS HIGH THEN DON'T SHUTDOWN
+                      00146         
+003F                  00147 SHDN_PGA_1                                              ; SHUTDOWN THE FIRST PGA
+003F   1207           00148                 BCF             CS                              ; SELECT PGA
+0040   3020           00149                 MOVLW           PGA_SHDN                ; PROGRAM SHUTDOWN CONFIGURATION
+0041   00A1           00150                 MOVWF           BUFFER  
+0042   2???           00151                 CALL            BITBANG         ; SEND IT THROUGH SPI AND PROGRAM PGA
+0043   2???           00152                 CALL            BITBANG         ; SEND 8 DUMMY BITS
+0044   1607           00153                 BSF             CS                              ; UNSELECT THE DEVICES
+MPASM  5.03                      PGA_DEMO.ASM   7-15-2006  10:53:14         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0045   2???           00154                 GOTO            READ    
+                      00155         
+0046                  00156 SHDN_PGA_2                                              ; SHUTDOWN THE SECOND PGA
+0046   1207           00157                 BCF             CS                              ; SELECT PGA
+0047   3020           00158                 MOVLW           PGA_SHDN                ; PROGRAM SHUTDOWN CONFIGURATION
+0048   00A1           00159                 MOVWF           BUFFER  
+0049   2???           00160                 CALL            BITBANG         ; SEND IT THROUGH SPI AND PROGRAM PGA
+004A   2???           00161                 CALL            BITBANG         ; SEND 8 DUMMY BITS
+004B   01A1           00162                 CLRF            BUFFER
+004C   2???           00163                 CALL            BITBANG         ; SEND 8 DUMMY BITS
+004D   2???           00164                 CALL            BITBANG         ; SEND 8 DUMMY BITS
+004E   1607           00165                 BSF             CS                              ; UNSELECT THE DEVICES
+004F   2???           00166                 GOTO            READ
+                      00167 
+0050                  00168 SHDN_BOTH                                               ; SHUTDOWN BOTH PGAs
+0050   1207           00169                 BCF             CS                              ; SELECT PGA
+0051   3020           00170                 MOVLW           PGA_SHDN                ; PROGRAM SHUTDOWN CONFIGURATION
+0052   00A1           00171                 MOVWF           BUFFER  
+0053   2???           00172                 CALL            BITBANG         ; SEND IT THRU SPI AND SHUTDOWN PGA
+0054   2???           00173                 CALL            BITBANG         ; SEND 8 DUMMY BITS
+0055   3020           00174                 MOVLW           PGA_SHDN                ; PROGRAM SHUTDOWN CONFIGURATION (again)
+0056   00A1           00175                 MOVWF           BUFFER  
+0057   2???           00176                 CALL            BITBANG         ; SEND IT THRU SPI AND SHUTDOWN PGA
+0058   2???           00177                 CALL            BITBANG         ; SEND 8 DUMMY BITS
+0059   1607           00178                 BSF             CS                              ; UNSELECT THE DEVICES
+005A   2???           00179                 GOTO            READ
+                      00180         
+                      00181 ;--------------------------------------------------------------------------
+                      00182 ;--- READ THE SWITCH SETTINGS
+                      00183 ;--------------------------------------------------------------------------
+                      00184 
+005B                  00185 READ_SWITCH
+005B   01A1           00186                 CLRF            BUFFER          ; PROGRAM BUFFER FROM SWITCHES
+005C   1807           00187                 BTFSC           SW3                     ; CHECK THE 3RD SWITCH
+005D   1521           00188                 BSF             BUFFER, 2
+005E   1887           00189                 BTFSC           SW2                     ; CHECK THE 2RD SWITCH
+005F   14A1           00190                 BSF             BUFFER, 1
+0060   1907           00191                 BTFSC           SW1                     ; CHECK THE 1RD SWITCH
+0061   1421           00192                 BSF             BUFFER, 0
+0062   0008           00193                 RETURN
+                      00194 
+                      00195 ;--------------------------------------------------------------------------
+                      00196 ;---- BIT BANG SPI COMMUNICATION
+                      00197 ;--------------------------------------------------------------------------
+                      00198 
+0063                  00199 BITBANG
+0063   1003           00200                 CLRC
+0064   3008           00201                 MOVLW   H'08'
+0065   00A0           00202                 MOVWF           COUNTER         ; SET THE BIT BANG COUNTER
+0066   1BA1           00203 SEND    BTFSC           BUFFER, 7       ; SEE THE LAST BIT OF THE BUFFER
+0067   1587           00204                 BSF             DO                              ; THE SWITCH IS SET, THEN SET THE BUFFER
+                             HIGH
+0068   1687           00205                 BSF             SCK                     ; SET CLOCK
+MPASM  5.03                      PGA_DEMO.ASM   7-15-2006  10:53:14         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0069   1287           00206                 BCF             SCK                     ; CLEAR CLOCK
+006A   1187           00207                 BCF             DO                              ; CLEAR THE DATA
+006B   0DA1           00208                 RLF             BUFFER,F                ; ROLL THE BITS
+006C   0BA0           00209                 DECFSZ  COUNTER, F      ; CHECK END OF COUNTER
+006D   2???           00210                 GOTO            SEND                    ; LOOP
+006E   0008           00211                 RETURN
+                      00212 ;--------------------------------------------------------------------------
+                      00213 
+                      00214         END
+MPASM  5.03                      PGA_DEMO.ASM   7-15-2006  10:53:14         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000004
+ADCS1                             00000005
+ADCS2                             00000006
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+ANS0                              00000000
+ANS1                              00000001
+ANS2                              00000002
+ANS3                              00000003
+ANS4                              00000004
+ANS5                              00000005
+ANS6                              00000006
+ANS7                              00000007
+ANSEL                             00000091
+BITBANG                           00000063
+BUFFER                            00000021
+C                                 00000000
+CAL0                              00000002
+CAL1                              00000003
+CAL2                              00000004
+CAL3                              00000005
+CAL4                              00000006
+CAL5                              00000007
+CHANNEL                           00000031
+CHANNEL_SHDN                      0000002F
+CHS0                              00000002
+CHS1                              00000003
+CHS2                              00000004
+CINV                              00000004
+CIS                               00000003
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             00000019
+CMIE                              00000003
+CMIF                              00000003
+COUNTER                           00000020
+COUT                              00000006
+CS                                PORTC, 4
+DC                                00000001
+DO                                PORTC, 3
+EEADR                             0000009B
+EECON1                            0000009C
+EECON2                            0000009D
+EEDAT                             0000009A
+EEDATA                            0000009A
+EEIE                              00000007
+MPASM  5.03                      PGA_DEMO.ASM   7-15-2006  10:53:14         PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+EEIF                              00000007
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+GO                                00000001
+GO_DONE                           00000001
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IOC                               00000096
+IOCA                              00000096
+IRP                               00000007
+NOT_BOD                           00000000
+NOT_DONE                          00000001
+NOT_GPPU                          00000007
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RAPU                          00000007
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+OPTION_REG                        00000081
+OSCCAL                            00000090
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PGA_1_GAIN                        0000001C
+PGA_2_GAIN                        00000024
+PGA_DEMO                          00000000
+PGA_SHDN                          B'00100000'
+PIE1                              0000008C
+PIR1                              0000000C
+PORTA                             00000005
+PORTC                             00000007
+PRG_CHANNEL                       B'01000001'
+PRG_GAIN                          B'01000000'
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PUSH                              PORTA, 0
+RAIE                              00000003
+RAIF                              00000000
+RD                                00000000
+RDING                             00000012
+READ                              00000010
+READ_SWITCH                       0000005B
+RP0                               00000005
+RP1                               00000006
+SCK                               PORTC, 5
+SEND                              00000066
+MPASM  5.03                      PGA_DEMO.ASM   7-15-2006  10:53:14         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SHDN                              00000039
+SHDN_BOTH                         00000050
+SHDN_PGA_1                        0000003F
+SHDN_PGA_2                        00000046
+START                             00000005
+STATUS                            00000003
+SW1                               PORTC, 2
+SW2                               PORTC, 1
+SW3                               PORTC, 0
+SW4                               PORTA, 2
+SW5                               PORTA, 5
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1IE                              00000000
+T1IF                              00000000
+T1OSCEN                           00000003
+TMR0                              00000001
+TMR1CS                            00000001
+TMR1GE                            00000006
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TRISA                             00000085
+TRISC                             00000087
+VCFG                              00000006
+VR0                               00000000
+VR1                               00000001
+VR2                               00000002
+VR3                               00000003
+VRCON                             00000099
+VREN                              00000007
+VRR                               00000005
+W                                 00000000
+WPU                               00000095
+WPUA                              00000095
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN                            00003FFF
+_BODEN_OFF                        00003FBF
+_CP                               00003F7F
+_CPD                              00003EFF
+_CPD_OFF                          00003FFF
+_CP_OFF                           00003FFF
+_EC_OSC                           00003FFB
+MPASM  5.03                      PGA_DEMO.ASM   7-15-2006  10:53:14         PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_EXTRC_OSC_CLKOUT                 00003FFF
+_EXTRC_OSC_NOCLKOUT               00003FFE
+_HS_OSC                           00003FFA
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FF8
+_MCLRE_OFF                        00003FDF
+_MCLRE_ON                         00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FEF
+_WDT_OFF                          00003FF7
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FF9
+__16F676                          00000001
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     4 suppressed
+
+

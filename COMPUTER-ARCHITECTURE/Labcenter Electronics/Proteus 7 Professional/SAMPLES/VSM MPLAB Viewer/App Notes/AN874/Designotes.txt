@@ -1,0 +1,462 @@
+***********************************************************************
+* Software License Agreement                                          *
+* The software supplied herewith by Microchip Technology Incorporated *
+* (the "Company") is intended and supplied to you, the Company's      *
+* customer, for use solely and exclusively on Microchip products.     *
+*                                                                     *
+* The software is owned by the Company and/or its supplier, and is    *
+* protected under applicable copyright laws. All rights are reserved. *
+* Any use in violation of the foregoing restrictions may subject the  *
+* user to criminal sanctions under applicable laws, as well as to     *
+* civil liability for the breach of the terms and conditions of this  *
+* license.                                                            *
+*                                                                     *
+* THIS SOFTWARE IS PROVIDED IN AN "AS IS" CONDITION. NO WARRANTIES,   *
+* WHETHER EXPRESS, IMPLIED OR STATU-TORY, INCLUDING, BUT NOT LIMITED  *
+* TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A         *
+* PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. THE COMPANY SHALL NOT,   *
+* IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL OR          *
+* CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.                   *
+*                                                                     *
+***********************************************************************
+
+This file contains general design notes for the functions, tasks, state machines, timing,
+priority control, communications and command structures of the LumiLED LED driver software.
+This file is for the Buck configuration driver.
+************************************************************************************************
+Software Functions
+1.	Generate a PWM output for intensity control
+2.	Decode key press
+3.	Decode key push
+4.	Decode key hold
+5.	Intensity control
+6.	Mode select
+7.	EEPROM reader
+8.	Intensity command
+9.	Time command
+10.	Repeat command
+11. 	Goto command
+12.	Power up configure
+13. 	Power down configure
+14.	Battery monitoring
+15.	Intensity correction for battery voltage
+
+Task list
+Timer task
+1.	PWM for intensity control
+2.	System Timing
+
+Key task
+1.	Decode Key press
+2.	Decode key push
+3.	Decode key hold
+
+Command task
+1.	Power up read and configure
+2.	Power down store and shut down
+3.	Intensity Control
+4.	Mode Select
+
+Auto sequence Task
+1.	Intensity command
+2.	Time command
+3.	Repeat command
+4.	Goto command
+
+Eprom Task (handled as macros in the command and Auto Sequence tasks, no state machine created)
+1.	Read eeprom
+2.	Write eeprom
+
+ADC task
+1.	Battery monitoring
+2.	Intensity correction
+
+****************************************************************************************************************
+Inter-Task Communications
+
+Item	Source		Destination		Communications
+1.	Command		Auto Seq		Bright				both for command feedback and flash lite mode
+2,	Auto Seq	ADC			Inten_chng			Notifies ADC of change in intensity
+3.	Cmd/Tmr		Cmd/Tmr			Timing				for Mode select, 3 second timer start/done 
+4.	Key		Command			press, push, hold		intesity and mode select flags
+5.	CMD/EEPROM	EEPROM/CMD		System State			Save mode & intensity on pwrdn, retrieve on Pwrup
+6.	Command		Auto Seq		Mode				Mode select, 1,2,3,4 or 5.  1 is do nothing
+7.	AuSq/EEPROM	EEPROM/AuSq		Commands			given an address, return the command
+8.	AuSq/TMR	TMR/AuSq		Time delay			for Time delay command, time, start, done
+9.	Auto Seq	ADC			Intensity			in modes 2-5, intensity setting per command
+10.	Auto Seq	ADC			Inten_chng			notifies ADC of change in intensity
+11.	ADC 		Timer			Final duty cycle		corrected for battery sag
+
+
+****************************************************************************************************************
+System Timing
+								skip timer
+Timer			1kHz			  1 msec	  1:1
+Key			100 Hz or faster	 10 msec	 10:1
+Command			100 Hz			 10 msec	 10:1
+Auto Sequence		10 Hz +/- 10%		100 msec	100:1
+ADC			10 Hz			100 msec	100:1
+
+Minimum Tick = 1 msec
+
+****************************************************************************************************************
+System Priorities
+System States
+
+Mode/Intensity Select
+1.	Key
+2.	Command
+3.	Timer
+4.	ADC
+
+Auto Sequence
+1.	Auto sequence
+2.	Timer
+3.	ADC
+
+Flash Light
+1.	Key
+2.	Timer
+3.	ADC
+4.	Command
+
+Power up/down
+1.	Command
+2.	EEPROM
+
+Auto Sequence only needed in Auto Sequence mode
+Key and Timer are optional in power up and down
+Command becomes important when key detects activity
+ADC needed only when actual intensity output is performed
+
+***************************************************************************************************************
+
+Timer State machine design
+Not a true state machine, rather is a timer system with a PWM pulse generator
+as part of the execution path.
+
+Timing algorithm
+
+Wait for TMR0 roll over
+switch (duty cycle)
+{
+	case 0%:	output low
+			return
+			
+	case 100%:	output high
+			return
+			
+	case 1-50%:	generate high output pulse
+			return
+			
+	case 50-100%:	generate low output pulse
+			return
+}
+
+if (key_skip_timer-- == 0)
+{
+	do_key = true
+	key_skip_timer = 10
+}
+
+if (cmd_skip_timer-- == 0)
+{
+	do_cmd = true
+	cmd_skip_timer = 5
+}
+
+if (auto_skip_timer-- == 0)
+{
+	do_auto = true
+	auto_skip_timer = 100
+}
+
+if (adc_skip_timer-- == 0)
+{
+	do_adc = true
+	adc_skip_timer = 100
+}
+
+***************************************************************************************************************
+
+Key State machine design
+Execution indexed state machine
+
+	State
+0	Idle		no key pressed
+1	press		key held < 1.5 sec
+2	push		key held < 3.0 sec
+3	hold		key held > 3.0 sec
+4	delay		auto repeat delay for hold
+5	default		error state
+6	default		error state
+7	default		error state
+
+STATE TO STATE TRANSITIONS
+From	Conditional		if True		if False	comments
+-----------------------------------------------------------------------------------------
+Idle	if key press detected	press		Idle		no key
+
+press	if keypress = 0		Idle		press		key stable at open press
+press	is time > 1.5 sec	push		press		if held > 1.5 s then push
+
+push	if keypress = 0		Idle		push		key stable at open Push
+push 	if time > 3.0 sec	hold		push		if held > 3.0 s then hold
+
+hold	if keypress = 0		Idle		hold		key stable at open hold
+hold				delay		----		goto delay for auto repeat
+
+delay	if keypress = 0		Idle		delay		key stable at open delay
+delay	if time = 3.0 sec	hold		delay		auto repeat
+	
+ACTIONS
+Idle	none
+press	if release send press command
+push	if release send push command
+hold	send hold command
+delay 	delay 3.0 seconds then return to hold
+
+Code segment prior to state variable decoder, monitors the button and debounces
+with keypress as an output.
+(Algorithm)
+
+	if (key == 0) and (bcounter < 7) then bcounter++
+	if (key == 1) and (bcounter > 0) then bcounter--
+	if bcounter == 6	then keypress = 1
+	if bcounter == 2 	then keypress = 0
+	
+		
+INPUT/OUTPUT
+		input			output
+Idle		keypress		----
+press		keypress		press cmd
+push		keypress		push cmd
+hold		keypress		hold cmd
+delay		keypress		----
+
+
+***************************************************************************************************************
+
+Command State machine design
+Hybrid Execution and Data indexed state machine
+
+	State
+0	Incint		Intensity increment mode
+1	Decint		Intensity decrement mode
+2	Modesel		Mode select mode
+3	Display		data indexed state machine for mode number display
+Note: no default state needed
+
+STATE TO STATE TRANSITIONS
+From	Conditional			if True		if False	comments
+-------------------------------------------------------------------------------------------------------------------
+Incint	if push command			Decint		Incint		change from inc to dec
+Incint	if hold command			Modesel		Incint		change to mode select
+
+Decint	if push command			Incint		Decint		change from dec to inc
+Decint	if hold command			Modesel		Decint		change to mode select
+
+Modesel	if keypress = 0			Incint		Modesel		key is released go back to keypress
+Modesel	if hold command			Display		Modesel		display next mode number
+
+Display	if display complete		Modesel		Display		display routine completes if started.
+	
+ACTIONS
+Incint
+	if (Push == 1) and (old_push == 1) then power off
+	if (Push == 1) then old_push = 1
+	if (Press == 1) or (Hold == 1) old_push = 0
+	clear Push
+
+	if (Press == 1) and (intensity < max) then intensity++ and store in eeprom
+	clear Press
+Decint
+	if (Push == 1) and (old_push == 1) then power off
+	if (Push == 1) then old_push = 1
+	if (Press == 1) or (Hold == 1) old_push = 0
+	clear Push
+
+	if (Press == 1) and (intensity > 0) then intensity-- and store in eeprom
+	clear Press
+Modesel
+	set asq_hold
+	if keypress = 0
+		clear asq_hold
+		set new_mode flag
+	mode++
+	if mode = number_of_modes+2
+		mode = 1
+Display
+	flash .5 second off with 1 second gap for mode index 1-5 (i.e. 1 to 5 flashes)
+
+
+INPUT/OUTPUT
+		input					output
+Incint		press, push, hold			intensity
+Decint		press, push, hold			intensity
+Modesel		hold, keypress				Mode
+Display		----					intensity
+
+DISPLAY SEQUENCE
+counter = 0
+pointer = mode * 2
+
+loop
+	if counter == 0
+		if pointer is odd
+			counter = 20
+			intensity = 1/2
+		else
+			counter = 10
+			intensity = full
+		pointer--
+		if pointer == 0
+		goto	Modesel_state
+	counter--
+
+***************************************************************************************************************
+Auto Sequence State machine design
+Hybrid Execution and Data indexed state machine
+
+Auto sequence Task		D7	D6	D5	D4-0
+1.	Intensity command	0	0	Intensity
+2.	Time command		0	1	Time delay
+3.	Repeat command		1	0	repeat count
+	Return at the end	1	0	0	0000
+4.	Goto command		1	1	destination
+	shut down command	1	1	0	0000
+
+if asq_hold is true, this state machine is idle
+if new_mode, state is reset to asq_change
+	
+sequence numbers 1-63, zero causes shut down
+
+	State
+0	Decode		Fetch a command and decode it
+1	Set_Intens	Intensity set command
+2	Time_Delay	Time Delay command
+3	Jump		goto different step number
+4	Repeat		repeat section command
+5	Delay		used for time command
+6	ASQ_change	auto sequence, sequence change.  Reset of system for next sequence
+7	flash_lite	no sequence, continuous mode only
+
+STATE TO STATE TRANSITIONS
+From		Conditional						if True		if False
+Decode		if command = Intensity					Set_Intens	Decode
+Decode		if command = Time					Time_delay	Decode
+Decode		if command = Jump					Jump		Decode
+Decode		if command = Repeat					Repeat		Decode
+Set_Itens	none							Decode
+Time_Delay	none							Delay
+Jump		none							Decode
+Repeat		none							Decode
+Delay		if timer == 0						Decode		Delay
+ASQ_change	mode = 1						flash_lite	Decode
+
+ACTIONS
+Decode		
+		get command(addr_next)
+		addr_next++
+		decode command & 0xC0
+		ASQ_data = command & 0x3F
+Set_Intens
+		intensity = ASQ_data
+		set int_chng
+Time_Delay
+		Timer = ASQ_data
+Jump
+		addr_next = ASQ_data
+Repeat
+		addr_next++
+		if ASQ_data == 0			; indicates a return to a repeat
+			pop ret_addr
+			pop counter			; retrieve counter and return address
+			counter--			; count this pass
+			if counter == 0
+				break (return)
+			else
+				push counter
+				push ret_addr
+				addr_next = ret_addr			
+		else					; not a return
+			push ASQ_data
+			push addr_next
+Delay
+		Decrement timer
+ASQ_change
+		reset repeat stack
+		clear new_mode flag
+		if mode > 1
+			addr_next = eeprom(start,mode)
+flash_lite
+		intensity = eeprom(EE_intensity)
+		set int_chng
+
+***************************************************************************************************************
+
+ADC State machine design
+Execution indexed state machine
+
+	State
+0	Idle		wait state
+1	Convert		do battery voltage conversion
+2	Calculate	correct intensity for battery voltage
+3	LowBattery	shut down state
+
+
+STATE TO STATE TRANSITIONS
+From	Conditional					if True		if False	comments
+-------------------------------------------------------------------------------------------------------------------
+Idle		if intensity change			Calculate	Idle		waiting
+Idle		if convert timer timeout		Convert		Idle
+Idle		if intensity change			Calculate	Idle
+
+Convert		none					Calculate
+
+Calculate	none					Idle
+
+LowBattery	shutdown
+
+	
+ACTIONS
+Idle		none
+Convert		set PWM output high and convert battery voltage
+Calculate	using ADC of battery convert intensity to duty cycle
+LowBattery	shutdown
+
+INPUT/OUTPUT
+		input					output
+Idle		ADC_skip_timer, Intensity_change	none
+Convert		ADC, dutycycle				ADRESH
+Calculate	Intensity, ADRESH			dutycycle
+LowBattery	none					none
+
+Math functions
+
+DATA For Buck system
+VDC	ADC	Max PWM	CF	
+4.0	2E	.337	100%
+4.5	29	.385	91%
+5.0	25	.435	80%
+5.5	21	.483	72%
+6.0	1E	.535	65%
+
+Maximum intensity @ 350 mV
+
+Conversion factor = (ADC*6 - 0B)
+Duty cycle    	  = Scaling value * Intensity * 2 / 256
+
+
+***************************************************************************************************************
+
+Error recovery handler
+
+Error		State machine	Reason for error	Response
+
+pwm_err		Timer routine	PWM value to large	reset dutycycle to 7F
+adc_err		ADC routine	state variable wrong	reset to idle state
+cmd_err		Command		state variable wrong	reset to idle state
+asq_err		Autosequence	state variable wrong	reset to change state
+key_err		Key		default state reached	reset to idle state
+

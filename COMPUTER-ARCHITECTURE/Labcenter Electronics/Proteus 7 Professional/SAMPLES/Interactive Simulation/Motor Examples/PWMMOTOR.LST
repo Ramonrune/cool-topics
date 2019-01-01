@@ -1,0 +1,156 @@
+File PWMMOTOR.ASM þ By ASM11 v1.84b [Tuesday, May 15, 2001  3:59 pm]
+
+    1                           ;HC11 PWM Motor Control Example
+    2                           ;Demonstrates ADC and Timer Output Capture functions
+    3                           
+    4      1000                 PORTA             equ      $1000
+    5      1003                 PORTC             equ      $1003
+    6      1004                 PORTB             equ      $1004
+    7      1007                 DDRC              equ      $1007
+    8      1016                 TOC1              equ      $1016
+    9      1018                 TOC2              equ      $1018
+   10      1020                 TCTL1             equ      $1020
+   11      1021                 TCTL2             equ      $1021
+   12      1022                 TMSK1             equ      $1022
+   13      1023                 TFLG1             equ      $1023
+   14      1024                 TMSK2             equ      $1024
+   15      1026                 PACTL             equ      $1026
+   16      1030                 ADCTL             equ      $1030
+   17      1031                 ADR1              equ      $1031
+   18      1032                 ADR2              equ      $1032
+   19                           
+   20      F000                                 org $F000
+   21                           
+   22 F000:8E00 FF         [ 3] start:          lds  #$FF
+   23                           
+   24 F003:86FF            [ 2]                 ldaa #$FF                       ;Port C is output
+   25 F005:B710 07         [ 4]                 staa DDRC
+   26                           
+   27 F008:8680            [ 2]                 ldaa #$80                       ;Enable OC1 interrupts.
+   28 F00A:B710 22         [ 4]                 staa TMSK1                      ;
+   29                           
+   30 F00D:8602            [ 2]                 ldaa #$2                        ;Set the prescaler (divide by 16)
+   31 F00F:B710 24         [ 4]                 staa TMSK2
+   32                           
+   33 F012:8680            [ 2]                 ldaa #$80                       ;Enable PA7 as output
+   34 F014:B710 26         [ 4]                 staa PACTL
+   35                                   
+   36                           
+   37 F017:8610            [ 2]                 ldaa #$10                       ;Start first ADC conversion - multi mode enable
+   38 F019:B710 30         [ 4]                 staa ADCTL
+   39                           
+   40 F01C:CC01 00         [ 3]                 ldd #$0100                      ;Load the capture register
+   41 F01F:FD10 16         [ 5]                 std TOC1
+   42                                                   
+   43 F022:0E              [ 2]                 cli                             ;Enable interupts
+   44                           
+   45 F023:3E              [14] loop            wai
+   46 F024:20FD (F023)     [ 3]                 bra loop
+   47                           
+   48                           
+   49                           
+   50                           ;OC1 interrupt service
+   51 F026:8610            [ 2] oc1f            ldaa #$10                       ;Start another ADC conversion
+   52 F028:B710 30         [ 4]                 staa ADCTL
+   53                           
+   54 F02B:B610 31         [ 4]                 ldaa ADR1                       ;Read the pot position from ADC channel 1
+   55 F02E:B710 04         [ 4]                 staa PORTB                      ;Display it
+   56                           
+   57 F031:807F            [ 2]                 suba #127                       ;0x7F is zero reference.
+   58                                           
+   59 F033:2609 (F03E)     [ 3]                 bne oc1f_ne                     ;Jump if values not same
+   60                           
+   61                           ;Set Both outputs low. Motor is stationary
+   62 F035:5F              [ 2]                 clrb
+   63 F036:F710 00         [ 4]                 stab PORTA                      ;Both OC1 and OC2 outputs low
+   64 F039:F710 20         [ 4]                 stab TCTL1                      ;TOC2 mode is disabled
+   65 F03C:2021 (F05F)     [ 3]                 bra done
+   66                                           
+   67                           ;Non-zero drive - decide if +ve or -ve:
+   68                                           
+   69 F03E:2510 (F050)     [ 3] oc1f_ne         bcs oc1f_cs
+   70                           
+   71                           ;Positive result - motor spins clockwise:
+   72                           
+   73 F040:C640            [ 2]                 ldab #$40                       ;Port A drives this value:
+   74 F042:F710 00         [ 4]                 stab PORTA
+   75 F045:5F              [ 2]                 clrb                            ;Release TOC2 latch - Port A acquires value, above.
+   76 F046:F710 20         [ 4]                 stab TCTL1
+   77 F049:C640            [ 2]                 ldab #$40                       ;TOC 2 output toggles on OC2 event; motor drive stops.
+   78 F04B:F710 20         [ 4]                 stab TCTL1
+   79 F04E:200F (F05F)     [ 3]                 bra done                
+   80                           
+   81                           ;Negative result - motor spins anti-clockwise:
+   82                           
+   83 F050:C680            [ 2] oc1f_cs         ldab #$80                       ;Port A drives this value:
+   84 F052:F710 00         [ 4]                 stab PORTA
+   85 F055:5F              [ 2]                 clrb                            ;Release TOC2 latch - Port A acquires value, above.
+   86 F056:F710 20         [ 4]                 stab TCTL1
+   87 F059:C640            [ 2]                 ldab #$40                       ;TOC 2 output toggles on OC2 event; motor drive stops.
+   88 F05B:F710 20         [ 4]                 stab TCTL1
+   89 F05E:40              [ 2]                 nega                            ;Invert result -> 0xFF -> 0x01 etc.
+   90                           
+   91                           ;Now set up TOC2 to trigger at a time forward of TOC1. This means that the motor will
+   92                           ;be powered for the number of ticks in ACCA * 256.
+   93                                                                                                                                                                           
+   94 F05F:16              [ 2] done:           tab                             ;TOC 2 is set to trigger after this no of cycles.
+   95 F060:4F              [ 2]                 clra
+   96 F061:59              [ 2]                 rolb
+   97 F062:49              [ 2]                 rola
+   98 F063:59              [ 2]                 rolb
+   99 F064:49              [ 2]                 rola            
+  100 F065:59              [ 2]                 rolb
+  101 F066:49              [ 2]                 rola
+  102 F067:59              [ 2]                 rolb
+  103 F068:49              [ 2]                 rola            
+  104 F069:59              [ 2]                 rolb
+  105 F06A:49              [ 2]                 rola            
+  106 F06B:F310 16         [ 6]                 addd TOC1
+  107 F06E:FD10 18         [ 5]                 std TOC2
+  108                                           
+  109 F071:CC10 00         [ 3]                 ldd #$1000
+  110 F074:F310 16         [ 6]                 addd TOC1
+  111 F077:FD10 16         [ 5]                 std TOC1
+  112                                           
+  113 F07A:8680            [ 2]                 ldaa #$80                       ;Clear the TOC 1 interrupt
+  114 F07C:B710 23         [ 4]                 staa TFLG1
+  115 F07F:3B              [12]                 rti
+  116                           
+  117                           
+  118                           ;Interrupt Vectors
+  119                           
+  120      FFE8                                 org $FFE8
+  121 FFE8.F026                                 dw oc1f         
+  122                           
+  123      FFFE                                 org $FFFE
+  124 FFFE.F000                                 dw start
+  125                           
+
+-----------------------------------------------------------
+
+         S E G M E N T   U S A G E   R E P O R T
+
+Segment  Start   End    Size  CodObj  DatObj  TotObj  Lines
+-------  -----  -----  -----  ------  ------  ------  -----
+ROM      $F000  $FFFF  $1000   $0080   $0004   $0084    125
+
+Summary  $F000  $FFFF  $1000   $0080   $0004   $0084    125
+
+-----------------------------------------------------------
+
+         O V E R A L L   M E M O R Y   U S A G E
+
+Total RAM   size:      0   $0000    0.00 KB
+Total CODE  size:    128   $0080    0.13 KB   (61 instructions)
+Total DATA  size:      4   $0004    0.00 KB
+Total IMAGE size:    132   $0084    0.13 KB
+
+Lowest address  :  61440   $F000
+Highest address :  65535   $FFFF
+Address Range   :   4096   $1000    4.00 KB   (Used Range:  3.22%)
+
+Number of INCLUDE files: 0
+
+Assembled 125 lines (No Errors, Warnings: 0)
+
+                      *** End of PWMMOTOR.ASM listing ***

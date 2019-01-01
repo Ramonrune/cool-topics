@@ -1,0 +1,165 @@
+*        title    IOPKG
+*        page
+*
+*
+OUTBYTE:	EQU    *
+	INC    PRINTPOS     ; INCREMENT THE CURRENT PRINT POSITION.
+	PSHB                ; SAVE THE B-REG.
+	PSHX                ; SAVE THE X-REG.
+	LDX    #OUTABLE     ; POINT TO THE OUTPUT VECTOR TABLE.
+OUTBYTE1:	LDAB   DEVNUM       ; GET THE CURRENT DEVICE NUMBER.
+	ASLB                ; MULT BY 2.
+	ABX                 ; POINT TO THE ADDRESS OF THE OUTPUT ROUTINE.
+	LDX    0,X          ; GET THE ADDRESS. HAS THE VECTOR BEEN INITALIZED?
+	BNE    OUTBYTE2     ; YES. GO OUTPUT THE CHARACTER.
+	CLR    DEVNUM       ; NO. RESET TO DEVICE #0.
+	LDAA   #UNINIERR    ; GO REPORT AN UNINITALIZED I/O VECTOR ERROR.
+	JMP    RPTRERR
+OUTBYTE2:	JSR    0,X          ; GO OUTPUT THE CHARACTER.
+	PULX                ; RESTORE X.
+	PULB                ; RESTORE B.
+	RTS                 ; RETURN.
+*
+INBYTE:	EQU    *
+	PSHB                ; SAVE THE B-REG.
+	PSHX                ; SAVE THE X-REG.
+	LDX    #INTABLE     ; POINT TO THE INPUT VECTOR TABLE.
+	BRA    OUTBYTE1     ; GO USE THE SAME CODE AS OUTBYTE.
+*
+*
+        $if      * > $FF00
+        #fatal    "BASIC Is Too Large"
+        $endif
+*
+*
+	ORG	$FF00
+*
+*
+ACIAIN:	BSR    ACIAINNE     ; GO GET CHARACTER FROM ACIA, NO ECHO.
+*                             ; NOW, FALL THROUGH TO ACIAOUT TO ECHO CHARACTER.
+*
+*
+ACIAOUT:	PSHA                ; SAVE THE CHARACTER TO OUTPUT.
+ACIAOUT1:	LDAA   ACIAST       ; GET THE ACIA STATUS.
+	BITA   #$02         ; IS THE XMIT DATA REGISTER EMPTY?
+	BEQ    ACIAOUT1     ; NO. WAIT TILL IT IS.
+	PULA                ; YES. GET BYTE TO SEND.
+	STAA   ACIADT       ; SEND IT.
+	RTS                 ; RETURN.
+*
+*
+*
+*
+*
+*
+ACIAINNE:	LDAA   ACIAST       ; GET THE ACIA STATUS.
+	BITA   #$01         ; HAS A CHARACTER BEEN RECIEVED?
+	BEQ    ACIAINNE     ; NO. WAIT TILL WE HAVE ONE.
+	LDAA   ACIADT       ; YES. GET THE CHARACTER.
+	RTS                 ; RETURN.
+*
+ACIASTAT:	EQU    *
+	PSHA                ; SAVE THE A-REG.
+	LDAA   ACIAST       ; GET THE ACIA STATUS.
+	BITA   #$01         ; CHECK FOR A CHARACTER.
+	PULA                ; RESTORE A.
+	RTS                 ; RETURN.
+*
+*
+
+
+SCIIN:	EQU    *
+	PSHX		; Save the index register.
+	LDX    IOBaseV
+SCIIN1:	LDAA   SCSR,X       ; GET SCI STATUS.
+	ANDA   #$20         ; HAS A CHARACTER BEEN RECIEVED?
+	BEQ    SCIIN1       ; NO. WAIT FOR CHARACTER TO BE RECIEVED.
+	LDAA   SCDR,X       ; GET THE CHARACTER.
+	PULX		; Restore X.
+
+* JKJ: Fall thru to echo the char...
+*	RTS                 ; RETURN.
+*
+*
+
+SCIOUT:	EQU    *
+	PSHX		; Save the index register.
+	LDX    IOBaseV
+	PSHA               ; SAVE THE CHARACTER TO SEND.
+SCIOUT1:	LDAA   SCSR,X      ; GET THE SCI STATUS.
+	BITA   #$80        ; HAS THE LAST CHARACTER BEEN SHIFTED OUT?
+	BEQ    SCIOUT1     ; NO. WAIT TILL IT HAS.
+	PULA               ; RESTORE CHARACTER TO SEND.
+	STAA   SCDR,X      ; SEND THE CHARACTER.
+	PULX		; Restore X.
+	RTS                ; RETURN.
+*
+*
+SCISTAT:	EQU    *
+	PSHX		; Save the index register.
+	LDX    IOBaseV
+	PSHA                ; SAVE THE A-REG.
+	LDAA   SCSR,X       ; GET THE SCI STATUS.
+	BITA   #$20         ; CHECK TO SEE IF A CHARACTER HAS BEEN RECIEVED.
+	PULA                ; RESTORE STATUS.
+	PULX		; Restore X.
+	RTS                 ; RETURN W/ STATUS.
+*
+*
+IODevInit:
+;JKJ No ACIA. Set PORTC as output for starters.
+;        BSR     InitACIA
+	BSR	InitSCI
+        PSHX
+        LDX     IOBaseV
+        LDAA    #$FF
+        STAA    DDRC,X
+        PULX
+	LDAA	#JMPOP
+	STAA	CONSTAT     ; INITIALIZE THE CONSOLE STATUS VECTOR.
+	STAA	INCONNE     ; INITIALIZE THE INPUT FROM CONSOLE NO ECHO VECT.
+        LDD     #SCISTAT    ; CONSOLE IS INITIALLY THE SCI.
+	STD	CONSTAT+1
+        LDD     #SCIIN      ; GET BYTE FROM SCI, DON'T ECHO IT.
+	STD	INCONNE+1
+	RTS
+*
+*
+INITSCI:	EQU    *
+	PSHX		; Save the index register.
+	LDX    IOBaseV
+	LDAA   #$30        ; SET BAUD RATE TO 9600.
+	STAA   BAUD,X
+	CLR    SCCR1,X     ; SET FOR 8 BIT OPERATION, DISABLE WAKEUP.
+	LDAA   #$0C        ; ENABLE THE TRANSMITER & RECEIVER.
+	STAA   SCCR2,X
+	LDAA   #$11        ; GET THE XON CHARACTER (CONTROL-Q).
+	STAA   XONCH       ; INITALIZE THE XON REGISTER.
+	LDAA   #$13        ; GET THE XOFF CHARACTER (CONTROL-S).
+	STAA   XOFFCH      ; INITALIZE THE XOFF CHARACTER.
+	PULX
+	RTS                ; RETURN.
+*
+*
+INITACIA:	LDAA   #$13         ; VALUE TO RESET THE ACIA.
+	STAA   ACIAST       ; RESET IT.
+	LDAA   #$56         ; SET /64, RTS=HI, 8-DATA/1 STOP
+	STAA   ACIAST
+	RTS                 ; RETURN.
+*
+*
+*
+PROUT:	EQU    *            ; SEND A CHARACTER TO THE PRINTER.
+	BSR    SCISTAT      ; WAS AN "X-OFF" RECIEVED?
+	BEQ    PROUT1       ; NO. GO SEND THE CHARACTER.
+	PSHA                ; SAVE THE CHARACTER TO SEND.
+	BSR    SCIIN        ; YES. GO RESET THE SCI RECEIVER STATUS.
+	CMPA   XOFFCH       ; WAS IT AN XOFF?
+	BNE    PROUT2       ; NO. SO GO SEND THE CHARACTER.
+PROUT3:	BSR    SCIIN        ; GO WAIT FOR AN "X-ON" CHARACTER.
+	CMPA   XONCH        ; IS IT AN X-ON CHARACTER?
+	BNE    PROUT3       ; NO. GO WAIT FOR AN X-ON CHARACTER.
+PROUT2:	PULA                ; GET THE CHARACTER TO SEND.
+PROUT1:	BRA    SCIOUT       ; SEND THE CHARACTER TO THE PRINTER & RETURN.
+*
+*

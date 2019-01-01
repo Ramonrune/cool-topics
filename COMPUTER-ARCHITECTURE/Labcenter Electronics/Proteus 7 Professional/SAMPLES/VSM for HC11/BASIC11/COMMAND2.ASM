@@ -1,0 +1,207 @@
+*        name    COMMAND2
+*        page
+*
+*
+CESAVE:	EQU    *
+	LDD    BASBEG	; GET POINTER TO THE START OF THE BASIC PROGRAM.
+	CPD    BASEND	; IS THERE A PROGRAM IN MEMORY?
+	BNE    CESAVE1	; YES. GO SAVE IT.
+	RTS		; NO. RETURN.
+CESAVE1:	LDD	VAREND
+	SUBD	BASBEG
+	CPD	EESIZE
+	BLS	CESAVE5
+	LDAA	#EETOSMAL
+	JMP	RPTERR
+CESAVE5:	LDX	EEStart	; point to the start of the EEPROM.
+	LDY	#BASBEG
+	LDAB	#4
+	STAB	COUNT
+CESAVE3:	LDD	0,Y
+	SUBD	RAMSTART
+	STAA	0,X
+	JSR	DLY10MS
+	INX
+	TBA
+	STAA	0,X
+	JSR	DLY10MS
+	INX
+	INY
+	INY
+	DEC	COUNT
+	BNE	CESAVE3
+*
+	LDD	0,Y
+	STAA	0,X
+	JSR	DLY10MS
+	INX
+	TBA
+	STAA	0,X
+	JSR	DLY10MS
+
+*
+	LDX	EEStart
+	LDY	BASBEG
+CESAVE4:	LDAA	0,Y
+	STAA	SSTART,X
+	JSR	DLY10MS
+	INX
+	INY
+	CPY	VAREND
+	BLS	CESAVE4
+	RTS                    ;RETURN.
+*
+*
+CELOAD:	EQU    *
+	LDX	EEStart	; point to the start of the program storage EEPROM.
+	LDY	#BASBEG	; point to the start of the program pointer storage area.
+	LDAB	#4	; number of words to move.
+	STAB	COUNT	; save the count.
+CELOAD3:	LDD	0,X	; get the offset that was saved.
+	ADDD	RAMSTART	; add the starting address of the RAM to it.
+	STD	0,Y	; save the resulting pointer
+	INX		; point to the next offset.
+	INX
+	INY		; point to the next pointer in RAM
+	INY
+	DEC	COUNT	; have we gotten all the pointers yet?
+	BNE	CELOAD3	; no. keep going.
+*
+	LDD	0,X	; yes. get the high line number.
+	STD	0,Y	; save it in RAM.
+
+*
+*	now load the actual program from EEPROM
+*
+	LDX	EEStart	; point to the start of the EEPROM
+	LDY	BASBEG	; point to the start of the BASIC program buffer.
+CELOAD4:	LDAA	SSTART,X	; get a byte of the program.
+	STAA	0,Y	; put it in the program buffer.
+	INX		; point to the next program byte
+	INY		; point to the next buffer location.
+	CPY	VAREND	; have we finished loading the program.
+	BLS	CELOAD4	; no. keep loading.
+	STY	STRASTG	; yes. initialize the array storage area.
+	RTS		; RETURN.
+	
+*
+*
+CLLIST:	EQU    *
+	LDAA   #$01	; USE DEVICE #1 FOR HARD COPY LISTING.
+	STAA   DEVNUM
+	JSR    CLIST	; GO DO A STANDARD LIST COMMAND.
+	CLR    DEVNUM
+	RTS		; RETURN.
+*
+*
+*
+CAUTOST:	EQU    *            ; SET AUTO START MODE FOR BASIC PROGRAM.
+	LDAA   #$55         ; GET FLAG.
+CAUTOST1:	LDX    EEStart
+	STAA   AUTOSTF,x    ; PROGRAM IT INTO THE EEPROM
+	JSR    DLY10MS      ; WAIT WHILE IT PROGRAMS.
+	RTS                 ; RETURN.
+*
+*
+*
+CNOAUTO:	EQU    *
+	LDAA   #$FF
+	BRA    CAUTOST1
+*
+*
+*
+AUTOLOAD:	EQU	*
+	 ldx	EESTART
+	 LDD	EESTART
+	 ADDD	#SSTART
+	 STD	BASBEG 
+	 LDD	EESTART
+	 ADDD	SBASEND,x
+	 ADDD	#SSTART
+	 STD	BASEND
+*
+	 LDD	SVAREND,x
+	 SUBD	SVARBEG,x
+	 ADDD	RAMSTART
+	 STD	VAREND
+	 LDD	RAMSTART
+	 STD	VARBEGIN
+	 XGDY
+	 LDD	EESTART
+	 ADDD	SVARBEG,X
+	 XGDX
+	 BRA	CELOAD4
+*
+*
+CFREE:		EQU	*
+	JSR	NL2
+	LDD	VARMEND
+	SUBD	STRASTG
+	JSR	OUTDECI
+	JSR	NL
+	RTS
+*
+*
+CDUMP:		EQU	*
+*	JSR	NL2		; PRINT TWO BLANK LINES.
+*	CLR	DNAME+2		; ZERO THE LAST BYTE OF THE VARIABLE NAME 'ARRAY'
+*	LDX	VARBEGIN		; POINT TO THE START OF THE VARIABLE TABLE.
+*CDUMP2  LDAA	0,X		; GET AN ENTRY. IS IT THE END OF THE TABLE?
+*        BNE	CDUMP3		; YES. WE'RE DONE.
+	RTS
+*CDUMP3	LDAA	1,X		; NO. GET THE FIRST CHARACTER OF THE NAME.
+*	STAA	DNAME
+*	LDAA	2,X
+*	STAA	DNAME+1
+*	LDX	#DNAME
+*	JSR	PL
+*	LDAA	0,X		; GET THE VARIABLE TOKEN.
+*	CMPA	#IVARTOK		; IS IT AN INTEGER?
+*	BEQ	CDUMP9		; YES. DUMP ITS VALUE.
+;	CMPA	#IAVARTOK	; NO. IS IT AN INTEGER ARRAY?
+;	BNE	CDUMP99		; NO.
+*	LDD	3,X		; YES. GET THE POINTER TO THE ARRAY STORAGE. HAS IT BEEN DIMENSIONED?
+*	BNE	CDUMP5		; YES. GO PRINT ALL THE VALUES.
+*	LDX	#UNDIM
+*	JSR	PL
+*CDUMP6	LDAB	#5
+*	ABX
+*	BRA	CDUMP2
+*CDUMP5	PSHX			; SAVE THE POINTER TO THE VARIABLE TABLE.
+*	XGDX			; POINT TO THE ARRAY STORAGE AREA.
+*	LDD	0,X		; GET THE MAXIMUM SUBSCRIPT.
+*	STD	SUBMAX
+*	CLRA
+*	CLRB
+*	STD	SUBCNT
+*CDUMP77	LDAA	#'('
+*	JSR	OUTBYTE
+*	LDD	SUBCNT
+*	JSR	OUTDECI
+*	LDX	#CPEQ
+*	JSR	PL
+*	INX
+*	INX
+*	LDD	0,X
+*	JSR	OUTDECI
+*	JSR	NL
+*	LDD	SUBCNT
+*	ADDD	#1
+*	CMPD	SUBMAX
+*	BHI	CDUMP88
+*	STD	SUBCNT
+*	LDX	#DNAME
+*	JSR	PL
+*	BRA	CDUMP77
+*CDUMP88	PULX
+*	BRA	CDUMP6
+*CDUMP9	LDAA	#'='
+*	JSR	OUTBYTE
+*	LDD	3,X
+*	JSR	OUTDECI
+*	JSR	NL
+*	BRA	CDUMP6
+*
+*
+*UNDIM	FCB	'=[?]',0
+*CPEQ	FCB	')=',0

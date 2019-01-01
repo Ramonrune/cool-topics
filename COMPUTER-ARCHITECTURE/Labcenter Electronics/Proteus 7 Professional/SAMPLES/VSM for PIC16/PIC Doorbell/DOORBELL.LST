@@ -1,0 +1,929 @@
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001               LIST    p=16F84 ; PIC16F844 is the target processor
+                      00002 
+                      00003               #include "P16F84.INC" ; Include header file
+                      00001         LIST
+                      00002 ; P16F84.INC  Standard Header File, Version 2.00    Microchip Technology, Inc.
+                      00136         LIST
+                      00004 
+                      00005               CBLOCK 0x10   ; Temporary storage
+  00000010            00006               tempo
+  00000011            00007               tptrl
+  00000012            00008               tptrh
+  00000013            00009               note
+  00000014            00010               length
+  00000015            00011               pitch
+  00000016            00012               temp              
+  00000017            00013               dl1
+  00000018            00014               dl2              
+                      00015               ENDC
+                      00016 
+                      00017 
+0000                  00018               ORG   0
+0000   2805           00019 entrypoint    goto  initialise
+                      00020 
+0004                  00021               ORG   4
+0004   2870           00022 intvector     goto    toggle
+                      00023 
+0005                  00024 initialise    ; Register set up:
+0005   0103           00025               clrw                    ; Zero.
+0006   0085           00026               movwf   PORTA           ; Ensure PORTB is zero before we enable it.               
+0007   0086           00027               movwf   PORTB           ; Ensure PORTB is zero before we enable it.
+0008   1683           00028               bsf     STATUS,RP0      ; Select Bank 1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0009   0186           00029               clrf    TRISB           ; Port B is outputs              
+                      00030 
+                      00031               ; Set up timer 0 for tone generation
+000A   3002           00032               movlw   0x02            ; Prescaler on, internal clocking, divide by 4            
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000B   0081           00033               movwf   OPTION_REG
+000C   1283           00034               bcf     STATUS,RP0      ; Back to bank 0                              
+                      00035               
+                      00036                                 
+                      00037               ; Poll for a button
+000D   0186           00038 wait          clrf    PORTB
+000E   1C05           00039 wloop         btfss   PORTA,0
+000F   2813           00040               goto    playtune0
+0010   1C85           00041               btfss   PORTA,1
+0011   281C           00042               goto    playtune1
+0012   280E           00043               goto    wloop                                   
+                      00044 
+                      00045 ;Routines to play the tunes
+0013   3013           00046 playtune0     movlw   0x13
+0014   0086           00047               movwf   PORTB
+0015   3050           00048               movlw   0x50
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0016   0090           00049               movwf   tempo
+0017   3000           00050               movlw   tune0 / 0x100
+0018   0092           00051               movwf   tptrh
+0019   3080           00052               movlw   tune0 % 0x100
+001A   0091           00053               movwf   tptrl
+001B   2825           00054               goto    playtune
+                      00055 
+001C   3023           00056 playtune1     movlw   0x23
+001D   0086           00057               movwf   PORTB
+001E   30A0           00058               movlw   0xA0
+001F   0090           00059               movwf   tempo
+0020   3001           00060               movlw   tune1 / 0x100
+0021   0092           00061               movwf   tptrh
+0022   3042           00062               movlw   tune1 % 0x100
+0023   0091           00063               movwf   tptrl
+0024   2825           00064               goto    playtune
+                      00065                   
+                      00066 ;Subroutine to play a tune
+0025   2045           00067 playtune      call    gettunedata       ; Lookup note from tune table
+0026   0093           00068               movwf   note              ; Store the note code
+0027   1B93           00069               btfsc   note,7            ; Bit 7 set => end of tune
+0028   280D           00070               goto    wait              ; Back to waiting for a button press
+0029   0A91           00071               incf    tptrl,F           ; Increment the tune pointer
+002A   2045           00072               call    gettunedata       ; Get the note length
+002B   0094           00073               movwf   length            ; Store it
+                      00074                                                                              
+                      00075 ; Play the stored note
+                      00076 ; The tune table supports two octaves and 8 note lengths.
+002C   1B13           00077 playnote      btfsc   note,6            ; Bit 6 set => rest
+002D   2836           00078               goto    playwait          ; Silence ensues...     
+002E   0813           00079               movf    note,W            ; Retrieve the note           
+002F   393F           00080               andlw   0x3F              ; Mask off the pitch index
+0030   2049           00081               call    pitchtable        ; and look it up in the pitchtable
+0031   0095           00082               movwf   pitch             ; Transfer the value to Timer 0
+0032   0081           00083               movwf   TMR0
+0033   110B           00084               bcf     INTCON,T0IF       ; Clear Timer Interrupt
+0034   168B           00085               bsf     INTCON,T0IE       ; Enable interrupts for Timer 0
+0035   178B           00086               bsf     INTCON,GIE
+0036   0814           00087 playwait      movf    length,W          ; Retrieve the note length
+0037   0097           00088               movwf   dl1               ; and store it in delay counter 1
+0038   0810           00089 loop1         movf    tempo,W           ; This value sets the timing resolution
+0039   0098           00090               movwf   dl2
+003A   0000           00091 loop2         nop                       ; Inner delay loop delay
+003B   0000           00092               nop      
+003C   0B98           00093               decfsz  dl2,F             
+003D   283A           00094               goto    loop2
+003E   0B97           00095               decfsz  dl1,F             ; Outer delay loop 
+003F   2838           00096               goto    loop1
+0040   128B           00097               bcf     INTCON,T0IE       ; Timer interrupts off            
+                      00098 
+                      00099 ;Fetch next note/length pair:
+0041   0A91           00100               incf    tptrl,F           ; Increment tune ptr          
+0042   1903           00101               btfsc   STATUS,Z          ; Test for low byte rollover
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0043   0A92           00102               incf    tptrh,F           ; Inc high byte
+0044   2825           00103               goto    playtune          ; Loop for next note
+                      00104 
+                      00105 ; Routine to fetch data from the tune tables
+0045   0812           00106 gettunedata   movf    tptrh,W         ; Set up PCLATH for the jump
+0046   008A           00107               movwf   PCLATH                      
+0047   0811           00108               movf    tptrl,W         ; Get low address of tptr
+0048   0082           00109               movwf   PCL             ; Jump off to the table entry                                   
+                      00110 
+                      00111 ; Pitch lookup function                                      
+0049   018A           00112 pitchtable    clrf    PCLATH           ; Clear PCLATH for zero page
+004A   0782           00113               addwf PCL,F
+004B   3411           00114               retlw 0x11               ;C5  // Midi Code 60
+004C   341F           00115               retlw 0x1F               ;C#
+004D   342B           00116               retlw 0x2B               ;D
+004E   3437           00117               retlw 0x37               ;D#
+004F   3442           00118               retlw 0x42               ;E
+0050   344D           00119               retlw 0x4D               ;F
+0051   3457           00120               retlw 0x57               ;F#
+0052   3461           00121               retlw 0x61               ;G
+0053   346A           00122               retlw 0x6A               ;G#
+0054   3472           00123               retlw 0x72               ;A (440)
+0055   347A           00124               retlw 0x7A               ;Bb
+0056   3481           00125               retlw 0x81               ;B
+0057   3489           00126               retlw 0x89               ;C6 // Midi Code 72
+0058   348F           00127               retlw 0x8F               ;Db
+0059   3496           00128               retlw 0x96               ;D
+005A   349C           00129               retlw 0x9C               ;Eb
+005B   34A1           00130               retlw 0xA1               ;E
+005C   34A7           00131               retlw 0xA7               ;F
+005D   34AC           00132               retlw 0xAC               ;F#
+005E   34B0           00133               retlw 0xB0               ;G
+005F   34B5           00134               retlw 0xB5               ;Ab
+0060   34B9           00135               retlw 0xB9               ;A (880)
+0061   34BD           00136               retlw 0xBD               ;Bb
+0062   34C1           00137               retlw 0xC1               ;B
+0063   34C4           00138               retlw 0xC4               ;C7 // Midi Code 84
+0064   34C8           00139               retlw 0xC8               ;Db
+0065   34CB           00140               retlw 0xCB               ;D
+0066   34CE           00141               retlw 0xCE               ;Eb
+0067   34D1           00142               retlw 0xD1               ;E
+0068   34D3           00143               retlw 0xD3               ;F
+0069   34D6           00144               retlw 0xD6               ;F#
+006A   34D8           00145               retlw 0xD8               ;G
+006B   34DA           00146               retlw 0xDA               ;Ab
+006C   34DC           00147               retlw 0xDC               ;A (1760)
+006D   34DE           00148               retlw 0xDE               ;Bb
+006E   34E0           00149               retlw 0xE0               ;
+006F   34E2           00150               retlw 0xE2               ;C8 // Midi Code 96
+                      00151 
+                      00152                                                                     
+                      00153               
+                      00154 
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00155 ;Interrupt service - toggle the drive polarity to the sounder
+                      00156 ;Note that this does not preserve the status bits - be careful,
+                      00157 ;and that there is an assumption we are addressing bank 0.
+0070   0096           00158 toggle        movwf   temp
+0071   0815           00159               movf    pitch,W
+0072   0081           00160               movwf   TMR0
+0073   0806           00161               movf    PORTB,W
+0074   3A0F           00162               xorlw   0x0F
+0075   0086           00163               movwf   PORTB
+0076   110B           00164               bcf     INTCON,T0IF
+0077   0816           00165               movf    temp,w
+0078   0009           00166               retfie
+                      00167 
+                      00168 ;Tune Tables             
+                      00169 ;Must be on even byte boundary                        
+                      00170                         
+0080                  00171               org 0x0080
+                      00172 
+                      00173 ; Tune 0 Data
+                      00174 ; Bach 'Badinerie' from Suite No 2
+0080   3417           00175 tune0   retlw 0x17      ;B
+0081   3478           00176         retlw 0x78      ;240
+0082   341A           00177         retlw 0x1A      ;D
+0083   343C           00178         retlw 0x3C      ;120
+0084   3417           00179         retlw 0x17      ;B
+0085   343C           00180         retlw 0x3C      ;120
+0086   3412           00181         retlw 0x12      ;F#
+0087   3478           00182         retlw 0x78      ;240
+0088   3417           00183         retlw 0x17      ;B
+0089   343C           00184         retlw 0x3C      ;120
+008A   3412           00185         retlw 0x12      ;F#
+008B   343C           00186         retlw 0x3C      ;120
+008C   340E           00187         retlw 0x0E      ;D
+008D   3478           00188         retlw 0x78      ;240
+008E   3412           00189         retlw 0x12      ;F#
+008F   343C           00190         retlw 0x3C      ;120
+0090   340E           00191         retlw 0x0E      ;D
+0091   343C           00192         retlw 0x3C      ;120
+0092   340B           00193         retlw 0x0B      ;B
+0093   34F0           00194         retlw 0xF0      ;480
+0094   3406           00195         retlw 0x06      ;F#
+0095   343C           00196         retlw 0x3C      ;120
+0096   340B           00197         retlw 0x0B      ;B
+0097   343C           00198         retlw 0x3C      ;120
+0098   340E           00199         retlw 0x0E      ;D
+0099   343C           00200         retlw 0x3C      ;120
+009A   340B           00201         retlw 0x0B      ;B
+009B   343C           00202         retlw 0x3C      ;120
+009C   340D           00203         retlw 0x0D      ;C#
+009D   343C           00204         retlw 0x3C      ;120
+009E   340B           00205         retlw 0x0B      ;B
+009F   343C           00206         retlw 0x3C      ;120
+00A0   340D           00207         retlw 0x0D      ;C#
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00A1   343C           00208         retlw 0x3C      ;120
+00A2   340B           00209         retlw 0x0B      ;B
+00A3   343C           00210         retlw 0x3C      ;120
+00A4   340A           00211         retlw 0x0A      ;A#
+00A5   343C           00212         retlw 0x3C      ;120
+00A6   340D           00213         retlw 0x0D      ;C#
+00A7   343C           00214         retlw 0x3C      ;120
+00A8   3410           00215         retlw 0x10      ;E
+00A9   343C           00216         retlw 0x3C      ;120
+00AA   340D           00217         retlw 0x0D      ;C#
+00AB   343C           00218         retlw 0x3C      ;120
+00AC   340E           00219         retlw 0x0E      ;D
+00AD   3478           00220         retlw 0x78      ;240
+00AE   340B           00221         retlw 0x0B      ;B
+00AF   3478           00222         retlw 0x78      ;240
+00B0   3417           00223         retlw 0x17      ;B
+00B1   3478           00224         retlw 0x78      ;240
+00B2   341A           00225         retlw 0x1A      ;D
+00B3   343C           00226         retlw 0x3C      ;120
+00B4   3417           00227         retlw 0x17      ;B
+00B5   343C           00228         retlw 0x3C      ;120
+00B6   3412           00229         retlw 0x12      ;F#
+00B7   3478           00230         retlw 0x78      ;240
+00B8   3417           00231         retlw 0x17      ;B
+00B9   343C           00232         retlw 0x3C      ;120
+00BA   3412           00233         retlw 0x12      ;F#
+00BB   343C           00234         retlw 0x3C      ;120
+00BC   340E           00235         retlw 0x0E      ;D
+00BD   3478           00236         retlw 0x78      ;240
+00BE   3412           00237         retlw 0x12      ;F#
+00BF   343C           00238         retlw 0x3C      ;120
+00C0   340E           00239         retlw 0x0E      ;D
+00C1   343C           00240         retlw 0x3C      ;120
+00C2   340B           00241         retlw 0x0B      ;B
+00C3   34F0           00242         retlw 0xF0      ;480
+00C4   340E           00243         retlw 0x0E      ;D
+00C5   3478           00244         retlw 0x78      ;240
+00C6   340E           00245         retlw 0x0E      ;D
+00C7   3478           00246         retlw 0x78      ;240
+00C8   340E           00247         retlw 0x0E      ;D
+00C9   3478           00248         retlw 0x78      ;240
+00CA   340E           00249         retlw 0x0E      ;D
+00CB   3478           00250         retlw 0x78      ;240
+00CC   3417           00251         retlw 0x17      ;B
+00CD   3478           00252         retlw 0x78      ;240
+00CE   340E           00253         retlw 0x0E      ;D
+00CF   3478           00254         retlw 0x78      ;240
+00D0   3410           00255         retlw 0x10      ;E
+00D1   343C           00256         retlw 0x3C      ;60
+00D2   340E           00257         retlw 0x0E      ;D
+00D3   343C           00258         retlw 0x3C      ;30
+00D4   340D           00259         retlw 0x0D      ;C#
+00D5   3478           00260         retlw 0x78      ;240
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00D6   3412           00261         retlw 0x12      ;F#
+00D7   3478           00262         retlw 0x78      ;240
+00D8   3412           00263         retlw 0x12      ;F#
+00D9   3478           00264         retlw 0x78      ;240
+00DA   3412           00265         retlw 0x12      ;F#
+00DB   3478           00266         retlw 0x78      ;240
+00DC   3412           00267         retlw 0x12      ;F#
+00DD   3478           00268         retlw 0x78      ;240
+00DE   341A           00269         retlw 0x1A      ;D
+00DF   3478           00270         retlw 0x78      ;240
+00E0   3412           00271         retlw 0x12      ;F#
+00E1   3478           00272         retlw 0x78      ;220
+00E2   3412           00273         retlw 0x12      ;F#
+00E3   343C           00274         retlw 0x3C      ;30
+00E4   3414           00275         retlw 0x14      ;G#
+00E5   343C           00276         retlw 0x3C      ;65
+00E6   3411           00277         retlw 0x11      ;F
+00E7   3478           00278         retlw 0x78      ;270
+00E8   340D           00279         retlw 0x0D      ;C#
+00E9   343C           00280         retlw 0x3C      ;120
+00EA   3412           00281         retlw 0x12      ;F#
+00EB   343C           00282         retlw 0x3C      ;120
+00EC   3415           00283         retlw 0x15      ;A
+00ED   343C           00284         retlw 0x3C      ;120
+00EE   3412           00285         retlw 0x12      ;F#
+00EF   343C           00286         retlw 0x3C      ;120
+00F0   3414           00287         retlw 0x14      ;G#
+00F1   343C           00288         retlw 0x3C      ;120
+00F2   3412           00289         retlw 0x12      ;F#
+00F3   343C           00290         retlw 0x3C      ;120
+00F4   3414           00291         retlw 0x14      ;G#
+00F5   343C           00292         retlw 0x3C      ;120
+00F6   3412           00293         retlw 0x12      ;F#
+00F7   343C           00294         retlw 0x3C      ;120
+00F8   3411           00295         retlw 0x11      ;F
+00F9   343C           00296         retlw 0x3C      ;120
+00FA   3414           00297         retlw 0x14      ;G#
+00FB   343C           00298         retlw 0x3C      ;120
+00FC   3417           00299         retlw 0x17      ;B
+00FD   343C           00300         retlw 0x3C      ;120
+00FE   3414           00301         retlw 0x14      ;G#
+00FF   343C           00302         retlw 0x3C      ;120
+0100   3415           00303         retlw 0x15      ;A
+0101   343C           00304         retlw 0x3C      ;120
+0102   3414           00305         retlw 0x14      ;G#
+0103   343C           00306         retlw 0x3C      ;120
+0104   3415           00307         retlw 0x15      ;A
+0105   343C           00308         retlw 0x3C      ;120
+0106   3414           00309         retlw 0x14      ;G#
+0107   343C           00310         retlw 0x3C      ;120
+0108   3412           00311         retlw 0x12      ;F#
+0109   343C           00312         retlw 0x3C      ;120
+010A   3415           00313         retlw 0x15      ;A
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+010B   343C           00314         retlw 0x3C      ;120
+010C   3412           00315         retlw 0x12      ;F#
+010D   343C           00316         retlw 0x3C      ;120
+010E   3411           00317         retlw 0x11      ;F
+010F   343C           00318         retlw 0x3C      ;120
+0110   3412           00319         retlw 0x12      ;F#
+0111   343C           00320         retlw 0x3C      ;120
+0112   3417           00321         retlw 0x17      ;B
+0113   343C           00322         retlw 0x3C      ;120
+0114   3412           00323         retlw 0x12      ;F#
+0115   343C           00324         retlw 0x3C      ;120
+0116   3411           00325         retlw 0x11      ;F
+0117   3439           00326         retlw 0x39      ;115
+0118   3412           00327         retlw 0x12      ;F#
+0119   343C           00328         retlw 0x3C      ;120
+011A   3419           00329         retlw 0x19      ;C#
+011B   343E           00330         retlw 0x3E      ;125
+011C   3412           00331         retlw 0x12      ;F#
+011D   343C           00332         retlw 0x3C      ;120
+011E   3411           00333         retlw 0x11      ;F
+011F   343C           00334         retlw 0x3C      ;120
+0120   3412           00335         retlw 0x12      ;F#
+0121   3439           00336         retlw 0x39      ;115
+0122   341A           00337         retlw 0x1A      ;D
+0123   343E           00338         retlw 0x3E      ;125
+0124   3412           00339         retlw 0x12      ;F#
+0125   343C           00340         retlw 0x3C      ;120
+0126   3411           00341         retlw 0x11      ;F
+0127   343C           00342         retlw 0x3C      ;120
+0128   3412           00343         retlw 0x12      ;F#
+0129   343C           00344         retlw 0x3C      ;120
+012A   341A           00345         retlw 0x1A      ;D
+012B   343C           00346         retlw 0x3C      ;120
+012C   3419           00347         retlw 0x19      ;C#
+012D   343C           00348         retlw 0x3C      ;120
+012E   3417           00349         retlw 0x17      ;B
+012F   343C           00350         retlw 0x3C      ;120
+0130   3419           00351         retlw 0x19      ;C#
+0131   343C           00352         retlw 0x3C      ;120
+0132   3415           00353         retlw 0x15      ;A
+0133   343C           00354         retlw 0x3C      ;120
+0134   3414           00355         retlw 0x14      ;G#
+0135   343C           00356         retlw 0x3C      ;120
+0136   3412           00357         retlw 0x12      ;F#
+0137   343C           00358         retlw 0x3C      ;130
+0138   3415           00359         retlw 0x15      ;A
+0139   3478           00360         retlw 0x78      ;210
+013A   3414           00361         retlw 0x14      ;G#
+013B   343C           00362         retlw 0x3C
+013C   3412           00363         retlw 0x12      ;F#
+013D   343C           00364         retlw 0x3C      ;
+013E   3412           00365         retlw 0x12      ;F#
+013F   34E0           00366         retlw 0xE0      ;480
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0140   34FF           00367         retlw 0xFF      
+0141   3400           00368         retlw 0
+                      00369 
+                      00370 ; Tune 1 
+                      00371 ; Mozart Eine Klein Nachtmusik
+                      00372 
+                      00373         
+0142                  00374 tune1           
+                      00375 
+0142   3413           00376         retlw 0x13      ;G
+0143   3443           00377         retlw 0x43      ;538
+0144   3440           00378         retlw 0x40      ;REST
+0145   344D           00379         retlw 0x4D      ;617
+0146   340E           00380         retlw 0x0E      ;D
+0147   3418           00381         retlw 0x18      ;193
+0148   3440           00382         retlw 0x40      ;REST
+0149   341D           00383         retlw 0x1D      ;232
+014A   3413           00384         retlw 0x13      ;G
+014B   343E           00385         retlw 0x3E      ;498
+014C   3440           00386         retlw 0x40      ;REST
+014D   3448           00387         retlw 0x48      ;582
+014E   340E           00388         retlw 0x0E      ;D
+014F   341B           00389         retlw 0x1B      ;218
+0150   3440           00390         retlw 0x40      ;REST
+0151   3418           00391         retlw 0x18      ;192
+0152   3413           00392         retlw 0x13      ;G
+0153   3415           00393         retlw 0x15      ;168
+0154   3440           00394         retlw 0x40      ;REST
+0155   3419           00395         retlw 0x19      ;207
+0156   340E           00396         retlw 0x0E      ;D
+0157   3415           00397         retlw 0x15      ;168
+0158   3440           00398         retlw 0x40      ;REST
+0159   3415           00399         retlw 0x15      ;172
+015A   3413           00400         retlw 0x13      ;G
+015B   3417           00401         retlw 0x17      ;188
+015C   3440           00402         retlw 0x40      ;REST
+015D   3418           00403         retlw 0x18      ;197
+015E   3417           00404         retlw 0x17      ;B
+015F   3417           00405         retlw 0x17      ;188
+0160   3440           00406         retlw 0x40      ;REST
+0161   341B           00407         retlw 0x1B      ;222
+0162   341A           00408         retlw 0x1A      ;D
+0163   343B           00409         retlw 0x3B      ;478
+0164   3440           00410         retlw 0x40      ;REST
+0165   3483           00411         retlw 0x83      ;1052
+0166   3418           00412         retlw 0x18      ;C
+0167   3447           00413         retlw 0x47      ;568
+0168   3440           00414         retlw 0x40      ;REST
+0169   344A           00415         retlw 0x4A      ;597
+016A   3415           00416         retlw 0x15      ;A
+016B   3415           00417         retlw 0x15      ;168
+016C   3440           00418         retlw 0x40      ;REST
+016D   341D           00419         retlw 0x1D      ;237
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+016E   3418           00420         retlw 0x18      ;C
+016F   343C           00421         retlw 0x3C      ;483
+0170   3440           00422         retlw 0x40      ;REST
+0171   3452           00423         retlw 0x52      ;657
+0172   3415           00424         retlw 0x15      ;A
+0173   3416           00425         retlw 0x16      ;183
+0174   3440           00426         retlw 0x40      ;REST
+0175   3416           00427         retlw 0x16      ;177
+0176   3418           00428         retlw 0x18      ;C
+0177   341C           00429         retlw 0x1C      ;228
+0178   3440           00430         retlw 0x40      ;REST
+0179   3412           00431         retlw 0x12      ;147
+017A   3415           00432         retlw 0x15      ;A
+017B   3416           00433         retlw 0x16      ;183
+017C   3440           00434         retlw 0x40      ;REST
+017D   3418           00435         retlw 0x18      ;197
+017E   3412           00436         retlw 0x12      ;F#
+017F   3418           00437         retlw 0x18      ;198
+0180   3440           00438         retlw 0x40      ;REST
+0181   3414           00439         retlw 0x14      ;167
+0182   3415           00440         retlw 0x15      ;A
+0183   341D           00441         retlw 0x1D      ;238
+0184   3440           00442         retlw 0x40      ;REST
+0185   3418           00443         retlw 0x18      ;192
+0186   340E           00444         retlw 0x0E      ;D
+0187   3439           00445         retlw 0x39      ;458
+0188   3440           00446         retlw 0x40      ;REST
+0189   3482           00447         retlw 0x82      ;1042
+018A   3413           00448         retlw 0x13      ;G
+018B   3427           00449         retlw 0x27      ;313
+018C   3440           00450         retlw 0x40      ;REST
+018D   343E           00451         retlw 0x3E      ;497
+018E   3413           00452         retlw 0x13      ;G
+018F   346B           00453         retlw 0x6B      ;858
+0190   3440           00454         retlw 0x40      ;REST
+0191   341E           00455         retlw 0x1E      ;242
+0192   3417           00456         retlw 0x17      ;B
+0193   3431           00457         retlw 0x31      ;395
+0194   3415           00458         retlw 0x15      ;A
+0195   3421           00459         retlw 0x21      ;268
+0196   3440           00460         retlw 0x40      ;REST
+0197   3407           00461         retlw 0x07      ;57
+0198   3413           00462         retlw 0x13      ;G
+0199   3416           00463         retlw 0x16      ;183
+019A   3440           00464         retlw 0x40      ;REST
+019B   3418           00465         retlw 0x18      ;197
+019C   3413           00466         retlw 0x13      ;G
+019D   3416           00467         retlw 0x16      ;180
+019E   3415           00468         retlw 0x15      ;A
+019F   3413           00469         retlw 0x13      ;155
+01A0   3413           00470         retlw 0x13      ;G
+01A1   3412           00471         retlw 0x12      ;145
+01A2   3412           00472         retlw 0x12      ;F#
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01A3   3410           00473         retlw 0x10      ;133
+01A4   3440           00474         retlw 0x40      ;REST
+01A5   3422           00475         retlw 0x22      ;272
+01A6   3412           00476         retlw 0x12      ;F#
+01A7   3468           00477         retlw 0x68      ;833
+01A8   3440           00478         retlw 0x40      ;REST
+01A9   341F           00479         retlw 0x1F      ;252
+01AA   3415           00480         retlw 0x15      ;A
+01AB   342C           00481         retlw 0x2C      ;355
+01AC   3418           00482         retlw 0x18      ;C
+01AD   341B           00483         retlw 0x1B      ;218
+01AE   3440           00484         retlw 0x40      ;REST
+01AF   3414           00485         retlw 0x14      ;162
+01B0   3412           00486         retlw 0x12      ;F#
+01B1   3413           00487         retlw 0x13      ;158
+01B2   3440           00488         retlw 0x40      ;REST
+01B3   3419           00489         retlw 0x19      ;202
+01B4   3415           00490         retlw 0x15      ;A
+01B5   342F           00491         retlw 0x2F      ;380
+01B6   3413           00492         retlw 0x13      ;G
+01B7   3413           00493         retlw 0x13      ;158
+01B8   3440           00494         retlw 0x40      ;REST
+01B9   3422           00495         retlw 0x22      ;272
+01BA   3413           00496         retlw 0x13      ;G
+01BB   3478           00497         retlw 0x78      ;963
+01BC   3440           00498         retlw 0x40      ;REST
+01BD   341D           00499         retlw 0x1D      ;237
+01BE   3417           00500         retlw 0x17      ;B
+01BF   342A           00501         retlw 0x2A      ;343
+01C0   3440           00502         retlw 0x40      ;REST
+01C1   3403           00503         retlw 0x03      ;27
+01C2   3415           00504         retlw 0x15      ;A
+01C3   3422           00505         retlw 0x22      ;278
+01C4   3440           00506         retlw 0x40      ;REST
+01C5   340C           00507         retlw 0x0C      ;102
+01C6   3413           00508         retlw 0x13      ;G
+01C7   3416           00509         retlw 0x16      ;183
+01C8   3440           00510         retlw 0x40      ;REST
+01C9   341A           00511         retlw 0x1A      ;212
+01CA   3413           00512         retlw 0x13      ;G
+01CB   3419           00513         retlw 0x19      ;205
+01CC   3415           00514         retlw 0x15      ;A
+01CD   3412           00515         retlw 0x12      ;150
+01CE   3413           00516         retlw 0x13      ;G
+01CF   3411           00517         retlw 0x11      ;140
+01D0   3412           00518         retlw 0x12      ;F#
+01D1   3412           00519         retlw 0x12      ;148
+01D2   3440           00520         retlw 0x40      ;REST
+01D3   341F           00521         retlw 0x1F      ;252
+01D4   3412           00522         retlw 0x12      ;F#
+01D5   345B           00523         retlw 0x5B      ;728
+01D6   3440           00524         retlw 0x40      ;REST
+01D7   3427           00525         retlw 0x27      ;317
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+01D8   3415           00526         retlw 0x15      ;A
+01D9   342D           00527         retlw 0x2D      ;365
+01DA   3418           00528         retlw 0x18      ;C
+01DB   341A           00529         retlw 0x1A      ;208
+01DC   3440           00530         retlw 0x40      ;REST
+01DD   3413           00531         retlw 0x13      ;152
+01DE   3412           00532         retlw 0x12      ;F#
+01DF   3414           00533         retlw 0x14      ;163
+01E0   3440           00534         retlw 0x40      ;REST
+01E1   3419           00535         retlw 0x19      ;207
+01E2   3413           00536         retlw 0x13      ;G
+01E3   3414           00537         retlw 0x14      ;163
+01E4   3440           00538         retlw 0x40      ;REST
+01E5   3419           00539         retlw 0x19      ;207
+01E6   3413           00540         retlw 0x13      ;G
+01E7   3413           00541         retlw 0x13      ;153
+01E8   3440           00542         retlw 0x40      ;REST
+01E9   341A           00543         retlw 0x1A      ;212
+01EA   3413           00544         retlw 0x13      ;G
+01EB   341C           00545         retlw 0x1C      ;225
+01EC   3412           00546         retlw 0x12      ;F#
+01ED   3415           00547         retlw 0x15      ;175
+01EE   3410           00548         retlw 0x10      ;E
+01EF   341E           00549         retlw 0x1E      ;240
+01F0   3412           00550         retlw 0x12      ;F#
+01F1   3412           00551         retlw 0x12      ;150
+01F2   3413           00552         retlw 0x13      ;G
+01F3   3418           00553         retlw 0x18      ;198
+01F4   3440           00554         retlw 0x40      ;REST
+01F5   3416           00555         retlw 0x16      ;177
+01F6   3413           00556         retlw 0x13      ;G
+01F7   3410           00557         retlw 0x10      ;128
+01F8   3440           00558         retlw 0x40      ;REST
+01F9   3423           00559         retlw 0x23      ;287
+01FA   3417           00560         retlw 0x17      ;B
+01FB   3417           00561         retlw 0x17      ;190
+01FC   3415           00562         retlw 0x15      ;A
+01FD   340D           00563         retlw 0x0D      ;105
+01FE   3413           00564         retlw 0x13      ;G
+01FF   341F           00565         retlw 0x1F      ;255
+0200   3415           00566         retlw 0x15      ;A
+0201   340F           00567         retlw 0x0F      ;125
+0202   3417           00568         retlw 0x17      ;B
+0203   3418           00569         retlw 0x18      ;193
+0204   3440           00570         retlw 0x40      ;REST
+0205   341A           00571         retlw 0x1A      ;212
+0206   3417           00572         retlw 0x17      ;B
+0207   3410           00573         retlw 0x10      ;128
+0208   3440           00574         retlw 0x40      ;REST
+0209   3420           00575         retlw 0x20      ;257
+020A   341A           00576         retlw 0x1A      ;D
+020B   3419           00577         retlw 0x19      ;200
+020C   3418           00578         retlw 0x18      ;C
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+020D   340F           00579         retlw 0x0F      ;125
+020E   3417           00580         retlw 0x17      ;B
+020F   341F           00581         retlw 0x1F      ;250
+0210   3418           00582         retlw 0x18      ;C
+0211   3410           00583         retlw 0x10      ;135
+0212   341A           00584         retlw 0x1A      ;D
+0213   3459           00585         retlw 0x59      ;713
+0214   3440           00586         retlw 0x40      ;REST
+0215   347B           00587         retlw 0x7B      ;987
+0216   340E           00588         retlw 0x0E      ;D
+0217   34BA           00589         retlw 0xBA      ;1495
+0218   3410           00590         retlw 0x10      ;E
+0219   347C           00591         retlw 0x7C      ;998
+021A   3440           00592         retlw 0x40      ;REST
+021B   3448           00593         retlw 0x48      ;577
+021C   340E           00594         retlw 0x0E      ;D
+021D   3419           00595         retlw 0x19      ;205
+021E   340C           00596         retlw 0x0C      ;C
+021F   3416           00597         retlw 0x16      ;183
+0220   3440           00598         retlw 0x40      ;REST
+0221   3431           00599         retlw 0x31      ;397
+0222   340C           00600         retlw 0x0C      ;C
+0223   3414           00601         retlw 0x14      ;163
+0224   3440           00602         retlw 0x40      ;REST
+0225   344C           00603         retlw 0x4C      ;612
+0226   340C           00604         retlw 0x0C      ;C
+0227   3417           00605         retlw 0x17      ;190
+0228   340B           00606         retlw 0x0B      ;B
+0229   3412           00607         retlw 0x12      ;148
+022A   3440           00608         retlw 0x40      ;REST
+022B   3439           00609         retlw 0x39      ;457
+022C   340B           00610         retlw 0x0B      ;B
+022D   3413           00611         retlw 0x13      ;153
+022E   3440           00612         retlw 0x40      ;REST
+022F   3443           00613         retlw 0x43      ;537
+0230   340B           00614         retlw 0x0B      ;B
+0231   3417           00615         retlw 0x17      ;190
+0232   3409           00616         retlw 0x09      ;A
+0233   3413           00617         retlw 0x13      ;153
+0234   3440           00618         retlw 0x40      ;REST
+0235   3437           00619         retlw 0x37      ;447
+0236   3409           00620         retlw 0x09      ;A
+0237   3416           00621         retlw 0x16      ;178
+0238   3440           00622         retlw 0x40      ;REST
+0239   3441           00623         retlw 0x41      ;522
+023A   3407           00624         retlw 0x07      ;G
+023B   342E           00625         retlw 0x2E      ;375
+023C   3406           00626         retlw 0x06      ;F#
+023D   3433           00627         retlw 0x33      ;410
+023E   3404           00628         retlw 0x04      ;E
+023F   342D           00629         retlw 0x2D      ;363
+0240   3440           00630         retlw 0x40      ;REST
+0241   3401           00631         retlw 0x01      ;12
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0242   3406           00632         retlw 0x06      ;F#
+0243   3435           00633         retlw 0x35      ;428
+0244   3440           00634         retlw 0x40      ;REST
+0245   3402           00635         retlw 0x02      ;22
+0246   3407           00636         retlw 0x07      ;G
+0247   3416           00637         retlw 0x16      ;178
+0248   3440           00638         retlw 0x40      ;REST
+0249   3450           00639         retlw 0x50      ;642
+024A   3409           00640         retlw 0x09      ;A
+024B   3410           00641         retlw 0x10      ;133
+024C   3440           00642         retlw 0x40      ;REST
+024D   344C           00643         retlw 0x4C      ;612
+024E   340B           00644         retlw 0x0B      ;B
+024F   340E           00645         retlw 0x0E      ;113
+0250   3440           00646         retlw 0x40      ;REST
+0251   34B4           00647         retlw 0xB4      ;1442
+0252   340E           00648         retlw 0x0E      ;D
+0253   34BA           00649         retlw 0xBA      ;1495
+0254   3410           00650         retlw 0x10      ;E
+0255   3482           00651         retlw 0x82      ;1043
+0256   3440           00652         retlw 0x40      ;REST
+0257   3439           00653         retlw 0x39      ;462
+0258   340E           00654         retlw 0x0E      ;D
+0259   342D           00655         retlw 0x2D      ;360
+025A   340C           00656         retlw 0x0C      ;C
+025B   3416           00657         retlw 0x16      ;178
+025C   3440           00658         retlw 0x40      ;REST
+025D   341E           00659         retlw 0x1E      ;242
+025E   340C           00660         retlw 0x0C      ;C
+025F   3410           00661         retlw 0x10      ;128
+0260   3440           00662         retlw 0x40      ;REST
+0261   341F           00663         retlw 0x1F      ;252
+0262   340C           00664         retlw 0x0C      ;C
+0263   3410           00665         retlw 0x10      ;133
+0264   3440           00666         retlw 0x40      ;REST
+0265   341C           00667         retlw 0x1C      ;227
+0266   340C           00668         retlw 0x0C      ;C
+0267   342C           00669         retlw 0x2C      ;355
+0268   340B           00670         retlw 0x0B      ;B
+0269   3413           00671         retlw 0x13      ;153
+026A   3440           00672         retlw 0x40      ;REST
+026B   341E           00673         retlw 0x1E      ;247
+026C   340B           00674         retlw 0x0B      ;B
+026D   340D           00675         retlw 0x0D      ;108
+026E   3440           00676         retlw 0x40      ;REST
+026F   3423           00677         retlw 0x23      ;282
+0270   340B           00678         retlw 0x0B      ;B
+0271   3410           00679         retlw 0x10      ;133
+0272   3440           00680         retlw 0x40      ;REST
+0273   341E           00681         retlw 0x1E      ;247
+0274   340B           00682         retlw 0x0B      ;B
+0275   342F           00683         retlw 0x2F      ;380
+0276   3409           00684         retlw 0x09      ;A
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0277   3413           00685         retlw 0x13      ;158
+0278   3440           00686         retlw 0x40      ;REST
+0279   341B           00687         retlw 0x1B      ;222
+027A   3409           00688         retlw 0x09      ;A
+027B   3413           00689         retlw 0x13      ;153
+027C   3440           00690         retlw 0x40      ;REST
+027D   341E           00691         retlw 0x1E      ;242
+027E   3409           00692         retlw 0x09      ;A
+027F   3410           00693         retlw 0x10      ;128
+0280   3440           00694         retlw 0x40      ;REST
+0281   3423           00695         retlw 0x23      ;282
+0282   3407           00696         retlw 0x07      ;G
+0283   342B           00697         retlw 0x2B      ;350
+0284   3406           00698         retlw 0x06      ;F#
+0285   342F           00699         retlw 0x2F      ;380
+0286   3404           00700         retlw 0x04      ;E
+0287   3431           00701         retlw 0x31      ;395
+0288   3406           00702         retlw 0x06      ;F#
+0289   3435           00703         retlw 0x35      ;428
+028A   3440           00704         retlw 0x40      ;REST
+028B   3405           00705         retlw 0x05      ;47
+028C   3407           00706         retlw 0x07      ;G
+028D   34B4           00707         retlw 0xB4      ;468
+028E   34FF           00708         retlw 0xFF
+                      00709         
+                      00710 
+                      00711               END
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+DC                                00000001
+EEADR                             00000009
+EECON1                            00000088
+EECON2                            00000089
+EEDATA                            00000008
+EEIE                              00000006
+EEIF                              00000004
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_PD                            00000003
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCL                               00000002
+PCLATH                            0000000A
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+TRISA                             00000085
+TRISB                             00000086
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_CP_OFF                           00003FFF
+_CP_ON                            0000000F
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE 16
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F84                           00000001
+dl1                               00000017
+dl2                               00000018
+entrypoint                        00000000
+gettunedata                       00000045
+initialise                        00000005
+intvector                         00000004
+length                            00000014
+loop1                             00000038
+loop2                             0000003A
+note                              00000013
+pitch                             00000015
+pitchtable                        00000049
+playnote                          0000002C
+playtune                          00000025
+playtune0                         00000013
+playtune1                         0000001C
+playwait                          00000036
+temp                              00000016
+tempo                             00000010
+toggle                            00000070
+tptrh                             00000012
+tptrl                             00000011
+tune0                             00000080
+tune1                             00000142
+wait                              0000000D
+wloop                             0000000E
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXX-------
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+01C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0200 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0240 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0280 : XXXXXXXXXXXXXXX- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   645
+Program Memory Words Free:   379
+
+MPASM 03.00 Released         DOORBELL.ASM   7-9-2002  10:52:24         PAGE 17
+
+
+
+
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     2 reported,     0 suppressed
+
+

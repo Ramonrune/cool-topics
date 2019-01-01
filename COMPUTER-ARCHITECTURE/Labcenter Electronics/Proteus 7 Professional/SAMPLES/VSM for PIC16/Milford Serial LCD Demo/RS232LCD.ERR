@@ -1,0 +1,6 @@
+Message[302] C:\PRODEV\VSM\LCDALPHA\RS232LCD.ASM 30 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\PRODEV\VSM\LCDALPHA\RS232LCD.ASM 31 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\PRODEV\VSM\LCDALPHA\RS232LCD.ASM 33 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\PRODEV\VSM\LCDALPHA\RS232LCD.ASM 35 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\PRODEV\VSM\LCDALPHA\RS232LCD.ASM 126 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\PRODEV\VSM\LCDALPHA\RS232LCD.ASM 127 : Register in operand not in bank 0.  Ensure that bank bits are correct.

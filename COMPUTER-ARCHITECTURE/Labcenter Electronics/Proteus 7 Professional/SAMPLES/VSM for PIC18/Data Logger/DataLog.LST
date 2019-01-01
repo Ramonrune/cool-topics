@@ -1,0 +1,2296 @@
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[205]: Found directive in column 1. (LIST)
+                      00001 LIST p=18F458 ;PIC18F458 is the target processor
+                      00002 
+                      00003 #include "P18f458.INC" ;Include header file
+                      00001         LIST
+                      00002 ; P18F458.INC  Standard Header File, Version 1.10   Microchip Technology, Inc.
+                      01571         LIST
+                      00004 
+                      00005 ;====================================================================
+                      00006 ; Macros
+                      00007 ;--------------------------------------------------------------------
+                      00008 
+                      00009 #define CLK_FREQ        D'20000000'
+                      00010 #define BAUD(x) ((CLK_FREQ/x)/D'64')-1
+                      00011 
+                      00012 #define BRG_VAL BAUD(D'9600')   ;Baud rate configuration value
+                      00013 
+                      00014 ;====================================================================
+                      00015 ; Uninitialised data
+                      00016 ;--------------------------------------------------------------------
+                      00017 
+                      00018 ; General temps
+  00000000            00019 TMP1            equ     0x000000
+  00000001            00020 TMP2            equ     0x000001
+                      00021 
+                      00022 ; Current LBA sector address for reading/wring
+  00000002            00023 ATA_A0          equ     0x000002
+  00000003            00024 ATA_A1          equ     0x000003
+  00000004            00025 ATA_A2          equ     0x000004
+  00000005            00026 ATA_A3          equ     0x000005
+                      00027 
+                      00028 ; Counter used to track data words read/written to/from ATA
+  00000006            00029 ATA_CNT         equ     0x000006
+                      00030 
+                      00031 ; High priority interrupt temps
+  00000007            00032 STATUS_TEMP_H   equ     0x000007
+  00000008            00033 WREG_TEMP_H     equ     0x000008
+  00000009            00034 BSR_TEMP_H      equ     0x000009
+                      00035 
+                      00036 ; Low priority interrupt temps
+  0000000A            00037 STATUS_TEMP_L   equ     0x00000A
+  0000000B            00038 WREG_TEMP_L     equ     0x00000B
+  0000000C            00039 BSR_TEMP_L      equ     0x00000C
+                      00040 
+                      00041 ; Countdown number of timer 0 overflows
+  0000000D            00042 T0COUNT         equ     0x00000D
+                      00043 
+                      00044 ; End of logged data
+  0000000E            00045 END_POSL        equ     0x00000E
+  0000000F            00046 END_POSH        equ     0x00000F
+  00000010            00047 END_ATA_A0      equ     0x000010
+  00000011            00048 END_ATA_A1      equ     0x000011
+  00000012            00049 END_ATA_A2      equ     0x000012
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+  00000013            00050 END_ATA_A3      equ     0x000013
+                      00051 
+                      00052 ; Temp for log data to be displayed
+  00000014            00053 INPDATA_L       equ     0x000014
+  00000015            00054 INPDATA_H       equ     0x000015
+                      00055 
+                      00056 ; Countdoen the number of log entries on a display line
+  00000016            00057 OUT_COUNT       equ     0x000016
+                      00058 
+                      00059 ; ATA data transfer buffer
+  00000400            00060 ATA_BUF         equ     0x000400
+  00000600            00061 ATA_BUF_END     equ     0x000600
+                      00062 
+                      00063 ;====================================================================
+                      00064 ; Interrupt vectors
+                      00065 ;--------------------------------------------------------------------
+000000                00066         org     0x000000        ;Reset vector
+000000 D00C           00067         bra     START
+                      00068 
+000008                00069         org     0x000008        ;High priority interrupt vector
+000008 D052           00070         bra     INT_HIGH
+                      00071 
+000018                00072         org     0x000018        ;Low priority interrupt vector
+000018 D05B           00073         bra     INT_LOW
+                      00074 
+                      00075 ;====================================================================
+                      00076 ; Main program
+                      00077 ;--------------------------------------------------------------------
+00001A                00078 START
+00001A D82F           00079         rcall   INIT            ; Program initialisation
+00001C D909           00080         rcall   OUT_VERSION     ; Version message
+00001E                00081 REHELP
+00001E D910           00082         rcall   OUT_HELP        ; Help message
+000020                00083 MLOOP
+000020 D917           00084         rcall   OUT_COMMAND     ; Command prompt
+                      00085 
+000022 D870           00086         rcall   UART_Getch      ; Get user input
+000024 6E00           00087         movwf   TMP1            ; and store
+                      00088 
+000026 D91C           00089         rcall   OUT_CRLF        ; Newline
+000028 0E68           00090         movlw   'h'             ; Check for help
+00002A 1800           00091         xorwf   TMP1, W
+00002C E0F8           00092         bz      REHELP
+00002E 0E48           00093         movlw   'H'
+000030 1800           00094         xorwf   TMP1, W
+000032 E0F5           00095         bz      REHELP
+000034 0E76           00096         movlw   'v'             ; Check for version
+000036 1800           00097         xorwf   TMP1, W
+000038 E012           00098         bz      VERSION
+00003A 0E56           00099         movlw   'V'
+00003C 1800           00100         xorwf   TMP1, W
+00003E E00F           00101         bz      VERSION
+000040 0E6C           00102         movlw   'l'             ; Check for log start
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000042 1800           00103         xorwf   TMP1, W
+000044 E00F           00104         bz      LOG
+000046 0E4C           00105         movlw   'L'
+000048 1800           00106         xorwf   TMP1, W
+00004A E00C           00107         bz      LOG
+00004C 0E64           00108         movlw   'd'             ; Check for log dump
+00004E 1800           00109         xorwf   TMP1, W
+000050 E010           00110         bz      DUMP
+000052 0E44           00111         movlw   'D'
+000054 1800           00112         xorwf   TMP1, W
+000056 E00D           00113         bz      DUMP
+000058 D90B           00114         rcall   OUT_UNKNOWN     ; Command is unknown
+00005A EF10 F000      00115         goto    MLOOP
+                      00116 
+00005E D8E8           00117 VERSION rcall   OUT_VERSION     ; Version message
+000060 EF10 F000      00118         goto    MLOOP
+                      00119 
+000064 D90D           00120 LOG     rcall   OUT_LOG         ; Log start message
+000066 D926           00121         rcall   LOG_START       ; Enable logging under interrupt
+000068 D84D           00122         rcall   UART_Getch      ; Wait for any user input
+00006A D92C           00123         rcall   LOG_STOP        ; Terminate logging
+00006C D8F9           00124         rcall   OUT_CRLF
+00006E EF10 F000      00125         goto    MLOOP
+                      00126 
+000072 D90E           00127 DUMP    rcall   OUT_DUMP        ; Dump start message
+000074 D955           00128         rcall   DUMP_ALL        ; Dump data
+000076 EF10 F000      00129         goto    MLOOP
+                      00130 
+                      00131 ;====================================================================
+                      00132 ; Program initialisation
+                      00133 ;--------------------------------------------------------------------
+00007A                00134 INIT
+                      00135         ;Setup serial comms
+00007A 0E90           00136         movlw   b'10010000'     ;Enable USART in continous receive mode
+00007C 6EAB           00137         movwf   RCSTA
+00007E 0E22           00138         movlw   b'00100010'     ;Async, TX enabled, low baud rate
+000080 6EAC           00139         movwf   TXSTA
+000082 0E1F           00140         movlw   BRG_VAL         ;Set baud rate
+000084 6EAF           00141         movwf   SPBRG
+000086 50AE           00142         movf    RCREG, W        ;Flush out RX buffer
+000088 50AE           00143         movf    RCREG, W
+                      00144 
+                      00145         ;Setup I/O ports
+00008A 6A80           00146         clrf    PORTA
+00008C 6892           00147         setf    TRISA           ; Port A all input
+00008E 6A81           00148         clrf    PORTB
+000090 6893           00149         setf    TRISB           ; Port B all input, ATA D0-7
+000092 6A82           00150         clrf    PORTC
+000094 0EE0           00151         movlw   B'11100000'     ; Port C lower bits for ATA adressing
+000096 6E94           00152         movwf   TRISC
+000098 0E07           00153         movlw   B'00000111'     ; Turn off comparitor
+00009A 6EB4           00154         movwf   CMCON           ; On PORTD bits 0-3
+00009C 6A83           00155         clrf    PORTD
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00009E 6895           00156         setf    TRISD           ; Port D all input, ATA D8-15
+0000A0 0E03           00157         movlw   B'00000011'
+0000A2 6E84           00158         movwf   PORTE
+0000A4 0E04           00159         movlw   B'00000100'     ; Port E lower two bits output for ATA
+0000A6 6E96           00160         movwf   TRISE           ; read and write
+0000A8 D91E           00161         rcall   LOG_RESET       ; Reset log pointers
+0000AA D910           00162         rcall   LOG_UPDATE
+0000AC 0012           00163         return
+                      00164 
+                      00165 ;====================================================================
+                      00166 ; High priority intrrupt handler
+                      00167 ;--------------------------------------------------------------------
+0000AE                00168 INT_HIGH
+0000AE CFD8 F007      00169         movff   STATUS, STATUS_TEMP_H
+0000B2 CFE0 F009      00170         movff   BSR, BSR_TEMP_H
+0000B6 6E08           00171         movwf   WREG_TEMP_H
+                      00172 
+0000B8 94F2           00173         bcf     INTCON, TMR0IF  ;Clear timer 0 overflow interrupt flag
+0000BA 2E0D           00174         decfsz  T0COUNT
+0000BC D003           00175         bra     INT_HIGH_EXIT1
+0000BE 0E14           00176         movlw   D'20'           ;Only start conversion every 20 timer 0 timeouts
+0000C0 6E0D           00177         movwf   T0COUNT
+0000C2 84C2           00178         bsf     ADCON0, GO      ;Start ADC conversion
+                      00179 
+0000C4                00180 INT_HIGH_EXIT1
+0000C4 5008           00181         movf    WREG_TEMP_H, W
+0000C6 C009 FFE0      00182         movff   BSR_TEMP_H, BSR
+0000CA C007 FFD8      00183         movff   STATUS_TEMP_H, STATUS
+0000CE 0010           00184         retfie
+                      00185 
+                      00186 ;====================================================================
+                      00187 ; Low prority interrupt handler
+                      00188 ;--------------------------------------------------------------------
+0000D0                00189 INT_LOW
+0000D0 CFD8 F00A      00190         movff   STATUS, STATUS_TEMP_L
+0000D4 CFE0 F00C      00191         movff   BSR, BSR_TEMP_L
+0000D8 6E0B           00192         movwf   WREG_TEMP_L
+                      00193 
+0000DA 50C3           00194         movf    ADRESL, W       ;Copy ADC result to buffer
+0000DC 6EDE           00195         movwf   POSTINC2
+0000DE 50C4           00196         movf    ADRESH, W       ;Copy ADC result to buffer
+0000E0 6EDE           00197         movwf   POSTINC2
+                      00198 
+0000E2 9C9E           00199         bcf     PIR1, ADIF      ;Clear ADC interrupt flag
+                      00200 
+0000E4 0E06           00201         movlw   HIGH(ATA_BUF_END)       ; Check if at end of buffer
+0000E6 62DA           00202         cpfseq  FSR2H
+0000E8 D007           00203         bra     INT_LOW_EXIT1
+0000EA 0E00           00204         movlw   LOW(ATA_BUF_END)
+0000EC 62D9           00205         cpfseq  FSR2L
+0000EE D004           00206         bra     INT_LOW_EXIT1
+                      00207 
+0000F0 D82A           00208         rcall   ATA_Block_Write
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0000F2 D84B           00209         rcall   ATA_A_INC
+Message[314]: LFSR instruction is not supported on some versions of the 18Cxx2 devices.
+Message[315]: Please refer to Microchip document DS80058A for more details.
+0000F4 EE24 F000      00210         lfsr    FSR2, ATA_BUF   ; Point to start of data capture buffer
+                      00211 
+0000F8                00212 INT_LOW_EXIT1
+0000F8 500B           00213         movf    WREG_TEMP_L, W
+0000FA C00C FFE0      00214         movff   BSR_TEMP_L, BSR
+0000FE C00A FFD8      00215         movff   STATUS_TEMP_L, STATUS
+000102 0010           00216         retfie
+                      00217 
+                      00218 ;====================================================================
+                      00219 ; Read a byte from the serial port
+                      00220 ;--------------------------------------------------------------------
+                      00221 ; W contains the byte that was received
+                      00222 ;--------------------------------------------------------------------
+000104                00223 UART_Getch
+000104 0004           00224         clrwdt
+000106 AA9E           00225         btfss   PIR1, RCIF      ; Wait for RX buffer full
+000108 D7FD           00226         bra     UART_Getch
+00010A 50AE           00227         movf    RCREG, W
+00010C 0012           00228         return
+                      00229 
+                      00230 ;====================================================================
+                      00231 ; Write a byte to the serial port
+                      00232 ;--------------------------------------------------------------------
+                      00233 ; W contains the byte to be sent
+                      00234 ;--------------------------------------------------------------------
+00010E                00235 UART_Putch
+00010E A89E           00236         btfss   PIR1, TXIF      ; Wait for TX buffer empty
+000110 D7FE           00237         bra     UART_Putch
+000112 6EAD           00238         movwf   TXREG
+000114 0012           00239         return
+                      00240 
+                      00241 ;====================================================================
+                      00242 ; Write null terminated string to serial port from
+                      00243 ; program memory
+                      00244 ;--------------------------------------------------------------------
+                      00245 ; TBLPTR Points to the start of the string
+                      00246 ;--------------------------------------------------------------------
+000116                00247 UART_Puts_loop
+000116 DFFB           00248         rcall   UART_Putch      
+000118                00249 UART_Puts
+000118 0009           00250         tblrd*+
+00011A 50F5           00251         movf    TABLAT, W
+00011C E1FC           00252         bnz     UART_Puts_loop
+00011E 0012           00253         return
+                      00254 
+                      00255 ;====================================================================
+                      00256 ; Read a sector from the ATA drive
+                      00257 ;--------------------------------------------------------------------
+000120                00258 ATA_Block_Read
+000120 D82A           00259         rcall   ATA_BSY_Wait    ; Drive ready for command
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000122 D83A           00260         rcall   ATA_Send_LBA
+000124 0E20           00261         movlw   0x20            ; Read sectors command
+000126 6E00           00262         movwf   TMP1
+000128 0E17           00263         movlw   0x17            ; ATA Command regsiter
+00012A D857           00264         rcall   ATA_Reg8_Write
+00012C 6A06           00265         clrf    ATA_CNT
+Message[314]: LFSR instruction is not supported on some versions of the 18Cxx2 devices.
+Message[315]: Please refer to Microchip document DS80058A for more details.
+00012E EE04 F000      00266         lfsr    FSR0, ATA_BUF
+000132                00267 ATA_Block_Read_Lp1
+000132 D81C           00268         rcall   ATA_DRQ_Wait    ; Drive data waiting
+000134 0E10           00269         movlw   0x10
+000136 D85E           00270         rcall   ATA_Reg16_Read
+000138 5000           00271         movf    TMP1, W
+00013A 6EEE           00272         movwf   POSTINC0
+00013C 5001           00273         movf    TMP2, W
+00013E 6EEE           00274         movwf   POSTINC0
+000140 3E06           00275         incfsz  ATA_CNT
+000142 D7F7           00276         bra     ATA_Block_Read_Lp1
+000144 0012           00277         return
+                      00278 
+                      00279 ;====================================================================
+                      00280 ; Write a sector too the ATA drive
+                      00281 ;--------------------------------------------------------------------
+000146                00282 ATA_Block_Write
+000146 D817           00283         rcall   ATA_BSY_Wait    ; Drive ready for command
+000148 D827           00284         rcall   ATA_Send_LBA
+00014A 0E30           00285         movlw   0x30            ; Write sectors command
+00014C 6E00           00286         movwf   TMP1
+00014E 0E17           00287         movlw   0x17            ; ATA Command regsiter
+000150 D844           00288         rcall   ATA_Reg8_Write
+000152 6A06           00289         clrf    ATA_CNT
+Message[314]: LFSR instruction is not supported on some versions of the 18Cxx2 devices.
+Message[315]: Please refer to Microchip document DS80058A for more details.
+000154 EE04 F000      00290         lfsr    FSR0, ATA_BUF
+                      00291 
+000158                00292 ATA_Block_Write_Lp1
+000158 D809           00293         rcall   ATA_DRQ_Wait    ; Drive ready for data
+00015A 50EE           00294         movf    POSTINC0, W
+00015C 6E00           00295         movwf   TMP1
+00015E 50EE           00296         movf    POSTINC0, W
+000160 6E01           00297         movwf   TMP2
+000162 0E10           00298         movlw   0x10
+000164 D854           00299         rcall   ATA_Reg16_Write
+000166 3E06           00300         incfsz  ATA_CNT
+000168 D7F7           00301         bra     ATA_Block_Write_Lp1
+                      00302 
+00016A 0012           00303         return
+                      00304 
+                      00305 ;====================================================================
+                      00306 ; Wait for DRQ to indicate drive is ready for data
+                      00307 ;--------------------------------------------------------------------
+00016C                00308 ATA_DRQ_Wait
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00016C 0E17           00309         movlw   0x17            ; Drive status register
+00016E D82A           00310         rcall   ATA_Reg8_Read
+000170 A600           00311         btfss   TMP1, 3         ; DRQ bit (data request)
+000172 D7FC           00312         bra     ATA_DRQ_Wait
+000174 0012           00313         return
+                      00314 
+                      00315 ;====================================================================
+                      00316 ; Wait for BSY to indicate drive is ready for a command
+                      00317 ;--------------------------------------------------------------------
+000176                00318 ATA_BSY_Wait
+000176 0E17           00319         movlw   0x17            ; Drive status register
+000178 D825           00320         rcall   ATA_Reg8_Read
+00017A BE00           00321         btfsc   TMP1, 7         ; BSY bit (busy)
+00017C D7FC           00322         bra     ATA_BSY_Wait
+00017E 0012           00323         return
+                      00324 
+                      00325 ;====================================================================
+                      00326 ; Zero out LBA address
+                      00327 ;--------------------------------------------------------------------
+000180                00328 ATA_A_RESET
+000180 6A02           00329         clrf    ATA_A0          ; Point to first sector
+000182 6A03           00330         clrf    ATA_A1
+000184 6A04           00331         clrf    ATA_A2
+000186 6A05           00332         clrf    ATA_A3
+000188 0012           00333         return
+                      00334 
+                      00335 ;====================================================================
+                      00336 ; Increment LBA address by one
+                      00337 ;--------------------------------------------------------------------
+00018A                00338 ATA_A_INC
+00018A 3E02           00339         incfsz  ATA_A0          ; Point to next sector
+00018C D004           00340         bra     ATA_A_INC_EXIT
+00018E 3E03           00341         incfsz  ATA_A1
+000190 D002           00342         bra     ATA_A_INC_EXIT
+000192 4A04           00343         infsnz  ATA_A2
+000194 2A05           00344         incf    ATA_A3
+000196                00345 ATA_A_INC_EXIT
+000196 0012           00346         return
+                      00347 
+                      00348 ;====================================================================
+                      00349 ; Transfer LBA address to drive
+                      00350 ;--------------------------------------------------------------------
+000198                00351 ATA_Send_LBA
+000198 0E01           00352         movlw   0x01            ; Sector count
+00019A 6E00           00353         movwf   TMP1
+00019C 0E12           00354         movlw   0x12            ; ATA Sector count
+00019E D81D           00355         rcall   ATA_Reg8_Write
+0001A0 C002 F000      00356         movff   ATA_A0, TMP1
+0001A4 0E13           00357         movlw   0x13            ; ATA LBA 0-7 register
+0001A6 D819           00358         rcall   ATA_Reg8_Write
+0001A8 C003 F000      00359         movff   ATA_A1, TMP1
+0001AC 0E14           00360         movlw   0x14            ; ATA LBA 8-15 register
+0001AE D815           00361         rcall   ATA_Reg8_Write
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0001B0 C004 F000      00362         movff   ATA_A2, TMP1
+0001B4 0E15           00363         movlw   0x15            ; ATA LBA 16-23 register
+0001B6 D811           00364         rcall   ATA_Reg8_Write
+0001B8 5005           00365         movf    ATA_A3, W
+0001BA 0940           00366         iorlw   B'01000000'     ; Indicate address is LBA not CHS
+0001BC 6E00           00367         movwf   TMP1
+0001BE 0E16           00368         movlw   0x16            ; ATA LBA 24-27 register
+0001C0 D80C           00369         rcall   ATA_Reg8_Write
+0001C2 0012           00370         return
+                      00371 ;====================================================================
+                      00372 ; Read a register from the ATA drive (8 bit)
+                      00373 ;--------------------------------------------------------------------
+                      00374 ; W    contains address
+                      00375 ; TMP1 contains data
+                      00376 ;--------------------------------------------------------------------
+0001C4                00377 ATA_Reg8_Read
+0001C4 AA82           00378         btfss   PORTC, 5        ; Wait until ready
+0001C6 D7FE           00379         bra     ATA_Reg8_Read
+0001C8 0B1F           00380         andlw   B'00011111'     ; Set address
+0001CA 6E82           00381         movwf   PORTC
+0001CC 908D           00382         bcf     LATE, 0         ; DIOR low
+0001CE 0000           00383         nop                     ; Wait
+0001D0 0000           00384         nop
+0001D2 5081           00385         movf    PORTB, W        ; Get data
+0001D4 6E00           00386         movwf   TMP1
+0001D6 808D           00387         bsf     LATE, 0         ; DIOR high
+0001D8 0012           00388         return
+                      00389 
+                      00390 ; +-----------------------------------+
+                      00391 ; | PORTC 4-0 to ATA register - Read  |
+                      00392 ; +------+----------------------------+
+                      00393 ; | Addr | Register                   |
+                      00394 ; +------+----------------------------+
+                      00395 ; | 0x0E | Alternate status           |
+                      00396 ; | 0x0F | Drive address              |
+                      00397 ; | 0x10 | Data (16 bit reg)          |
+                      00398 ; | 0x11 | Features                   |
+                      00399 ; | 0x12 | Sector count               |
+                      00400 ; | 0x13 | LBA 0-7                    |
+                      00401 ; | 0x14 | LBA 8-15                   |
+                      00402 ; | 0x15 | LBA 16-23                  |
+                      00403 ; | 0x16 | LBA 24-27                  |
+                      00404 ; | 0x17 | Status                     |
+                      00405 ; +------+----------------------------+
+                      00406 
+                      00407 ;====================================================================
+                      00408 ; Write a register to the ATA drive (8 bit)
+                      00409 ;--------------------------------------------------------------------
+                      00410 ; W    contains address
+                      00411 ; TMP1 contains data
+                      00412 ;--------------------------------------------------------------------
+0001DA                00413 ATA_Reg8_Write
+0001DA AA82           00414         btfss   PORTC, 5        ; Wait until ready
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0001DC D7FE           00415         bra     ATA_Reg8_Write
+0001DE 0B1F           00416         andlw   B'00011111'     ; Set address
+0001E0 6E82           00417         movwf   PORTC
+0001E2 5000           00418         movf    TMP1, W         ; Set data
+0001E4 6E81           00419         movwf   PORTB
+0001E6 6A93           00420         clrf    TRISB           ; Port for output
+0001E8 928D           00421         bcf     LATE, 1         ; DIOW low
+0001EA 0000           00422         nop                     ; Wait
+0001EC 0000           00423         nop
+0001EE 828D           00424         bsf     LATE, 1         ; DIOW high
+0001F0 6893           00425         setf    TRISB           ; Port for input
+0001F2 0012           00426         return
+                      00427 
+                      00428 ; +-----------------------------------+
+                      00429 ; | PORTC 4-0 to ATA register - Write |
+                      00430 ; +------+----------------------------+
+                      00431 ; | Addr | Register                   |
+                      00432 ; +------+----------------------------+
+                      00433 ; | 0x0E | Device control             |
+                      00434 ; | 0x10 | Data (16 bit reg)          |
+                      00435 ; | 0x11 | Features                   |
+                      00436 ; | 0x12 | Sector count               |
+                      00437 ; | 0x13 | LBA 0-7                    |
+                      00438 ; | 0x14 | LBA 8-15                   |
+                      00439 ; | 0x15 | LBA 16-23                  |
+                      00440 ; | 0x16 | LBA 24-27                  |
+                      00441 ; | 0x17 | Command                    |
+                      00442 ; +------+----------------------------+
+                      00443 
+                      00444 ;====================================================================
+                      00445 ; Read a register from the ATA drive (16 bit)
+                      00446 ;--------------------------------------------------------------------
+                      00447 ; W    contains address
+                      00448 ; TMP1 contains data low
+                      00449 ; TMP2 contains data high
+                      00450 ;--------------------------------------------------------------------
+0001F4                00451 ATA_Reg16_Read
+0001F4 AA82           00452         btfss   PORTC, 5        ; Wait until ready
+0001F6 D7FE           00453         bra     ATA_Reg16_Read
+0001F8 0B1F           00454         andlw   B'00011111'     ; Set address
+0001FA 6E82           00455         movwf   PORTC
+0001FC 908D           00456         bcf     LATE, 0         ; DIOR low
+0001FE 0000           00457         nop                     ; Wait
+000200 0000           00458         nop
+000202 5081           00459         movf    PORTB, W        ; Get data
+000204 6E00           00460         movwf   TMP1
+000206 5083           00461         movf    PORTD, W
+000208 6E01           00462         movwf   TMP2
+00020A 808D           00463         bsf     LATE, 0         ; DIOR high
+00020C 0012           00464         return
+                      00465 
+                      00466 ;====================================================================
+                      00467 ; Write a register to the ATA drive (16 bit)
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00468 ;--------------------------------------------------------------------
+                      00469 ; W    contains address
+                      00470 ; TMP1 contains data low
+                      00471 ; TMP2 contains data high
+                      00472 ;--------------------------------------------------------------------
+00020E                00473 ATA_Reg16_Write
+00020E AA82           00474         btfss   PORTC, 5        ; Wait until ready
+000210 D7FE           00475         bra     ATA_Reg16_Write
+000212 0B1F           00476         andlw   B'00011111'     ; Set address
+000214 6E82           00477         movwf   PORTC
+000216 5000           00478         movf    TMP1, W         ; Set data
+000218 6E81           00479         movwf   PORTB
+00021A 5001           00480         movf    TMP2, W
+00021C 6E83           00481         movwf   PORTD
+00021E 6A93           00482         clrf    TRISB           ; Port for output
+000220 6A95           00483         clrf    TRISD
+000222 928D           00484         bcf     LATE, 1         ; DIOW low
+000224 0000           00485         nop                     ; Wait
+000226 0000           00486         nop
+000228 828D           00487         bsf     LATE, 1         ; DIOW high
+00022A 6893           00488         setf    TRISB           ; Ports for input
+00022C 6895           00489         setf    TRISD
+00022E 0012           00490         return
+                      00491 
+                      00492 ;====================================================================
+                      00493 ; Output string routines
+                      00494 ;--------------------------------------------------------------------
+000230                00495 OUT_VERSION
+000230 0E00           00496         movlw   UPPER(MSG_VERSION)
+000232 6EF8           00497         movwf   TBLPTRU
+000234 0E03           00498         movlw   HIGH(MSG_VERSION)
+000236 6EF7           00499         movwf   TBLPTRH
+000238 0E98           00500         movlw   LOW(MSG_VERSION)
+00023A 6EF6           00501         movwf   TBLPTRL
+00023C EF8C F000      00502         goto    UART_Puts
+000240                00503 OUT_HELP
+000240 0E00           00504         movlw   UPPER(MSG_HELP)
+000242 6EF8           00505         movwf   TBLPTRU
+000244 0E03           00506         movlw   HIGH(MSG_HELP)
+000246 6EF7           00507         movwf   TBLPTRH
+000248 0EC8           00508         movlw   LOW(MSG_HELP)
+00024A 6EF6           00509         movwf   TBLPTRL
+00024C EF8C F000      00510         goto    UART_Puts
+000250                00511 OUT_COMMAND
+000250 0E00           00512         movlw   UPPER(MSG_COMMAND)
+000252 6EF8           00513         movwf   TBLPTRU
+000254 0E03           00514         movlw   HIGH(MSG_COMMAND)
+000256 6EF7           00515         movwf   TBLPTRH
+000258 0EB6           00516         movlw   LOW(MSG_COMMAND)
+00025A 6EF6           00517         movwf   TBLPTRL
+00025C EF8C F000      00518         goto    UART_Puts
+000260                00519 OUT_CRLF
+000260 0E00           00520         movlw   UPPER(MSG_CRLF)
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 11
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000262 6EF8           00521         movwf   TBLPTRU
+000264 0E03           00522         movlw   HIGH(MSG_CRLF)
+000266 6EF7           00523         movwf   TBLPTRH
+000268 0EC4           00524         movlw   LOW(MSG_CRLF)
+00026A 6EF6           00525         movwf   TBLPTRL
+00026C EF8C F000      00526         goto    UART_Puts
+000270                00527 OUT_UNKNOWN
+000270 0E00           00528         movlw   UPPER(MSG_UNKNOWN)
+000272 6EF8           00529         movwf   TBLPTRU
+000274 0E04           00530         movlw   HIGH(MSG_UNKNOWN)
+000276 6EF7           00531         movwf   TBLPTRH
+000278 0E0E           00532         movlw   LOW(MSG_UNKNOWN)
+00027A 6EF6           00533         movwf   TBLPTRL
+00027C EF8C F000      00534         goto    UART_Puts
+000280                00535 OUT_LOG
+000280 0E00           00536         movlw   UPPER(MSG_LOG)
+000282 6EF8           00537         movwf   TBLPTRU
+000284 0E04           00538         movlw   HIGH(MSG_LOG)
+000286 6EF7           00539         movwf   TBLPTRH
+000288 0E22           00540         movlw   LOW(MSG_LOG)
+00028A 6EF6           00541         movwf   TBLPTRL
+00028C EF8C F000      00542         goto    UART_Puts
+000290                00543 OUT_DUMP
+000290 0E00           00544         movlw   UPPER(MSG_DUMP)
+000292 6EF8           00545         movwf   TBLPTRU
+000294 0E04           00546         movlw   HIGH(MSG_DUMP)
+000296 6EF7           00547         movwf   TBLPTRH
+000298 0E46           00548         movlw   LOW(MSG_DUMP)
+00029A 6EF6           00549         movwf   TBLPTRL
+00029C EF8C F000      00550         goto    UART_Puts
+                      00551 
+                      00552 ;====================================================================
+                      00553 ; Output value to USART as two hexadecimal digits
+                      00554 ;--------------------------------------------------------------------
+                      00555 ; W contains value to be output
+                      00556 ;--------------------------------------------------------------------
+0002A0                00557 OUT_HEX
+0002A0 6E00           00558         movwf   TMP1
+0002A2 3800           00559         swapf   TMP1, W
+0002A4 D801           00560         rcall   OUT_HEX_SUB1
+0002A6 5000           00561         movf    TMP1, W
+0002A8                00562 OUT_HEX_SUB1
+0002A8 0B0F           00563         andlw   0x0F
+0002AA 0FF6           00564         addlw   0xF6
+0002AC B0D8           00565         btfsc   STATUS, C
+0002AE 0F07           00566         addlw   0x07
+0002B0 0F3A           00567         addlw   0x3A
+0002B2 D72D           00568         bra     UART_Putch
+                      00569 
+                      00570 ;====================================================================
+                      00571 ; Start logging
+                      00572 ;--------------------------------------------------------------------
+0002B4                00573 LOG_START
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 12
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0002B4 D818           00574         rcall   LOG_RESET
+0002B6 D81B           00575         rcall   INIT_ADC
+0002B8 D822           00576         rcall   INIT_TIMER
+0002BA D828           00577         rcall   START_TIMER
+0002BC 8ED0           00578         bsf     RCON, IPEN      ; Enable interrupt priority
+0002BE 8EF2           00579         bsf     INTCON, GIEH    ; Enable high prority interrupts
+0002C0 8CF2           00580         bsf     INTCON, GIEL    ; Enable low prority interrupts
+0002C2 0012           00581         return
+                      00582 
+                      00583 ;====================================================================
+                      00584 ; Stop logging
+                      00585 ;--------------------------------------------------------------------
+0002C4                00586 LOG_STOP
+0002C4 9EF2           00587         bcf     INTCON, 7       ; Disable interrupts
+0002C6 D824           00588         rcall   STOP_TIMER
+0002C8 D827           00589         rcall   STOP_ADC
+0002CA DF3D           00590         rcall   ATA_Block_Write ; Flush buffer to disk
+0002CC                00591 LOG_UPDATE
+0002CC CFD9 F00E      00592         movff   FSR2L, END_POSL ; Copy over to end log pointers
+0002D0 CFDA F00F      00593         movff   FSR2H, END_POSH
+0002D4 C002 F010      00594         movff   ATA_A0, END_ATA_A0
+0002D8 C003 F011      00595         movff   ATA_A1, END_ATA_A1
+0002DC C004 F012      00596         movff   ATA_A2, END_ATA_A2
+0002E0 C005 F013      00597         movff   ATA_A3, END_ATA_A3
+0002E4 0012           00598         return
+                      00599 
+                      00600 ;====================================================================
+                      00601 ; Reset log ready for start of logging
+                      00602 ;--------------------------------------------------------------------
+0002E6                00603 LOG_RESET
+Message[314]: LFSR instruction is not supported on some versions of the 18Cxx2 devices.
+Message[315]: Please refer to Microchip document DS80058A for more details.
+0002E6 EE24 F000      00604         lfsr    FSR2, ATA_BUF   ; Point to start of data capture buffer
+0002EA DF4A           00605         rcall   ATA_A_RESET
+0002EC 0012           00606         return
+                      00607 
+                      00608 ;====================================================================
+                      00609 ; Initialise ADC converter
+                      00610 ;--------------------------------------------------------------------
+0002EE                00611 INIT_ADC
+0002EE 0E0E           00612         movlw   B'00001110'
+0002F0 6EC1           00613         movwf   ADCON1
+0002F2 0EC1           00614         movlw   B'11000001'
+0002F4 6EC2           00615         movwf   ADCON0
+0002F6 9C9F           00616         bcf     IPR1, ADIP      ; Low priority
+0002F8 9C9E           00617         bcf     PIR1, ADIF      ; Clear any pending interrupt
+0002FA 8C9D           00618         bsf     PIE1, ADIE      ; Enable ADC conversion interrupt
+                      00619 
+0002FC 0012           00620         return
+                      00621 
+                      00622 ;====================================================================
+                      00623 ; Initialise timer 0
+                      00624 ;--------------------------------------------------------------------
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 13
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0002FE                00625 INIT_TIMER
+0002FE 0E46           00626         movlw   B'01000110'
+000300 6ED5           00627         movwf   T0CON
+000302 0E01           00628         movlw   D'1'            ; Setup countdown on TMR0 for ADC trigger
+000304 6E0D           00629         movwf   T0COUNT
+000306 94F2           00630         bcf     INTCON, TMR0IF  ; Clear any pending TMR0 overflow interrupt
+000308 8AF2           00631         bsf     INTCON, TMR0IE  ; Enable timer 0 overflow interrupt
+00030A 0012           00632         return
+                      00633 
+                      00634 ;====================================================================
+                      00635 ; Start timer 0
+                      00636 ;--------------------------------------------------------------------
+00030C                00637 START_TIMER
+00030C 8ED5           00638         bsf     T0CON, 7        ; Start timer 0
+00030E 0012           00639         return
+                      00640 
+                      00641 ;====================================================================
+                      00642 ; Stop timer 0
+                      00643 ;--------------------------------------------------------------------
+000310                00644 STOP_TIMER
+000310 9AF2           00645         bcf     INTCON, TMR0IE  ; Disable timer 0 overflow interrupt
+000312 94F2           00646         bcf     INTCON, TMR0IF  ; Clear any pending TMR0 overflow interrupt
+000314 9ED5           00647         bcf     T0CON, 7        ; Stop timer 0
+000316 0012           00648         return
+                      00649 
+                      00650 ;====================================================================
+                      00651 ; Stop ADC conversion
+                      00652 ;--------------------------------------------------------------------
+000318                00653 STOP_ADC
+000318 9C9D           00654         bcf     PIE1, ADIE      ; Diasable ADC conversion interrupt
+00031A 9C9E           00655         bcf     PIR1, ADIF      ; Clear any pending interrupt
+00031C 90C2           00656         bcf     ADCON0, ADON    ; Turn off ADC module
+00031E 0012           00657         return
+                      00658 
+                      00659 ;====================================================================
+                      00660 ; Dump data from ATA to USART in hex
+                      00661 ;--------------------------------------------------------------------
+000320                00662 DUMP_ALL
+000320 DF2F           00663         rcall   ATA_A_RESET
+Message[314]: LFSR instruction is not supported on some versions of the 18Cxx2 devices.
+Message[315]: Please refer to Microchip document DS80058A for more details.
+000322 EE26 F000      00664         lfsr    FSR2, ATA_BUF_END
+000326 0E10           00665         movlw   0x10
+000328 6E16           00666         movwf   OUT_COUNT
+                      00667 
+00032A 5005           00668         movf    ATA_A3, W       ; Exit if no data to display
+00032C 1004           00669         iorwf   ATA_A2, W
+00032E 1003           00670         iorwf   ATA_A1, W
+000330 1002           00671         iorwf   ATA_A0, W
+000332 A4D8           00672         btfss   STATUS, Z
+000334 D00E           00673         bra     DUMP_ALL_JP1
+000336 0E04           00674         movlw   HIGH(ATA_BUF)
+000338 620F           00675         cpfseq  END_POSH
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 14
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00033A D00B           00676         bra     DUMP_ALL_JP1
+00033C 0E00           00677         movlw   LOW(ATA_BUF)
+00033E 620E           00678         cpfseq  END_POSL
+000340 D008           00679         bra     DUMP_ALL_JP1
+000342 D029           00680         bra     DUMP_ALL_EXIT
+                      00681 
+000344                00682 DUMP_ALL_LP1
+000344 0E06           00683         movlw   HIGH(ATA_BUF_END)       ; Check if next sector required
+000346 62DA           00684         cpfseq  FSR2H
+000348 D007           00685         bra     DUMP_ALL_JP2
+00034A 0E00           00686         movlw   LOW(ATA_BUF_END)
+00034C 62D9           00687         cpfseq  FSR2L
+00034E D004           00688         bra     DUMP_ALL_JP2
+000350 DF1C           00689         rcall   ATA_A_INC
+000352                00690 DUMP_ALL_JP1
+000352 DEE6           00691         rcall   ATA_Block_Read          ; Get a new sector
+Message[314]: LFSR instruction is not supported on some versions of the 18Cxx2 devices.
+Message[315]: Please refer to Microchip document DS80058A for more details.
+000354 EE24 F000      00692         lfsr    FSR2, ATA_BUF           ; Point buffer to start of sector
+000358                00693 DUMP_ALL_JP2
+                      00694 
+000358 0E20           00695         movlw   0x20
+00035A DED9           00696         rcall   UART_Putch
+                      00697 
+00035C CFDE F001      00698         movff   POSTINC2, TMP2
+000360 50DE           00699         movf    POSTINC2, W
+000362 DF9E           00700         rcall   OUT_HEX
+000364 5001           00701         movf    TMP2, W
+000366 DF9C           00702         rcall   OUT_HEX
+                      00703 
+000368 2E16           00704         decfsz  OUT_COUNT
+00036A D003           00705         bra     DUMP_ALL_JP3
+00036C 0E10           00706         movlw   0x10
+00036E 6E16           00707         movwf   OUT_COUNT
+000370 DF77           00708         rcall   OUT_CRLF
+000372                00709 DUMP_ALL_JP3
+000372 500F           00710         movf    END_POSH, W             ; Check not at the end of data
+000374 62DA           00711         cpfseq  FSR2H
+000376 D7E6           00712         bra     DUMP_ALL_LP1
+000378 500E           00713         movf    END_POSL, W
+00037A 62D9           00714         cpfseq  FSR2L
+00037C D7E3           00715         bra     DUMP_ALL_LP1
+00037E 5013           00716         movf    END_ATA_A3, W
+000380 6205           00717         cpfseq  ATA_A3
+000382 D7E0           00718         bra     DUMP_ALL_LP1
+000384 5012           00719         movf    END_ATA_A2, W
+000386 6204           00720         cpfseq  ATA_A2
+000388 D7DD           00721         bra     DUMP_ALL_LP1
+00038A 5011           00722         movf    END_ATA_A1, W
+00038C 6203           00723         cpfseq  ATA_A1
+00038E D7DA           00724         bra     DUMP_ALL_LP1
+000390 5010           00725         movf    END_ATA_A0, W
+000392 6202           00726         cpfseq  ATA_A0
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 15
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000394 D7D7           00727         bra     DUMP_ALL_LP1
+000396                00728 DUMP_ALL_EXIT
+000396 0012           00729         return
+                      00730 
+                      00731 ;====================================================================
+                      00732 ; Program messages
+                      00733 ;--------------------------------------------------------------------
+000398                00734 MSG_VERSION
+000398 614C 6362 6E65 00735         DATA    "Labcenter Data Logger v1.0\r\n", 0
+       6574 2072 6144 
+       6174 4C20 676F 
+       6567 2072 3176 
+       302E 0A0D 0000 
+0003B6                00736 MSG_COMMAND
+0003B6 0A0D 6F43 6D6D 00737         DATA    "\r\nCommand? ", 0
+       6E61 3F64 0020 
+       0000 
+0003C4                00738 MSG_CRLF
+0003C4 0A0D 0000      00739         DATA    "\r\n", 0
+0003C8                00740 MSG_HELP
+0003C8 6548 706C 0D3A 00741         DATA    "Help:\r\nH - This help\r\nV - Version\r\nL - Start logging\r\nD - Dump log\r\n", 0
+       480A 2D20 5420 
+       6968 2073 6568 
+       706C 0A0D 2056 
+       202D 6556 7372 
+       6F69 0D6E 4C0A 
+       2D20 5320 6174 
+       7472 6C20 676F 
+       6967 676E 0A0D 
+       2044 202D 7544 
+       706D 6C20 676F 
+       0A0D 0000 
+00040E                00742 MSG_UNKNOWN
+00040E 6E55 6E6B 776F 00743         DATA    "Unknown command.\r\n", 0
+       206E 6F63 6D6D 
+       6E61 2E64 0A0D 
+       0000 
+000422                00744 MSG_LOG
+000422 6F4C 6767 6E69 00745         DATA    "Logging...\r\nPress any key to stop.", 0
+       2E67 2E2E 0A0D 
+       7250 7365 2073 
+       6E61 2079 656B 
+       2079 6F74 7320 
+       6F74 2E70 0000 
+000446                00746 MSG_DUMP
+000446 7453 7261 2074 00747         DATA    "Start of dump.\r\n", 0
+       666F 6420 6D75 
+       2E70 0A0D 0000 
+                      00748 ;====================================================================
+Warning[205]: Found directive in column 1. (END)
+                      00749 END
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 16
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+A                                 00000000
+ABAT                              00000004
+ACCESS                            00000000
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            00000FC2
+ADCON1                            00000FC1
+ADCS0                             00000006
+ADCS1                             00000007
+ADCS2                             00000006
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADIP                              00000006
+ADON                              00000000
+ADRESH                            00000FC4
+ADRESL                            00000FC3
+AN0                               00000000
+AN1                               00000001
+AN2                               00000002
+AN3                               00000003
+AN4                               00000005
+AN5                               00000000
+AN6                               00000001
+AN7                               00000002
+ATA_A0                            00000002
+ATA_A1                            00000003
+ATA_A2                            00000004
+ATA_A3                            00000005
+ATA_A_INC                         0000018A
+ATA_A_INC_EXIT                    00000196
+ATA_A_RESET                       00000180
+ATA_BSY_Wait                      00000176
+ATA_BUF                           00000400
+ATA_BUF_END                       00000600
+ATA_Block_Read                    00000120
+ATA_Block_Read_Lp1                00000132
+ATA_Block_Write                   00000146
+ATA_Block_Write_Lp1               00000158
+ATA_CNT                           00000006
+ATA_DRQ_Wait                      0000016C
+ATA_Reg16_Read                    000001F4
+ATA_Reg16_Write                   0000020E
+ATA_Reg8_Read                     000001C4
+ATA_Reg8_Write                    000001DA
+ATA_Send_LBA                      00000198
+BANKED                            00000001
+BAUD                              ((CLK_FREQ/x)/D'64')-1
+BCLIE                             00000003
+BCLIF                             00000003
+BCLIP                             00000003
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 17
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+BF                                00000000
+BOR                               00000000
+BRGCON1                           00000F70
+BRGCON2                           00000F71
+BRGCON3                           00000F72
+BRGH                              00000002
+BRG_VAL                           BAUD(D'9600')
+BRP0                              00000000
+BRP1                              00000001
+BRP2                              00000002
+BRP3                              00000003
+BRP4                              00000004
+BRP5                              00000005
+BSR                               00000FE0
+BSR_TEMP_H                        00000009
+BSR_TEMP_L                        0000000C
+C                                 00000000
+C1INM                             00000001
+C1INP                             00000000
+C1INV                             00000004
+C1OUT                             00000006
+C2INM                             00000003
+C2INP                             00000002
+C2INV                             00000005
+C2OUT                             00000007
+CANCAP                            00000004
+CANCON                            00000F6F
+CANRX                             00000003
+CANSTAT                           00000F6E
+CANSTATRO1                        00000F5E
+CANSTATRO2                        00000F4E
+CANSTATRO3                        00000F3E
+CANSTATRO4                        00000F2E
+CANTX                             00000002
+CCP1                              00000002
+CCP1CON                           00000FBD
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1IP                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCPR1H                            00000FBF
+CCPR1L                            00000FBE
+CFGS                              00000006
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CIOCON                            00000F73
+CIS                               00000003
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 18
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CK                                00000006
+CKE                               00000006
+CKP                               00000004
+CLKO                              00000006
+CLK_FREQ                          D'20000000'
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             00000FB4
+CMIE                              00000006
+CMIF                              00000006
+CMIP                              00000006
+COMSTAT                           00000F74
+CREN                              00000004
+CS                                00000002
+CSRC                              00000007
+CVR0                              00000000
+CVR1                              00000001
+CVR2                              00000002
+CVR3                              00000003
+CVRCON                            00000FB5
+CVREF                             00000000
+CVREN                             00000007
+CVROE                             00000006
+CVRR                              00000005
+CVRSS                             00000004
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+DC1B0                             00000004
+DC1B1                             00000005
+DDRA                              TRISA
+DDRB                              TRISB
+DDRC                              TRISC
+DDRD                              TRISD
+DDRE                              TRISE
+DLC0                              00000000
+DLC1                              00000001
+DLC2                              00000002
+DLC3                              00000003
+DONE                              00000002
+DUMP                              00000072
+DUMP_ALL                          00000320
+DUMP_ALL_EXIT                     00000396
+DUMP_ALL_JP1                      00000352
+DUMP_ALL_JP2                      00000358
+DUMP_ALL_JP3                      00000372
+DUMP_ALL_LP1                      00000344
+D_A                               00000005
+ECCP1                             00000004
+ECCP1CON                          00000FBA
+ECCP1DEL                          00000FB7
+ECCP1IE                           00000000
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 19
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ECCP1IF                           00000000
+ECCP1IP                           00000000
+ECCP1M0                           00000000
+ECCP1M1                           00000001
+ECCP1M2                           00000002
+ECCP1M3                           00000003
+ECCPAS                            00000FB6
+ECCPAS0                           00000004
+ECCPAS1                           00000005
+ECCPAS2                           00000006
+ECCPASE                           00000007
+ECCPR1H                           00000FBC
+ECCPR1L                           00000FBB
+EDC2B0                            00000004
+EDC2B1                            00000005
+EEADR                             00000FA9
+EECON1                            00000FA6
+EECON2                            00000FA7
+EEDATA                            00000FA8
+EEFS                              00000006
+EEIE                              00000004
+EEIF                              00000004
+EEIP                              00000004
+EEPGD                             00000007
+EID0                              00000000
+EID1                              00000001
+EID10                             00000002
+EID11                             00000003
+EID12                             00000004
+EID13                             00000005
+EID14                             00000006
+EID15                             00000007
+EID16                             00000000
+EID17                             00000001
+EID2                              00000002
+EID3                              00000003
+EID4                              00000004
+EID5                              00000005
+EID6                              00000006
+EID7                              00000007
+EID8                              00000000
+EID9                              00000001
+ENDRHI                            00000005
+END_ATA_A0                        00000010
+END_ATA_A1                        00000011
+END_ATA_A2                        00000012
+END_ATA_A3                        00000013
+END_POSH                          0000000F
+END_POSL                          0000000E
+EPWM1M0                           00000006
+EPWM1M1                           00000007
+ERRIE                             00000005
+ERRIF                             00000005
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 20
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ERRIP                             00000005
+EWARN                             00000000
+EXID                              00000003
+EXIDE                             00000003
+EXIDEN                            00000003
+FAST                              00000001
+FERR                              00000002
+FILHIT0                           00000000
+FILHIT1                           00000001
+FILHIT2                           00000002
+FREE                              00000004
+FSR0                              00000000
+FSR0H                             00000FEA
+FSR0L                             00000FE9
+FSR1                              00000001
+FSR1H                             00000FE2
+FSR1L                             00000FE1
+FSR2                              00000002
+FSR2H                             00000FDA
+FSR2L                             00000FD9
+GCEN                              00000007
+GIE                               00000007
+GIEH                              00000007
+GIEL                              00000006
+GO                                00000002
+GO_DONE                           00000002
+I2C_DAT                           00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+ICODE0                            00000001
+ICODE1                            00000002
+ICODE2                            00000003
+INDF0                             00000FEF
+INDF1                             00000FE7
+INDF2                             00000FDF
+INIT                              0000007A
+INIT_ADC                          000002EE
+INIT_TIMER                        000002FE
+INPDATA_H                         00000015
+INPDATA_L                         00000014
+INT0                              00000000
+INT0E                             00000004
+INT0F                             00000001
+INT0IE                            00000004
+INT0IF                            00000001
+INT1                              00000001
+INT1E                             00000003
+INT1F                             00000000
+INT1IE                            00000003
+INT1IF                            00000000
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 21
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+INT1IP                            00000006
+INT1P                             00000006
+INT2E                             00000004
+INT2F                             00000001
+INT2IE                            00000004
+INT2IF                            00000001
+INT2IP                            00000007
+INT2P                             00000007
+INTCON                            00000FF2
+INTCON1                           00000FF2
+INTCON2                           00000FF1
+INTCON3                           00000FF0
+INTEDG0                           00000006
+INTEDG1                           00000005
+INT_HIGH                          000000AE
+INT_HIGH_EXIT1                    000000C4
+INT_LOW                           000000D0
+INT_LOW_EXIT1                     000000F8
+IPEN                              00000007
+IPR1                              00000F9F
+IPR2                              00000FA2
+IPR3                              00000FA5
+IRXIE                             00000007
+IRXIF                             00000007
+IRXIP                             00000007
+IVRST                             00000005
+JTOFF                             00000001
+LATA                              00000F89
+LATB                              00000F8A
+LATC                              00000F8B
+LATD                              00000F8C
+LATE                              00000F8D
+LOG                               00000064
+LOG_RESET                         000002E6
+LOG_START                         000002B4
+LOG_STOP                          000002C4
+LOG_UPDATE                        000002CC
+LVDCON                            00000FD2
+LVDEN                             00000004
+LVDIE                             00000002
+LVDIF                             00000002
+LVDIN                             00000005
+LVDIP                             00000002
+LVDL0                             00000000
+LVDL1                             00000001
+LVDL2                             00000002
+LVDL3                             00000003
+MLOOP                             00000020
+MSG_COMMAND                       000003B6
+MSG_CRLF                          000003C4
+MSG_DUMP                          00000446
+MSG_HELP                          000003C8
+MSG_LOG                           00000422
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 22
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+MSG_UNKNOWN                       0000040E
+MSG_VERSION                       00000398
+N                                 00000004
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BOR                           00000000
+NOT_CS                            00000002
+NOT_DONE                          00000002
+NOT_PD                            00000002
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_RD                            00000000
+NOT_RI                            00000004
+NOT_SS                            00000005
+NOT_T1SYNC                        00000002
+NOT_T3SYNC                        00000002
+NOT_TO                            00000003
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WR                            00000001
+NOT_WRITE                         00000002
+OBF                               00000006
+OERR                              00000001
+OPMODE0                           00000005
+OPMODE1                           00000006
+OPMODE2                           00000007
+OSC2                              00000006
+OSCCON                            00000FD3
+OUT_COMMAND                       00000250
+OUT_COUNT                         00000016
+OUT_CRLF                          00000260
+OUT_DUMP                          00000290
+OUT_HELP                          00000240
+OUT_HEX                           000002A0
+OUT_HEX_SUB1                      000002A8
+OUT_LOG                           00000280
+OUT_UNKNOWN                       00000270
+OUT_VERSION                       00000230
+OV                                00000003
+P                                 00000004
+P1A                               00000004
+P1B                               00000005
+P1C                               00000006
+P1D                               00000007
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000FF9
+PCLATH                            00000FFA
+PCLATU                            00000FFB
+PD                                00000002
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 23
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PEIE                              00000006
+PEN                               00000002
+PGC                               00000006
+PGD                               00000007
+PGM                               00000005
+PIE1                              00000F9D
+PIE2                              00000FA0
+PIE3                              00000FA3
+PIR1                              00000F9E
+PIR2                              00000FA1
+PIR3                              00000FA4
+PLUSW0                            00000FEB
+PLUSW1                            00000FE3
+PLUSW2                            00000FDB
+POR                               00000001
+PORTA                             00000F80
+PORTB                             00000F81
+PORTC                             00000F82
+PORTD                             00000F83
+PORTE                             00000F84
+POSTDEC0                          00000FED
+POSTDEC1                          00000FE5
+POSTDEC2                          00000FDD
+POSTINC0                          00000FEE
+POSTINC1                          00000FE6
+POSTINC2                          00000FDE
+PR2                               00000FCB
+PREINC0                           00000FEC
+PREINC1                           00000FE4
+PREINC2                           00000FDC
+PRODH                             00000FF4
+PRODL                             00000FF3
+PRSEG0                            00000000
+PRSEG1                            00000001
+PRSEG2                            00000002
+PSA                               00000003
+PSP0                              00000000
+PSP1                              00000001
+PSP2                              00000002
+PSP3                              00000003
+PSP4                              00000004
+PSP5                              00000005
+PSP6                              00000006
+PSP7                              00000007
+PSPCON                            00000FB0
+PSPIE                             00000007
+PSPIF                             00000007
+PSPIP                             00000007
+PSPMODE                           00000004
+PSSAC0                            00000002
+PSSAC1                            00000003
+PSSBD0                            00000000
+PSSBD1                            00000001
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 24
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+R                                 00000002
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RA6                               00000006
+RB0                               00000000
+RB0D00                            00000000
+RB0D01                            00000001
+RB0D02                            00000002
+RB0D03                            00000003
+RB0D04                            00000004
+RB0D05                            00000005
+RB0D06                            00000006
+RB0D07                            00000007
+RB0D10                            00000000
+RB0D11                            00000001
+RB0D12                            00000002
+RB0D13                            00000003
+RB0D14                            00000004
+RB0D15                            00000005
+RB0D16                            00000006
+RB0D17                            00000007
+RB0D20                            00000000
+RB0D21                            00000001
+RB0D22                            00000002
+RB0D23                            00000003
+RB0D24                            00000004
+RB0D25                            00000005
+RB0D26                            00000006
+RB0D27                            00000007
+RB0D30                            00000000
+RB0D31                            00000001
+RB0D32                            00000002
+RB0D33                            00000003
+RB0D34                            00000004
+RB0D35                            00000005
+RB0D36                            00000006
+RB0D37                            00000007
+RB0D40                            00000000
+RB0D41                            00000001
+RB0D42                            00000002
+RB0D43                            00000003
+RB0D44                            00000004
+RB0D45                            00000005
+RB0D46                            00000006
+RB0D47                            00000007
+RB0D50                            00000000
+RB0D51                            00000001
+RB0D52                            00000002
+RB0D53                            00000003
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 25
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RB0D54                            00000004
+RB0D55                            00000005
+RB0D56                            00000006
+RB0D57                            00000007
+RB0D60                            00000000
+RB0D61                            00000001
+RB0D62                            00000002
+RB0D63                            00000003
+RB0D64                            00000004
+RB0D65                            00000005
+RB0D66                            00000006
+RB0D67                            00000007
+RB0D70                            00000000
+RB0D71                            00000001
+RB0D72                            00000002
+RB0D73                            00000003
+RB0D74                            00000004
+RB0D75                            00000005
+RB0D76                            00000006
+RB0D77                            00000007
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RBIP                              00000000
+RBPU                              00000007
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCIP                              00000005
+RCON                              00000FD0
+RCREG                             00000FAE
+RCSTA                             00000FAB
+RD                                00000000
+RD0                               00000000
+RD1                               00000001
+RD16                              00000007
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 26
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RD2                               00000002
+RD3                               00000003
+RD4                               00000004
+RD5                               00000005
+RD6                               00000006
+RD7                               00000007
+RE0                               00000000
+RE1                               00000001
+RE2                               00000002
+READ_WRITE                        00000002
+REC0                              00000000
+REC1                              00000001
+REC2                              00000002
+REC3                              00000003
+REC4                              00000004
+REC5                              00000005
+REC6                              00000006
+REC7                              00000007
+REHELP                            0000001E
+REQOP0                            00000005
+REQOP1                            00000006
+REQOP2                            00000007
+RESB0                             00000004
+RESB1                             00000005
+RI                                00000004
+RSEN                              00000001
+RX                                00000007
+RX1OVFL                           00000007
+RX2OVFL                           00000006
+RX9                               00000006
+RX9D                              00000000
+RXB0CON                           00000F60
+RXB0D0                            00000F66
+RXB0D1                            00000F67
+RXB0D2                            00000F68
+RXB0D3                            00000F69
+RXB0D4                            00000F6A
+RXB0D5                            00000F6B
+RXB0D6                            00000F6C
+RXB0D7                            00000F6D
+RXB0DBEN                          00000002
+RXB0DLC                           00000F65
+RXB0EIDH                          00000F63
+RXB0EIDL                          00000F64
+RXB0IE                            00000000
+RXB0IF                            00000000
+RXB0IP                            00000000
+RXB0OVFL                          00000007
+RXB0SIDH                          00000F61
+RXB0SIDL                          00000F62
+RXB1CON                           00000F50
+RXB1D0                            00000F56
+RXB1D00                           00000000
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 27
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RXB1D01                           00000001
+RXB1D02                           00000002
+RXB1D03                           00000003
+RXB1D04                           00000004
+RXB1D05                           00000005
+RXB1D06                           00000006
+RXB1D07                           00000007
+RXB1D1                            00000F57
+RXB1D10                           00000000
+RXB1D11                           00000001
+RXB1D12                           00000002
+RXB1D13                           00000003
+RXB1D14                           00000004
+RXB1D15                           00000005
+RXB1D16                           00000006
+RXB1D17                           00000007
+RXB1D2                            00000F58
+RXB1D20                           00000000
+RXB1D21                           00000001
+RXB1D22                           00000002
+RXB1D23                           00000003
+RXB1D24                           00000004
+RXB1D25                           00000005
+RXB1D26                           00000006
+RXB1D27                           00000007
+RXB1D3                            00000F59
+RXB1D30                           00000000
+RXB1D31                           00000001
+RXB1D32                           00000002
+RXB1D33                           00000003
+RXB1D34                           00000004
+RXB1D35                           00000005
+RXB1D36                           00000006
+RXB1D37                           00000007
+RXB1D4                            00000F5A
+RXB1D40                           00000000
+RXB1D41                           00000001
+RXB1D42                           00000002
+RXB1D43                           00000003
+RXB1D44                           00000004
+RXB1D45                           00000005
+RXB1D46                           00000006
+RXB1D47                           00000007
+RXB1D5                            00000F5B
+RXB1D50                           00000000
+RXB1D51                           00000001
+RXB1D52                           00000002
+RXB1D53                           00000003
+RXB1D54                           00000004
+RXB1D55                           00000005
+RXB1D56                           00000006
+RXB1D57                           00000007
+RXB1D6                            00000F5C
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 28
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RXB1D60                           00000000
+RXB1D61                           00000001
+RXB1D62                           00000002
+RXB1D63                           00000003
+RXB1D64                           00000004
+RXB1D65                           00000005
+RXB1D66                           00000006
+RXB1D67                           00000007
+RXB1D7                            00000F5D
+RXB1D70                           00000000
+RXB1D71                           00000001
+RXB1D72                           00000002
+RXB1D73                           00000003
+RXB1D74                           00000004
+RXB1D75                           00000005
+RXB1D76                           00000006
+RXB1D77                           00000007
+RXB1DLC                           00000F55
+RXB1EIDH                          00000F53
+RXB1EIDL                          00000F54
+RXB1IE                            00000001
+RXB1IF                            00000001
+RXB1IP                            00000001
+RXB1OVFL                          00000006
+RXB1SIDH                          00000F51
+RXB1SIDL                          00000F52
+RXBP                              00000003
+RXERRCNT                          00000F75
+RXF0EIDH                          00000F02
+RXF0EIDL                          00000F03
+RXF0SIDH                          00000F00
+RXF0SIDL                          00000F01
+RXF1EIDH                          00000F06
+RXF1EIDL                          00000F07
+RXF1SIDH                          00000F04
+RXF1SIDL                          00000F05
+RXF2EIDH                          00000F0A
+RXF2EIDL                          00000F0B
+RXF2SIDH                          00000F08
+RXF2SIDL                          00000F09
+RXF3EIDH                          00000F0E
+RXF3EIDL                          00000F0F
+RXF3SIDH                          00000F0C
+RXF3SIDL                          00000F0D
+RXF4EIDH                          00000F12
+RXF4EIDL                          00000F13
+RXF4SIDH                          00000F10
+RXF4SIDL                          00000F11
+RXF5EIDH                          00000F16
+RXF5EIDL                          00000F17
+RXF5SIDH                          00000F14
+RXF5SIDL                          00000F15
+RXFUL                             00000007
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 29
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RXM0                              00000005
+RXM0EIDH                          00000F1A
+RXM0EIDL                          00000F1B
+RXM0SIDH                          00000F18
+RXM0SIDL                          00000F19
+RXM1                              00000006
+RXM1EIDH                          00000F1E
+RXM1EIDL                          00000F1F
+RXM1SIDH                          00000F1C
+RXM1SIDL                          00000F1D
+RXRTR                             00000006
+RXRTRRO                           00000003
+RXWARN                            00000001
+R_W                               00000002
+S                                 00000003
+SAM                               00000006
+SCK                               00000003
+SCL                               00000003
+SCS                               00000000
+SDA                               00000004
+SDI                               00000004
+SDO                               00000005
+SEG1PH0                           00000003
+SEG1PH1                           00000004
+SEG1PH2                           00000005
+SEG2PH0                           00000000
+SEG2PH1                           00000001
+SEG2PH2                           00000002
+SEG2PHTS                          00000007
+SEN                               00000000
+SID0                              00000005
+SID1                              00000006
+SID10                             00000007
+SID2                              00000007
+SID3                              00000001
+SID4                              00000001
+SID5                              00000002
+SID6                              00000003
+SID7                              00000004
+SID8                              00000005
+SID9                              00000006
+SJW0                              00000006
+SJW1                              00000007
+SMP                               00000007
+SP0                               00000000
+SP1                               00000001
+SP2                               00000002
+SP3                               00000003
+SP4                               00000004
+SPBRG                             00000FAF
+SPEN                              00000007
+SREN                              00000005
+SRR                               00000004
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 30
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+SS                                00000005
+SSPADD                            00000FC8
+SSPBUF                            00000FC9
+SSPCON1                           00000FC6
+SSPCON2                           00000FC5
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPIP                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000FC7
+START                             0000001A
+START_TIMER                       0000030C
+STATUS                            00000FD8
+STATUS_TEMP_H                     00000007
+STATUS_TEMP_L                     0000000A
+STKFUL                            00000007
+STKPTR                            00000FFC
+STKUNF                            00000006
+STOP_ADC                          00000318
+STOP_TIMER                        00000310
+SWDTE                             00000000
+SWDTEN                            00000000
+SYNC                              00000004
+T08BIT                            00000006
+T0CKI                             00000004
+T0CON                             00000FD5
+T0COUNT                           0000000D
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0IP                              00000002
+T0PS0                             00000000
+T0PS1                             00000001
+T0PS2                             00000002
+T0SE                              00000004
+T1CKI                             00000000
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000FCD
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1OSI                             00000001
+T1OSO                             00000000
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000FCA
+T3CCP1                            00000003
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 31
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+T3CKPS0                           00000004
+T3CKPS1                           00000005
+T3CON                             00000FB1
+T3ECCP1                           00000006
+T3INSYNC                          00000002
+T3SYNC                            00000002
+TABLAT                            00000FF5
+TBB1D23                           00000003
+TBLPTRH                           00000FF7
+TBLPTRL                           00000FF6
+TBLPTRU                           00000FF8
+TEC0                              00000000
+TEC1                              00000001
+TEC2                              00000002
+TEC3                              00000003
+TEC4                              00000004
+TEC5                              00000005
+TEC6                              00000006
+TEC7                              00000007
+TMP1                              00000000
+TMP2                              00000001
+TMR0H                             00000FD7
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR0IP                            00000002
+TMR0L                             00000FD6
+TMR0ON                            00000007
+TMR1CS                            00000001
+TMR1H                             00000FCF
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1IP                            00000000
+TMR1L                             00000FCE
+TMR1ON                            00000000
+TMR2                              00000FCC
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2IP                            00000001
+TMR2ON                            00000002
+TMR3CS                            00000001
+TMR3H                             00000FB3
+TMR3IE                            00000001
+TMR3IF                            00000001
+TMR3IP                            00000001
+TMR3L                             00000FB2
+TMR3ON                            00000000
+TO                                00000003
+TOSH                              00000FFE
+TOSL                              00000FFD
+TOSU                              00000FFF
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 32
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TOUTPS3                           00000006
+TRISA                             00000F92
+TRISB                             00000F93
+TRISC                             00000F94
+TRISD                             00000F95
+TRISE                             00000F96
+TRMT                              00000001
+TX                                00000006
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXABT                             00000006
+TXB0CON                           00000F40
+TXB0D0                            00000F46
+TXB0D00                           00000000
+TXB0D01                           00000001
+TXB0D02                           00000002
+TXB0D03                           00000003
+TXB0D04                           00000004
+TXB0D05                           00000005
+TXB0D06                           00000006
+TXB0D07                           00000007
+TXB0D1                            00000F47
+TXB0D10                           00000000
+TXB0D11                           00000001
+TXB0D12                           00000002
+TXB0D13                           00000003
+TXB0D14                           00000004
+TXB0D15                           00000005
+TXB0D16                           00000006
+TXB0D17                           00000007
+TXB0D2                            00000F48
+TXB0D20                           00000000
+TXB0D21                           00000001
+TXB0D22                           00000002
+TXB0D23                           00000003
+TXB0D24                           00000004
+TXB0D25                           00000005
+TXB0D26                           00000006
+TXB0D27                           00000007
+TXB0D3                            00000F49
+TXB0D30                           00000000
+TXB0D31                           00000001
+TXB0D32                           00000002
+TXB0D33                           00000003
+TXB0D34                           00000004
+TXB0D35                           00000005
+TXB0D36                           00000006
+TXB0D37                           00000007
+TXB0D4                            00000F4A
+TXB0D40                           00000000
+TXB0D41                           00000001
+TXB0D42                           00000002
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 33
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TXB0D43                           00000003
+TXB0D44                           00000004
+TXB0D45                           00000005
+TXB0D46                           00000006
+TXB0D47                           00000007
+TXB0D5                            00000F4B
+TXB0D50                           00000000
+TXB0D51                           00000001
+TXB0D52                           00000002
+TXB0D53                           00000003
+TXB0D54                           00000004
+TXB0D55                           00000005
+TXB0D56                           00000006
+TXB0D57                           00000007
+TXB0D6                            00000F4C
+TXB0D60                           00000000
+TXB0D61                           00000001
+TXB0D62                           00000002
+TXB0D63                           00000003
+TXB0D64                           00000004
+TXB0D65                           00000005
+TXB0D66                           00000006
+TXB0D67                           00000007
+TXB0D7                            00000F4D
+TXB0D70                           00000000
+TXB0D71                           00000001
+TXB0D72                           00000002
+TXB0D73                           00000003
+TXB0D74                           00000004
+TXB0D75                           00000005
+TXB0D76                           00000006
+TXB0D77                           00000007
+TXB0DLC                           00000F45
+TXB0EIDH                          00000F43
+TXB0EIDL                          00000F44
+TXB0IE                            00000002
+TXB0IF                            00000002
+TXB0IP                            00000002
+TXB0SIDH                          00000F41
+TXB0SIDL                          00000F42
+TXB1CON                           00000F30
+TXB1D0                            00000F36
+TXB1D00                           00000000
+TXB1D01                           00000001
+TXB1D02                           00000002
+TXB1D03                           00000003
+TXB1D04                           00000004
+TXB1D05                           00000005
+TXB1D06                           00000006
+TXB1D07                           00000007
+TXB1D1                            00000F37
+TXB1D10                           00000000
+TXB1D11                           00000001
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 34
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TXB1D12                           00000002
+TXB1D13                           00000003
+TXB1D14                           00000004
+TXB1D15                           00000005
+TXB1D16                           00000006
+TXB1D17                           00000007
+TXB1D2                            00000F38
+TXB1D20                           00000000
+TXB1D21                           00000001
+TXB1D22                           00000002
+TXB1D24                           00000004
+TXB1D25                           00000005
+TXB1D26                           00000006
+TXB1D27                           00000007
+TXB1D3                            00000F39
+TXB1D30                           00000000
+TXB1D31                           00000001
+TXB1D32                           00000002
+TXB1D33                           00000003
+TXB1D34                           00000004
+TXB1D35                           00000005
+TXB1D36                           00000006
+TXB1D37                           00000007
+TXB1D4                            00000F3A
+TXB1D40                           00000000
+TXB1D41                           00000001
+TXB1D42                           00000002
+TXB1D43                           00000003
+TXB1D44                           00000004
+TXB1D45                           00000005
+TXB1D46                           00000006
+TXB1D47                           00000007
+TXB1D5                            00000F3B
+TXB1D50                           00000000
+TXB1D51                           00000001
+TXB1D52                           00000002
+TXB1D53                           00000003
+TXB1D54                           00000004
+TXB1D55                           00000005
+TXB1D56                           00000006
+TXB1D57                           00000007
+TXB1D6                            00000F3C
+TXB1D60                           00000000
+TXB1D61                           00000001
+TXB1D62                           00000002
+TXB1D63                           00000003
+TXB1D64                           00000004
+TXB1D65                           00000005
+TXB1D66                           00000006
+TXB1D67                           00000007
+TXB1D7                            00000F3D
+TXB1D70                           00000000
+TXB1D71                           00000001
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 35
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TXB1D72                           00000002
+TXB1D73                           00000003
+TXB1D74                           00000004
+TXB1D75                           00000005
+TXB1D76                           00000006
+TXB1D77                           00000007
+TXB1DLC                           00000F35
+TXB1EIDH                          00000F33
+TXB1EIDL                          00000F34
+TXB1IE                            00000003
+TXB1IF                            00000003
+TXB1IP                            00000003
+TXB1SIDH                          00000F31
+TXB1SIDL                          00000F32
+TXB2CON                           00000F20
+TXB2D0                            00000F26
+TXB2D00                           00000000
+TXB2D01                           00000001
+TXB2D02                           00000002
+TXB2D03                           00000003
+TXB2D04                           00000004
+TXB2D05                           00000005
+TXB2D06                           00000006
+TXB2D07                           00000007
+TXB2D1                            00000F27
+TXB2D10                           00000000
+TXB2D11                           00000001
+TXB2D12                           00000002
+TXB2D13                           00000003
+TXB2D14                           00000004
+TXB2D15                           00000005
+TXB2D16                           00000006
+TXB2D17                           00000007
+TXB2D2                            00000F28
+TXB2D20                           00000000
+TXB2D21                           00000001
+TXB2D22                           00000002
+TXB2D23                           00000003
+TXB2D24                           00000004
+TXB2D25                           00000005
+TXB2D26                           00000006
+TXB2D27                           00000007
+TXB2D3                            00000F29
+TXB2D30                           00000000
+TXB2D31                           00000001
+TXB2D32                           00000002
+TXB2D33                           00000003
+TXB2D34                           00000004
+TXB2D35                           00000005
+TXB2D36                           00000006
+TXB2D37                           00000007
+TXB2D4                            00000F2A
+TXB2D40                           00000000
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 36
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TXB2D41                           00000001
+TXB2D42                           00000002
+TXB2D43                           00000003
+TXB2D44                           00000004
+TXB2D45                           00000005
+TXB2D46                           00000006
+TXB2D47                           00000007
+TXB2D5                            00000F2B
+TXB2D50                           00000000
+TXB2D51                           00000001
+TXB2D52                           00000002
+TXB2D53                           00000003
+TXB2D54                           00000004
+TXB2D55                           00000005
+TXB2D56                           00000006
+TXB2D57                           00000007
+TXB2D6                            00000F2C
+TXB2D60                           00000000
+TXB2D61                           00000001
+TXB2D62                           00000002
+TXB2D63                           00000003
+TXB2D64                           00000004
+TXB2D65                           00000005
+TXB2D66                           00000006
+TXB2D67                           00000007
+TXB2D7                            00000F2D
+TXB2D70                           00000000
+TXB2D71                           00000001
+TXB2D72                           00000002
+TXB2D73                           00000003
+TXB2D74                           00000004
+TXB2D75                           00000005
+TXB2D76                           00000006
+TXB2D77                           00000007
+TXB2DLC                           00000F25
+TXB2EIDH                          00000F23
+TXB2EIDL                          00000F24
+TXB2IE                            00000004
+TXB2IF                            00000004
+TXB2IP                            00000004
+TXB2SIDH                          00000F21
+TXB2SIDL                          00000F22
+TXBO                              00000005
+TXBP                              00000004
+TXD8                              00000000
+TXEN                              00000005
+TXERR                             00000004
+TXERRCNT                          00000F76
+TXIE                              00000004
+TXIF                              00000004
+TXIP                              00000004
+TXLARB                            00000005
+TXPRI0                            00000000
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 37
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TXPRI1                            00000001
+TXREG                             00000FAD
+TXREQ                             00000003
+TXRTR                             00000006
+TXSTA                             00000FAC
+TXWARN                            00000002
+UA                                00000001
+UART_Getch                        00000104
+UART_Putch                        0000010E
+UART_Puts                         00000118
+UART_Puts_loop                    00000116
+VERSION                           0000005E
+VREFM                             00000002
+VREFP                             00000003
+W                                 00000000
+WAKFIL                            00000006
+WAKIE                             00000006
+WAKIF                             00000006
+WAKIP                             00000006
+WCOL                              00000007
+WDTCON                            00000FD1
+WIN0                              00000001
+WIN1                              00000002
+WIN2                              00000003
+WR                                00000001
+WREG                              00000FE8
+WREG_TEMP_H                       00000008
+WREG_TEMP_L                       0000000B
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BORV_25_2L                       000000FF
+_BORV_27_2L                       000000FB
+_BORV_42_2L                       000000F7
+_BORV_45_2L                       000000F3
+_BOR_OFF_2L                       000000FD
+_BOR_ON_2L                        000000FF
+_CONFIG1H                         00300001
+_CONFIG2H                         00300003
+_CONFIG2L                         00300002
+_CONFIG4L                         00300006
+_CONFIG5H                         00300009
+_CONFIG5L                         00300008
+_CONFIG6H                         0030000B
+_CONFIG6L                         0030000A
+_CONFIG7H                         0030000D
+_CONFIG7L                         0030000C
+_CP0_OFF_5L                       000000FF
+_CP0_ON_5L                        000000FE
+_CP1_OFF_5L                       000000FF
+_CP1_ON_5L                        000000FD
+_CP2_OFF_5L                       000000FF
+_CP2_ON_5L                        000000FB
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 38
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_CP3_OFF_5L                       000000FF
+_CP3_ON_5L                        000000F7
+_CPB_OFF_5H                       000000FF
+_CPB_ON_5H                        000000BF
+_CPD_OFF_5H                       000000FF
+_CPD_ON_5H                        0000007F
+_DEBUG_OFF_4L                     000000FF
+_DEBUG_ON_4L                      0000007F
+_DEVID1                           003FFFFE
+_DEVID2                           003FFFFF
+_EBTR0_OFF_7L                     000000FF
+_EBTR0_ON_7L                      000000FE
+_EBTR1_OFF_7L                     000000FF
+_EBTR1_ON_7L                      000000FD
+_EBTR2_OFF_7L                     000000FF
+_EBTR2_ON_7L                      000000FB
+_EBTR3_OFF_7L                     000000FF
+_EBTR3_ON_7L                      000000F7
+_EBTRB_OFF_7H                     000000FF
+_EBTRB_ON_7H                      000000BF
+_ECIO_OSC_1H                      000000FD
+_EC_OSC_1H                        000000FC
+_HSPLL_OSC_1H                     000000FE
+_HS_OSC_1H                        000000FA
+_IDLOC0                           00200000
+_IDLOC1                           00200001
+_IDLOC2                           00200002
+_IDLOC3                           00200003
+_IDLOC4                           00200004
+_IDLOC5                           00200005
+_IDLOC6                           00200006
+_IDLOC7                           00200007
+_LP_OSC_1H                        000000F8
+_LVP_OFF_4L                       000000FB
+_LVP_ON_4L                        000000FF
+_OSCS_OFF_1H                      000000FF
+_OSCS_ON_1H                       000000DF
+_PWRT_OFF_2L                      000000FF
+_PWRT_ON_2L                       000000FE
+_RCIO_OSC_1H                      000000FF
+_RC_OSC_1H                        000000FB
+_STVR_OFF_4L                      000000FE
+_STVR_ON_4L                       000000FF
+_WDTPS_128_2H                     000000FF
+_WDTPS_16_2H                      000000F9
+_WDTPS_1_2H                       000000F1
+_WDTPS_2_2H                       000000F3
+_WDTPS_32_2H                      000000FB
+_WDTPS_4_2H                       000000F5
+_WDTPS_64_2H                      000000FD
+_WDTPS_8_2H                       000000F7
+_WDT_OFF_2H                       000000FE
+_WDT_ON_2H                        000000FF
+MPASM 03.00 Released          DATALOG.ASM   3-29-2004  12:59:54         PAGE 39
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_WRT0_OFF_6L                      000000FF
+_WRT0_ON_6L                       000000FE
+_WRT1_OFF_6L                      000000FF
+_WRT1_ON_6L                       000000FD
+_WRT2_OFF_6L                      000000FF
+_WRT2_ON_6L                       000000FB
+_WRT3_OFF_6L                      000000FF
+_WRT3_ON_6L                       000000F7
+_WRTB_OFF_6H                      000000FF
+_WRTB_ON_6H                       000000BF
+_WRTC_OFF_6H                      000000FF
+_WRTC_ON_6H                       000000DF
+_WRTD_OFF_6H                      000000FF
+_WRTD_ON_6H                       0000007F
+_XT_OSC_1H                        000000F9
+__18F458                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XX------XX------ --------XXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0140 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0180 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+01C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0200 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0240 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0280 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+02C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0300 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0340 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0380 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+03C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0400 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0440 : XXXXXXXXXXXXXXXX XXXXXXXX-------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Bytes Used:  1092
+Program Memory Bytes Free: 31676
+
+
+Errors   :     0
+Warnings :     2 reported,     0 suppressed
+Messages :    12 reported,     0 suppressed
+
+

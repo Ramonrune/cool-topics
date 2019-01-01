@@ -1,0 +1,68 @@
+:Base MODELS.HLP
+1 SIMULATOR PRIMITIVE REFERENCE
+2 Analogue Modelling Primitives
+3 Capacitor Model=Capacitor_Model
+3 Current Source Model=CSOURCE_Model
+3 Lossless Delay Line Model=TRANLINE_Model
+3 Lossy Delay Line Model=LOSSYLINE_Model
+3 Uniform RC Transmission Line Model=URCLINE_Model
+3 Inductor Model=Inductor_Model
+3 Analogue Resistor Model=Analogue_Resistor_Model
+3 Voltage Controlled Voltage Source Model=VCVS_model
+3 Voltage Controlled Current Source Model=VCCS_Model
+3 Current Controlled Voltage Source Model=CCVS_Model
+3 Current Controlled Current Source Model=CCCS_Model
+3 Arbitrary Controlled Current Source=ACS_Model
+3 Analogue Diode Model=Analog_Diode_Model
+3 Bipolar Transistor Model=bipolar_model
+3 JFET Model=jfet_model
+3 MOSFET Transistor Models=mosfet_model
+3 MESFET Transistor Models=mesfet_model
+3 Non-Linear Voltage Controlled Current Source=NLVCIS_Model
+3 Non-Linear Current Controlled Current Source=ICISOURCE_Model
+3 Voltage Controlled Switch Model=VSWITCH_Model
+3 Voltage Controlled Resistor=VCR_Model
+3 Current Controlled Switch Model=CSWITCH_Model
+3 Current Controlled Resistor Model=CCR_Model
+3 Current Probe Model=IPROBE_Model
+2 Digital Modelling Primitives
+3 Standard Gate Models=Gate_Models
+3 Boolean (Programmable) Gate Model=Boolean_Gate_Model
+3 Delay/Buffer Model=Delay_Model
+3 Tristate Buffer Model=Tribuffer_Model
+3 Bi-Directional Buffer Model=Bibuffer_Model
+3 J-K Model=JK_Model
+3 Pulse Generator Model=Pulse_Model
+3 A or B Selector Model=AORB_Model
+3 Bistable Model=Bistable_Model
+3 D-Type Flip-Flop Model=DTFF_Model
+3 JK Flip-Flop Model=JKFF_Model
+3 Counter Model=Counter_Model
+3 Divide by N Model=Divider_Model
+3 Latch Model=Latch_Model
+3 Shift Register Model=SHIFTREG_Model
+3 Decoder Model=Decoder_Model
+3 Priority Encoder Model=Encoder_Model
+3 One-of-N Selector Model=Selector_Model
+3 ALU Function Model=Function_Model
+3 Magnitude Comparator Model=Comparator_Model
+3 Memory Model=Memory_Model
+3 Digital Resistor Model=Digital_Resistor_Model
+3 Digital Diode Model=Digital_Diodee_Model
+2 PLD Modelling Primitives
+3 Matrix Model=PLD_Matrix_Model
+3 Fuse Expression Model=PLD_Fuse_Model
+3 Fused 1-of-N Selector Model=PLD_FSEL_Model
+3 Macro Cell Model=PLD_MCELL_Model
+2 Mixed Mode Modelling Primitives
+3 ADC Interface Object Model=ADC_Interface_Object
+3 DAC Interface Object Model=DAC_Interface_Object
+3 Dual Mode Switch=DSWITCH_Model
+3 N-Bit ADC Model=DATAC_ADC
+3 N-Bit DAC Model=DATAC_DAC
+2 Real Time Modelling Primitives
+3 Real Time Digital Probe=RTDPROBE_Model
+3 Real Time Current Probe=RTIPROBE_Model
+3 Real Time Voltage Probe=RTVPROBE_Model
+3 Real Time Digital State Model=RTDSTATE_Model
+3 Real Time Switch Model=RTSWITCH_Model

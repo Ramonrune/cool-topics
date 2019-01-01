@@ -1,0 +1,2181 @@
+Archive member included because of file (symbol)
+
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_udivsi3.o)
+                              iterate.o (__udivsi3)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_divsi3.o)
+                              book.o (__divsi3)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_modsi3.o)
+                              book.o (__modsi3)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_dvmd_tls.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_udivsi3.o) (__div0)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_lshrdi3.o)
+                              atak.o (__lshrdi3)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_fixunsdfsi.o)
+                              book.o (__fixunsdfsi)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_addsub_sf.o)
+                              cmd.o (__addsf3)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_mul_sf.o)
+                              cmd.o (__mulsf3)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_div_sf.o)
+                              cmd.o (__divsf3)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_eq_sf.o)
+                              cmd.o (__eqsf2)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_gt_sf.o)
+                              iterate.o (__gtsf2)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_lt_sf.o)
+                              iterate.o (__ltsf2)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_le_sf.o)
+                              iterate.o (__lesf2)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_si_to_sf.o)
+                              cmd.o (__floatsisf)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_sf_to_si.o)
+                              players.o (__fixsfsi)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_sf_to_df.o)
+                              cmd.o (__extendsfdf2)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_thenan_sf.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_addsub_sf.o) (__thenan_sf)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_addsub_df.o)
+                              book.o (__adddf3)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_mul_df.o)
+                              book.o (__muldf3)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_div_df.o)
+                              book.o (__divdf3)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_gt_df.o)
+                              book.o (__gtdf2)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_ge_df.o)
+                              iterate.o (__gedf2)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_lt_df.o)
+                              pgn.o (__ltdf2)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_si_to_df.o)
+                              book.o (__floatsidf)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_df_to_si.o)
+                              search.o (__fixdfsi)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_make_df.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_sf_to_df.o) (__make_dp)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_df_to_sf.o)
+                              iterate.o (__truncdfsf2)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_thenan_df.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_addsub_df.o) (__thenan_df)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_pack_sf.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_addsub_sf.o) (__pack_f)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_unpack_sf.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_addsub_sf.o) (__unpack_f)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_fpcmp_parts_sf.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_eq_sf.o) (__fpcmp_parts_f)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_make_sf.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_df_to_sf.o) (__make_fp)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_pack_df.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_addsub_df.o) (__pack_d)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_unpack_df.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_addsub_df.o) (__unpack_d)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_fpcmp_parts_df.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_gt_df.o) (__fpcmp_parts_d)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_ashldi3.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_pack_df.o) (__ashldi3)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(isdigit.o)
+                              epd.o (isdigit)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(isspace.o)
+                              cmd.o (isspace)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tolower.o)
+                              epd.o (tolower)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(toupper.o)
+                              move.o (toupper)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__uClibc_main.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/crt0.o (__uClibc_main)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(errno.o)
+                              book.o (errno)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(localtime.o)
+                              pgn.o (localtime)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(localtime_r.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(localtime.o) (localtime_r)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tzset.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(localtime_r.o) (tzset)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_time_t2tm.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(localtime_r.o) (_time_t2tm)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__time_tm.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(localtime.o) (__time_tm)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(difftime.o)
+                              pgn.o (difftime)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fclose.o)
+                              book.o (fclose)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fflush.o)
+                              cmd.o (fflush)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fopen.o)
+                              book.o (fopen)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(perror.o)
+                              pgn.o (perror)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fgets.o)
+                              epd.o (fgets)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fputc.o)
+                              cmd.o (fputc)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fputs.o)
+                              cmd.o (fputs)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(putchar.o)
+                              cmd.o (putchar)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(puts.o)
+                              book.o (puts)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fread.o)
+                              book.o (fread)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fwrite.o)
+                              book.o (fwrite)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(clearerr.o)
+                              lexpgn.o (clearerr)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(feof.o)
+                              epd.o (feof)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fileno.o)
+                              lexpgn.o (fileno)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_fopen.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fopen.o) (_stdio_fopen)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_fread.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fread.o) (_stdio_fread)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_fwrite.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fflush.o) (_stdio_fwrite)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_lseek.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_fwrite.o) (_stdio_lseek)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_init.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fclose.o) (_cs_read)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fprintf.o)
+                              book.o (fprintf)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(printf.o)
+                              book.o (printf)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(sprintf.o)
+                              cmd.o (sprintf)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fprintf.o) (vfprintf)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_store_inttype.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o) (_store_inttype)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_load_inttype.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o) (_load_inttype)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_dtostr.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o) (_dtostr)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(sscanf.o)
+                              cmd.o (sscanf)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fscanf.o)
+                              players.o (fscanf)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vsscanf.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(sscanf.o) (vsscanf)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfscanf.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fscanf.o) (vfscanf)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(memcmp.o)
+                              book.o (memcmp)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(memcpy.o)
+                              input.o (memcpy)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(memset.o)
+                              atak.o (memset)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strcat.o)
+                              lexpgn.o (strcat)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strcmp.o)
+                              players.o (strcmp)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strcpy.o)
+                              cmd.o (strcpy)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strcspn.o)
+                              cmd.o (strcspn)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strdup.o)
+                              lexpgn.o (strdup)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strlen.o)
+                              cmd.o (strlen)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strncmp.o)
+                              cmd.o (strncmp)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strncpy.o)
+                              cmd.o (strncpy)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strnlen.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o) (strnlen)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strstr.o)
+                              epd.o (strstr)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strerror.o)
+                              book.o (strerror)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_susv3_strerror_r.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strerror.o) (_susv3_strerror_r)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_string_syserrmsgs.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_susv3_strerror_r.o) (_string_syserrmsgs)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_glibc_strerror_r.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o) (_glibc_strerror_r)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(signal.o)
+                              util.o (signal)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(sigsetops.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(signal.o) (__sigismember)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(atol.o)
+                              cmd.o (atoi)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strtol.o)
+                              cmd.o (strtol)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdlib_strto_l.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strtol.o) (_stdlib_strto_l)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(qsort.o)
+                              players.o (qsort)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdlib_strto_ll.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfscanf.o) (_stdlib_strto_ll)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(atexit.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__uClibc_main.o) (atexit)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__exit_handler.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(atexit.o) (__exit_count)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(exit.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(atexit.o) (__exit_cleanup)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(abort.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/crt0.o (abort)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(getenv.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tzset.o) (getenv)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(random.o)
+                              main.o (srand)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(random_r.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(random.o) (srandom_r)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(calloc.o)
+                              book.o (calloc)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(malloc.o)
+                              init.o (malloc)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(realloc.o)
+                              init.o (realloc)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(llseek.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_lseek.o) (lseek64)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__libc_read.o)
+                              lexpgn.o (read)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__syscall_open.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tzset.o) (open)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__libc_close.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tzset.o) (close)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(time.o)
+                              pgn.o (time)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(access.o)
+                              cmd.o (access)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_fcntl.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_fopen.o) (fcntl)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__rt_sigprocmask.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(abort.o) (sigprocmask)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(getopt.o)
+                              main.o (optarg)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(isalnum.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tzset.o) (isalnum)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(isalpha.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tzset.o) (isalpha)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(isascii.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tzset.o) (isascii)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(isxdigit.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfscanf.o) (isxdigit)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(wcrtomb.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o) (wcrtomb)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(wcsrtombs.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o) (wcsrtombs)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__wcsnrtombs.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(wcrtomb.o) (__wcsnrtombs)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fgetc.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fgets.o) (fgetc_unlocked)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(ungetc.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfscanf.o) (ungetc)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fseek.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_fwrite.o) (fseek)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fseeko64.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fseek.o) (fseeko64)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_adjpos.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fseeko64.o) (_stdio_adjpos)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_uintmaxtostr.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o) (_uintmaxtostr)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vsnprintf.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(sprintf.o) (vsnprintf)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_init.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o) (_ppfs_init)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_prepargs.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o) (_ppfs_prepargs)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_setargs.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o) (_ppfs_setargs)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_parsespec.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o) (_custom_printf_spec)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(memmove.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(realloc.o) (memmove)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strchr.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(getopt.o) (strchr)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(raise.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(abort.o) (raise)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(sigaction.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(signal.o) (sigaction)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__libc_getpid.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(raise.o) (getpid)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__syscall_kill.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(raise.o) (kill)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__syscall_rt_sigaction.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(sigaction.o) (__syscall_rt_sigaction)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(sigrestorer.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(sigaction.o) (__default_sa_restorer)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(mbsrtowcs.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_init.o) (mbsrtowcs)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__mbsnrtowcs.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(mbsrtowcs.o) (__mbsnrtowcs)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_umodsi3.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdlib_strto_l.o) (__umodsi3)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_eq_df.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_dtostr.o) (__eqdf2)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_ne_df.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_dtostr.o) (__nedf2)
+/cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_negate_df.o)
+                              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_dtostr.o) (__negdf2)
+
+Allocating common symbols
+Common symbol       size              file
+
+pgn_whiteELO        0x4               lexpgn.o
+pgn_blackELO        0x4               lexpgn.o
+newpos              0x4               main.o
+progname            0x4               main.o
+hashcode            0x1c00            main.o
+Rook90Atak          0x20000           main.o
+EvalCnt             0x4               main.o
+nmovesfrombook      0x4               main.o
+maxtime             0x4               main.o
+n                   0x4               main.o
+cboard              0x100             main.o
+GoodGetHashCnt      0x4               main.o
+StartTime           0x8               main.o
+ChkCnt              0x104             main.o
+Game50              0x4               main.o
+suddendeath         0x4               main.o
+ThrtCnt             0x104             main.o
+TimeLimit           0x8               main.o
+weaked              0x10              eval.o
+SANmv               0x8               main.o
+HashTab             0x8               main.o
+GoodPawnHashCnt     0x4               main.o
+yytext              0x4               lexpgn.o
+pgn_round           0x4               lexpgn.o
+KingExtCnt          0x4               main.o
+pscore              0x80              main.o
+initial_comments    0x4               lexpgn.o
+Mvboard             0x100             main.o
+boardhalf           0x10              main.o
+pgn_date            0x4               lexpgn.o
+board               0xb8              main.o
+wasbookmove         0x4               main.o
+maxposnscore        0x8               main.o
+data_dest           0x4               lexpgn.o
+_heapindex          0x4               /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(malloc.o)
+endptr              0x4               cmd.o
+myrating            0x4               main.o
+playerdb            0x7d00            players.o
+_heaplimit          0x4               /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(malloc.o)
+PawnTab             0x8               main.o
+SearchTime          0x4               main.o
+WKCastlehash        0x8               main.o
+Ataks               0x70              main.o
+killer1             0x104             main.o
+TreePtr             0x104             main.o
+InChkDummy          0x2               iterate.o
+bookmode            0x2               main.o
+RootAlpha           0x2               main.o
+BKCastlehash        0x8               main.o
+pgn_event           0x4               lexpgn.o
+threatply           0x1               main.o
+RootPV              0x4               main.o
+ThrtExtCnt          0x4               main.o
+mask_kr_trapped_w   0x18              main.o
+EvalCall            0x4               main.o
+_time_tzinfo        0x30              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tzset.o)
+mask_qr_trapped_b   0x18              main.o
+RcpExtCnt           0x4               main.o
+SquarePawnMask      0x400             main.o
+boxes               0x10              main.o
+HashSize            0x4               main.o
+distance            0x2000            main.o
+id                  0x20              main.o
+RealGameCnt         0x4               main.o
+OneRepCnt           0x4               main.o
+computer            0x4               main.o
+BQCastlehash        0x8               main.o
+PHashMask           0x4               main.o
+SxDec               0x4               main.o
+computerplays       0x4               main.o
+ephash              0x200             main.o
+pinned              0x8               main.o
+GameCnt             0x4               main.o
+lazyscore           0x8               main.o
+TotalPutHashCnt     0x4               main.o
+history             0x8000            main.o
+FromToRay           0x8000            main.o
+FutlCutCnt          0x4               main.o
+threatmv            0x2               main.o
+terminal            0x2               iterate.o
+TotalGetHashCnt     0x4               main.o
+RootBeta            0x2               main.o
+_custom_printf_arginfo
+                    0x28              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_parsespec.o)
+phase               0x4               main.o
+mask_kr_trapped_b   0x18              main.o
+RepeatCnt           0x4               main.o
+pgn_site            0x4               lexpgn.o
+WQCastlehash        0x8               main.o
+Tree                0x3e80            main.o
+castled             0x8               main.o
+Game                0x6720            main.o
+TCMove              0x4               main.o
+stonewall           0x10              main.o
+NodeCnt             0x4               main.o
+yyleng              0x4               lexpgn.o
+MoveArray           0x1000            main.o
+inputstr            0x80              input.o
+SearchDepth         0x4               main.o
+PawnHashKey         0x8               main.o
+pgn_white           0x4               lexpgn.o
+pgn_othertags       0x4               lexpgn.o
+HashKey             0x8               main.o
+PawnExtCnt          0x4               main.o
+lastrootscore       0x4               main.o
+NotBitPosArray      0x200             main.o
+boardside           0x10              main.o
+passed              0x10              eval.o
+Hashmv              0x104             main.o
+existpos            0x4               main.o
+TotalPawnHashCnt    0x4               main.o
+pieces              0x10              main.o
+TCTime              0x4               main.o
+IsolaniMask         0x40              main.o
+mask_qr_trapped_w   0x18              main.o
+_heapinfo           0x4               /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(malloc.o)
+Rook00Atak          0x20000           main.o
+TCinc               0x4               main.o
+HorzExtCnt          0x4               main.o
+opprating           0x4               main.o
+ChkExtCnt           0x4               main.o
+Idepth              0x4               main.o
+TCionc              0x4               main.o
+DistMap             0x1000            main.o
+KingThrt            0x104             main.o
+lzArray             0x10000           main.o
+Bishop45Atak        0x20000           main.o
+bookfirstlast       0x2               main.o
+rings               0x20              main.o
+QuiesCnt            0x4               main.o
+ofp                 0x4               main.o
+preanalyze_flags    0x4               main.o
+ElapsedTime         0x8               main.o
+pgn_result          0x4               lexpgn.o
+_aligned_blocks     0x4               /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(malloc.o)
+Ray                 0x1000            main.o
+ExchCnt             0x8               main.o
+FileBit             0x40              main.o
+solution            0x40              main.o
+Bishop315Atak       0x20000           main.o
+RootPieces          0x2               main.o
+__time_tm           0x30              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__time_tm.o)
+gfxboard            0x40              graphics.o
+GenCnt              0x4               main.o
+RazrCutCnt          0x4               main.o
+RootPawns           0x2               main.o
+directions          0x2000            main.o
+_sigintr            0x80              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(signal.o)
+_heapbase           0x4               /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(malloc.o)
+BitPosArray         0x200             main.o
+taxicab             0x2000            main.o
+flags               0x4               main.o
+killer2             0x104             main.o
+rootscore           0x4               main.o
+hunged              0x8               main.o
+pickphase           0x82              main.o
+BitCount            0x10000           main.o
+InChk               0x82              main.o
+_custom_printf_handler
+                    0x28              /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_parsespec.o)
+getline             0x4               atak.o
+name                0x32              main.o
+gocolour            0x4               graphics.o
+KingSafety          0x4               main.o
+NullCutCnt          0x4               main.o
+pgn_black           0x4               lexpgn.o
+PassedPawnMask      0x400             main.o
+RootMaterial        0x2               main.o
+MoveLimit           0x8               main.o
+RealSide            0x2               main.o
+TTHashMask          0x4               main.o
+Sidehash            0x8               main.o
+CollHashCnt         0x4               main.o
+RankBit             0x40              main.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+CODE             0x00000000         0x00040000         xr
+DATA             0x40000000         0x00100000         rw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crti.o
+LOAD /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtbegin.o
+LOAD /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/crt0.o
+Address of section .text set to 0x0
+Address of section .data set to 0x40000000
+LOAD atak.o
+LOAD book.o
+LOAD cmd.o
+LOAD debug.o
+LOAD epd.o
+LOAD eval.o
+LOAD genmove.o
+LOAD getopt1.o
+LOAD getopt.o
+LOAD hash.o
+LOAD hung.o
+LOAD init.o
+LOAD input.o
+LOAD iterate.o
+LOAD lexpgn.o
+LOAD main.o
+LOAD move.o
+LOAD null.o
+LOAD output.o
+LOAD pgn.o
+LOAD players.o
+LOAD ponder.o
+LOAD quiesce.o
+LOAD random.o
+LOAD repeat.o
+LOAD search.o
+LOAD solve.o
+LOAD sort.o
+LOAD swap.o
+LOAD test.o
+LOAD ttable.o
+LOAD util.o
+LOAD startup.o
+LOAD syscalls.o
+LOAD graphics.o
+LOAD pieces.o
+LOAD eeprom.o
+LOAD /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a
+LOAD /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a
+LOAD /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a
+LOAD /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtend.o
+LOAD /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtn.o
+
+.text           0x00000000    0x29778
+ *startup.o(.text)
+ .text          0x00000000       0xf4 startup.o
+                0x00000000                _startup
+ *(.text)
+ .text          0x000000f4      0x100 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtbegin.o
+ .text          0x000001f4       0x1c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/crt0.o
+                0x000001f4                _start
+ .text          0x00000210     0x26b0 atak.o
+                0x00001d18                FindPins
+                0x000013c0                AttackFrom
+                0x000025b0                MateScan
+                0x0000104c                AttackXTo
+                0x00000210                SqAtakd
+                0x000004d8                GenAtaks
+                0x00001aa0                PinnedOnKing
+                0x00001620                AttackXFrom
+                0x00000d74                AttackTo
+ .text          0x000028c0      0xaf8 book.o
+                0x00003248                BookBuilderClose
+                0x00002de0                BookBuilderOpen
+                0x00002fc4                BookBuilder
+                0x000033a0                BookQuery
+ .text          0x000033b8     0x1df8 cmd.o
+                0x000041b4                cmd_ping
+                0x0000480c                cmd_xboard
+                0x00003844                cmd_easy
+                0x00004320                cmd_remove
+                0x00003a38                cmd_hash
+                0x000035c4                cmd_bk
+                0x0000351c                cmd_accepted
+                0x00003c20                cmd_level
+                0x00003520                cmd_activate
+                0x00003ae8                cmd_hashsize
+                0x00003e94                cmd_manual
+                0x000044e4                cmd_solve
+                0x0000471c                cmd_variant
+                0x00004484                cmd_save
+                0x000046f4                cmd_usage
+                0x000043fc                cmd_result
+                0x0000409c                cmd_null
+                0x000045e0                cmd_time
+                0x00004270                cmd_quit
+                0x000041ec                cmd_post
+                0x000044c0                cmd_setboard
+                0x000042a8                cmd_rating
+                0x00003b8c                cmd_hint
+                0x00003934                cmd_force
+                0x00003fec                cmd_new
+                0x00003690                cmd_book
+                0x00003570                cmd_analyze
+                0x00004720                cmd_version
+                0x00003840                cmd_draw
+                0x00003800                cmd_computer
+                0x000035f4                cmd_black
+                0x00004e7c                cmd_help
+                0x0000458c                cmd_switch
+                0x00003968                cmd_go
+                0x000038b8                cmd_epd
+                0x00004d94                cmd_test
+                0x00003e38                cmd_load
+                0x00003a04                cmd_hard
+                0x000042a4                cmd_random
+                0x00004068                cmd_nopost
+                0x00003878                cmd_edit
+                0x00003804                cmd_depth
+                0x00004150                cmd_pgnload
+                0x00004504                cmd_st
+                0x000038fc                cmd_exit
+                0x00004220                cmd_protover
+                0x0000414c                cmd_otim
+                0x00004634                cmd_undo
+                0x00003dc4                cmd_list
+                0x000048ac                cmd_show
+                0x00004fdc                parse_input
+                0x00004170                cmd_pgnsave
+                0x00003ec8                cmd_movenow
+                0x00004770                cmd_white
+                0x00003ecc                cmd_name
+                0x0000431c                cmd_rejected
+ .text          0x000051b0       0x20 debug.o
+                0x000051b0                dbg_open
+                0x000051b8                dbg_printf
+                0x000051c8                dbg_close
+ .text          0x000051d0      0xf08 epd.o
+                0x00005ed0                SaveEPD
+                0x000051d0                ReadEPDFile
+                0x00005e08                LoadEPD
+                0x000052d4                ParseEPD
+ .text          0x000060d8     0x5544 eval.o
+                0x0000731c                ScoreN
+                0x00009ffc                KPK
+                0x0000b2dc                EvaluateDraw
+                0x00009e7c                LoneKing
+                0x000077e8                ScoreB
+                0x00008cf0                ScoreK
+                0x00007dd8                BishopTrapped
+                0x0000a644                ScoreDev
+                0x0000ab18                Evaluate
+                0x000087dc                ScoreQ
+                0x000060d8                ScoreP
+                0x000086d8                DoubleQR7
+                0x0000a404                ScoreKBNK
+                0x00007f94                ScoreR
+ .text          0x0000b61c     0x454c genmove.o
+                0x0000fa80                FilterIllegalMoves
+                0x0000f00c                GenCheckEscapes
+                0x0000ccb0                GenNonCaptures
+                0x0000b61c                GenMoves
+                0x0000dd18                GenCaptures
+ .text          0x0000fb68      0x37c hash.o
+                0x0000fb68                CalcHashKey
+                0x0000fe24                CalcHashSize
+                0x0000fdf8                ShowHashKey
+ .text          0x0000fee4      0x298 hung.o
+                0x0000fee4                EvalHung
+ .text          0x0001017c     0x1a58 init.o
+                0x00010950                InitIsolaniMask
+                0x000101d4                InitFICS
+                0x00010228                InitLzArray
+                0x00011b38                NewPosition
+                0x000106e0                InitRandomMasks
+                0x000119d0                InitHashTable
+                0x000102dc                InitMoveArray
+                0x00010280                InitBitPosArray
+                0x00010524                InitFromToRay
+                0x000109c0                InitSquarePawnMask
+                0x00010658                InitRankFileBit
+                0x000118fc                InitHashCode
+                0x0001104c                InitDistance
+                0x00010bb0                InitRotAtak
+                0x000111e4                InitVars
+                0x0001082c                InitPassedPawnMask
+                0x000103dc                InitRay
+                0x00010b40                InitBitCount
+                0x0001017c                Initialize
+ .text          0x00011bd4      0x264 input.o
+                0x00011bec                CleanupInput
+                0x00011c90                getline_standard
+                0x00011bf0                wait_for_input
+                0x00011bd4                InitInput
+                0x00011c8c                input_wakeup
+ .text          0x00011e38     0x129c iterate.o
+                0x00013030                GetElapsed
+                0x00011e38                Iterate
+                0x000130a0                StartTiming
+ .text          0x000130d4     0x1ea4 lexpgn.o
+                0x00014cb0                yy_delete_buffer
+                0x00014b14                yyrestart
+                0x00014da4                yy_scan_buffer
+                0x00014bec                yy_load_buffer_state
+                0x00014c48                yy_create_buffer
+                0x000130d4                return_append_str
+                0x00013180                append_comment
+                0x00013160                append_str
+                0x00014d48                yy_flush_buffer
+                0x00014e44                yy_scan_string
+                0x00014e78                yy_scan_bytes
+                0x00014b68                yy_switch_to_buffer
+                0x00014cfc                yy_init_buffer
+                0x000131e0                yylex
+ .text          0x00014f78      0x5ac main.o
+                0x00014f78                main
+ .text          0x00015524     0x2e50 move.o
+                0x000181b0                AlgbrMove
+                0x00015524                MakeMove
+                0x00016818                SANMove
+                0x00017be8                IsInMoveList
+                0x00018264                piece_id
+                0x00016b24                ValidateMove
+                0x00017c84                IsLegalMove
+                0x000161a8                UnmakeMove
+ .text          0x00018374      0x130 null.o
+                0x00018374                MakeNullMove
+                0x0001843c                UnmakeNullMove
+ .text          0x000184a4      0xc60 output.o
+                0x00018c60                ShowCBoard
+                0x00018540                ShowSmallBoard
+                0x00018e7c                ShowGfxBoard
+                0x00018850                ShowBitBoard
+                0x000184a8                ShowMoveList
+                0x00018d28                ShowGame
+                0x000188d0                ShowBoard
+                0x00018cd0                ShowMvboard
+                0x000184a4                ShowTime
+ .text          0x00019104      0x8c4 pgn.o
+                0x000196c4                BookPGNReadFromFile
+                0x00019608                PGNReadFromFile
+                0x00019104                PGNSaveToFile
+                0x0001967c                IsTrustedPlayer
+ .text          0x000199c8      0x6c4 players.o
+                0x00019e70                DBSearchPlayer
+                0x00019d10                DBWritePlayer
+                0x00019b2c                DBSortPlayer
+                0x00019bec                DBListPlayer
+                0x00019db4                DBReadPlayer
+                0x00019ee8                DBUpdatePlayer
+ .text          0x0001a08c       0x90 ponder.o
+                0x0001a08c                ponder
+ .text          0x0001a11c      0x2a4 quiesce.o
+                0x0001a11c                Quiesce
+ .text          0x0001a3c0       0xf4 random.o
+                0x0001a484                Rand64
+                0x0001a3c0                Rand32
+ .text          0x0001a4b4       0x8c repeat.o
+                0x0001a4b4                Repeat
+ .text          0x0001a540     0x1ca8 search.o
+                0x0001a540                SearchRoot
+                0x0001aaac                Search
+                0x0001bad0                ShowLine
+ .text          0x0001c1e8      0x1a8 solve.o
+                0x0001c1e8                Solve
+ .text          0x0001c390      0x908 sort.o
+                0x0001c638                SortRoot
+                0x0001cbf0                PhasePick1
+                0x0001c7ec                PhasePick
+                0x0001c390                SortCaptures
+                0x0001c430                SortMoves
+                0x0001c780                pick
+ .text          0x0001cc98      0x654 swap.o
+                0x0001cc98                SwapOff
+                0x0001d0d4                AddXrayPiece
+ .text          0x0001d2ec      0x894 test.o
+                0x0001d920                TestEvalSpeed
+                0x0001d830                TestNonCaptureList
+                0x0001d7b8                TestMoveList
+                0x0001dabc                TestEval
+                0x0001d614                TestCaptureGenSpeed
+                0x0001d2ec                TestMoveGenSpeed
+                0x0001d470                TestNonCaptureGenSpeed
+                0x0001d8a8                TestCaptureList
+ .text          0x0001db80      0x414 ttable.o
+                0x0001df08                TTClear
+                0x0001df58                PTClear
+                0x0001db80                TTPut
+                0x0001dc9c                TTGet
+                0x0001ddc4                TTGetPV
+ .text          0x0001df94      0x51c util.o
+                0x0001e208                ValidateBoard
+                0x0001df94                UpdateFriends
+                0x0001e16c                UpdateMvboard
+                0x0001e1c4                EndSearch
+                0x0001e074                UpdateCBoard
+ .text          0x0001e4b0      0x320 syscalls.o
+                0x0001e5d8                gets
+                0x0001e60c                isatty
+                0x0001e53c                write
+                0x0001e6c8                outchar
+                0x0001e65c                sbrk
+                0x0001e614                gettimeofday
+                0x0001e788                getchar
+                0x0001e4b0                InitSystem
+                0x0001e658                _exit
+ .text          0x0001e7d0      0xc54 graphics.o
+                0x0001e7d0                panel_init
+                0x0001e970                panel_update
+                0x0001ef1c                lcd_cls
+                0x0001effc                lcd_wrcmd
+                0x0001ee0c                panel_blit
+                0x0001f144                lcd_write
+                0x0001eba0                panel_polltty
+                0x0001f1e8                sound_capture
+                0x0001f244                tone
+                0x0001f3c8                sleep
+                0x0001f1cc                sound_yourmove
+                0x0001f0f0                lcd_read
+                0x0001e9fc                panel_getmove
+                0x0001eb84                panel_pollbtns
+                0x0001ec1c                panel_load
+                0x0001f02c                lcd_wrcmd1
+                0x0001ed94                panel_draw
+                0x0001f354                scankeypad
+                0x0001e8d0                panel_cls
+                0x0001ebb8                panel_save
+                0x0001ee64                panel_invert
+                0x0001ecac                panel_getEPD
+                0x0001f07c                lcd_wrcmd2
+                0x0001f228                sound_illegal
+                0x0001ef8c                lcd_blit
+ .text          0x0001f424      0x270 eeprom.o
+                0x0001f640                i2c_write
+                0x0001f4f4                i2c_start
+                0x0001f4b4                eeprom_write
+                0x0001f5b8                i2c_stop
+                0x0001f5d8                i2c_read
+                0x0001f470                eeprom_read
+                0x0001f424                eeprom_init
+ .text          0x0001f694       0x98 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_udivsi3.o)
+                0x0001f694                __udivsi3
+ .text          0x0001f72c       0xb0 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_divsi3.o)
+                0x0001f72c                __divsi3
+ .text          0x0001f7dc       0xd4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_modsi3.o)
+                0x0001f7dc                __modsi3
+ .text          0x0001f8b0        0x4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_dvmd_tls.o)
+                0x0001f8b0                __div0
+ .text          0x0001f8b4       0x50 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_lshrdi3.o)
+                0x0001f8b4                __lshrdi3
+ .text          0x0001f904       0x6c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_fixunsdfsi.o)
+                0x0001f904                __fixunsdfsi
+ .text          0x0001f970      0x318 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_addsub_sf.o)
+                0x0001fbdc                __subsf3
+                0x0001fb84                __addsf3
+ .text          0x0001fc88      0x220 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_mul_sf.o)
+                0x0001fc88                __mulsf3
+ .text          0x0001fea8      0x1ac /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_div_sf.o)
+                0x0001fea8                __divsf3
+ .text          0x00020054       0x94 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_eq_sf.o)
+                0x00020054                __eqsf2
+ .text          0x000200e8       0x94 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_gt_sf.o)
+                0x000200e8                __gtsf2
+ .text          0x0002017c       0x94 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_lt_sf.o)
+                0x0002017c                __ltsf2
+ .text          0x00020210       0x94 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_le_sf.o)
+                0x00020210                __lesf2
+ .text          0x000202a4       0x90 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_si_to_sf.o)
+                0x000202a4                __floatsisf
+ .text          0x00020334       0xe4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_sf_to_si.o)
+                0x00020334                __fixsfsi
+ .text          0x00020418       0x50 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_sf_to_df.o)
+                0x00020418                __extendsfdf2
+ .text          0x00020468      0x464 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_addsub_df.o)
+                0x000207b8                __adddf3
+                0x00020818                __subdf3
+ .text          0x000208cc      0x40c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_mul_df.o)
+                0x000208cc                __muldf3
+ .text          0x00020cd8      0x2cc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_div_df.o)
+                0x00020cd8                __divdf3
+ .text          0x00020fa4       0x9c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_gt_df.o)
+                0x00020fa4                __gtdf2
+ .text          0x00021040       0x9c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_ge_df.o)
+                0x00021040                __gedf2
+ .text          0x000210dc       0x9c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_lt_df.o)
+                0x000210dc                __ltdf2
+ .text          0x00021178       0xc0 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_si_to_df.o)
+                0x00021178                __floatsidf
+ .text          0x00021238       0xf0 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_df_to_si.o)
+                0x00021238                __fixdfsi
+ .text          0x00021328       0x40 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_make_df.o)
+                0x00021328                __make_dp
+ .text          0x00021368       0x68 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_df_to_sf.o)
+                0x00021368                __truncdfsf2
+ .text          0x000213d0      0x178 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_pack_sf.o)
+                0x000213d0                __pack_f
+ .text          0x00021548       0xb8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_unpack_sf.o)
+                0x00021548                __unpack_f
+ .text          0x00021600      0x188 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_fpcmp_parts_sf.o)
+                0x00021600                __fpcmp_parts_f
+ .text          0x00021788       0x30 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_make_sf.o)
+                0x00021788                __make_fp
+ .text          0x000217b8      0x294 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_pack_df.o)
+                0x000217b8                __pack_d
+ .text          0x00021a4c      0x14c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_unpack_df.o)
+                0x00021a4c                __unpack_d
+ .text          0x00021b98      0x1bc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_fpcmp_parts_df.o)
+                0x00021b98                __fpcmp_parts_d
+ .text          0x00021d54       0x50 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_ashldi3.o)
+                0x00021d54                __ashldi3
+ .text          0x00021da4       0x14 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(isdigit.o)
+                0x00021da4                isdigit
+ .text          0x00021db8       0x20 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(isspace.o)
+                0x00021db8                isspace
+ .text          0x00021dd8       0x18 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tolower.o)
+                0x00021dd8                tolower
+ .text          0x00021df0       0x18 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(toupper.o)
+                0x00021df0                toupper
+ .text          0x00021e08      0x138 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__uClibc_main.o)
+                0x00021e08                __uClibc_init
+                0x00021f20                __uClibc_main
+                0x00021e50                __uClibc_start_main
+ .text          0x00021f40       0x34 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(localtime.o)
+                0x00021f40                localtime
+ .text          0x00021f74      0x304 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(localtime_r.o)
+                0x000221b4                localtime_r
+ .text          0x00022278      0x57c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tzset.o)
+                0x00022420                tzset
+ .text          0x000227f4      0x21c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_time_t2tm.o)
+                0x000227f4                _time_t2tm
+ .text          0x00022a10       0x3c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(difftime.o)
+                0x00022a10                difftime
+ .text          0x00022a4c      0x118 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fclose.o)
+                0x00022a4c                fclose
+ .text          0x00022b64       0xb8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fflush.o)
+                0x00022b64                fflush
+                0x00022b64                fflush_unlocked
+ .text          0x00022c1c        0xc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fopen.o)
+                0x00022c1c                fopen
+ .text          0x00022c28       0x64 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(perror.o)
+                0x00022c28                perror
+ .text          0x00022c8c       0x74 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fgets.o)
+                0x00022c8c                fgets
+                0x00022c8c                fgets_unlocked
+ .text          0x00022d00       0x3c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fputc.o)
+                0x00022d00                fputc
+                0x00022d00                fputc_unlocked
+ .text          0x00022d3c       0x40 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fputs.o)
+                0x00022d3c                fputs_unlocked
+                0x00022d3c                fputs
+ .text          0x00022d7c       0x48 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(putchar.o)
+                0x00022d7c                putchar
+                0x00022d7c                putchar_unlocked
+ .text          0x00022dc4       0x54 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(puts.o)
+                0x00022dc4                puts
+ .text          0x00022e18       0x68 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fread.o)
+                0x00022e18                fread
+                0x00022e18                fread_unlocked
+ .text          0x00022e80       0x68 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fwrite.o)
+                0x00022e80                fwrite_unlocked
+                0x00022e80                fwrite
+ .text          0x00022ee8       0x10 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(clearerr.o)
+                0x00022ee8                clearerr_unlocked
+                0x00022ee8                clearerr
+ .text          0x00022ef8        0xc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(feof.o)
+                0x00022ef8                feof
+                0x00022ef8                feof_unlocked
+ .text          0x00022f04       0x50 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fileno.o)
+                0x00022f04                fileno_unlocked
+                0x00022f04                fileno
+ .text          0x00022f54      0x2a4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_fopen.o)
+                0x00022f54                _stdio_fopen
+ .text          0x000231f8      0x228 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_fread.o)
+                0x00023268                _stdio_fread
+ .text          0x00023420      0x320 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_fwrite.o)
+                0x000234a0                _stdio_fwrite
+ .text          0x00023740       0x74 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_lseek.o)
+                0x00023740                _stdio_lseek
+ .text          0x000237b4       0xf4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_init.o)
+                0x000237c4                _cs_close
+                0x000237cc                _stdio_term
+                0x000237b4                _cs_read
+                0x000237bc                _cs_write
+                0x0002383c                _stdio_init
+ .text          0x000238a8       0x20 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fprintf.o)
+                0x000238a8                fprintf
+ .text          0x000238c8       0x3c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(printf.o)
+                0x000238c8                printf
+ .text          0x00023904       0x24 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(sprintf.o)
+                0x00023904                sprintf
+ .text          0x00023928      0x6c4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o)
+                0x00023edc                vfprintf
+ .text          0x00023fec       0x2c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_store_inttype.o)
+                0x00023fec                _store_inttype
+ .text          0x00024018       0x68 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_load_inttype.o)
+                0x00024018                _load_inttype
+ .text          0x00024080      0x78c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_dtostr.o)
+                0x00024080                _dtostr
+ .text          0x0002480c       0x20 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(sscanf.o)
+                0x0002480c                sscanf
+ .text          0x0002482c       0x20 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fscanf.o)
+                0x0002482c                fscanf
+ .text          0x0002484c       0x5c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vsscanf.o)
+                0x0002484c                vsscanf
+ .text          0x000248a8      0xd00 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfscanf.o)
+                0x00024a80                vfscanf
+ .text          0x000255a8       0x2c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(memcmp.o)
+                0x000255a8                bcmp
+                0x000255a8                memcmp
+ .text          0x000255d4       0x20 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(memcpy.o)
+                0x000255d4                memcpy
+ .text          0x000255f4       0x1c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(memset.o)
+                0x000255f4                memset
+ .text          0x00025610       0x2c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strcat.o)
+                0x00025610                strcat
+ .text          0x0002563c       0x24 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strcmp.o)
+                0x0002563c                strcoll
+                0x0002563c                strcmp
+ .text          0x00025660       0x1c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strcpy.o)
+                0x00025660                strcpy
+ .text          0x0002567c       0x50 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strcspn.o)
+                0x0002567c                strcspn
+ .text          0x000256cc       0x34 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strdup.o)
+                0x000256cc                strdup
+ .text          0x00025700       0x24 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strlen.o)
+                0x00025700                strlen
+ .text          0x00025724       0x34 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strncmp.o)
+                0x00025724                strncmp
+ .text          0x00025758       0x28 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strncpy.o)
+                0x00025758                strncpy
+ .text          0x00025780       0x38 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strnlen.o)
+                0x00025780                strnlen
+ .text          0x000257b8       0x4c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strstr.o)
+                0x000257b8                strstr
+ .text          0x00025804       0x38 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strerror.o)
+                0x00025804                strerror
+ .text          0x0002583c      0x108 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_susv3_strerror_r.o)
+                0x0002583c                _susv3_strerror_r
+ .text          0x00025944       0x1c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_glibc_strerror_r.o)
+                0x00025944                __strerror_r
+                0x00025944                _glibc_strerror_r
+ .text          0x00025960       0xc8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(signal.o)
+                0x00025960                bsd_signal
+                0x00025960                signal
+ .text          0x00025a28       0x6c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(sigsetops.o)
+                0x00025a70                __sigdelset
+                0x00025a4c                __sigaddset
+                0x00025a28                __sigismember
+ .text          0x00025a94        0xc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(atol.o)
+                0x00025a94                atol
+                0x00025a94                atoi
+ .text          0x00025aa0        0x8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strtol.o)
+                0x00025aa0                strtol
+ .text          0x00025aa8      0x1a8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdlib_strto_l.o)
+                0x00025aa8                _stdlib_strto_l
+ .text          0x00025c50       0xdc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(qsort.o)
+                0x00025c50                qsort
+ .text          0x00025d2c      0x254 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdlib_strto_ll.o)
+                0x00025d2c                _stdlib_strto_ll
+ .text          0x00025f80       0xfc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(atexit.o)
+                0x00025f80                atexit
+ .text          0x0002607c       0xcc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__exit_handler.o)
+                0x0002607c                __exit_handler
+ .text          0x00026148       0x58 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(exit.o)
+                0x00026148                exit
+ .text          0x000261a0      0x114 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(abort.o)
+                0x000261a0                abort
+ .text          0x000262b4       0x90 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(getenv.o)
+                0x000262b4                getenv
+ .text          0x00026344       0xd4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(random.o)
+                0x000263e0                random
+                0x000263a0                setstate
+                0x00026344                srand
+                0x00026368                initstate
+                0x00026344                srandom
+ .text          0x00026418      0x3c8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(random_r.o)
+                0x0002660c                setstate_r
+                0x00026710                random_r
+                0x00026418                srandom_r
+                0x00026514                initstate_r
+ .text          0x000267e0       0x7c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(calloc.o)
+                0x000267e0                calloc
+ .text          0x0002685c      0xacc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(malloc.o)
+                0x00026ae0                malloc
+                0x00026ae4                __malloc_unlocked
+                0x00026f84                __free_unlocked
+                0x00026f28                free
+ .text          0x00027328      0x224 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(realloc.o)
+                0x00027328                realloc
+ .text          0x0002754c       0x60 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(llseek.o)
+                0x0002754c                __libc_lseek64
+                0x0002754c                llseek
+                0x0002754c                lseek64
+ .text          0x000275ac       0x38 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__libc_read.o)
+                0x000275ac                __libc_read
+                0x000275ac                read
+ .text          0x000275e4       0x48 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__syscall_open.o)
+                0x000275e4                __libc_open
+                0x000275e4                open
+ .text          0x0002762c       0x38 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__libc_close.o)
+                0x0002762c                __libc_close
+                0x0002762c                close
+ .text          0x00027664       0x38 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(time.o)
+                0x00027664                time
+ .text          0x0002769c       0x38 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(access.o)
+                0x0002769c                access
+ .text          0x000276d4       0x54 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_fcntl.o)
+                0x0002770c                __libc_fcntl
+                0x0002770c                fcntl
+                0x000276d4                _fcntl
+ .text          0x00027728       0x40 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__rt_sigprocmask.o)
+                0x00027728                __rt_sigprocmask
+                0x00027760                sigprocmask
+ .text          0x00027768      0xb70 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(getopt.o)
+                0x00028288                getopt_long
+                0x00027920                _getopt_internal
+                0x00028260                getopt
+                0x000282b0                getopt_long_only
+ .text          0x000282d8       0x28 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(isalnum.o)
+                0x000282d8                isalnum
+ .text          0x00028300       0x18 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(isalpha.o)
+                0x00028300                isalpha
+ .text          0x00028318       0x10 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(isascii.o)
+                0x00028318                isascii
+ .text          0x00028328       0x28 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(isxdigit.o)
+                0x00028328                isxdigit
+ .text          0x00028350       0x60 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(wcrtomb.o)
+                0x00028350                wcrtomb
+ .text          0x000283b0       0x2c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(wcsrtombs.o)
+                0x000283b0                wcsrtombs
+ .text          0x000283dc       0xb8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__wcsnrtombs.o)
+                0x000283dc                wcsnrtombs
+                0x000283dc                __wcsnrtombs
+ .text          0x00028494       0x34 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fgetc.o)
+                0x00028494                fgetc
+                0x00028494                fgetc_unlocked
+ .text          0x000284c8       0xbc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(ungetc.o)
+                0x000284c8                ungetc
+ .text          0x00028584       0x20 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fseek.o)
+                0x00028584                fseeko
+                0x00028584                fseek
+ .text          0x000285a4       0xd4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(fseeko64.o)
+                0x000285a4                fseeko64
+ .text          0x00028678       0xa4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_adjpos.o)
+                0x00028678                _stdio_adjpos
+ .text          0x0002871c      0x13c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_uintmaxtostr.o)
+                0x0002871c                _uintmaxtostr
+ .text          0x00028858       0x94 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vsnprintf.o)
+                0x00028858                vsnprintf
+ .text          0x000288ec      0x128 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_init.o)
+                0x000288ec                _ppfs_init
+ .text          0x00028a14       0x40 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_prepargs.o)
+                0x00028a14                _ppfs_prepargs
+ .text          0x00028a54      0x160 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_setargs.o)
+                0x00028a54                _ppfs_setargs
+ .text          0x00028bb4      0x5c0 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_parsespec.o)
+                0x00028c5c                _ppfs_parsespec
+ .text          0x00029174       0x50 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(memmove.o)
+                0x00029174                memmove
+ .text          0x000291c4       0x28 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strchr.o)
+                0x000291c4                index
+                0x000291c4                strchr
+ .text          0x000291ec       0x20 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(raise.o)
+                0x000291ec                raise
+ .text          0x0002920c       0xfc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(sigaction.o)
+                0x0002920c                __libc_sigaction
+                0x0002920c                sigaction
+ .text          0x00029308       0x38 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__libc_getpid.o)
+                0x00029308                __getpid
+                0x00029308                getpid
+                0x00029308                __libc_getpid
+ .text          0x00029340       0x38 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__syscall_kill.o)
+                0x00029340                kill
+ .text          0x00029378       0x38 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__syscall_rt_sigaction.o)
+                0x00029378                __syscall_rt_sigaction
+ .text          0x000293b0       0x20 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(sigrestorer.o)
+                0x000293b0                __default_sa_restorer
+                0x000293c0                __default_rt_sa_restorer
+ .text          0x000293d0       0x44 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(mbsrtowcs.o)
+                0x000293d0                mbsrtowcs
+ .text          0x00029414       0xc0 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__mbsnrtowcs.o)
+                0x00029414                mbsnrtowcs
+                0x00029414                __mbsnrtowcs
+ .text          0x000294d4       0xc0 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_umodsi3.o)
+                0x000294d4                __umodsi3
+ .text          0x00029594       0x9c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_eq_df.o)
+                0x00029594                __eqdf2
+ .text          0x00029630       0x9c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_ne_df.o)
+                0x00029630                __nedf2
+ .text          0x000296cc       0x5c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_negate_df.o)
+                0x000296cc                __negdf2
+ .text          0x00029728       0x50 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtend.o
+ *(.glue_7t)
+ *(.glue_7)
+
+.init           0x00029778       0x1c
+ .init          0x00029778        0xc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crti.o
+                0x00029778                _init
+ .init          0x00029784        0x4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtbegin.o
+ .init          0x00029788        0x4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtend.o
+ .init          0x0002978c        0x8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtn.o
+
+.fini           0x00029794       0x18
+ .fini          0x00029794        0xc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crti.o
+                0x00029794                _fini
+ .fini          0x000297a0        0x4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtbegin.o
+ .fini          0x000297a4        0x8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtn.o
+                0x000297ac                . = ALIGN (0x4)
+
+.rodata         0x000297ac     0x9a5c
+ *(.rodata)
+ .rodata        0x000297ac       0x18 book.o
+ .rodata        0x000297c4      0x3a4 cmd.o
+                0x00029990                commands
+ .rodata        0x00029b68      0x538 eval.o
+ .rodata        0x0002a0a0       0x1c genmove.o
+                0x0002a0ae                rayend
+                0x0002a0a0                raybeg
+ .rodata        0x0002a0bc      0x380 init.o
+ .rodata        0x0002a43c       0x80 input.o
+ .rodata        0x0002a4bc     0x3da8 lexpgn.o
+ .rodata        0x0002e264      0x19c pgn.o
+ .rodata        0x0002e400       0x1c swap.o
+ .rodata        0x0002e41c      0x100 util.o
+ .rodata        0x0002e51c     0x4000 pieces.o
+                0x0002e51c                lcd_bitmaps
+ .rodata        0x0003251c       0x10 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_thenan_sf.o)
+                0x0003251c                __thenan_sf
+ .rodata        0x0003252c       0x14 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_thenan_df.o)
+                0x0003252c                __thenan_df
+ .rodata        0x00032540        0xd /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(localtime_r.o)
+ .rodata        0x0003254d       0x26 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tzset.o)
+ *fill*         0x00032573        0x1 00
+ .rodata        0x00032574       0x1e /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_time_t2tm.o)
+ *fill*         0x00032592        0x2 00
+ .rodata        0x00032594       0x14 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o)
+ .rodata        0x000325a8       0x28 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfscanf.o)
+ .rodata        0x000325d0        0xe /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_susv3_strerror_r.o)
+ *fill*         0x000325de        0x2 00
+ .rodata        0x000325e0      0xb5c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_string_syserrmsgs.o)
+                0x000325e0                _string_syserrmsgs
+ .rodata        0x0003313c       0x28 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(random_r.o)
+ .rodata        0x00033164       0x24 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_init.o)
+ .rodata        0x00033188       0x80 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_parsespec.o)
+
+.eh_frame       0x00033208        0x4
+ .eh_frame      0x00033208        0x4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtend.o
+
+.note.ABI-tag   0x00033210       0x20
+ .note.ABI-tag  0x00033210       0x20 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/crt0.o
+
+.rodata.str1.4  0x00033230     0x2f74
+ .rodata.str1.4
+                0x00033230      0x163 book.o
+                                0x170 (size before relaxing)
+ *fill*         0x00033393        0x1 00
+ .rodata.str1.4
+                0x00033394     0x183e cmd.o
+                               0x1874 (size before relaxing)
+ *fill*         0x00034bd2        0x2 00
+ .rodata.str1.4
+                0x00034bd4       0x89 epd.o
+                                 0xac (size before relaxing)
+ *fill*         0x00034c5d        0x3 00
+ .rodata.str1.4
+                0x00034c60       0x4c hash.o
+ .rodata.str1.4
+                0x00034cac      0x133 init.o
+                                0x160 (size before relaxing)
+ *fill*         0x00034ddf        0x1 00
+ .rodata.str1.4
+                0x00034de0       0x98 input.o
+                                 0xa8 (size before relaxing)
+ .rodata.str1.4
+                0x00034e78      0x3c7 iterate.o
+                                0x3f0 (size before relaxing)
+ *fill*         0x0003523f        0x1 00
+ .rodata.str1.4
+                0x00035240      0x2a6 lexpgn.o
+                                0x324 (size before relaxing)
+ *fill*         0x000354e6        0x2 00
+ .rodata.str1.4
+                0x000354e8       0x88 main.o
+                                0x154 (size before relaxing)
+ .rodata.str1.4
+                0x00035570       0x50 move.o
+ .rodata.str1.4
+                0x000355c0       0xa4 output.o
+                                 0xa8 (size before relaxing)
+ .rodata.str1.4
+                0x00035664      0x674 pgn.o
+                                0x6fc (size before relaxing)
+ .rodata.str1.4
+                0x00035cd8       0x6b players.o
+                                 0xe8 (size before relaxing)
+ *fill*         0x00035d43        0x1 00
+ .rodata.str1.4
+                0x00035d44       0x3b ponder.o
+                                 0x54 (size before relaxing)
+ *fill*         0x00035d7f        0x1 00
+ .rodata.str1.4
+                0x00035d80       0xfe search.o
+                                0x118 (size before relaxing)
+ *fill*         0x00035e7e        0x2 00
+ .rodata.str1.4
+                0x00035e80       0x50 solve.o
+                                 0x70 (size before relaxing)
+ .rodata.str1.4
+                0x00035ed0       0xfd test.o
+                                0x118 (size before relaxing)
+ *fill*         0x00035fcd        0x3 00
+ .rodata.str1.4
+                0x00035fd0        0xc util.o
+ .rodata.str1.4
+                0x00035fdc       0x20 syscalls.o
+ .rodata.str1.4
+                0x00035ffc        0xc graphics.o
+ .rodata.str1.4
+                0x00036008        0x8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tzset.o)
+ .rodata.str1.4
+                0x00036010        0x8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(perror.o)
+                                  0xc (size before relaxing)
+ .rodata.str1.4
+                0x00036018        0xf /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(vfprintf.o)
+                                 0x10 (size before relaxing)
+ *fill*         0x00036027        0x1 00
+ .rodata.str1.4
+                0x00036028       0x34 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_dtostr.o)
+                                 0x3c (size before relaxing)
+ .rodata.str1.4
+                0x0003605c      0x148 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(getopt.o)
+                                0x14c (size before relaxing)
+
+.rel.dyn
+                0x000361a4                . = ALIGN (0x4)
+                0x000361a4                _etext = .
+                0x000361a4                PROVIDE (etext, .)
+
+.data           0x40000000      0xddc load address 0x000361a4
+                0x40000000                _data = .
+ *(.data)
+ .data          0x40000000        0x8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtbegin.o
+                0x40000000                __dso_handle
+ .data          0x40000008       0x10 book.o
+ .data          0x40000018      0x31c eval.o
+                0x40000218                KBNK
+ .data          0x40000334        0x4 input.o
+                0x40000334                input_status
+ .data          0x40000338       0x14 lexpgn.o
+ .data          0x4000034c      0x8f4 main.o
+                0x40000a28                Shift315
+                0x4000037c                Value
+                0x4000035c                slider
+                0x400007a8                Shift45
+                0x40000498                notation
+                0x40000bb0                rank7
+                0x400003b8                ptype
+                0x40000928                r315
+                0x40000aa8                Mask315
+                0x40000bb8                rank8
+                0x400006a8                r45
+                0x400003c0                algbr
+                0x400004a0                lnotation
+                0x4000048c                algbrrank
+                0x40000628                Shift90
+                0x400004a8                Shift00
+                0x40000828                Mask45
+                0x40000ba8                rank6
+                0x40000480                algbrfile
+                0x40000398                range
+                0x40000528                r90
+ .data          0x40000c40       0x10 pgn.o
+ .data          0x40000c50       0x10 players.o
+ .data          0x40000c60       0xe0 random.o
+ .data          0x40000d40       0x10 graphics.o
+ .data          0x40000d50       0x80 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(random.o)
+ .data          0x40000dd0        0xc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(getopt.o)
+                0x40000dd4                opterr
+                0x40000dd0                optind
+                0x40000dd8                optopt
+
+.ctors          0x40000ddc        0x8 load address 0x00036f80
+ .ctors         0x40000ddc        0x4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtbegin.o
+ .ctors         0x40000de0        0x4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtend.o
+
+.dtors          0x40000de4        0x8 load address 0x00036f88
+ .dtors         0x40000de4        0x4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtbegin.o
+ .dtors         0x40000de8        0x4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtend.o
+
+.jcr            0x40000dec        0x4 load address 0x00036f90
+ .jcr           0x40000dec        0x4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtend.o
+
+.got            0x40000df0       0xe8 load address 0x00036f94
+ .got           0x40000df0       0xe8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__uClibc_main.o)
+
+.got.plt        0x40000ed8        0xc load address 0x0003707c
+ .got.plt       0x40000ed8        0xc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__uClibc_main.o)
+                0x40000ed8                _GLOBAL_OFFSET_TABLE_
+
+.data.rel.local
+                0x40000ee4       0x58 load address 0x00037088
+ .data.rel.local
+                0x40000ee4        0x8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tzset.o)
+                0x40000ee4                tzname
+ .data.rel.local
+                0x40000eec       0x10 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_init.o)
+                0x40000ef0                stdout
+                0x40000ef8                _stdio_openlist
+                0x40000eec                stdin
+                0x40000ef4                stderr
+ .data.rel.local
+                0x40000efc       0x20 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_dtostr.o)
+ .data.rel.local
+                0x40000f1c       0x1c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(random.o)
+ .data.rel.local
+                0x40000f38        0x4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_parsespec.o)
+                0x40000f38                _custom_printf_spec
+
+.data.rel       0x40000f3c       0xd8 load address 0x000370e0
+ .data.rel      0x40000f3c       0xd8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_init.o)
+                0x40001014                . = ALIGN (0x4)
+                0x40001014                _edata = .
+                0x40001014                PROVIDE (edata, .)
+
+.bss            0x40001020    0xd09c8
+                0x40001020                __bss_start = .
+                0x40001020                __bss_start__ = .
+ *(.bss)
+ .bss           0x40001020       0x1c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtbegin.o
+ .bss           0x4000103c      0x664 book.o
+ .bss           0x400016a0      0x10c cmd.o
+ .bss           0x400017ac        0x4 epd.o
+ .bss           0x400017b0        0x4 genmove.o
+ .bss           0x400017b4       0x28 lexpgn.o
+                0x400017c4                yyout
+                0x400017c0                yyin
+ .bss           0x400017dc        0x4 main.o
+                0x400017dc                bookloaded
+ .bss           0x400017e0        0x6 move.o
+ *fill*         0x400017e6        0x2 00
+ .bss           0x400017e8       0x38 players.o
+                0x400017e8                totalplayers
+ .bss           0x40001820       0xe4 random.o
+ .bss           0x40001904        0x4 search.o
+ .bss           0x40001908      0x208 sort.o
+ .bss           0x40001b10        0x4 syscalls.o
+ .bss           0x40001b14       0x40 graphics.o
+ .bss           0x40001b54        0xc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__uClibc_main.o)
+                0x40001b54                __environ
+                0x40001b54                environ
+                0x40001b58                __progname
+ .bss           0x40001b60        0x8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(errno.o)
+                0x40001b64                _h_errno
+                0x40001b60                errno
+                0x40001b64                h_errno
+                0x40001b60                _errno
+ .bss           0x40001b68       0x4c /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tzset.o)
+                0x40001b68                daylight
+                0x40001b6c                timezone
+ .bss           0x40001bb4      0x200 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_stdio_init.o)
+ .bss           0x40001db4       0x32 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(strerror.o)
+ *fill*         0x40001de6        0x2 00
+ .bss           0x40001de8        0xc /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__exit_handler.o)
+                0x40001dec                __exit_function_table
+                0x40001de8                __exit_count
+                0x40001df0                __exit_slots
+ .bss           0x40001df4        0x4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(exit.o)
+                0x40001df4                __exit_cleanup
+ .bss           0x40001df8        0x4 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(abort.o)
+ .bss           0x40001dfc       0x98 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(malloc.o)
+ .bss           0x40001e94       0x18 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(getopt.o)
+                0x40001e94                optarg
+ .bss           0x40001eac        0xa /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_parsespec.o)
+ *fill*         0x40001eb6        0x2 00
+ .bss           0x40001eb8        0x8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(mbsrtowcs.o)
+ .bss           0x40001ec0        0x8 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__mbsnrtowcs.o)
+ *(COMMON)
+ *fill*         0x40001ec8       0x18 00
+ COMMON         0x40001ee0        0x4 atak.o
+                                  0x0 (size before relaxing)
+                0x40001ee0                getline
+ *fill*         0x40001ee4       0x1c 00
+ COMMON         0x40001f00        0x4 cmd.o
+                                  0x0 (size before relaxing)
+                0x40001f00                endptr
+ *fill*         0x40001f04       0x1c 00
+ COMMON         0x40001f20       0x30 eval.o
+                                  0x0 (size before relaxing)
+                0x40001f20                weaked
+                0x40001f40                passed
+ COMMON         0x40001f50       0x80 input.o
+                                  0x0 (size before relaxing)
+                0x40001f50                inputstr
+ COMMON         0x40001fd0       0x12 iterate.o
+                                  0x0 (size before relaxing)
+                0x40001fd0                InChkDummy
+                0x40001fe0                terminal
+ *fill*         0x40001fe2       0x1e 00
+ COMMON         0x40002000      0x1a4 lexpgn.o
+                                  0x0 (size before relaxing)
+                0x40002000                pgn_whiteELO
+                0x40002020                pgn_blackELO
+                0x40002040                yytext
+                0x40002060                pgn_round
+                0x40002080                initial_comments
+                0x400020a0                pgn_date
+                0x400020c0                data_dest
+                0x400020e0                pgn_event
+                0x40002100                pgn_site
+                0x40002120                yyleng
+                0x40002140                pgn_white
+                0x40002160                pgn_othertags
+                0x40002180                pgn_result
+                0x400021a0                pgn_black
+ *fill*         0x400021a4       0x1c 00
+ COMMON         0x400021c0    0xc78c0 main.o
+                                  0x0 (size before relaxing)
+                0x400021c0                newpos
+                0x400021e0                progname
+                0x40002200                hashcode
+                0x40003e00                Rook90Atak
+                0x40023e00                EvalCnt
+                0x40023e20                nmovesfrombook
+                0x40023e40                maxtime
+                0x40023e60                n
+                0x40023e80                cboard
+                0x40023f80                GoodGetHashCnt
+                0x40023fa0                StartTime
+                0x40023fc0                ChkCnt
+                0x400240e0                Game50
+                0x40024100                suddendeath
+                0x40024120                ThrtCnt
+                0x40024240                TimeLimit
+                0x40024248                SANmv
+                0x40024260                HashTab
+                0x40024280                GoodPawnHashCnt
+                0x400242a0                KingExtCnt
+                0x400242b0                pscore
+                0x40024340                Mvboard
+                0x40024440                boardhalf
+                0x40024460                board
+                0x40024520                wasbookmove
+                0x40024540                maxposnscore
+                0x40024560                myrating
+                0x40024580                PawnTab
+                0x400245a0                SearchTime
+                0x400245c0                WKCastlehash
+                0x400245e0                Ataks
+                0x40024660                killer1
+                0x40024780                TreePtr
+                0x40024890                bookmode
+                0x400248a0                RootAlpha
+                0x400248c0                BKCastlehash
+                0x400248c8                threatply
+                0x400248e0                RootPV
+                0x40024900                ThrtExtCnt
+                0x40024920                mask_kr_trapped_w
+                0x40024940                EvalCall
+                0x40024960                mask_qr_trapped_b
+                0x40024980                RcpExtCnt
+                0x400249a0                SquarePawnMask
+                0x40024da0                boxes
+                0x40024dc0                HashSize
+                0x40024dd0                distance
+                0x40026dd0                id
+                0x40026e00                RealGameCnt
+                0x40026e20                OneRepCnt
+                0x40026e40                computer
+                0x40026e60                BQCastlehash
+                0x40026e80                PHashMask
+                0x40026ea0                SxDec
+                0x40026ec0                computerplays
+                0x40026ee0                ephash
+                0x400270e0                pinned
+                0x40027100                GameCnt
+                0x40027120                lazyscore
+                0x40027140                TotalPutHashCnt
+                0x40027160                history
+                0x4002f160                FromToRay
+                0x40037160                FutlCutCnt
+                0x40037170                threatmv
+                0x40037180                TotalGetHashCnt
+                0x40037190                RootBeta
+                0x400371a0                phase
+                0x400371c0                mask_kr_trapped_b
+                0x400371e0                RepeatCnt
+                0x40037200                WQCastlehash
+                0x40037220                Tree
+                0x4003b0a0                castled
+                0x4003b0c0                Game
+                0x400417e0                TCMove
+                0x40041800                stonewall
+                0x40041820                NodeCnt
+                0x40041840                MoveArray
+                0x40042840                SearchDepth
+                0x40042860                PawnHashKey
+                0x40042880                HashKey
+                0x400428a0                PawnExtCnt
+                0x400428c0                lastrootscore
+                0x400428e0                NotBitPosArray
+                0x40042ae0                boardside
+                0x40042b00                Hashmv
+                0x40042c20                existpos
+                0x40042c40                TotalPawnHashCnt
+                0x40042c60                pieces
+                0x40042c80                TCTime
+                0x40042ca0                IsolaniMask
+                0x40042ce0                mask_qr_trapped_w
+                0x40042d00                Rook00Atak
+                0x40062d00                TCinc
+                0x40062d20                HorzExtCnt
+                0x40062d40                opprating
+                0x40062d60                ChkExtCnt
+                0x40062d80                Idepth
+                0x40062da0                TCionc
+                0x40062dc0                DistMap
+                0x40063dc0                KingThrt
+                0x40063ec8                lzArray
+                0x40073ee0                Bishop45Atak
+                0x40093ee0                bookfirstlast
+                0x40093f00                rings
+                0x40093f20                QuiesCnt
+                0x40093f40                ofp
+                0x40093f60                preanalyze_flags
+                0x40093f80                ElapsedTime
+                0x40093fa0                Ray
+                0x40094fa0                ExchCnt
+                0x40094fc0                FileBit
+                0x40095000                solution
+                0x40095040                Bishop315Atak
+                0x400b5040                RootPieces
+                0x400b5060                GenCnt
+                0x400b5080                RazrCutCnt
+                0x400b5090                RootPawns
+                0x400b50a0                directions
+                0x400b70a0                BitPosArray
+                0x400b72a0                taxicab
+                0x400b92a0                flags
+                0x400b92c0                killer2
+                0x400b93e0                rootscore
+                0x400b9400                hunged
+                0x400b9410                pickphase
+                0x400b9498                BitCount
+                0x400c94a0                InChk
+                0x400c9528                name
+                0x400c9560                KingSafety
+                0x400c9580                NullCutCnt
+                0x400c95a0                PassedPawnMask
+                0x400c99a0                RootMaterial
+                0x400c99c0                MoveLimit
+                0x400c99d0                RealSide
+                0x400c99e0                TTHashMask
+                0x400c9a00                Sidehash
+                0x400c9a20                CollHashCnt
+                0x400c9a40                RankBit
+ COMMON         0x400c9a80     0x7d00 players.o
+                                  0x0 (size before relaxing)
+                0x400c9a80                playerdb
+ COMMON         0x400d1780       0x44 graphics.o
+                                  0x0 (size before relaxing)
+                0x400d1780                gfxboard
+                0x400d17c0                gocolour
+ *fill*         0x400d17c4       0x1c 00
+ COMMON         0x400d17e0       0x30 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(tzset.o)
+                                  0x0 (size before relaxing)
+                0x400d17e0                _time_tzinfo
+ *fill*         0x400d1810       0x10 00
+ COMMON         0x400d1820       0x30 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(__time_tm.o)
+                                  0x0 (size before relaxing)
+                0x400d1820                __time_tm
+ *fill*         0x400d1850       0x10 00
+ COMMON         0x400d1860       0x80 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(signal.o)
+                                  0x0 (size before relaxing)
+                0x400d1860                _sigintr
+ COMMON         0x400d18e0       0x84 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(malloc.o)
+                                  0x0 (size before relaxing)
+                0x400d18e0                _heapindex
+                0x400d1900                _heaplimit
+                0x400d1920                _heapinfo
+                0x400d1940                _aligned_blocks
+                0x400d1960                _heapbase
+ *fill*         0x400d1964       0x1c 00
+ COMMON         0x400d1980       0x68 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/../../../../arm-thumb-elf/lib/libc.a(_ppfs_parsespec.o)
+                                  0x0 (size before relaxing)
+                0x400d1980                _custom_printf_arginfo
+                0x400d19c0                _custom_printf_handler
+                0x400d19e8                . = ALIGN (0x4)
+                0x400d19e8                __bss_end__ = .
+                0x400d19e8                __bss_end__ = .
+                0x400d19e8                _end = .
+                0x400d19e8                PROVIDE (end, .)
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment        0x00000000      0x522
+ *(.comment)
+ .comment       0x00000000       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtbegin.o
+ .comment       0x00000012       0x12 atak.o
+ .comment       0x00000024       0x12 book.o
+ .comment       0x00000036       0x12 cmd.o
+ .comment       0x00000048       0x12 debug.o
+ .comment       0x0000005a       0x12 epd.o
+ .comment       0x0000006c       0x12 eval.o
+ .comment       0x0000007e       0x12 genmove.o
+ .comment       0x00000090       0x12 getopt1.o
+ .comment       0x000000a2       0x12 getopt.o
+ .comment       0x000000b4       0x12 hash.o
+ .comment       0x000000c6       0x12 hung.o
+ .comment       0x000000d8       0x12 init.o
+ .comment       0x000000ea       0x12 input.o
+ .comment       0x000000fc       0x12 iterate.o
+ .comment       0x0000010e       0x12 lexpgn.o
+ .comment       0x00000120       0x12 main.o
+ .comment       0x00000132       0x12 move.o
+ .comment       0x00000144       0x12 null.o
+ .comment       0x00000156       0x12 output.o
+ .comment       0x00000168       0x12 pgn.o
+ .comment       0x0000017a       0x12 players.o
+ .comment       0x0000018c       0x12 ponder.o
+ .comment       0x0000019e       0x12 quiesce.o
+ .comment       0x000001b0       0x12 random.o
+ .comment       0x000001c2       0x12 repeat.o
+ .comment       0x000001d4       0x12 search.o
+ .comment       0x000001e6       0x12 solve.o
+ .comment       0x000001f8       0x12 sort.o
+ .comment       0x0000020a       0x12 swap.o
+ .comment       0x0000021c       0x12 test.o
+ .comment       0x0000022e       0x12 ttable.o
+ .comment       0x00000240       0x12 util.o
+ .comment       0x00000252       0x12 syscalls.o
+ .comment       0x00000264       0x12 graphics.o
+ .comment       0x00000276       0x12 pieces.o
+ .comment       0x00000288       0x12 eeprom.o
+ .comment       0x0000029a       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_lshrdi3.o)
+ .comment       0x000002ac       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_fixunsdfsi.o)
+ .comment       0x000002be       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_addsub_sf.o)
+ .comment       0x000002d0       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_mul_sf.o)
+ .comment       0x000002e2       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_div_sf.o)
+ .comment       0x000002f4       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_eq_sf.o)
+ .comment       0x00000306       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_gt_sf.o)
+ .comment       0x00000318       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_lt_sf.o)
+ .comment       0x0000032a       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_le_sf.o)
+ .comment       0x0000033c       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_si_to_sf.o)
+ .comment       0x0000034e       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_sf_to_si.o)
+ .comment       0x00000360       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_sf_to_df.o)
+ .comment       0x00000372       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_thenan_sf.o)
+ .comment       0x00000384       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_addsub_df.o)
+ .comment       0x00000396       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_mul_df.o)
+ .comment       0x000003a8       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_div_df.o)
+ .comment       0x000003ba       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_gt_df.o)
+ .comment       0x000003cc       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_ge_df.o)
+ .comment       0x000003de       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_lt_df.o)
+ .comment       0x000003f0       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_si_to_df.o)
+ .comment       0x00000402       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_df_to_si.o)
+ .comment       0x00000414       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_make_df.o)
+ .comment       0x00000426       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_df_to_sf.o)
+ .comment       0x00000438       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_thenan_df.o)
+ .comment       0x0000044a       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_pack_sf.o)
+ .comment       0x0000045c       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_unpack_sf.o)
+ .comment       0x0000046e       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_fpcmp_parts_sf.o)
+ .comment       0x00000480       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_make_sf.o)
+ .comment       0x00000492       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_pack_df.o)
+ .comment       0x000004a4       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_unpack_df.o)
+ .comment       0x000004b6       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_fpcmp_parts_df.o)
+ .comment       0x000004c8       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_ashldi3.o)
+ .comment       0x000004da       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_eq_df.o)
+ .comment       0x000004ec       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_ne_df.o)
+ .comment       0x000004fe       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/libgcc.a(_negate_df.o)
+ .comment       0x00000510       0x12 /cygdrive/c/Cygnus/Arm-Tools/Bin/../lib/gcc-lib/arm-thumb-elf/3.3.1/crtend.o
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x00000000      0x440
+ *(.debug_aranges)
+ .debug_aranges
+                0x00000000       0x20 atak.o
+ .debug_aranges
+                0x00000020       0x20 book.o
+ .debug_aranges
+                0x00000040       0x20 cmd.o
+ .debug_aranges
+                0x00000060       0x20 debug.o
+ .debug_aranges
+                0x00000080       0x20 epd.o
+ .debug_aranges
+                0x000000a0       0x20 eval.o
+ .debug_aranges
+                0x000000c0       0x20 genmove.o
+ .debug_aranges
+                0x000000e0       0x20 hash.o
+ .debug_aranges
+                0x00000100       0x20 hung.o
+ .debug_aranges
+                0x00000120       0x20 init.o
+ .debug_aranges
+                0x00000140       0x20 input.o
+ .debug_aranges
+                0x00000160       0x20 iterate.o
+ .debug_aranges
+                0x00000180       0x20 lexpgn.o
+ .debug_aranges
+                0x000001a0       0x20 main.o
+ .debug_aranges
+                0x000001c0       0x20 move.o
+ .debug_aranges
+                0x000001e0       0x20 null.o
+ .debug_aranges
+                0x00000200       0x20 output.o
+ .debug_aranges
+                0x00000220       0x20 pgn.o
+ .debug_aranges
+                0x00000240       0x20 players.o
+ .debug_aranges
+                0x00000260       0x20 ponder.o
+ .debug_aranges
+                0x00000280       0x20 quiesce.o
+ .debug_aranges
+                0x000002a0       0x20 random.o
+ .debug_aranges
+                0x000002c0       0x20 repeat.o
+ .debug_aranges
+                0x000002e0       0x20 search.o
+ .debug_aranges
+                0x00000300       0x20 solve.o
+ .debug_aranges
+                0x00000320       0x20 sort.o
+ .debug_aranges
+                0x00000340       0x20 swap.o
+ .debug_aranges
+                0x00000360       0x20 test.o
+ .debug_aranges
+                0x00000380       0x20 ttable.o
+ .debug_aranges
+                0x000003a0       0x20 util.o
+ .debug_aranges
+                0x000003c0       0x20 startup.o
+ .debug_aranges
+                0x000003e0       0x20 syscalls.o
+ .debug_aranges
+                0x00000400       0x20 graphics.o
+ .debug_aranges
+                0x00000420       0x20 eeprom.o
+
+.debug_pubnames
+                0x00000000     0x1c81
+ *(.debug_pubnames)
+ .debug_pubnames
+                0x00000000       0x9c atak.o
+ .debug_pubnames
+                0x0000009c       0x65 book.o
+ .debug_pubnames
+                0x00000101      0x34e cmd.o
+ .debug_pubnames
+                0x0000044f       0x48 debug.o
+ .debug_pubnames
+                0x00000497       0x53 epd.o
+ .debug_pubnames
+                0x000004ea       0xed eval.o
+ .debug_pubnames
+                0x000005d7       0x8f genmove.o
+ .debug_pubnames
+                0x00000666       0x4f hash.o
+ .debug_pubnames
+                0x000006b5       0x2b hung.o
+ .debug_pubnames
+                0x000006e0      0x16a init.o
+ .debug_pubnames
+                0x0000084a       0x94 input.o
+ .debug_pubnames
+                0x000008de       0x65 iterate.o
+ .debug_pubnames
+                0x00000943      0x209 lexpgn.o
+ .debug_pubnames
+                0x00000b4c      0x88e main.o
+ .debug_pubnames
+                0x000013da       0x93 move.o
+ .debug_pubnames
+                0x0000146d       0x42 null.o
+ .debug_pubnames
+                0x000014af       0xab output.o
+ .debug_pubnames
+                0x0000155a       0x70 pgn.o
+ .debug_pubnames
+                0x000015ca       0xa7 players.o
+ .debug_pubnames
+                0x00001671       0x29 ponder.o
+ .debug_pubnames
+                0x0000169a       0x2a quiesce.o
+ .debug_pubnames
+                0x000016c4       0x34 random.o
+ .debug_pubnames
+                0x000016f8       0x29 repeat.o
+ .debug_pubnames
+                0x00001721       0x45 search.o
+ .debug_pubnames
+                0x00001766       0x28 solve.o
+ .debug_pubnames
+                0x0000178e       0x70 sort.o
+ .debug_pubnames
+                0x000017fe       0x3b swap.o
+ .debug_pubnames
+                0x00001839       0xc1 test.o
+ .debug_pubnames
+                0x000018fa       0x56 ttable.o
+ .debug_pubnames
+                0x00001950       0x73 util.o
+ .debug_pubnames
+                0x000019c3       0x7b syscalls.o
+ .debug_pubnames
+                0x00001a3e      0x1a8 graphics.o
+ .debug_pubnames
+                0x00001be6       0x22 pieces.o
+ .debug_pubnames
+                0x00001c08       0x79 eeprom.o
+
+.debug_info     0x00000000    0x382b3
+ *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x00000000     0x1ddb atak.o
+ .debug_info    0x00001ddb     0x20ff book.o
+ .debug_info    0x00003eda     0x250c cmd.o
+ .debug_info    0x000063e6     0x14ff debug.o
+ .debug_info    0x000078e5     0x1893 epd.o
+ .debug_info    0x00009178     0x2c83 eval.o
+ .debug_info    0x0000bdfb     0x21b9 genmove.o
+ .debug_info    0x0000dfb4      0xad7 getopt1.o
+ .debug_info    0x0000ea8b      0x9b7 getopt.o
+ .debug_info    0x0000f442     0x1676 hash.o
+ .debug_info    0x00010ab8     0x155d hung.o
+ .debug_info    0x00012015     0x2c52 init.o
+ .debug_info    0x00014c67     0x1854 input.o
+ .debug_info    0x000164bb     0x1ad8 iterate.o
+ .debug_info    0x00017f93     0x26c2 lexpgn.o
+ .debug_info    0x0001a655     0x252d main.o
+ .debug_info    0x0001cb82     0x1fcc move.o
+ .debug_info    0x0001eb4e     0x156f null.o
+ .debug_info    0x000200bd     0x187e output.o
+ .debug_info    0x0002193b     0x1900 pgn.o
+ .debug_info    0x0002323b     0x195f players.o
+ .debug_info    0x00024b9a     0x1b75 ponder.o
+ .debug_info    0x0002670f     0x15b8 quiesce.o
+ .debug_info    0x00027cc7     0x1555 random.o
+ .debug_info    0x0002921c     0x150f repeat.o
+ .debug_info    0x0002a72b     0x1c22 search.o
+ .debug_info    0x0002c34d     0x156c solve.o
+ .debug_info    0x0002d8b9     0x1819 sort.o
+ .debug_info    0x0002f0d2     0x176a swap.o
+ .debug_info    0x0003083c     0x168f test.o
+ .debug_info    0x00031ecb     0x16b6 ttable.o
+ .debug_info    0x00033581     0x1d6b util.o
+ .debug_info    0x000352ec       0x5d startup.o
+ .debug_info    0x00035349      0xf10 syscalls.o
+ .debug_info    0x00036259     0x122d graphics.o
+ .debug_info    0x00037486      0x1c4 pieces.o
+ .debug_info    0x0003764a      0xc69 eeprom.o
+
+.debug_abbrev   0x00000000     0x4b31
+ *(.debug_abbrev)
+ .debug_abbrev  0x00000000      0x2c1 atak.o
+ .debug_abbrev  0x000002c1      0x2b6 book.o
+ .debug_abbrev  0x00000577      0x2ab cmd.o
+ .debug_abbrev  0x00000822      0x1c0 debug.o
+ .debug_abbrev  0x000009e2      0x26e epd.o
+ .debug_abbrev  0x00000c50      0x31b eval.o
+ .debug_abbrev  0x00000f6b      0x2a0 genmove.o
+ .debug_abbrev  0x0000120b       0xed getopt1.o
+ .debug_abbrev  0x000012f8       0xd7 getopt.o
+ .debug_abbrev  0x000013cf      0x1f2 hash.o
+ .debug_abbrev  0x000015c1      0x1e5 hung.o
+ .debug_abbrev  0x000017a6      0x2a4 init.o
+ .debug_abbrev  0x00001a4a      0x210 input.o
+ .debug_abbrev  0x00001c5a      0x252 iterate.o
+ .debug_abbrev  0x00001eac      0x2f7 lexpgn.o
+ .debug_abbrev  0x000021a3      0x226 main.o
+ .debug_abbrev  0x000023c9      0x2bb move.o
+ .debug_abbrev  0x00002684      0x1a2 null.o
+ .debug_abbrev  0x00002826      0x20a output.o
+ .debug_abbrev  0x00002a30      0x276 pgn.o
+ .debug_abbrev  0x00002ca6      0x22f players.o
+ .debug_abbrev  0x00002ed5      0x1a7 ponder.o
+ .debug_abbrev  0x0000307c      0x1cf quiesce.o
+ .debug_abbrev  0x0000324b      0x1ad random.o
+ .debug_abbrev  0x000033f8      0x195 repeat.o
+ .debug_abbrev  0x0000358d      0x2b8 search.o
+ .debug_abbrev  0x00003845      0x1c2 solve.o
+ .debug_abbrev  0x00003a07      0x21d sort.o
+ .debug_abbrev  0x00003c24      0x22b swap.o
+ .debug_abbrev  0x00003e4f      0x1c4 test.o
+ .debug_abbrev  0x00004013      0x1df ttable.o
+ .debug_abbrev  0x000041f2      0x294 util.o
+ .debug_abbrev  0x00004486       0x14 startup.o
+ .debug_abbrev  0x0000449a      0x1cc syscalls.o
+ .debug_abbrev  0x00004666      0x2a7 graphics.o
+ .debug_abbrev  0x0000490d       0x90 pieces.o
+ .debug_abbrev  0x0000499d      0x194 eeprom.o
+
+.debug_line     0x00000000     0x6fa2
+ *(.debug_line)
+ .debug_line    0x00000000      0x4f9 atak.o
+ .debug_line    0x000004f9      0x32e book.o
+ .debug_line    0x00000827      0x475 cmd.o
+ .debug_line    0x00000c9c      0x20f debug.o
+ .debug_line    0x00000eab      0x346 epd.o
+ .debug_line    0x000011f1      0x8c5 eval.o
+ .debug_line    0x00001ab6      0x763 genmove.o
+ .debug_line    0x00002219      0x1d0 getopt1.o
+ .debug_line    0x000023e9      0x1b1 getopt.o
+ .debug_line    0x0000259a      0x25a hash.o
+ .debug_line    0x000027f4      0x23b hung.o
+ .debug_line    0x00002a2f      0x4ab init.o
+ .debug_line    0x00002eda      0x24d input.o
+ .debug_line    0x00003127      0x30d iterate.o
+ .debug_line    0x00003434      0x524 lexpgn.o
+ .debug_line    0x00003958      0x2af main.o
+ .debug_line    0x00003c07      0x53c move.o
+ .debug_line    0x00004143      0x221 null.o
+ .debug_line    0x00004364      0x2ff output.o
+ .debug_line    0x00004663      0x2de pgn.o
+ .debug_line    0x00004941      0x28e players.o
+ .debug_line    0x00004bcf      0x23c ponder.o
+ .debug_line    0x00004e0b      0x24f quiesce.o
+ .debug_line    0x0000505a      0x220 random.o
+ .debug_line    0x0000527a      0x215 repeat.o
+ .debug_line    0x0000548f      0x3eb search.o
+ .debug_line    0x0000587a      0x226 solve.o
+ .debug_line    0x00005aa0      0x2ba sort.o
+ .debug_line    0x00005d5a      0x295 swap.o
+ .debug_line    0x00005fef      0x293 test.o
+ .debug_line    0x00006282      0x25d ttable.o
+ .debug_line    0x000064df      0x2fd util.o
+ .debug_line    0x000067dc       0x6a startup.o
+ .debug_line    0x00006846      0x223 syscalls.o
+ .debug_line    0x00006a69      0x2f9 graphics.o
+ .debug_line    0x00006d62       0x38 pieces.o
+ .debug_line    0x00006d9a      0x208 eeprom.o
+
+.debug_frame    0x00000000     0x2564
+ *(.debug_frame)
+ .debug_frame   0x00000000      0x180 atak.o
+ .debug_frame   0x00000180      0x1a4 book.o
+ .debug_frame   0x00000324      0x718 cmd.o
+ .debug_frame   0x00000a3c       0x4c debug.o
+ .debug_frame   0x00000a88       0xb0 epd.o
+ .debug_frame   0x00000b38      0x240 eval.o
+ .debug_frame   0x00000d78       0xec genmove.o
+ .debug_frame   0x00000e64       0x74 hash.o
+ .debug_frame   0x00000ed8       0x38 hung.o
+ .debug_frame   0x00000f10      0x2a8 init.o
+ .debug_frame   0x000011b8       0x80 input.o
+ .debug_frame   0x00001238       0x84 iterate.o
+ .debug_frame   0x000012bc      0x304 lexpgn.o
+ .debug_frame   0x000015c0       0x3c main.o
+ .debug_frame   0x000015fc      0x14c move.o
+ .debug_frame   0x00001748       0x44 null.o
+ .debug_frame   0x0000178c      0x164 output.o
+ .debug_frame   0x000018f0       0xac pgn.o
+ .debug_frame   0x0000199c      0x168 players.o
+ .debug_frame   0x00001b04       0x38 ponder.o
+ .debug_frame   0x00001b3c       0x3c quiesce.o
+ .debug_frame   0x00001b78       0x4c random.o
+ .debug_frame   0x00001bc4       0x2c repeat.o
+ .debug_frame   0x00001bf0       0x94 search.o
+ .debug_frame   0x00001c84       0x3c solve.o
+ .debug_frame   0x00001cc0       0xf4 sort.o
+ .debug_frame   0x00001db4       0x60 swap.o
+ .debug_frame   0x00001e14      0x130 test.o
+ .debug_frame   0x00001f44       0xb0 ttable.o
+ .debug_frame   0x00001ff4       0xb0 util.o
+ .debug_frame   0x000020a4       0xf8 syscalls.o
+ .debug_frame   0x0000219c      0x324 graphics.o
+ .debug_frame   0x000024c0       0xa4 eeprom.o
+
+.debug_str      0x00000000     0x3e51
+ *(.debug_str)
+ .debug_str     0x00000000      0xe1a atak.o
+                               0x10f8 (size before relaxing)
+ .debug_str     0x00000e1a      0xfb4 book.o
+                               0x1f9a (size before relaxing)
+ .debug_str     0x00001dce      0x5a7 cmd.o
+                               0x23c4 (size before relaxing)
+ .debug_str     0x00002375       0x2a debug.o
+                                0xfc9 (size before relaxing)
+ .debug_str     0x0000239f       0x3f epd.o
+                               0x127e (size before relaxing)
+ .debug_str     0x000023de      0x286 eval.o
+                               0x13d2 (size before relaxing)
+ .debug_str     0x00002664       0xa6 genmove.o
+                               0x1138 (size before relaxing)
+ .debug_str     0x0000270a       0x1d getopt1.o
+                                0xa20 (size before relaxing)
+ .debug_str     0x00002727        0xd getopt.o
+                                0x7ad (size before relaxing)
+ .debug_str     0x00002734       0x98 hash.o
+                               0x107a (size before relaxing)
+ .debug_str     0x000027cc       0x14 hung.o
+                                0xfcd (size before relaxing)
+ .debug_str     0x000027e0      0x6be init.o
+                               0x2686 (size before relaxing)
+ .debug_str     0x00002e9e       0xc7 input.o
+                               0x1111 (size before relaxing)
+ .debug_str     0x00002f65      0x183 iterate.o
+                               0x12ae (size before relaxing)
+ .debug_str     0x000030e8      0x4a7 lexpgn.o
+                               0x25c5 (size before relaxing)
+ .debug_str     0x0000358f       0xf7 main.o
+                               0x1676 (size before relaxing)
+ .debug_str     0x00003686       0xb3 move.o
+                               0x1467 (size before relaxing)
+ .debug_str     0x00003739       0x27 null.o
+                                0xfec (size before relaxing)
+ .debug_str     0x00003760       0x76 output.o
+                               0x10c2 (size before relaxing)
+ .debug_str     0x000037d6       0x6f pgn.o
+                               0x13ae (size before relaxing)
+ .debug_str     0x00003845       0xce players.o
+                               0x112a (size before relaxing)
+ .debug_str     0x00003913       0x25 ponder.o
+                               0x1de9 (size before relaxing)
+ .debug_str     0x00003938       0x31 quiesce.o
+                               0x1004 (size before relaxing)
+ .debug_str     0x00003969       0x1b random.o
+                                0xfba (size before relaxing)
+ .debug_str     0x00003984       0x14 repeat.o
+                                0xfc3 (size before relaxing)
+ .debug_str     0x00003998       0x86 search.o
+                               0x1257 (size before relaxing)
+ .debug_str     0x00003a1e       0x31 solve.o
+                                0xff0 (size before relaxing)
+ .debug_str     0x00003a4f       0x59 sort.o
+                               0x1064 (size before relaxing)
+ .debug_str     0x00003aa8       0x36 swap.o
+                               0x101b (size before relaxing)
+ .debug_str     0x00003ade       0x8e test.o
+                               0x1058 (size before relaxing)
+ .debug_str     0x00003b6c       0x31 ttable.o
+                               0x103d (size before relaxing)
+ .debug_str     0x00003b9d       0x57 util.o
+                               0x1505 (size before relaxing)
+ .debug_str     0x00003bf4       0x75 syscalls.o
+                                0x9c1 (size before relaxing)
+ .debug_str     0x00003c69      0x183 graphics.o
+                                0xa29 (size before relaxing)
+ .debug_str     0x00003dec        0xd pieces.o
+                                0x118 (size before relaxing)
+ .debug_str     0x00003df9       0x58 eeprom.o
+                                0x88c (size before relaxing)
+
+.debug_loc
+ *(.debug_loc)
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+OUTPUT(gnuchess.elf elf32-littlearm)

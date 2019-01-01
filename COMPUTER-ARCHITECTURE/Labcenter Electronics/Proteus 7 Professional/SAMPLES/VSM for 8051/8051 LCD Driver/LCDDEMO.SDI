@@ -1,0 +1,182 @@
+,,,; LCD Display Driver Demo.
+,,,; Timing code assumes 1.2MHz Clock
+,,,
+,,,;LCD Registers addresses
+,,,LCD_CMD_WR      equ     0
+,,,LCD_DATA_WR     equ     1
+,,,LCD_BUSY_RD     equ     2
+,,,LCD_DATA_RD     equ     3
+,,,
+,,,;LCD Commands
+,,,LCD_CLS         equ     1
+,,,LCD_HOME        equ     2
+,,,LCD_SETMODE     equ     4
+,,,LCD_SETVISIBLE  equ     8
+,,,LCD_SHIFT       equ     16
+,,,LCD_SETFUNCTION equ     32
+,,,LCD_SETCGADDR   equ     64
+,,,LCD_SETDDADDR   equ     128
+,,,
+,,,;Reset vector
+,,,        org 0000h
+0000,02 01 6A,,        jmp start
+,,,
+,,,
+,,,;Start of the program
+,,,        org 0100h
+,,,
+0100,20 21 21 20,string1a,string1a:db ' !! A M A Z I N G !! '
+0115,00,,         db 0
+0116,21 21 20 41,string1b,string1b:db '!! A M A Z I N G !! '
+012A,00,,         db 0
+012B,20 41 20 76,string2,string2:db ' A virtual LM032L... '
+0140,00,,        db 0
+,,,
+0141,20 64 72 69,string3,string3:db ' driven by a virtual '
+0156,00,,        db 0
+0157,20 20 20 38,string4,string4:db '   8051 processor!'
+0169,00,,        db 0
+,,,
+016A,74 38,start,start:  mov A,#038h
+016C,12 02 11,,        call wrcmd
+,,,
+016F,74 0E,loop,loop:   mov A,#LCD_SETVISIBLE+6         ;Make the display & blink visible:
+0171,12 02 11,,        call wrcmd
+,,,
+0174,7F 02,,        mov R7,#2
+0176,,loop2,loop2:
+0176,90 01 00,,        mov DPTR,#string1a
+0179,12 01 DF,,        call wrstr
+,,,
+017C,90 00 C8,,        mov DPTR,#200
+017F,12 02 2C,,        call wtms
+,,,
+0182,74 01,,        mov A,#LCD_CLS                  ;Clear screen
+0184,12 02 11,,        call wrcmd
+,,,
+0187,90 01 16,,        mov DPTR,#string1b
+018A,12 01 DF,,        call wrstr
+,,,
+018D,90 00 C8,,        mov DPTR,#200
+0190,12 02 2C,,        call wtms
+,,,
+0193,74 01,,        mov A,#LCD_CLS                  ;Clear screen
+0195,12 02 11,,        call wrcmd
+,,,
+0198,DF DC,,        djnz R7,loop2
+,,,
+019A,90 01 00,,        mov DPTR,#string1a
+019D,12 01 DF,,        call wrstr
+,,,
+01A0,90 01 90,,        mov DPTR,#400
+01A3,12 02 2C,,        call wtms
+,,,
+01A6,74 C0,,        mov A,#LCD_SETDDADDR+64
+01A8,12 02 11,,        call wrcmd
+,,,
+01AB,90 01 2B,,        mov DPTR,#string2
+01AE,12 01 F5,,        call wrslow
+,,,
+01B1,90 00 C8,,        mov DPTR,#200
+01B4,12 02 2C,,        call wtms
+,,,
+01B7,74 01,,        mov A,#LCD_CLS                  ;Clear screen
+01B9,12 02 11,,        call wrcmd
+,,,
+01BC,90 01 41,,        mov DPTR,#string3
+01BF,12 01 F5,,        call wrslow
+,,,
+01C2,74 C0,,        mov A,#LCD_SETDDADDR+64
+01C4,12 02 11,,        call wrcmd
+,,,
+01C7,90 01 57,,        mov DPTR,#string4
+01CA,12 01 F5,,        call wrslow
+,,,
+01CD,74 0F,,        mov A,#LCD_SETVISIBLE+7         ;Show the blink cursor as well.
+01CF,12 02 11,,        call wrcmd
+,,,
+01D2,90 07 D0,,        mov DPTR,#2000
+01D5,12 02 2C,,        call wtms
+,,,
+01D8,74 01,,        mov A,#LCD_CLS                  ;Clear screen
+01DA,12 02 11,,        call wrcmd
+,,,
+01DD,80 90,,        jmp loop
+,,,
+,,,
+,,,;Sub routine to write null terminated string at DPTR in program ram.
+01DF,78 01,wrstr,wrstr:  mov R0,#LCD_DATA_WR
+01E1,E4,wrstr1,wrstr1: clr A
+01E2,93,,        movc A,@A+DPTR
+01E3,60 0F,,        jz wrstr2
+01E5,F2,,        movx @R0,A
+01E6,12 02 1A,,        call wtbusy
+01E9,A3,,        inc DPTR
+01EA,C0 82,,        push DPL
+01EC,C0 83,,        push DPH
+01EE,D0 83,,        pop DPH
+01F0,D0 82,,        pop DPL
+01F2,80 ED,,        jmp wrstr1
+01F4,22,wrstr2,wrstr2: ret
+,,,
+,,,;Sub routine to write null terminated string at DPTR in program ram. Slowly
+01F5,78 01,wrslow,wrslow: mov R0,#LCD_DATA_WR
+01F7,E4,wrslw1,wrslw1: clr A
+01F8,93,,        movc A,@A+DPTR
+01F9,60 15,,        jz wrslw2
+01FB,F2,,        movx @R0,A
+01FC,12 02 1A,,        call wtbusy
+01FF,A3,,        inc DPTR
+0200,C0 82,,        push DPL
+0202,C0 83,,        push DPH
+0204,90 00 64,,        mov DPTR,#100
+0207,12 02 2C,,        call wtms
+020A,D0 83,,        pop DPH
+020C,D0 82,,        pop DPL
+020E,80 E7,,        jmp wrslw1
+0210,22,wrslw2,wrslw2: ret
+,,,
+,,,
+,,,;Sub routine to write command:
+0211,78 00,wrcmd,wrcmd:  mov R0,#LCD_CMD_WR
+0213,F2,,        movx @R0,A
+0214,02 02 1A,,        jmp wtbusy
+,,,
+,,,
+,,,;Sub routine to write character:
+0217,78 01,wrchar,wrchar: mov R0,#LCD_DATA_WR
+0219,F2,,        movx @R0,A
+,,,
+,,,;Subroutine to wait for busy clear
+021A,79 02,wtbusy,wtbusy: mov R1,#LCD_BUSY_RD
+021C,E3,,        movx A,@r1
+021D,20 E7 FA,,        jb ACC.7,wtbusy
+0220,22,,        ret
+,,,
+,,,;Wait for number of seconds in A
+0221,C0 E0,wtsec,wtsec:  push ACC
+0223,12 02 2C,,        call wtms
+0226,D0 E0,,        pop ACC
+0228,14,,        dec A
+0229,70 F6,,        jnz wtsec
+022B,22,,        ret
+,,,
+,,,;Wait for number of milliseconds in DPTR
+022C,63 82 FF,wtms,wtms:   xrl DPL,#0FFh                   ;Can't do DEC DPTR, so do the loop by forming 2's complement
+022F,63 83 FF,,        xrl DPH,#0FFh                   ;and incrementing instead.
+0232,A3,,        inc DPTR
+0233,75 8A 9C,wtms1,wtms1:  mov TL0,#09Ch                   ;100 ticks before overflow = 1ms at 1.2MHz Clock
+0236,75 8C FF,,        mov TH0,#0FFh
+0239,75 89 01,,        mov TMOD,#1                     ;Timer 0 mode 1
+023C,D2 8C,,        setb TCON.4                     ;Timer 0 runs
+023E,30 8D FD,wtms2,wtms2:  jnb TCON.5,wtms2
+0241,C2 8C,,        clr TCON.4                      ;Timer 0 stops
+0243,C2 8D,,        clr TCON.5
+0245,A3,,        inc DPTR
+0246,E5 82,,        mov A,DPL
+0248,45 83,,        orl A,DPH
+024A,70 E7,,        jnz wtms1
+024C,22,,        ret
+,,,
+,,,
+000E,,,        END

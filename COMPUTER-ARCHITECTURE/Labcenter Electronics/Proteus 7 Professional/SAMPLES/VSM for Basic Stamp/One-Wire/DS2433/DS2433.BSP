@@ -1,0 +1,164 @@
+' DS2433.bsp
+' This program demonstrates interfacing to a Dallas Semiconductor DS2433
+
+' {$STAMP BS2p}
+' {$PBASIC 2.5}
+
+DQ              PIN     0               ' 1-Wire bus pin
+
+' ROM commands
+RdROM           CON     $33             ' read serial number
+MatchROM        CON     $55             ' match SN -- for multiple devices
+SkipROM         CON     $CC             ' ignore SN -- use for one device
+
+' RAM commands
+WrSP            CON     $0F             ' write DS2433 scratch pad
+RdSP            CON     $AA             ' read DS2433 scratch pad
+CpySP           CON     $55             ' copy DS2433 scratch pad to e2prom
+RdE2P           CON     $F0             ' read DS2433 E2Prom directly
+
+' Variables
+ta1             VAR     Byte
+ta2             VAR     Byte
+es              VAR     Byte
+ch0             VAR     Byte
+ch1             VAR     Byte
+ch2             VAR     Byte
+ch3             VAR     Byte
+ch4             VAR     Byte
+ch5             VAR     Byte
+ch6             VAR     Byte
+ch7             VAR     Byte
+
+crcl            VAR     Byte
+crch            VAR     Byte
+
+Al              VAR     Byte            ' Address low byte
+Ah              VAR     Byte            ' Address high byte
+addr            VAR     Word
+i               VAR     Word
+x               VAR     Byte
+y               VAR     Byte
+seed            VAR     Byte
+
+' ****************************************
+' **            MAIN PROGRAM            **
+' ****************************************
+Main:
+  seed = 110
+  DEBUG "**********************************", CR,
+        "* DS2433 - Demonstration program *", CR,
+        "**********************************", CR, CR
+  Al = 0
+  Ah = 0
+  ' Read the e2prom contents into the scratch pad.
+  GOSUB Read_eeprom
+
+  FOR y = 0 TO 15
+    addr = 32*y
+    Al = addr & $FF  ' must be on the page bounday
+    Ah = (addr / 256)
+    ' Write a set of data to the scratch pad
+    GOSUB Write_scratch
+    ' Read the scratch pad
+    GOSUB Read_scratch
+    ' Copy the contents of scratch pad into the e2prom
+    Al = ta1
+    Ah = ta2
+    i  = es
+    GOSUB Copy_e2prom
+  NEXT
+
+  Al = 0
+  Ah = 0
+  ' Read the e2prom contents into the scratch pad.
+  GOSUB Read_eeprom
+
+  END
+  ' ********************** SUB-ROUTINES ***********************************
+
+
+' ****************************************
+' **         READ EEPROM DIRECTLY       **
+' ****************************************
+Read_eeprom:
+  OWOUT DQ, 1, [SkipROM, RdE2P, Al, Ah] ' Select and read scratch pad from
+                                        ' first location.
+  DEBUG "Read 4096-bit eeprom", CR
+  FOR i = Al TO 504 STEP 8
+    ' Read a row of 8 bytes from scratch pad
+    OWIN  DQ, 2, [ch0, ch1, ch2, ch3, ch4, ch5, ch6, ch7]
+    ' Print the row
+    DEBUG "Address: ",HEX3 i, "H--->",
+          HEX2 ch0," ",
+          HEX2 ch1," ",
+          HEX2 ch2," ",
+          HEX2 ch3," ",
+          HEX2 ch4," ",
+          HEX2 ch5," ",
+          HEX2 ch6," ",
+          HEX2 ch7, CR
+  NEXT
+  ' print a carriage return
+  DEBUG CR
+  RETURN
+
+' ****************************************
+' **       WRITE THE SCRATCH PAD        **
+' ****************************************
+Write_scratch:
+  DEBUG "ADDRESS      : ", HEX2 Ah, HEX2 Al, CR
+  RANDOM seed
+  OWOUT DQ, 1, [SkipROM, WrSP, Al, Ah]  ' write scratch.
+  ' Writes random data into the scratch pad  
+  OWOUT DQ, 2, [seed+0,seed+1,seed+2,seed+3,seed+4,seed+5,seed+6,seed+7,
+                seed+8,seed+9,seed+10,seed+11,seed+12,seed+13,seed+14,seed+15,
+                seed+16,seed+17,seed+18,seed+19,seed+20,seed+21,seed+22,seed+23,
+                seed+24,seed+25,seed+26,seed+27,seed+28,seed+29,seed+30,seed+31]
+
+  ' Retrieve CRC-16
+  OWIN  DQ, 0, [crcl, crch]
+  ' Print CRC-16
+  DEBUG "WRITE CRC-16 : ", HEX2 crch, HEX2 crcl, "H", CR
+
+  RETURN
+
+
+' ****************************************
+' **       READ THE SCRATCH PAD         **
+' ****************************************
+Read_scratch:
+  OWOUT DQ, 1, [SkipROM, RdSP]          ' Send $AA command to read scratch pad
+  OWIN  DQ, 0, [ta1, ta2, es]           ' Read TA1, TA2, E/S.
+
+  DEBUG "TA1, TA2, E/S: ", HEX2 ta1, "H ",
+                           HEX2 ta2, "H ",
+                           HEX2 es,  "H ", CR
+  FOR x = 0 TO 3
+    OWIN  DQ, 0, [ch0, ch1, ch2, ch3,     ' Read 8 bytes data from scratch pad...
+                  ch4, ch5, ch6, ch7]
+
+    ' Print formatted results
+    DEBUG "Scratch data : ", HEX2 ch0, "H ",
+                             HEX2 ch1, "H ",
+                             HEX2 ch2, "H ",
+                             HEX2 ch3, "H ",
+                             HEX2 ch4, "H ",
+                             HEX2 ch5, "H ",
+                             HEX2 ch6, "H ",
+                             HEX2 ch7, "H ",CR
+  NEXT
+
+  OWIN  DQ, 2, [crcl, crch]             ' ... and read crc-16 low and high bytes.
+
+  DEBUG "READ  Crc-16 : ", HEX2 crch, HEX2 crcl, "H", CR, CR
+  RETURN
+
+' ****************************************
+' **  COPY SCRATCH PAD INTO THE EEPROM  **
+' ****************************************
+Copy_e2prom:
+  OWOUT DQ, 1, [SkipROM, CpySP, Al, Ah, i]    ' Al, Ah and i are 3-byte
+                                              ' authorization pattern.
+  PAUSE 6                                     ' small loop pad
+  RETURN

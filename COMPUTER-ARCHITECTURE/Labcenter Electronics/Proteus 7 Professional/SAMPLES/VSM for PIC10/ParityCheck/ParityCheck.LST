@@ -1,0 +1,180 @@
+MPASM 03.70.01 Released                       PARITYCHECK.ASM   8-10-2004  21:01:53         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;Simple Parity Checker
+                      00002 
+                      00003         LIST    p=10F202 ; 
+                      00004         #include "P10F202.INC" ; Include header file
+                      00001         LIST
+                      00002 ; P10F202.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+                      00114         LIST
+                      00005 
+                      00006         CBLOCK 0x08   ; Temporary storage
+  00000008            00007         dc1
+  00000009            00008         bitcount
+  0000000A            00009         databyte
+  0000000B            00010         onecount
+                      00011         ENDC
+                      00012 
+                      00013 
+                      00014         ; Vector for normal start up.
+0000                  00015         org     0
+0000   0A01           00016         goto    start
+                      00017 
+                      00018 
+                      00019 ; Main program starts here:
+0001   0040           00020 start   clrw                    ; Clear W.      
+0002   0026           00021         movwf   GPIO            ; Ensure PORT is zero before we enable it.
+0003   0CFD           00022         movlw   0xFD            ; All inputs except GP1
+0004   0006           00023         tris    GPIO
+                      00024 
+                      00025 ;Wait for a start bit
+0005   0606           00026 wstart  btfsc   GPIO,0
+0006   0A05           00027         goto    wstart
+                      00028 
+0007   0924           00029         call    waithalf
+                      00030 
+                      00031 ;Check start bit still low      
+0008   0606           00032         btfsc   GPIO,0
+0009   0A05           00033         goto    wstart
+                      00034         
+                      00035 ;Loop 8 times to capture data byte
+000A   006A           00036         clrf    databyte
+000B   006B           00037         clrf    onecount
+000C   0C08           00038         movlw   8
+000D   0029           00039         movwf   bitcount
+000E   0921           00040 l1      call    waitfull
+000F   0306           00041         rrf     GPIO,W
+0010   032A           00042         rrf     databyte,F
+0011   0606           00043         btfsc   GPIO,0
+0012   02AB           00044         incf    onecount,F
+0013   02E9           00045         decfsz  bitcount,F
+0014   0A0E           00046         goto    l1
+                      00047 
+                      00048 ;Wait for parity bit
+0015   0921           00049         call waitfull
+                      00050         
+MPASM 03.70.01 Released                       PARITYCHECK.ASM   8-10-2004  21:01:53         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00051 ;Add the parity bit to the 1's count    
+0016   0606           00052         btfsc   GPIO,0
+0017   02AB           00053         incf    onecount,F
+                      00054 ;Add the state from GP2 to the 1's count so as to switch between
+                      00055 ;checking even or odd parity    
+0018   0646           00056         btfsc   GPIO,2
+0019   02AB           00057         incf    onecount,F
+                      00058 ;If the 1's count is odd we are OK, if it's odd we had a parity error
+001A   0040           00059         clrw    
+001B   070B           00060         btfss   onecount,0
+001C   0C02           00061         movlw   0x02
+                      00062 ;Write result to the LED        
+001D   0026           00063         movwf   GPIO
+                      00064                 
+                      00065 ;Wait for stop bit, then go again
+001E   0706           00066 wstop   btfss   GPIO,0
+001F   0A1E           00067         goto wstop
+0020   0A05           00068         goto wstart     
+                      00069 
+                      00070         
+                      00071 ;Wait a full bit time   
+                      00072 ;
+0021                  00073 waitfull        
+0021   0924           00074         call waithalf
+0022   0924           00075         call waithalf
+Warning[227]: Substituting RETLW 0 for RETURN pseudo-op
+0023   0800           00076         return
+                      00077         
+                      00078 ;Wait half a bit time
+                      00079 ;
+0024                  00080 waithalf                
+0024   0C89           00081         movlw 0x89
+0025   0028           00082         movwf dc1
+0026                  00083 wh1     
+0026   02E8           00084         decfsz  dc1,f
+0027   0A26           00085         goto wh1
+Warning[227]: Substituting RETLW 0 for RETURN pseudo-op
+0028   0800           00086         return
+                      00087         
+                      00088         END
+MPASM 03.70.01 Released                       PARITYCHECK.ASM   8-10-2004  21:01:53         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+CAL0                              00000001
+CAL1                              00000002
+CAL2                              00000003
+CAL3                              00000004
+CAL4                              00000005
+CAL5                              00000006
+CAL6                              00000007
+DC                                00000001
+F                                 00000001
+FOSC4                             00000000
+FSR                               00000004
+GPIO                              00000006
+GPWUF                             00000007
+INDF                              00000000
+NOT_GPPU                          00000006
+NOT_GPWU                          00000007
+NOT_PD                            00000003
+NOT_TO                            00000004
+OSCCAL                            00000005
+PCL                               00000002
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+STATUS                            00000003
+T0CS                              00000005
+T0SE                              00000004
+TMR0                              00000001
+W                                 00000000
+Z                                 00000002
+_CP_OFF                           00000FFF
+_CP_ON                            00000FF7
+_IntRC_OSC                        00000FFF
+_MCLRE_OFF                        00000FEF
+_MCLRE_ON                         00000FFF
+_WDT_OFF                          00000FFB
+_WDT_ON                           00000FFF
+__10F202                          00000001
+bitcount                          00000009
+databyte                          0000000A
+dc1                               00000008
+l1                                0000000E
+onecount                          0000000B
+start                             00000001
+waitfull                          00000021
+waithalf                          00000024
+wh1                               00000026
+wstart                            00000005
+wstop                             0000001E
+MPASM 03.70.01 Released                       PARITYCHECK.ASM   8-10-2004  21:01:53         PAGE  4
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXX------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    41
+Program Memory Words Free:   983
+
+
+Errors   :     0
+Warnings :     2 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

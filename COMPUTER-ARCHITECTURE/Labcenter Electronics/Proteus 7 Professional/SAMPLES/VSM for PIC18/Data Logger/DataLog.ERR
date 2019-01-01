@@ -1,0 +1,14 @@
+Warning[205] K:\PRODEV\VSM\ATA\DATALOG\DATALOG.ASM 1 : Found directive in column 1. (LIST)
+Message[314] K:\PRODEV\VSM\ATA\DATALOG\DATALOG.ASM 210 : LFSR instruction is not supported on some versions of the 18Cxx2 devices.
+Message[315] K:\PRODEV\VSM\ATA\DATALOG\DATALOG.ASM 210 : Please refer to Microchip document DS80058A for more details.
+Message[314] K:\PRODEV\VSM\ATA\DATALOG\DATALOG.ASM 266 : LFSR instruction is not supported on some versions of the 18Cxx2 devices.
+Message[315] K:\PRODEV\VSM\ATA\DATALOG\DATALOG.ASM 266 : Please refer to Microchip document DS80058A for more details.
+Message[314] K:\PRODEV\VSM\ATA\DATALOG\DATALOG.ASM 290 : LFSR instruction is not supported on some versions of the 18Cxx2 devices.
+Message[315] K:\PRODEV\VSM\ATA\DATALOG\DATALOG.ASM 290 : Please refer to Microchip document DS80058A for more details.
+Message[314] K:\PRODEV\VSM\ATA\DATALOG\DATALOG.ASM 604 : LFSR instruction is not supported on some versions of the 18Cxx2 devices.
+Message[315] K:\PRODEV\VSM\ATA\DATALOG\DATALOG.ASM 604 : Please refer to Microchip document DS80058A for more details.
+Message[314] K:\PRODEV\VSM\ATA\DATALOG\DATALOG.ASM 664 : LFSR instruction is not supported on some versions of the 18Cxx2 devices.
+Message[315] K:\PRODEV\VSM\ATA\DATALOG\DATALOG.ASM 664 : Please refer to Microchip document DS80058A for more details.
+Message[314] K:\PRODEV\VSM\ATA\DATALOG\DATALOG.ASM 692 : LFSR instruction is not supported on some versions of the 18Cxx2 devices.
+Message[315] K:\PRODEV\VSM\ATA\DATALOG\DATALOG.ASM 692 : Please refer to Microchip document DS80058A for more details.
+Warning[205] K:\PRODEV\VSM\ATA\DATALOG\DATALOG.ASM 749 : Found directive in column 1. (END)

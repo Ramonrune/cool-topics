@@ -1,0 +1,13 @@
+'{$STAMP BS2}
+
+result      var     word
+
+again:
+    high    0
+    pause   1
+    rctime  0,1,result
+    debug ? result
+    
+    goto    again
+    end
+

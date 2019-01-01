@@ -1,0 +1,133 @@
+* This file is an extract from the Nat Semi model library
+* that we have carved up to use for demonstrating the
+* SPICELINK utility.
+*
+* Model developed by:
+* David Hindi
+* National Semiconductor       For information on the models, contact:
+* 2900 Semiconductor Dr.       Linear Applications    
+* Santa Clara, CA 95052        (408) 721-3877 
+* M/S C2500                     
+* FAX (408) 721-7321           For ordering information, contact:
+*                              Customer Response Center
+*                              (408) 721-4902
+* ---------------------------------------------------------
+*//////////////////////////////////////////////////////////
+*LMC660AM/AI/C CMOS Quad OP-AMP MACRO-MODEL
+*//////////////////////////////////////////////////////////
+*
+* connections:      non-inverting input
+*                   |   inverting input
+*                   |   |   positive power supply
+*                   |   |   |   negative power supply
+*                   |   |   |   |   output
+*                   |   |   |   |   |
+*                   |   |   |   |   |
+.SUBCKT LMC660      1   2  99  50  41
+*
+*Features:
+*Operates from single supply
+*Rail-to-rail output swing
+*Ultra low input current =             40fA
+*Slew rate =                        1.1V/uS
+*
+*NOTE: Model is for single device only and simulated
+*      supply current is 1/4 of total device current.
+*      Noise is not modeled.
+*      Asymmetrical gain is not modeled.
+*
+*****************INPUT STAGE************** 
+*
+I1  99  4 20U
+M1   5  2 4 99 MOSFET
+R3   5 50 5.2696K
+M2   6  7 4 99 MOSFET
+R4   6 50 5.2696K
+*Fp2=7.5 MHz
+C4   5  6 2.0135P
+CI1  1  0 2P
+CI2  2  0 2P
+DP1  1 99 DA
+DP2 50  1 DX
+DP3  2 99 DX
+DP4 50  2 DB
+G0  98  9 6 5 23.721E-3
+R0  98  9 1K
+*For accurate Ib , set GMIN<=1E-16 on .OPTIONS line.
+*
+***********COMMON MODE EFFECT***********
+*
+I2  99 50 305U
+*^Quiescent current                   
+EOS  7  1 POLY(1) 16 49 1E-3 1
+*Offset voltage.........^
+R8  99 49 100K
+R9  49 50 100K
+*
+***************POLE STAGE*************** 
+*
+*Fp=13.3 MHz
+G3  98 15 9 49 1E-3
+R12 98 15 1K
+C5  98 15 11.967P
+*
+************POLE/ZERO STAGE*************
+*
+*Fp=1 MHz, Fz= 2.6MHz
+G5  98 18 15 49 1E-3
+R14 98 18 1K
+R15 98 19 625
+C6  19 18 97.94P
+*
+*********COMMON-MODE ZERO STAGE*********
+*
+*Fpcm=20 KHz
+G4  98 16 POLY(2) 1 49 2 49 0 3.5397E-8 3.5397E-8
+L2  98 17 7.958M
+R13 17 16 1K
+*
+**************OUTPUT STAGE**************
+*
+EH  99 98 99 49 1
+G1  98 29 18 49 8.253E-6
+R5  98 29 510.8MEG
+D1   8 99 DX
+V2   8 29 1.363
+D2  50 10 DX
+V3  29 10 1.363
+F6  99 50 VA7 1
+*^Dynamic supply current
+F5  99 35 VA8 1
+D3  36 35 DX
+VA7 99 36 0
+D4  35 99 DX
+E1  99 37 99 49 1
+VA8 37 38 0
+G6  38 40 49 29 11.765E-3
+R16 38 40 2.688K  
+D5  30 99 DX
+V4  30 40 .77
+D6  50 31 DX
+V5  40 31 .77
+*Fp1=.5294 Hz
+C3  29 39 18.182P
+R6  39 40 1K
+R17 40 41 47
+*
+***************MODELS USED**************
+*
+.MODEL DA D(IS=5E-14)
+.MODEL DB D(IS=4E-14)
+.MODEL DX D(IS=1E-14)
+.MODEL MOSFET PMOS(VTO=-2.35 KP=1.801E-3)
+.ENDS
+*
+*
+* This is the 2N2222 model supplied with the PSPICE demo
+*** 2N2222 ***
+*
+.MODEL Q2N2222	NPN(IS=3.108E-15 XTI=3 EG=1.11 VAF=131.5 BF=217.5 NE=1.541 
++		ISE=190.7E-15 IKF=1.296 XTB=1.5 BR=6.18 NC=2 ISC=0 IKR=0 RC=1
++		CJC=14.57E-12 VJC=.75 MJC=.3333 FC=.5 CJE=26.08E-12 VJE=.75
++		MJE=.3333 TR=51.35E-9 TF=451E-12 ITF=.1 VTF=10 XTF=2)
+

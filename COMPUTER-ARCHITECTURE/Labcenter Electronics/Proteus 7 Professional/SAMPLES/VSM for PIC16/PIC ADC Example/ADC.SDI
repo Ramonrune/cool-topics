@@ -1,0 +1,106 @@
+,,,           LIST    p=16F877
+,,,           #include "P16F877.INC"
+,,,
+,,,; Macro to generate a MOVLW instruction that also causes a model break:
+,,,break      MACRO arg
+,,,           DW    0x3100 | (arg & H'FF')
+,,,           ENDM
+,,,
+,,,           cblock 0x20
+,,,              count, lc1, lc2;
+,,,           endc
+,,,
+,,,           ; Vector for normal start up.
+,,,           org     0
+0000,2805,,           goto    start
+,,,
+,,,           org     4
+0004,2840,,           goto    inthlr
+,,,
+,,,; Main program starts here:
+0005,0103,start,start      clrw                    ; Clear W.
+0006,0086,,           movwf   PORTB           ; Ensure PORTB is zero before we enable it.
+0007,0088,,           movwf   PORTD           ; Ensure PORTD is zero before we enable it.
+0008,00A0,,           movwf   count           ; Reset count value.
+0009,0096,,           movwf   CCPR1H          ; Clear.
+000A,0095,,           movwf   CCPR1L          ; Clear.
+,,,
+,,,           ; Set up ports:
+000B,1683,,           bsf     STATUS,RP0      ; Select Bank 1
+000C,30FF,,           movlw   0xFF            ; Set W to mask for all inputs.
+000D,0085,,           movwf   TRISA           ; set TRISA register as inputs.
+000E,3000,,           movlw   0x00            ; Set W to mask for all inputs.
+000F,0085,,           movwf   TRISA           ; set TRISA register as inputs.
+,,,
+0010,1283,,           bcf     STATUS,RP0      ; Select Bank 1
+0011,1405,,           bsf     PORTA,0
+0012,1005,,           bcf     PORTA,0
+0013,1405,,           bsf     PORTA,0
+0014,1005,,           bcf     PORTA,0
+0015,1683,,           bsf     STATUS,RP0      ; Select Bank 0
+,,,
+0016,30FF,,           movlw   0xFF            ; Set W to mask for all inputs.
+0017,0085,,           movwf   TRISA           ; set TRISA register as inputs.
+0018,0186,,           clrf    TRISB           ; Set TRISB register as outputs.
+0019,0188,,           clrf    TRISD           ; Set TRISD register as outputs.
+,,,
+001A,3081,,           movlw   0x81            ; ADFM=1, all inputs analogue, +VREF enabled.
+001B,009F,,           movwf   ADCON1          ; Save it.
+001C,1283,,           bcf     STATUS,RP0      ; Select Bank 0.
+001D,30C1,,           movlw   0xC1            ; Clock/Channel select and enable.
+001E,009F,,           movwf   ADCON0          ; Save it.
+001F,3001,,           movlw   0x01            ; Number of loops of 255 clocks.
+0020,2041,,           call    swait           ; Wait for acquire time.
+,,,
+0021,151F,do_conv,do_conv    bsf     ADCON0,GO
+0022,191F,wait_eoc,wait_eoc   btfsc   ADCON0,GO       ; Is bit still set?
+0023,2822,,           goto    wait_eoc        ; Yes, so loop and wait for end of conversion.
+,,,
+0024,1283,,           bcf     STATUS,RP0      ; Ensure we have bank 0.
+0025,1408,,           bsf     PORTD,0         ; Show ISR in progress.
+0026,0AA0,,           incf    count,F         ; Increment count.
+0027,2031,,           call    disp_adc        ; Display captured value.
+0028,1008,,           bcf     PORTD,0         ; Remove progress bit.
+,,,
+0029,3040,,           movlw   0x40            ; Count
+002A,00A0,,           movwf   count           ; Save it.
+002B,0000,loop1,loop1      nop                     ; Dilly...
+002C,0000,,           nop                     ; Dally...
+002D,0000,,           nop                     ; Dilly...
+002E,0BA0,,           decfsz count            ; Decrement loop counter
+002F,282B,,           goto loop1              ; Loop if no zero.
+,,,
+0030,2821,,           goto    do_conv         ; Do another conversion.
+,,,
+0031,1683,disp_adc,disp_adc   bsf     STATUS,RP0      ; Bank 1.
+0032,081E,,           movf    ADRESL,W        ; Get ADRESL into W.
+0033,1283,,           bcf     STATUS,RP0      ; Bank 0.
+0034,0086,,           movwf   PORTB           ; Write it to port
+0035,1708,,           bsf     PORTD,6         ; Toggle latch enable
+0036,0000,,           nop                     ; Wait
+0037,0000,,           nop                     ; Wait
+0038,1308,,           bcf     PORTD,6         ; Toggle latch enable
+0039,081E,,           movf    ADRESH,W        ; Get ADRESH into W.
+003A,0086,,           movwf   PORTB           ; Write it to port
+003B,1788,,           bsf     PORTD,7         ; Toggle latch enable
+003C,0000,,           nop                     ; Wait
+003D,0000,,           nop                     ; Wait
+003E,1388,,           bcf     PORTD,7         ; Toggle latch enable
+003F,0008,,           return
+,,,
+0040,0009,inthlr,inthlr     retfie
+,,,
+,,,; -------------------------------------------------------------------------------
+,,,; Wait function
+,,,; -------------
+0041,00A2,swait,swait      movwf   lc2
+0042,30FF,,_sw2       movlw   0xFF
+0043,00A1,,           movwf   lc1
+0044,0000,,_sw3       nop
+0045,0BA1,,           decfsz  lc1,f
+0046,2844,,           goto    _sw3
+0047,0BA2,,           decfsz  lc2,f
+0048,2842,,           goto    _sw2
+0049,0008,,           return
+,,,
+,,,           END

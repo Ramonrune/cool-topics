@@ -1,0 +1,17 @@
+'-----------------------------------------------------------------------------
+' 
+' Sample program to dial a phone #
+'
+'
+'{$STAMP BS2}
+
+start:  
+    debug   "Dialing...",cr  
+    dtmfout 0,[1,5,8,6,7,8,1,9,1,4,5]
+
+    pause   1000
+    goto    start
+    
+
+
+

@@ -1,0 +1,12 @@
+void command_processor (void);
+void set_timebase (void);
+void set_warmup (void);
+void set_average (void);
+void set_date (void);
+void set_time (void);
+void get_setup (void);
+void erase_mem (void);
+void read_measure(void);
+void dump_data (void);
+void help (void);
+int get_par (void);

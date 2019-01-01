@@ -1,0 +1,420 @@
+,,,              LIST    p=16F84 ; PIC16F844 is the target processor
+,,,
+,,,              #include "P16F84.INC" ; Include header file
+,,,
+,,,              CBLOCK 0x10   ; Temporary storage
+,,,                 state
+,,,                 secs
+,,,                 mins
+,,,                 hours
+,,,                 ticks
+,,,                 idc
+,,,                 bcd
+,,,              ENDC
+,,,
+,,,; Constants for bit allocation. The BIT_x constants are actual bit numbers and
+,,,; the MASK_x are bit masks for the same bit.
+,,,BIT_HSEL      EQU H'0000'
+,,,BIT_TSET      EQU H'0001'
+,,,BIT_HSET      EQU H'0002'
+,,,BIT_MSET      EQU H'0003'
+,,,
+,,,BIT_H24       EQU H'0000'
+,,,BIT_PM        EQU H'0001'
+,,,BIT_SET       EQU H'0002'
+,,,BIT_HSB       EQU H'0003'
+,,,
+,,,MASK_H24      EQU H'0001'
+,,,MASK_PM       EQU H'0002'
+,,,MASK_SET      EQU H'0004'
+,,,MASK_HSB      EQU H'0008'
+,,,
+,,,
+,,,; Macro to generate a MOVLW instruction that also causes a model break:
+,,,break         MACRO arg
+,,,              DW    0x3100 | (arg & H'FF')
+,,,              ENDM
+,,,
+,,,              ORG   0
+0000,2805,entrypoint,entrypoint    goto  initialise
+,,,
+,,,              ORG   4
+0004,2821,intvector,intvector     goto    clock
+,,,
+0005,,initialise,initialise    ; Register set up:
+0005,0103,,              clrw                    ; Zero.
+0006,0085,,              movwf   PORTA           ; Ensure PORTA is zero before we enable it.
+0007,0086,,              movwf   PORTB           ; Ensure PORTB is zero before we enable it.
+0008,1683,,              bsf     STATUS,RP0      ; Select Bank 1
+0009,301F,,              movlw   H'1F'           ; Mask for PORTA inputs/outputs.
+000A,0085,,              movwf   TRISA           ; Set TRISA register.
+000B,3001,,              movlw   H'01'           ; Mask for PORTA inputs/outputs.
+000C,0086,,              movwf   TRISB           ; Set TRISB register.
+000D,1283,,              bcf     STATUS,RP0      ; Reselect Bank 0.
+,,,
+,,,              ; Initialise clock:
+000E,0190,,              clrf    state
+000F,1590,,              bsf     state,BIT_HSB
+0010,3000,,              movlw   D'0'
+0011,0093,,              movwf   hours
+0012,3000,,              movlw   D'0'
+0013,0092,,              movwf   mins
+0014,3000,,              movlw   D'0'
+0015,0091,,              movwf   secs
+,,,
+,,,              ; Clear 50Hz tick count:
+0016,0194,,              clrf    ticks
+,,,
+,,,              ; Clear interrupt disable count (idc) semaphore:
+0017,0195,,              clrf    idc
+,,,
+,,,              ; Initialise display:
+0018,20CE,,              call    wr_hours
+0019,20BF,,              call    wr_mins
+001A,20B0,,              call    wr_secs
+001B,20DD,,              call    wr_state
+,,,
+,,,              ; Finally initialise interrupts for clock on RB0/INT pin:
+001C,3090,,              movlw   H'90'
+001D,008B,,              movwf   INTCON
+,,,
+001E,,start,start         ; When not processing an interrupt we sit and check input pins:
+001E,2075,,              call    chk_tset        ; Time set select active?
+001F,2044,,              call    chk_hsel        ; H12/H24 display format select active?
+0020,281E,,              goto    start
+,,,
+,,,
+,,,;------------------------------------------------------------------------------
+,,,; Interrupt handler. We come here for every tick of the time base.
+,,,
+0021,,clock,clock         ; Toggle half-second flag and set state outputs:
+0021,0A94,,              incf    ticks,F         ; Increment clock ticks.
+0022,0814,,              movf    ticks,W         ; Get ticks value.
+0023,3C19,,              sublw   D'25'           ; Is it 25 (W=25-W)?
+0024,1D03,,              btfss   STATUS,Z        ; Test zero flag.
+0025,2841,,              goto    endclock        ; Return.
+,,,
+0026,,toggle_hs,toggle_hs     ; Half second - toggle HS flag, write it and return:
+0026,0194,,              clrf    ticks           ; Reset timebase,
+0027,0810,,              movf    state,W         ; Get state.
+0028,3A08,,              xorlw   MASK_HSB        ; Toggle half-second bit.
+0029,0090,,              movwf   state           ; Save it back to register.
+002A,20DD,,              call    wr_state        ; Display it.
+002B,0810,,              movf    state,W         ; Get state.
+002C,1D90,,              btfss   state,BIT_HSB   ; Is bit now clear?
+002D,2841,,              goto    endclock        ; Return.
+,,,
+002E,,inc_secs,inc_secs      ; Incrmement seconds...
+002E,0A91,,              incf    secs,F          ; Increment seconds count.
+002F,0811,,              movf    secs,W          ; Get it into W.
+0030,3C3C,,              sublw   D'60'           ; Is it 60 (W=60-W)?
+0031,1903,,              btfsc   STATUS,Z        ; Test zero flag, skip clear if no set.
+0032,2835,,              goto    reset_secs      ; Clear seconds, increment minutes.
+0033,20B0,,              call    wr_secs         ; Write seconds it to display.
+0034,2841,,              goto    endclock        ; Done.
+,,,
+0035,0191,reset_secs,reset_secs    clrf    secs
+0036,20B0,,              call    wr_secs         ; Write seconds to display.
+,,,
+0037,0A92,,              incf    mins,F          ; Increment minute count.
+0038,0812,,              movf    mins,W          ; Get it into W.
+0039,3C3C,,              sublw   D'60'           ; Is it 60 (W=60-W)?
+003A,1903,,              btfsc   STATUS,Z        ; Test zero flag, skip clear if no set.
+003B,283E,,              goto    reset_mins      ; Clear minutes, increment hours.
+003C,20BF,,              call    wr_mins         ; Write minutes it to display.
+003D,2841,,              goto    endclock        ; Done.
+,,,
+003E,0192,reset_mins,reset_mins    clrf    mins            ; Reset minute count to zero.
+003F,20BF,,              call    wr_mins         ; Write minutes to display.
+,,,
+0040,2099,,              call    inc_hours       ; Increment hours, display it with PM flag.
+,,,
+0041,3090,endclock,endclock      movlw   H'90'
+0042,008B,,              movwf   INTCON
+0043,0009,,              retfie                  ; Return
+,,,
+,,,;------------------------------------------------------------------------------
+,,,; Subroutine. Check the state of the HSEL input and set h12/h24 format as
+,,,; required.
+,,,
+0044,1805,chk_hsel,chk_hsel      btfsc   PORTA,BIT_HSEL  ; Test 12/24 select.
+0045,2857,,              goto    set_h12         ; H12 set so switch to 12 hour format.
+,,,              ; fall through          ; H12 not set so switch to 24 hour format.
+,,,
+0046,1810,set_h24,set_h24       btfsc   state,BIT_H24   ; Are we on 12 hour format?
+0047,3400,,              retlw   0               ; No, so no need to do anything...
+,,,
+0048,138B,,              bcf     INTCON,GIE      ; Disable interrupts.
+0049,0A95,,              incf    idc,F           ; Increment count of number of disables.
+004A,1410,,              bsf     state,BIT_H24   ; Clear h12 flag.
+,,,
+004B,0813,,              movf    hours,W         ; Get hours value.
+004C,3C0C,,              sublw   D'12'           ; Is it 12:xx?
+004D,1903,,              btfsc   STATUS,Z        ; Test zero flag.
+004E,0193,,              clrf    hours           ; Reset to zero.
+004F,0813,,              movf    hours,W         ; Get hours value.
+0050,1890,,              btfsc   state,BIT_PM    ; Is the PM indicator set?
+0051,3E0C,,              addlw   D'12'           ; Add 12 to get 24 hour value.
+0052,0093,,              movwf   hours           ; Save result (does nothing for AM).
+0053,1090,,              bcf     state,BIT_PM    ; Clear PM flag.
+0054,20CE,,              call    wr_hours        ; Write hours.
+0055,20DD,,              call    wr_state        ; Write H12 state and PM state.
+0056,2870,,              goto    chk_hsel_iec    ; Done.
+,,,
+0057,1C10,set_h12,set_h12       btfss   state,BIT_H24   ; Are we on 12 hour format?
+0058,3400,,              retlw   0               ; Yes, so no need to do anything...
+,,,
+0059,138B,,              bcf     INTCON,GIE      ; Disable interrupts.
+005A,0A95,,              incf    idc,F           ; Increment count of number of disables.
+005B,1010,,              bcf     state,BIT_H24   ; Set h12 flag.
+,,,
+005C,0813,,              movf    hours,W         ; Get hour value.
+005D,3C0B,,              sublw   D'11'           ; W=11-W. C is clear for a borrow (W>=12).
+005E,1C03,,              btfss   STATUS,C        ; Test carry flag.
+005F,2868,,              goto    set_h12_pm      ; Set PM.
+,,,
+0060,1090,set_h12_am,set_h12_am    bcf     state,BIT_PM    ; Clear PM bit.
+0061,0813,,              movf    hours,W         ; Get hours.
+0062,1903,,              btfsc   STATUS,Z        ; Is it zero?
+0063,3E0C,,              addlw   D'12'           ; Yes, add 12 to get 00:xx to 12:xx.
+0064,0093,,              movwf   hours           ; Save any result.
+0065,20CE,,              call    wr_hours        ; Display hours.
+0066,20DD,,              call    wr_state        ; Display H12 and PM states.
+0067,2870,,              goto    chk_hsel_iec    ; Done.
+,,,
+0068,1490,set_h12_pm,set_h12_pm    bsf     state,BIT_PM    ; Set PM bit.
+0069,300C,,              movlw   D'12'           ; Constant.
+006A,0293,,              subwf   hours,F         ; hours=hours-12 (23..12 -> 11..0).
+006B,1903,,              btfsc   STATUS,Z        ; Zero set?
+006C,0093,,              movwf   hours           ; Yes, so reset to '12'.
+006D,20CE,,              call    wr_hours        ; No, so leave hours alone and display it.
+006E,20DD,,              call    wr_state        ; Display H12 and PM states.
+006F,2870,,              goto    chk_hsel_iec    ; Done.
+,,,
+0070,0B95,chk_hsel_iec,chk_hsel_iec  decfsz  idc,F           ; Decrement idc. If zero we can reenable interrupts.
+0071,3401,,              retlw   1               ; Return without enabling interrupts.
+,,,
+0072,3090,chk_hsel_done,chk_hsel_done movlw   H'90'           ; Constant for GIE and T0IE.
+0073,008B,,              movwf   INTCON          ; Set interrupt register.
+0074,3401,,              retlw   1               ; Return.
+,,,
+,,,;------------------------------------------------------------------------------
+0075,1885,chk_tset,chk_tset      btfsc   PORTA,BIT_TSET  ; Set mode?
+0076,3400,,              retlw   0
+,,,
+0077,138B,,              bcf     INTCON,GIE      ; Disable interrupts.
+0078,0A95,,              incf    idc,F           ; Increment count of number of disables.
+0079,1510,,              bsf     state,BIT_SET   ; Set the 'set mode' bit.
+007A,0191,,              clrf    secs            ; Setting time resets seconds count.
+007B,20B0,,              call    wr_secs         ; Display it.
+007C,1190,,              bcf     state,BIT_HSB   ; Clear seconds toggle.
+007D,20DD,,              call    wr_state        ; Update the state output latch.
+,,,
+007E,2044,set_loop,set_loop      call    chk_hsel        ; Check for H12/H24 display change.
+007F,1D85,,              btfss   PORTA,BIT_MSET  ; If pin is high then switch is open.
+0080,288C,,              goto    set_mins        ; Bit not set, switch closed, set minutes.
+0081,1D05,,              btfss   PORTA,BIT_HSET  ; If pin is high then switch is open.
+0082,2895,,              goto    set_hours       ; Bit not set, switch closed, set hours.
+0083,1C85,,              btfss   PORTA,BIT_TSET  ; If pin is high then switch is open.
+0084,287E,,              goto    set_loop        ; Bit not set, switch closed, loop.
+,,,
+0085,1110,,              bcf     state,BIT_SET   ; Clear the 'set mode' bit.
+0086,20DD,,              call    wr_state        ; Update the state output latch.
+,,,
+0087,0B95,chk_tset_idc,chk_tset_idc  decfsz  idc,F           ; Decrement idc. If zero we can reenable interrupts.
+0088,3401,,              retlw   1               ; Return without enabling interrupts.
+0089,3090,chk_tset_done,chk_tset_done movlw   H'90'           ; Constant for GIE and T0IE.
+008A,008B,,              movwf   INTCON          ; Set interrupt register.
+008B,3401,,              retlw   1               ; Return.
+,,,
+008C,0A92,set_mins,set_mins      incf    mins,F          ; Increment minute count.
+008D,0812,,              movf    mins,W          ; Get it into W.
+008E,3C3C,,              sublw   D'60'           ; Is it 60 (W=60-W)?
+008F,1903,,              btfsc   STATUS,Z        ; Test zero flag, skip clear if no set.
+0090,0192,,              clrf    mins            ; Clear minutes.
+0091,20BF,,              call    wr_mins         ; Write minutes.
+,,,
+0092,1D85,debounce_mset,debounce_mset btfss   PORTA,BIT_MSET  ; Wait for MSET button to be released.
+0093,2892,,              goto    debounce_mset   ; Loop.
+0094,287E,,              goto    set_loop        ; Released so recheck buttons.
+,,,
+0095,2099,set_hours,set_hours     call    inc_hours       ; Increment hours and display.
+0096,1D05,debounce_hset,debounce_hset btfss   PORTA,BIT_HSET  ; Wait for HSET button to be released.
+0097,2896,,              goto    debounce_hset   ; Loop.
+0098,287E,,              goto    set_loop        ; Released so recheck buttons.
+,,,
+,,,;------------------------------------------------------------------------------
+,,,; Increment hours, set PM indicator bit as necessary.
+,,,
+0099,1810,inc_hours,inc_hours     btfsc   state,BIT_H24   ; 12h display?
+009A,28A9,,              goto    reset_on24      ; No,  so we reset when we get to 24.
+,,,
+009B,0813,reset_on12,reset_on12    movf    hours,W         ; Get hours
+009C,3C0C,,              sublw   D'12'           ; Is it 12 (W=12-W)?
+009D,1903,,              btfsc   STATUS,Z        ; Test zero flag, skip clear if no set.
+009E,0193,,              clrf    hours           ; Clear hours.
+009F,0A93,,              incf    hours,F         ; Increment hours.
+00A0,20CE,,              call    wr_hours        ; Write it.
+00A1,0813,,              movf    hours,W         ; Get hours
+00A2,3C0C,,              sublw   D'12'           ; Is it 12 (W=12-W)?
+00A3,1D03,,              btfss   STATUS,Z        ; Test zero flag.
+00A4,0008,,              return                  ; Zero not set, so not 12, so return.
+00A5,3002,,              movlw   MASK_PM         ; Get PM state bit mask.
+00A6,0690,,              xorwf   state,F         ; Toggle PM state bit in state.
+00A7,20DD,,              call    wr_state        ; Update state outputs.
+00A8,0008,,              return                  ; Return.
+,,,
+00A9,0A93,reset_on24,reset_on24    incf    hours,F         ; Incrment hours.
+00AA,0813,,              movf    hours,W         ; Get it in W.
+00AB,3C18,,              sublw   D'24'           ; Is it 24 (W=24-W)?
+00AC,1903,,              btfsc   STATUS,Z        ; Test zero flag, skip clear if no set.
+00AD,0193,,              clrf    hours           ; Clear hours 24->0.
+00AE,20CE,,              call    wr_hours        ; Write hours to display.
+00AF,0008,,              return
+,,,
+,,,;------------------------------------------------------------------------------
+,,,; Get seconds value, split to get BCD pair and write to port.
+00B0,0811,wr_secs,wr_secs       movf    secs,W          ; Get seconds.
+00B1,2100,,              call    bin2bcd         ; Convert to BCD.
+00B2,0096,,              movwf   bcd             ; Save result.
+00B3,39F0,,              andlw   0xF0            ; Mask BCD pair to leave upper digit in W upper nibble.
+00B4,380A,,              iorlw   0x0A            ; Select strobe.
+00B5,0086,,              movwf   PORTB           ; Write to PORTB.
+00B6,39F0,,              andlw   0xF0            ; Clear strobe (by selecting Q0).
+00B7,0086,,              movwf   PORTB           ; Write to PORTB.
+00B8,0E16,,              swapf   bcd,W           ; Get lower BCD digit in to W upper nibble.
+00B9,39F0,,              andlw   0xF0            ; Mask of strobe selection bits.
+00BA,380C,,              iorlw   0x0C            ; Set WR strobe.
+00BB,0086,,              movwf   PORTB           ; Write to PORTB.
+00BC,39F0,,              andlw   0xF0            ; Clear strobe.
+00BD,0086,,              movwf   PORTB           ; Write to PORTB.
+00BE,0008,,              return                  ; Return.
+,,,
+,,,;------------------------------------------------------------------------------
+,,,; Get minutes value, split to get BCD pair and write to port.
+00BF,0812,wr_mins,wr_mins       movf    mins,W          ; Get minutes value.
+00C0,2100,,              call    bin2bcd         ; Convert to BCD.
+00C1,0096,,              movwf   bcd             ; Save result.
+00C2,39F0,,              andlw   0xF0            ; Mask BCD pair to leave upper digit in W upper nibble.
+00C3,3806,,              iorlw   0x06            ; Select strobe.
+00C4,0086,,              movwf   PORTB           ; Write to PORTB.
+00C5,39F0,,              andlw   0xF0            ; Clear strobe (by selecting Q0).
+00C6,0086,,              movwf   PORTB           ; Write to PORTB.
+00C7,0E16,,              swapf   bcd,W           ; Get lower BCD digit in to W upper nibble.
+00C8,39F0,,              andlw   0xF0            ; Mask of strobe selection bits.
+00C9,3808,,              iorlw   0x08            ; Set WR strobe.
+00CA,0086,,              movwf   PORTB           ; Write to PORTB.
+00CB,39F0,,              andlw   0xF0            ; Clear strobe.
+00CC,0086,,              movwf   PORTB           ; Write to PORTB.
+00CD,0008,,              return                  ; Return.
+,,,
+,,,;------------------------------------------------------------------------------
+,,,; Get hours value, split to get BCD pair and write to port.
+00CE,0813,wr_hours,wr_hours      movf    hours,W         ; Get hours value/
+00CF,2100,,              call    bin2bcd         ; Convert to BCD.
+00D0,0096,,              movwf   bcd             ; Save result.
+00D1,39F0,,              andlw   0xF0            ; Mask BCD pair to leave upper digit in W upper nibble.
+00D2,3802,,              iorlw   0x02            ; Select strobe.
+00D3,0086,,              movwf   PORTB           ; Write to PORTB.
+00D4,39F0,,              andlw   0xF0            ; Clear strobe (by selecting Q0).
+00D5,0086,,              movwf   PORTB           ; Write to PORTB.
+00D6,0E16,,              swapf   bcd,W           ; Get lower BCD digit in to W upper nibble.
+00D7,39F0,,              andlw   0xF0            ; Mask of strobe selection bits.
+00D8,3804,,              iorlw   0x04            ; Set WR strobe.
+00D9,0086,,              movwf   PORTB           ; Write to PORTB.
+00DA,39F0,,              andlw   0xF0            ; Clear strobe.
+00DB,0086,,              movwf   PORTB           ; Write to PORTB.
+00DC,0008,,              return                  ; Return.
+,,,
+,,,;------------------------------------------------------------------------------
+,,,; Write state bits to state latch.
+00DD,0E10,wr_state,wr_state      swapf   state,W         ; Get state bits in to W<4:1>.
+00DE,380E,,              iorlw   0x0E            ; Set WR strobe.
+00DF,0086,,              movwf   PORTB           ; Write to PORTB.
+00E0,39F0,,              andlw   0xF0            ; Clear strobe by selecting Q0.
+00E1,0086,,              movwf   PORTB           ; Write to PORTB.
+00E2,0008,,              return
+,,,
+,,,;------------------------------------------------------------------------------
+,,,; Routine to convert a binary value  (0..63) in to a BCD pair. The result is
+,,,; returned in W. The lookup is done as a 'calculated goto' by modifying PCL
+,,,; (the lower eight bits of the program counter). PCL is only eight bits wide
+,,,; with the top five bits coming from the PCLATH register. We use an ORG
+,,,; statement to ensure that addition of the offset (0..63) to the table address
+,,,; doesn't overflow the PCL register (any overflow would be lost and would result
+,,,; in a jump to some other part of the code).
+,,,
+0100,,,              ORG     0x0100
+,,,
+0100,018A,bin2bcd,bin2bcd       clrf    PCLATH          ; Clear PCLATH.
+0101,140A,,              bsf     PCLATH,0        ; Set bit zero so that goto yields an
+,,,                                      ; address 0x01xx.
+0102,393F,,              andlw   H'3F'           ; Ensure we limit lookup.
+0103,0782,,              addwf   PCL,F           ; Add offset in W to PCL to calc. goto.
+,,,
+0104,3400,,              retlw   0x00
+0105,3401,,              retlw   0x01
+0106,3402,,              retlw   0x02
+0107,3403,,              retlw   0x03
+0108,3404,,              retlw   0x04
+0109,3405,,              retlw   0x05
+010A,3406,,              retlw   0x06
+010B,3407,,              retlw   0x07
+010C,3408,,              retlw   0x08
+010D,3409,,              retlw   0x09
+010E,3410,,              retlw   0x10
+010F,3411,,              retlw   0x11
+0110,3412,,              retlw   0x12
+0111,3413,,              retlw   0x13
+0112,3414,,              retlw   0x14
+0113,3415,,              retlw   0x15
+0114,3416,,              retlw   0x16
+0115,3417,,              retlw   0x17
+0116,3418,,              retlw   0x18
+0117,3419,,              retlw   0x19
+0118,3420,,              retlw   0x20
+0119,3421,,              retlw   0x21
+011A,3422,,              retlw   0x22
+011B,3423,,              retlw   0x23
+011C,3424,,              retlw   0x24
+011D,3425,,              retlw   0x25
+011E,3426,,              retlw   0x26
+011F,3427,,              retlw   0x27
+0120,3428,,              retlw   0x28
+0121,3429,,              retlw   0x29
+0122,3430,,              retlw   0x30
+0123,3431,,              retlw   0x31
+0124,3432,,              retlw   0x32
+0125,3433,,              retlw   0x33
+0126,3434,,              retlw   0x34
+0127,3435,,              retlw   0x35
+0128,3436,,              retlw   0x36
+0129,3437,,              retlw   0x37
+012A,3438,,              retlw   0x38
+012B,3439,,              retlw   0x39
+012C,3440,,              retlw   0x40
+012D,3441,,              retlw   0x41
+012E,3442,,              retlw   0x42
+012F,3443,,              retlw   0x43
+0130,3444,,              retlw   0x44
+0131,3445,,              retlw   0x45
+0132,3446,,              retlw   0x46
+0133,3447,,              retlw   0x47
+0134,3448,,              retlw   0x48
+0135,3449,,              retlw   0x49
+0136,3450,,              retlw   0x50
+0137,3451,,              retlw   0x51
+0138,3452,,              retlw   0x52
+0139,3453,,              retlw   0x53
+013A,3454,,              retlw   0x54
+013B,3455,,              retlw   0x55
+013C,3456,,              retlw   0x56
+013D,3457,,              retlw   0x57
+013E,3458,,              retlw   0x58
+013F,3459,,              retlw   0x59
+0140,3460,,              retlw   0x60
+0141,3461,,              retlw   0x61
+0142,3462,,              retlw   0x62
+0143,3463,,              retlw   0x63
+,,,
+,,,              END

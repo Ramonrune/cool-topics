@@ -1,0 +1,278 @@
+:Base ARES.hlp
+1 INTRODUCTION
+2 What is ARES=WHAT_IS_ARES_
+2 How to use this documentation=HOW_TO_USE_THIS_MANUAL
+1 TUTORIAL
+2 Introduction=INTRODUCTION_1
+2 Overview of the Layout Editor=OVERVIEW_OF_THE_LAYOUT_EDITOR
+2 Basic Placement and Routing Techniques=BASIC_PLACEMENT_ROUTING_TECHNIQUES
+2 Block Editing Facilities=BLOCK_EDITING_FACILITIES
+2 Route Editing=ROUTE_EDITING
+2 3D Visualisation=3D_VISUALISATION
+2 Hard Copy Generation=HARD_COPY_GENERATION_1
+2 The Package Library=THE_PACKAGE_LIBRARY
+2 The Symbol Library=THE_SYMBOL_LIBRARY
+2 Routing a PCB from a Netlist=ROUTING_A_PCB_FROM_A_NETLIST
+2 Cross Probing=Cross_Probing
+2 Object Selector Context Menu=OBJECT_SELECTOR_CONTEXT_MENU
+1 GENERAL CONCEPTS
+2 Screen Layout
+3 The Editing Window=The_Editing_Window
+3 The Overview Window=The_Overview_Window
+3 The Toolbars=The_Toolbars
+3 The Object Selector=The_Object_Selector
+3 The Layer Selector=The_Layer_Selector
+3 Co-ordinate display=Co_ordinate_Display
+2 Co-ordinate Systems
+3 Overview=Coordisp_Intro
+3 Dimension Entry Fields=Dimension_Entry_Fields
+3 Output Origin=Output_Origin
+3 False Origin=False_Origin
+3 Grid dots=Grid_Dots
+3 Snapping Grids=Snapping_Grids
+3 Real Time Snap=Real_Time_Snap
+2 Object Placement
+3 Overview=Objplace_Intro
+3 Placing Components=Placing_Components
+3 Packages=Packages
+3 Pads=Pads
+3 2D Graphics=2D_Graphics
+3 Zones=Zones
+2 Object Editing
+3 Overview=Objplace_Intro
+3 The Selection Filter=Selection_Filter
+3 Tagging a Single Object=Tagging_a_Single_Object
+3 Tagging a Group of Objects=Tagging_a_Group_of_Objects
+3 Untagging  All Objects=Untagging_All_Objects
+3 Deleting an Object=Deleting_an_Object
+3 Dragging an Object=Dragging_an_Object
+3 Editing an Object=Editing_an_Object
+3 Locking an Object=Locking_an_Object
+3 Highlighting a Component by Name=Highlighting_a_Component_by_Name
+2 Route Placement and Editing
+3 Overview=Routeplace_Intro
+3 Trace Placement - No Netlist Loaded=Trace_Placement_No_Netlist_Loaded
+3 Trace Placement - Netlist Loaded=Trace_Placement_Netlist_Loaded
+3 Curved Track Segments=Curved_Track_Segments
+3 Auto Track Necking=Auto_Track_Necking
+3 Trace Angle Lock=Trace_Angle_Lock
+3 Tagging a Route=Tagging_a_Route_1
+3 Changing the Width of a Route=Changing_the_Width_of_a_Route
+3 Changing the Layer of a Route=Changing_the_Layer_of_a_Route
+3 Modifying a Route=Modifying_a_Route
+3 Mitring a Route=Mitring_a_Route
+3 Copying a Route=Copying_a_Route
+3 Deleting a Route=Deleting_a_Route
+3 Tidying the Routes=Tidying_the_Routes
+2 Block Editing Commands
+3 Overview=BlockEdit_Intro
+3 Block Copy=Block_Copy
+3 Block Move=Block_Move
+3 Block Rotate=Block_Rotate
+3 Block Delete=Block_Delete
+2 Filing Commands
+3 Overview=Filecmd_Intro
+3 Starting a New Layout=Starting_a_New_Layout
+3 Loading a Layout=Loading_a_Layout
+3 Saving a Layout=Saving_a_Layout
+3 Import/Export=Import_Export
+3 Auto Save=Auto_Save
+3 Backups and Last Loaded Files=Backups_and_Last_Loaded_Files
+2 Pad,Trace and Graphics Styles
+3 Overview=padtrace_Intro
+3 Pad Styles=Pad_Styles
+3 Polygonal Pads=Polygonal_Pads
+3 Pad Stacks=Pad_Stacks
+3 Pad Styles and the Solder Resist Layer=Pad_Styles_and_the_Solder_Resist
+3 Pad Styles and the Solder Paste Mask=Pad_Styles_and_the_Solder_Paste_Mask
+3 Trace Styles=Trace_Styles
+3 Via Styles=Via_Styles
+3 Style Management and DEFAULT.STY=Style_Management_DEFAULT_STY
+3 2D Graphics Styles=2D_Graphics_Styles
+2 Miscellaneous
+3 Keyboard Configuration=KEYBOARD_CONFIGURATION
+1 LIBRARY FACILITES
+2 General Points About Libraries
+3 Overview=generlib_Intro
+3 Library Discipline=Library_Discipline
+3 The Library Browser=The_Library_Browser
+3 Updating the Layout from the Libraries=Updating_the_Layout_from_the_Libraries
+3 The Tidy Command=The_Tidy_Command
+2 The Package Library
+3 Overview=packlib_Intro
+3 Making a Package=Making_a_Package
+3 Editing a Package=Editing_a_Package
+2 The Symbol Library
+3 Overview=symblib_Intro
+1 NETLIST MANAGEMENT
+2 Netlist Features
+3 Overview=netfeat_Intro
+3 The Load Netlist Command=The_Load_Netlist_Command
+3 Using the Netlist  Laoder on an Empty Layout=Using_the_Netlist_Loader_on_an_Empty_Layout
+3 The Netlist Loader and Existing Components=The_Netlist_Loader_Existing_Components
+3 The Netlist Loader and Existing Tracking=The_Netlist_Loader_Existing_Tracking
+3 The Bridge Style and Joining Nets=The_Bridge_Style_and_Merging_Nets
+3 Problems with Pin Numbers=Problems_with_Pin_Numbers
+3 Packaging Considerations=Packaging_Considerations
+3 Connectivity Highlight=Connectivity_Highlight
+2 Ratsnest Features
+3 Overview=ratfeat_Intro
+3 Automatic Ratsnest Recalculation=Automatic_Ratsnest_Recalculation
+3 Dynamic Ratsnest=Dynamic_Ratsnest
+3 Force Vectors=Force_Vectors
+3 Ratsnest Mode=Ratsnest_Mode
+3 Manual Ratsnest Entry=Manual_Ratsnest_Entry
+2 Pinswap / Gateswap
+3 Overview=pingate_Intro
+3 Manual Pinswap/Gateswap=2D_Graphics
+3 Automatic Gateswap Optimisation=STID_RUN_GATESWAP_OPTIMISER
+3 Synchronisation with the Schematic=Synchronization_with_the_Schematic
+2 Routing Classes
+3 Overview=routestrat_Intro
+3 Net Classes and the Netlist=Strategies_and_the_Netlist
+3 Net Classes and Design Rules=strategy_designrules
+3 Special Net Class Names=Special_Strategy_Names
+3 Editing a Net Class=Editing_a_Strategy
+2 Back-Annotation
+3 Overview=bckannot_Intro
+3 Manual RE-Annotation=Manual_Re_Annotation
+3 Automatic Re-annotation=Automatic_Re_Annotation
+3 Back-Annotation to ISIS=Back_Annotation_to_ISIS
+2 Reverse Netlisting
+3 Overview=reversenet_Intro
+2 Converting 3rd Party Netlists
+3 Overview=3rdparty_Intro
+1 AUTO-PLACEMENT
+2 Introduction
+3 Overview=autoplc_Intro
+2 Using the Autoplacer
+3 Overview=autoplc_using
+2 The Autoplacer dialogue
+3 Overview=autoplc_dial
+3 The Component Selector=The_Component_Selector
+3 Design Rules=Design_Rules
+3 Trial Placement and Cost Weightings=Trial_Placement_and_Cost_Weightings
+3 Options=Options
+2 Occupancy Definitions
+3 Overview=autoplc_occup
+2 Limitations
+3 Overview=autoplc_limit
+1 AUTO-ROUTING
+2 Introduction
+3 Overview=autoroute_intro
+3 Modes of Operation=autoroute_modes
+3 The Autorouter and Design Rules=autoroute_using_with_design_rules
+3 Live Status Reporting=autoroute_status
+2 The Autorouter Dialogue Form
+3 Overview=autoroute_cmd
+3 Execution Modes=autoroute_execution_modes
+3 Routing Rules=autoroute_routing_rules
+3 Conflict Handling=autoroute_conflict_handling
+3 Command Buttons=autoroute_command_buttons
+2 Basic Operation
+3 Overview=basic_operation_overview
+3 Fully Automatic Mode=autoroute_invoke_automatic
+3 Scriptable Mode=autoroute_invoke_scripted
+3 Interactive Mode=autoroute_invoke_interactive
+2 Creating Routing Scripts
+3 Overview=routing_scripts_overview
+3 Creating and Modifying Scripts=routing_scripts_modifying
+2 Working with the Autorouter Interactively
+3 Overview=router_interactive_overview
+3 Specifying Nets=router_interactive_specifying_nets
+3 Routing Phases=router_interactive_routing_phases
+2 Autorouter Command Reference
+3 Overview=command_set_overview
+3 Basic Command Set
+4 The BUS Command=bus_command
+4 The FANOUT Command=fanout_command
+4 The ROUTE Command=route_command
+4 The FILTER Command=filter_command
+4 The RECORNER Command=recorner_command
+4 The CLEAN Command=clean_command
+3 Advanced Command Set
+4 The CHECK Command=check_command
+4 The CIRCUIT Command=circuit_command
+4 The COST Command=cost_command
+4 The DIRECTION Commmand=direction_command
+4 The GRID Command=grid_command
+4 The LIMIT Command=limit_command
+4 The LOCK Command=lock_command
+4 The PROTECT Command=protect_command
+4 The RULE Command=rule_command
+4 The SELECT Command=select_command
+4 The UNLOCK Command=unlock_command
+4 The UNPROTECT Command=unprotect_command
+4 The UNSELECT Command=unselect_command
+2 Hints and Tips about Autorouting
+3 Overview=autoroute_hints
+3 Single Sided Boards=Single_Sided_Boards
+3 Avoiding using Component Pads as Through Holes=Avoiding_Using_Component_Pads_as_Through_Holes
+3 Surface Mount Components=Surface_Mount_Components
+3 Routing to Power Planes=Routing_to_Internal_Power_Planes
+1 POWER PLANES
+2 Introduction and Background
+3 Overview=pplanes_Intro
+3 Grid Based Power Planes=Grid_Based_Power_Planes
+3 Negative Image Power Planes=Negative_Image_Power_Planes
+3 Polygonal Gridless Power Planes=Polygonal_Gridless_Power_Planes
+3 Ground Planes Without a Netlist=Ground_Planes_Without_a_Netlist
+2 Using Poygonal Power Planes
+3 Overview=pplanes_using
+3 The Power Plane Generator Command=The_Power_Plane_Generator_Command
+3 Zone Placement Mode=Zone_Placement_Mode
+3 Editing a Power Plane=Editing_a_Power_Plane
+3 Deleting a Power Plane=Deleting_a_Power_Plane
+3 Automatic Regeneration of Power Planes=Automatic_Regeneration_of_Power_Planes
+3 Quick Redraw Mode=Quick_Redraw_Mode
+3 Autorouting and Power Planes=Auto_Routing_Power_Planes
+1 VERIFICATION
+2 Connectivity Rules
+3 Overview=crc_Intro
+3 Basic CRC Functions=Basic_CRC_Functions
+2 Design Rules
+3 Overview=drc_Intro
+3 Configuring Net Classes=drc_netclasses
+3 Design Clearances=drc_setclearances
+3 Design Rules=drc_setrules
+3 Understanding Design Rule Hierarchy=drc_hierarchy
+3 Design Rules Examples=drc_examples
+1 HARD COPY GENERATION
+2 Printer Output
+3 Overview=print_Intro
+2 Plotter Output
+3 Overview=Plotter_Intro
+3 Plotter Pen Colours=Plotter_Pen_Colours
+3 Plotter Tips=Plotter_Tips
+2 Postscript Output
+3 Overview=postscript_Intro
+2 Clipboard and Graphics File Generation
+3 Overview=graphic_Intro
+3 Bitmap Generation=Bitmap_Generation
+3 Metafile Generation=Metafile_Generation
+3 DXF File Generation=DXF_File_Generation
+3 EPS File Generation=EPS_File_Generation
+3 Overlay Bitmap Generation=Overlay_Bitmap_Generation
+1 CADCAM OUTPUT
+2 The CADCAM Output Command=THE_CADCAM_OUTPUT_COMMAND
+2 Gerber Output=GERBER_OUTPUT
+2 NC Drill Output=NC_DRILL_OUTPUT
+2 Mechanical Routing and Slots=Mechanical_Routing_and_Slots
+2 Gerber Viewing=GERBER_VIEWING
+2 Pick and Place File=PICK_AND_PLACE_FILE
+2 Test Point Information File=TESTPOINT_INFORMATION_FILE
+2 ODB++ Output=ODB_EXPORT
+2 Panelization=Panelization
+1 DXF IMPORT TOOL
+2 Introduction
+3 Overview=dxfimport_Intro
+2 Setting Up
+3 Generating the DXF File=Generating_The_DXF_File
+3 Layer Assignments=Layer_Assignments
+2 Performing a Conversion
+3 Basic Conversions=Basic_Conversions
+3 Conversion Errors=Conversion_Errors
+3 Conversion Warnings=Conversion_Warnings
+2 Limitations
+3 DXF Limitations=DXF_Limitations
+:include VIEW3D.cnt

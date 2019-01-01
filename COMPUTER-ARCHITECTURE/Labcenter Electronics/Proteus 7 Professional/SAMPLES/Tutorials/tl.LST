@@ -1,0 +1,179 @@
+MPASM 03.00 Released               TL.ASM   10-24-2002  16:11:18         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001            LIST    p=16F84 ; PIC16F844 is the target processor
+                      00002 
+                      00003            #include "P16F84.INC" ; Include header file
+                      00001         LIST
+                      00002 ; P16F84.INC  Standard Header File, Version 2.00    Microchip Technology, Inc.
+                      00136         LIST
+                      00004 
+                      00005            CBLOCK 0x10   ; Temporary storage
+  00000010            00006               state
+  00000011            00007               l1,l2
+                      00008            ENDC
+                      00009 
+0000                  00010            org     0               ; Start up vector.
+0000   2805           00011            goto    setports        ; Go to start up code.
+                      00012 
+0004                  00013            org     4               ; Interrupt vector.
+Warning[204]: Found pseudo-op in column 1. (halt)
+Warning[211]: Extraneous arguments on the line.
+0004   0061           00014 halt       goto    halt            ; Sit in endless loop and do nothing.
+                      00015 
+0005   0103           00016 setports   clrw                    ; Zero in to W.
+0006   0085           00017            movwf   PORTA           ; Ensure PORTA is zero before we enable it.
+0007   0086           00018            movwf   PORTB           ; Ensure PORTB is zero before we enable it.
+0008   1683           00019            bsf     STATUS,RP0      ; Select Bank 1
+0009   0103           00020            clrw                    ; Mask for all bits as outputs.
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000A   0086           00021            movwf   TRISB           ; Set TRISB register.
+000B   1283           00022            bcf     STATUS,RP0      ; Reselect Bank 0.
+                      00023 
+000C   0103           00024 initialise clrw                    ; Initial state.
+000D   0090           00025            movwf   state           ; Set it.
+                      00026 
+000E   2015           00027 loop       call    getmask         ; Convert state to bitmask.
+000F   0086           00028            movwf   PORTB           ; Write it to port.
+0010   0A10           00029            incf    state,W         ; Increment state in to W.
+0011   3904           00030            andlw   0x04            ; Wrap it around.
+0012   0090           00031            movwf   state           ; Put it back in to memory.
+0013   201B           00032            call    wait            ; Wait :-)
+0014   280E           00033            goto    loop            ; And loop :-)
+                      00034 
+                      00035            ; Function to return bitmask for output port for current state.
+                      00036            ; The top nibble contains the bits for one set of lights and the
+                      00037            ; lower nibble the bits for the other set. Bit 1 is red, 2 is amber
+                      00038            ; and bit three is green. Bit four is not used.
+0015   0810           00039 getmask    movf    state,W         ; Get state in to W.
+0016   0782           00040            addwf   PCL,F           ; Add offset in W to PCL to calc. goto.
+0017   3441           00041            retlw   0x41            ; state==0 is Green and Red.
+0018   3423           00042            retlw   0x23            ; state==1 is Amber and Red/Amber
+0019   3414           00043            retlw   0x14            ; state==3 is Red   and Green
+001A   3432           00044            retlw   0x32            ; state==4 is Red/Amber and Amber.
+                      00045 
+                      00046            ; Function using two loops to achieve a delay.
+001B   3005           00047 wait       movlw   5
+MPASM 03.00 Released               TL.ASM   10-24-2002  16:11:18         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001C   0091           00048            movwf   l1
+                      00049 
+001D   2021           00050 w1         call    wait2
+Message[305]: Using default destination of 1 (file).
+001E   0B91           00051            decfsz  l1
+001F   281D           00052            goto    w1
+                      00053 
+0020   0008           00054            return
+                      00055 
+                      00056 
+0021   0192           00057 wait2      clrf    l2
+Message[305]: Using default destination of 1 (file).
+0022   0B92           00058 w2         decfsz  l2
+0023   2822           00059            goto    w2
+0024   0008           00060            return
+                      00061            END
+MPASM 03.00 Released               TL.ASM   10-24-2002  16:11:18         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+DC                                00000001
+EEADR                             00000009
+EECON1                            00000088
+EECON2                            00000089
+EEDATA                            00000008
+EEIE                              00000006
+EEIF                              00000004
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_PD                            00000003
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCL                               00000002
+PCLATH                            0000000A
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+TRISA                             00000085
+TRISB                             00000086
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_CP_OFF                           00003FFF
+_CP_ON                            0000000F
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+MPASM 03.00 Released               TL.ASM   10-24-2002  16:11:18         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F84                           00000001
+getmask                           00000015
+initialise                        0000000C
+l1                                00000011
+l2                                00000012
+loop                              0000000E
+setports                          00000005
+state                             00000010
+w1                                0000001D
+w2                                00000022
+wait                              0000001B
+wait2                             00000021
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXX----------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    34
+Program Memory Words Free:   990
+
+
+Errors   :     0
+Warnings :     2 reported,     0 suppressed
+Messages :     3 reported,     0 suppressed
+
+

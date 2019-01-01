@@ -1,0 +1,55 @@
+,,, ;EVB11 Demo Program
+,,, ;A very simple example which implements a
+,,, ;terminal echo program and writes the incomming
+,,, ;and outgoing characters to some LED displays.
+,,,
+,,, ACIA_CONTROL    equ $9800
+,,, ACIA_STATUS     equ $9800
+,,, ACIA_DATA       equ $9801
+,,,
+,,, PORTC             equ      $1003
+,,, PORTB             equ      $1004
+,,, PORTCL            equ      $1005
+,,, DDRC              equ      $1007
+,,,
+,,,
+,,,                 org $FFFE
+FFFE,E0 00,,                 dw start
+,,,
+,,,                 org $E000
+,,,
+E000,8E 00 FF,start:, start:          lds  #$FF
+,,,
+E003,86 03,,                 ldaa #$03                       ; Reset
+E005,B7 98 00,,                 staa ACIA_CONTROL
+,,,
+E008,86 1D,,                 ldaa #$1D                       ; 8 bits, odd, 1 stop, div 16 clocks
+E00A,B7 98 00,,                 staa ACIA_CONTROL
+,,,
+E00D,86 FF,,                 ldaa #$FF
+E00F,B7 10 07,,                 staa DDRC
+,,,
+,,,
+E012,B6 98 00,waitrx:, waitrx:         ldaa ACIA_STATUS
+E015,84 01,,                 anda #$01
+E017,26 07,,                 bne readrx
+E019,86 00,,                 ldaa #0
+E01B,4A,delay:, delay:          deca
+E01C,26 FD,,                 bne delay
+E01E,20 F2,,                 bra waitrx
+,,,
+E020,F6 98 01,readrx:, readrx:         ldab ACIA_DATA
+E023,F7 10 04,,                 stab PORTB
+,,,
+E026,B6 98 00,waittx:, waittx:         ldaa ACIA_STATUS
+E029,84 02,,                 anda #$02
+E02B,27 F9,,                 beq waittx
+,,,
+E02D,F7 98 01,,                 stab ACIA_DATA
+E030,F7 10 03,,                 stab PORTC
+,,,
+E033,20 DD,done:, done:           bra waitrx
+,,,
+,,,
+,,,
+,,,

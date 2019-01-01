@@ -1,0 +1,14 @@
+#
+# Labcenter Electronics
+#
+# 8051 syntax highlighter definition file.
+#
+line_comment=;.*$
+string='([^'\\]|\\.)*'
+constant=((0(x|X)[\da-fA-F]*)|((\d+\.?\d*)|(\.\d+))((e|E)(\+|-)?\d+)?)(L|l|UL|ul|u|U|F|f)?
+keyword=\b(ACALL|ADD|ADDC|AJMP|ANL|CALL|CJNE|CLR|CPL|DA|DEC|DIV|DJNZ|INC|JB|JBC|JC|JMP|JNC|JNB|JNZ|JZ|LCALL|LJMP|MOV|MOVC|MOVX|MUL|NOP|ORL|POP|PUSH|RET|RETI|RL|RLC|RR|RRC|SETB|SJMP|SUBB|SWAP|XCH|XRL)\b
+extensions=\b(A(B|CC)|B|C|D(PH|PL|PTR)|R[0-7]|SP|PSW)\b
+macro=\b(ASEG|BSEG|COMMON|CSEG|DB|DBIT|DS|DSEG|DW|END|ENDIF|ENDMOD|ELSE|EQU|EXTERN|EXTRN|HIGH|ISEG|LOW|LSTPAG|MODULE|NAME|ORG|PAGE|PAGSIZ|PUBLIC|RSEG|SEGMENT|SET|TITEL|TITL|USING|XSEG)\b
+operator=(\+|-:|=|@|#|\$|\[|\])
+
+

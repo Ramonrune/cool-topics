@@ -1,0 +1,813 @@
+ NOLIST
+;*******************************************************
+;*                 Code Produced by the                *
+;*             PROTON+ Compiler. Version 3.0           *
+;* Copyright Rosetta Technologies/Crownhill Associates *
+;*              Written by Les Johnson. 2004           *
+;*******************************************************
+ #include "D:\PRODEV\VSM\BASIC\ISIS_DSNS\INVADERS\INVADERS.FIL"
+;[Variable Listing]
+;_B#VR1,002D,DT_BYTE,1
+;_B#VR2,002E,DT_BYTE,1
+;BASE_ENABLED,003D,DT_BYTE,9
+;BASE_HITS,0046,DT_BYTE,9
+;INVADER_XPOS,004F,DT_BYTE,18
+;INVADER_YPOS,0061,DT_BYTE,18
+;INVADER_ENABLED,0073,DT_BYTE,18
+;SHIP_XPOS,0085,DT_BYTE,1
+;MISSILE_YPOS,0086,DT_BYTE,1
+;MISSILE_XPOS,0087,DT_BYTE,1
+;SHIP_SPEED,0088,DT_BYTE,1
+;INVADER_TICK,0089,DT_BYTE,1
+;INVADER_MISSILE_TICK,008A,DT_BYTE,1
+;SHIP_MISSILE_TICK,008B,DT_BYTE,1
+;TEMP_LOOP,008C,DT_BYTE,1
+;INVADERS_ENABLED,008D,DT_BYTE,1
+;INVADER_SPEED,008E,DT_BYTE,1
+;BASE_XPOS_TEST,008F,DT_BYTE,1
+;INVADER_MISSILE_YPOS,0090,DT_BYTE,1
+;INVADER_MISSILE_XPOS,0091,DT_BYTE,1
+;INVADER_MISSILE_SPEED,0092,DT_BYTE,1
+;DEFAULT_INVADER_SPEED,0093,DT_BYTE,1
+;INVADER_MISSILE2_TICK,0094,DT_BYTE,1
+;INVADER_MISSILE2_YPOS,0095,DT_BYTE,1
+;INVADER_MISSILE2_XPOS,0096,DT_BYTE,1
+;INVADER_MISSILE2_SPEED,0097,DT_BYTE,1
+;SAUCER_XPOS,0098,DT_BYTE,1
+;SAUCER_SPEED,0099,DT_BYTE,1
+;SCORE,009A,DT_DWORD,4
+;LEVEL,009E,DT_WORD,2
+;LIVES,00A0,DT_BYTE,1
+;RANDOM_VALUE,00A1,DT_BYTE,1
+;[End Listing]
+ #define _USELFSR 1
+ LIST  P = 18F452,f = INHX32 ,w = 2, x = on, r = DEC, mm = ON, n = 0, c = 255
+ #include "c:\PROTON~1.2\INC\P18F452.lpb"
+ #define XTAL 8
+ #define _CORE 16
+ #define _MAXRAM 1536
+ #define _RAM_END 1535
+ #define _MAXMEM 32768
+ #define _ADC 8
+ #define _ADC_RES 10
+ #define _EEPROM 256
+ #define RAM_BANKS 6
+ #define _USART 1
+ #define _USB 0
+ #define _FLASH 1
+ #define BANK0_START 128
+ #define BANK0_END 255
+ #define BANK1_START 256
+ #define BANK1_END 511
+ #define BANK2_START 512
+ #define BANK2_END 767
+ #define BANK3_START 768
+ #define BANK3_END 1023
+ #define BANK4_START 1024
+ #define BANK4_END 1279
+ #define BANK5_START 1280
+ #define BANK5_END 1535
+ #define BANKA_START 0
+ #define BANKA_END 127
+ #define _SYSTEM_VARIABLE_COUNT 49
+ram_bank = 0
+ #define LCD#DTPORT PORTD
+ #define LCD#DTPIN 4
+ #define LCD#RSPORT PORTC
+ #define LCD#RSPIN 1
+ #define LCD#ENPORT PORTE
+ #define LCD#ENPIN 0
+ #define LCD#RWPORT PORTC
+ #define LCD#RWPIN 0
+ #define LCD#CS1PORT PORTE
+ #define LCD#CS1PIN 1
+ #define LCD#CS2PORT PORTE
+ #define LCD#CS2PIN 2
+ #define LCD#TYPE 1
+ #define INTERNAL#FONT 1
+ #define FONT_SLAVE#ADDR 0
+ #include "c:\PROTON~1.2\INC\REG_LD16.INC"
+BPF = 0
+BPFH = 1
+CSTR@CT = 2
+GEN = 3
+GEN2 = 4
+GEN2H = 5
+GEN3 = 6
+GEN3H = 7
+GEN4 = 8
+GEN4H = 9
+GENH = 10
+GPR = 11
+PBP#RND = 12
+PBP#RNDH = 13
+PBP#VAR0 = 14
+PBP#VAR0H = 15
+PBP#VAR1 = 16
+PBP#VAR1H = 17
+PP0 = 18
+PP0H = 19
+PP0HH = 20
+PP0HHH = 21
+PP1 = 22
+PP1H = 23
+PP2 = 24
+PP2H = 25
+PP2HH = 26
+PP2HHH = 27
+PP3 = 28
+PP3H = 29
+PP4 = 30
+PP4H = 31
+PP5 = 32
+PP5H = 33
+PP6 = 34
+PP6H = 35
+PP7 = 36
+PP7H = 37
+PP7HH = 38
+PP7HHH = 39
+PPZ = 40
+PPZH = 41
+PPZHH = 42
+PPZHHH = 43
+SP#P9 = 44
+_B#VR1 = 45
+_B#VR2 = 46
+_GLCD_FLAG = 47
+_GLCD_XPOS = 48
+NOTE_STATUS = 49
+INTERRUPT_COUNTER1 = 50
+INVADER_SOUND_COUNTER = 51
+INVADER_FREQ = 52
+INVADER_SOUND_DURATION = 53
+INVADER_SOUND_DURATION_COUNTER = 54
+MISSILE_SOUND_COUNTER = 55
+MISSILE_FREQ = 56
+SAUCER_SOUND_COUNTER = 57
+SAUCER_FREQ = 58
+MISSILE_STATUS = 59
+INVADER_LOOP = 60
+	org 0
+	goto Start@
+	org 8
+t@eb clrf 19
+t@ew clrf 23
+t@e movwf 22
+	movlw 2
+	bra t@st
+t@st movwf 11
+	movfw 23
+	subwf 19,w
+	bnz cn@eq
+	movfw 22
+	subwf 18,w
+cn@eq movlw 4
+	skpnc
+	movlw 1
+	skpnz
+	movlw 2
+	andwf 11,w
+	skpz
+	movlw 1
+	goto i@nt
+out@dec
+	bcf 0,3
+	movfw 9
+	skpnz
+	bsf 0,3
+	movlw 5
+	movwf 8
+	movlw 39
+	movwf 23
+	movlw 16
+	rcall d@dig
+	movlw 3
+	movwf 23
+	movlw 232
+	rcall d@dig
+	clrf 23
+	movlw 100
+	rcall d@dig
+	clrf 23
+	movlw 10
+	rcall d@dig
+	movfw 24
+	bra send@it
+d@dig movwf 22
+	movfw 25
+	movwf 19
+	movfw 24
+	movwf 18
+	call d@vd
+	movfw 18
+send@it movwf 18
+	dcfsnz 8,f
+	bcf 0,3
+	movfw 9
+	bz $ + 8
+	subwf 8,w
+	skpnc
+	bra ex@send@it
+	movfw 18
+	skpz
+	bcf 0,3
+	btfsc 0,3
+	bra ex@send@it
+	addlw '0'
+	goto ch@snd
+ex@send@it
+	return
+out@dec32
+	bcf 0,3
+	movfw 9
+	bnz	o@d32l1
+	bsf 0,3
+	movlw 10
+	movwf 9
+o@d32l1
+	movff PP7HHH,PP0HHH
+	movff PP7HH,PP0HH
+	movff 37,19
+	movff 36,18
+	clrf 8
+o@d32l2
+	clrf PP2HHH
+	clrf PP2HH
+	clrf 25
+	movlw 10
+	movwf 24
+	call l@div
+	incf 8,f
+	movfw 8
+	subwf 9,w
+	btfss 4056,Z
+	bra o@d32l2
+	movfw 24
+	btfss 4056,Z
+	bcf 0,3
+	btfss 0,3
+	bra o@d32skp
+	decfsz 9,w
+	bra o@d32l3
+o@d32skp
+	movfw 24
+	addlw 48
+	call ch@snd
+o@d32l3
+	decfsz 9,f
+	bra o@d32l1
+	goto i@nt
+print@mstr clrf TBLPTRU
+	clrf EECON1
+	bsf EECON1,EEPGD
+	clrf CSTR@CT
+	movff 8,4086
+	movff 9,4087
+	tblrd*+
+	movfw 4085
+	bz $ + 14
+	rcall Print
+	incf 8,f
+	skpnz
+	incf 9,f
+	incfsz CSTR@CT,f
+	bra $ - 24
+	return
+print movwf 29
+	call setup@lcd
+glcd@flp movfw _GLCD_XPOS
+	call check@page
+	movff 24,6
+	movff 25,7
+	movlw 6
+	mulwf 29
+	movlw low FONT
+	addwf PRODL,w
+	movwf 4086
+	movlw high FONT
+	skpnc
+	addlw 1
+	addwf PRODH,w
+	movwf 4087
+	movlw 6
+	movwf 34
+glcd_l@2
+	clrf 4088
+	clrf 4006
+	bsf	4006,EEPGD
+	TBLRD*+
+	movfw 4085
+	movwf 24
+	btfsc _GLCD_FLAG,0
+	comf PP2,f
+	rcall lcdwrite
+	decfsz 34,f
+	bra glcd_l@2
+	movff 6,24
+	movff 7,25
+lcd@done
+	movfw 29
+	goto i@nt
+lcdwrite
+	movfw 24
+lcdwrite@wreg
+	bcf PORTC,1
+	rcall read@status
+	bsf PORTC,1
+	bsf PORTE,0
+	movwf PORTD
+	bcf PORTE,0
+	movlw 125
+	cpfslt _GLCD_XPOS
+	bra $ + 6
+	incf _GLCD_XPOS,f
+	bra $ + 4
+	clrf _GLCD_XPOS
+	movfw _GLCD_XPOS
+	rcall check@page
+	bcf PORTC,1
+	movfw _GLCD_XPOS
+	rcall read@status
+	bsf PORTE,0
+	movwf PORTD
+	bcf PORTE,0
+	return
+cir@cle movwf 28
+	clrf 25
+	movff 28,24
+	clrc
+	rlf 28,w
+	movwf 34
+	clrf 35
+	rlf 35,f
+movfw 34
+sublw 3
+movwf 22
+movlw 0
+subfwb 35,w
+movwf 23
+crc@lp1 movfw 25
+	subwf 24,w
+	skpc
+	goto i@nt
+	rcall plot@8
+	btfss 23,7
+	bra crc@lp2
+	movff 25,34
+	clrf 35
+	clrc
+	rlf 34,f
+	rlf 35,f
+	rlf 34,f
+	rlf 35,f
+	movfw 34
+	addwf 22,f
+	movfw 35
+	addwfc 23,f
+	movlw 6
+	addwf 22,f
+	movlw 0
+	addwfc 23,f
+	bra crc@lp3
+crc@lp2 movfw 24
+	subwf 25,w
+	movwf 34
+	movlw 0
+	clrf 35
+	subwfb 35,f
+	clrc
+	rlf 34,f
+	rlf 35,f
+	clrc
+	rlf 34,f
+	rlf 35,f
+	movfw 34
+	addwf 22,f
+	movfw 35
+	addwfc 23,f
+	movlw 10
+	addwf 22,f
+	movlw 0
+	addwfc 23,f
+	decf 24,f
+crc@lp3 incf 25,f
+	bra crc@lp1
+	goto i@nt
+plot@8
+	movfw 5
+	addwf 24,w
+	movwf 3
+	movfw 4
+	addwf 25,w
+	rcall plot@it
+	movfw 5
+	addwf 24,w
+	movwf 3
+	movfw 25
+	subwf 4,w
+	rcall plot@it
+	movfw 24
+	subwf 5,w
+	movwf 3
+	movfw 4
+	addwf 25,w
+	rcall plot@it
+	movfw 24
+	subwf 5,w
+	movwf 3
+	movfw 25
+	subwf 4,w
+	rcall plot@it
+	movfw 5
+	addwf 25,w
+	movwf 3
+	movfw 4
+	addwf 24,w
+	rcall plot@it
+	movfw 5
+	addwf 25,w
+	movwf 3
+	movfw 24
+	subwf 4,w
+	call plot@it
+	movfw 25
+	subwf 5,w
+	movwf 3
+	movfw 4
+	addwf 24,w
+	rcall plot@it
+	movfw 25
+	subwf 5,w
+	movwf 3
+	movfw 24
+	subwf 4,w
+	bra plot@it
+lcd@plot
+	bsf 0,2
+	bra $ + 4
+lcd@unplot
+	bcf 0,2
+plot@it btfsc WREG,7
+	bra plt@exit
+	btfsc GEN,6
+	bra plt@exit
+	rcall setup@lcd
+	rcall getbit@pos
+	clrf 31
+	incf 3,f
+	setc
+	rlcf 31,f
+	decfsz 3,f
+	bra $ - 4
+	movfw 31
+	btfss 0,2
+	bra $ + 6
+	iorwf 32,w
+	bra $ + 6
+	xorlw 255
+	andwf 32,w
+	bcf PORTC,1
+	rcall read@status
+	bsf PORTC,1
+	rcall tg@l
+plt@exit goto i@nt
+getbit@pos
+	movwf 33
+	rcall check@page
+	clrc
+	rrcf 3,w
+	movwf 30
+	clrc
+	rrcf 30,f
+	clrc
+	rrcf 30,f
+	movlw 7
+	andwf 3,f
+	movlw B'00111111'
+	andwf 30,f
+	movlw B'10111000'
+	iorwf 30,w
+	rcall read@status
+	rcall tg@l
+	movlw B'00111111'
+	andwf 33,f
+	movlw B'01000000'
+	iorwf 33,w
+	rcall read@status
+	rcall tg@l
+	movfw 33
+	bra read@byte
+glcd@p
+	rcall setup@lcd
+	movwf 30
+	movfw 10
+	rcall check@page
+	movlw B'00111111'
+	rcall read@status
+	rcall tg@l
+	movlw B'10111000'
+	iorwf 3,w
+	rcall read@status
+	rcall tg@l
+	movlw B'01000000'
+	iorwf 10,w
+	rcall read@status
+	rcall tg@l
+	movfw 30
+	rcall read@status
+	bsf PORTC,1
+	rcall tg@l
+	incf 10,f
+	goto i@nt
+readByte@Xpos
+	movfw _GLCD_XPOS
+read@Byte
+	movwf 33
+	rcall read@it
+	rcall read@it
+	bsf PORTC,1
+	movfw 32
+	return
+read@it
+	rcall read@status
+	bsf PORTC,1
+	bsf PORTC,0
+	setf PORTD + 18
+	bsf PORTE,0
+	nop
+	movfw PORTD
+	movwf 32
+	bcf PORTE,0
+	clrf PORTD + 18
+	bcf PORTC,0
+	bcf PORTC,1
+	movlw B'01000000'
+	iorwf 33,w
+	rcall read@status
+	bra tg@l
+setup@lcd
+	btfsc 0,1
+	bra skp@gcsin
+	movwf 33
+	bcf PORTE + 18,0
+	bcf PORTC + 18,1
+	bcf PORTC + 18,0
+	bcf PORTE + 18,1
+	bcf PORTE + 18,2
+	clrf PORTD + 18
+	bsf 0,1
+	bcf PORTE,0
+	bcf PORTC,0
+	bcf PORTC,1
+	clrf _GLCD_XPOS
+	movlw B'10111000'
+	rcall read@status
+	rcall tg@l
+	movlw B'01000000'
+	rcall read@status
+	rcall tg@l
+	movlw B'11000000'
+	rcall read@status
+	rcall tg@l
+	movlw B'00111111'
+	rcall read@status
+	rcall tg@l
+	movfw 33
+skp@gcsin
+	bcf PORTC,1
+	return
+check@page
+	btfsc WREG,6
+	bra en@right
+	bcf PORTE,1
+	nop
+	bsf PORTE,2
+	return
+en@right
+	bsf PORTE,1
+	nop
+	bcf PORTE,2
+	return
+tg@l bsf PORTE,0
+	movwf PORTD
+	nop
+	bcf PORTE,0
+	return
+read@status
+	bsf PORTC,0
+	setf PORTD + 18
+	clrf 18
+r@slp1 bsf PORTE,0
+	nop
+	bcf PORTE,0
+	btfss PORTD,7
+	bra $ + 6
+	incfsz 18,f
+	bra r@slp1
+	clrf PORTD + 18
+	clrf PORTD
+	bcf PORTC,0
+	return
+glcd_cur
+	rcall setup@lcd
+	movwf _GLCD_XPOS
+	bcf PORTE,1
+	bra $ + 2
+	bcf PORTE,2
+	bsf 0,1
+	movlw B'00111111'
+	rcall tg@l
+	movlw B'10111000'
+	iorwf 3,w
+	rcall read@status
+	rcall tg@l
+	movfw _GLCD_XPOS
+	mullw 6
+	movfw PRODL
+	rcall check@page
+	movfw PRODL
+	andlw 127
+	movwf _GLCD_XPOS
+	iorlw B'01000000'
+	rcall read@status
+	rcall tg@l
+	goto i@nt
+glcd@cls
+	bcf 0,1
+	call setup@lcd
+	bcf PORTE,1
+	bcf PORTE,2
+	movlw B'00111110'
+	rcall tg@l
+	clrf 34
+gld@l1 bcf PORTC,1
+	movfw 34
+	iorlw B'10111000'
+	rcall read@status
+	rcall tg@l
+	clrf 35
+glcd@l2 bcf PORTC,1
+	movfw 35
+	iorlw B'01000000'
+	rcall read@status
+	rcall tg@l
+	clrw
+	bcf PORTC,1
+	rcall read@status
+	bsf PORTC,1
+	rcall tg@l
+	incf 35,f
+	btfss 35,6
+	bra glcd@l2
+	incf 34,f
+	btfss 34,3
+	bra gld@l1
+	bcf PORTC,1
+	bcf 0,1
+	rcall setup@lcd
+	goto i@nt
+rsout@
+ch@snd
+	btfsc 1,7
+	goto print
+rn@dm movfw PBP#RNDH
+	iorwf PBP#RND,w
+	skpnz
+	incf PBP#RND,f
+	rlcf PBP#RNDH,w
+	xorwf PBP#RNDH,w
+	rlcf WREG
+	swapf PBP#RNDH 
+	swapf PBP#RND,w
+	rlncf WREG
+	xorwf PBP#RNDH,w
+	swapf PBP#RNDH
+	andlw 1
+	rlcf PBP#RND,f
+	xorwf PBP#RND,f
+	rlcf PBP#RNDH,f
+	movfw PBP#RND
+	goto i@nt
+dl@ms clrf 23
+dly@w movwf 22
+dl@lp movlw 255
+	addwf 22,f
+	skpc
+	addwf 23,f
+	skpc
+	goto i@nt
+	movlw 3
+	movwf 19
+	movlw 227
+	rcall dlus@w
+	bra dl@lp
+dl@us clrf 19
+dlus@w addlw 244
+	movwf 18
+	comf 19,f
+	movlw 254
+	skpc
+	bra dl@h
+dlus@lp addwf 18,f
+	skpnc
+	bra dlus@lp
+dl@h addwf 18,f
+	nop
+	incfsz 19,f
+	bra dlus@lp
+	nop
+	btfsc 18,0
+	bra $ + 2
+	btfsc 18,0
+	bra $ + 2
+	return
+ #include "c:\PROTON~1.2\INC\DV32_SRC.INC"
+d@vd clrf 25
+	clrf 24
+d@vd2 movlw 16
+	movwf 28
+dv@lp rlcf 19,w
+	rlcf 24,f
+	rlcf 25,f
+	movfw 22
+	subwf 24,f
+	movfw 23
+	skpc
+	incfsz 23,w
+	subwf 25,f
+	bc d@k
+	movfw 22
+	addwf 24,f
+	movfw 23
+	skpnc
+	incfsz 23,w
+	addwf 25,f
+	clrc
+d@k rlcf 18,f
+	rlcf 19,f
+	decfsz 28,f
+	bra dv@lp
+	movfw 18
+	goto i@nt
+n@gt32 comf 18,f
+	comf 19,f
+	comf PP0HH,f
+	comf PP0HHH,f
+	incf 18,f
+	skpnc
+	incf 19,f
+	skpnc
+	incf PP0HH,f
+	skpnc
+	incf PP0HHH,f
+	return
+i@nt movlb 0
+i@ntr return
+T300 = 3313
+T300H = 12
+N300 = 19697
+N300H = 76
+T600 = 1646
+T600H = 6
+N600 = 18030
+N600H = 70
+T1200 = 813
+T1200H = 3
+N1200 = 17197
+N1200H = 67
+T2400 = 396
+T2400H = 1
+N2400 = 16780
+N2400H = 65
+T4800 = 188
+N4800 = 16572
+N4800H = 64
+T9600 = 84
+N9600 = 16468
+N9600H = 64
+OT2400 = 33164
+OT2400H = 129
+OT1200 = 33581
+OT1200H = 131
+OT9600 = 32852
+OT9600H = 128
+OT300 = 36081
+OT300H = 140
+ON2400 = 49548
+ON2400H = 193
+ON1200 = 49965
+ON1200H = 195
+ON9600 = 49236
+ON9600H = 192
+ON300 = 52465
+ON300H = 204
+HOME = 1
+BELL = 7
+BKSP = 8
+TAB = 9
+CR = 13
+Start@ equ $
+	clrf 0
+	clrf 4011
+	clrf _GLCD_FLAG

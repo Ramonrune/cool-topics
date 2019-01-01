@@ -1,0 +1,876 @@
+MP2COD 4.03, COFF to COD File Converter
+Copyright (c) 2006 Microchip Technology Inc.
+Listing File Generated: Sat Jul 15 10:56:44 2006
+
+
+Address  Value    Disassembly              Source                                                                           File
+-------  -------  -----------------------  -------------------------------------------------------------------------------  -----
+                                           ;Software License Agreement                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;The software supplied herewith by Microchip Technology                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;Incorporated (the "Company") is intended and supplied to you, the               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;Company’s customer, for use solely and exclusively on Microchip                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;products. The software is owned by the Company and/or its supplier,             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;and is protected under applicable copyright laws. All rights are                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;reserved. Any use in violation of the foregoing restrictions may                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;subject the user to criminal sanctions under applicable laws, as                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;well as to civil liability for the breach of the terms and                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;conditions of this license.                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;THIS SOFTWARE IS PROVIDED IN AN "AS IS" CONDITION. NO WARRANTIES,               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT NOT LIMITED               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. THE COMPANY SHALL NOT,               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL OR                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;	Filename:	00010R1.asm                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;	Date:		  12/23/2004 day, 2004                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;	Version:	1.0                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;	Author:		Pat Richards                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;	Company:	Microchip Technology Inc.                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;	Description:                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;	This is the source code for AN972                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Refer to 00010R1.lkr for details on the linker script                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; 	                                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;	Revision History: none                                                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           	#include <p10F202.inc>        ; processor specific variable definitions         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           	LIST                                                                            C:\Program Files\Microchip\MPASM Suite\p10F202.inc
+                                           ; P10F202.INC  Standard Header File, Version 1.01    Microchip Technology, Inc.  C:\Program Files\Microchip\MPASM Suite\p10F202.inc
+                                           	LIST                                                                            C:\Program Files\Microchip\MPASM Suite\p10F202.inc
+                                           ;	#include <p10F206.inc>        ; processor specific variable definitions        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000fff   0fef     XORLW     0xef           	__CONFIG   _MCLRE_OFF & _WDT_ON & _IntRC_OSC                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; '__CONFIG' directive is used to embed configuration word within .asm file.     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; The lables following the directive are located in the respective .inc file.    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; See data sheet for additional information on configuration word settings.      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;************************** VARIABLE DEFINITIONS ******************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             UDATA                                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           Addr        RES   1 ;                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           DataByte    RES   1 ;                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           BitCount    RES   1 ;                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           TempData    RES   1 ;                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SerOutData  RES   1 ;                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ReadData    RES   1 ; Used to hold serial out data (and can be used to test ACK) K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ACKStat     RES   1 ; Holds ACK status. 0 = NACK, 1 = ACK                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           OldSwitch   RES   1 ; Serial mode 1 = SPI, 0 = I2C                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           NewSwitch   RES   1 ; Serial mode 1 = SPI, 0 = I2C                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           n           RES   1 ;                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           RAMTRIS			RES   1 ; this is a baseline part so have to create                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                 					    ; own tris register in RAM to keep track of                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           			      		    ; input and output pins (very important!)                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;*************************** DEFINE STATEMENTS ********************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;; Flag Bit (FlagReg) definitions                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define SerMode   0x00                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;; pin definitions                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define	SCL GPIO,0                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define	SCK GPIO,0                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define	nCS GPIO,1    ; Note: will drive both states of nCS                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define	SDA GPIO,2                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define	SI  GPIO,2                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define	SO  GPIO,3                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;; MCP23x08 registers                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define IODIR   0x00                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define IPOL    0x01                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define GPINTEN 0x02                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define DEFVAL  0x03                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define INTCON  0x04                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define IOCON   0x05                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define GPPU    0x06                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define INTF    0x07                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define INTCAP  0x08                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define MCPGPIO 0x09                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define OLAT    0x0A                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;; GP3 = SI, GP2 = SDA/SO, GP1 = CS, GP0 = SCL/SCK                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;; Will modify TRIS register and not GPIO directly                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define	SCL_L		b'11111110'	; AND with this to make SCL an output                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define SCL_H		b'00000001'	; IOR with this to make SCL an input                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define	SDA_L   b'11111011'	; AND with this to make SDA an output                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define	SDA_H   b'00000100'	; IOR with this to make SDA an input                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define	SCK_L		b'11111110'	; AND with this to make SCK an output                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define SCK_H		b'00000001'	; IOR with this to make SCK an input                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define	SI_L    b'11111011'	; AND with this to make SI an output                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define	SI_H    b'00000100'	; IOR with this to make SI an input                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define	CS_OUT  b'11111101'	; AND with this to make CS an output                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define	CS_IN   b'00000010'	; IOR with this to make CS an input                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;; I2C Commands/Opcodes                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define OPCODE    0x40                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define WRITECMD  0                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define READCMD   1                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           #define AnPINS    b'0000'  ; A2, A1, A0 pins (Shift left by one. A2,A1,A0,X)     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;****************************** START OF CODE *********************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           RESET_VECTOR CODE                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000000   0b00     GOTO      0x100          	goto  Start                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;*************************** MAIN  CODE ***************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           MAIN  CODE                                                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Start -                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; InitPIC                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Set Mode to I2C                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Init23008                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Set Mode to SPI                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Init23S08                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Check toggle switch                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;   Set proper serial mode                                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;   Make other device all inputs                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Read GP inputs                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Drive outputs to match inputs                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; goto Check Toggle Switch                                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           Start                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;	movlw	0x40 	                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000100   0025     MOVWF     0x5            	movwf OSCCAL		; load the factory oscillator calibration value                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; InitPIC - Initialize PIC                                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           InitPIC                                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;Remove next two lines for PIC10F202 (uncomment for PIC10F206)                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;  movlw 0xF1                                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;  movwf CMCON0                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000101   0c02     MOVLW     0x2              movlw 0x02          ; Note: CS (GP1) needs to drive H and L due to selector switch resistors K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000102   0026     MOVWF     0x6              movwf GPIO          ; Clear latches.. will operate on tris for I2C and SPI (except nCS pin) K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000103   0c0d     MOVLW     0xd              movlw b'00001101'	  ; SI, SDA/SO, CS, SCL/SCK                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000104   0032     MOVWF     0x12             movwf RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000105   0006     TRIS      0x6              tris  GPIO                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000106   0ccd     MOVLW     0xcd             movlw b'11001101'   ; 1:64TMR0 prescaler: 1E-6 x 256 x 64 = 16.38 ms, weak pullups disabled K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000107   0002     OPTION                     option                                                                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000108   0004     TRIS      0x4              clrwdt              ; Clear the watchdog timer                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Init23008                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           	;*** First clock out 8-bits, No ACK, and then stop to make sure device          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           	;    is not locked up                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000109   0cff     MOVLW     0xff             movlw 0xFF            ; Set TempData all '1's to make SDA an input             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00010a   002b     MOVWF     0xb              movwf TempData        ; so can read the data                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00010b   092f     CALL      0x2f             call  I2CClockByte    ; Data is now in ReadData variable                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00010c   0987     CALL      0x87             call  NoACK                                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00010d   0965     CALL      0x65             call  I2CStop                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           I2CWriteIODIR                                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00010e   0c00     MOVLW     0x0              movlw IODIR             ; Load Addr                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00010f   0028     MOVWF     0x8              movwf Addr                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000110   0cff     MOVLW     0xff             movlw 0xFF              ; Initially make all inputs (which is default anyway)  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000111   0029     MOVWF     0x9              movwf DataByte                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000112   0902     CALL      0x2              call  I2CByteWrite      ; Call I2C Byte Write                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Now verify that the register was correctly written                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000113   0c00     MOVLW     0x0              movlw IODIR             ; Load Addr                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000114   0028     MOVWF     0x8              movwf Addr                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000115   0914     CALL      0x14             call  I2CByteRead                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000116   0209     MOVF      0x9,0x0          movf  DataByte,w        ; Load data written to be                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000117   018d     XORWF     0xd,0x0          xorwf ReadData,w        ; compared to data read                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000118   0743     BTFSS     0x3,0x2          btfss STATUS,Z          ; If the same, skip                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000119   0b0e     GOTO      0x10e            goto  I2CWriteIODIR     ; Otherwise, try again                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Init23S08                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SPIWriteIODIR                                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00011a   0c00     MOVLW     0x0              movlw IODIR             ; Load Addr                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00011b   0028     MOVWF     0x8              movwf Addr                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00011c   0cff     MOVLW     0xff             movlw 0xFF              ; Make all inputs                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00011d   0029     MOVWF     0x9              movwf DataByte                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00011e   09a7     CALL      0xa7             call  SPIByteWrite      ; Write byte                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Now verify that the register was correctly written                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00011f   09be     CALL      0xbe             call  SPIByteRead       ; Read byte                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000120   0209     MOVF      0x9,0x0          movf  DataByte,w        ; Load data written to be                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000121   018d     XORWF     0xd,0x0          xorwf ReadData,w        ; compared to data read                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000122   0743     BTFSS     0x3,0x2          btfss STATUS,Z          ; If the same, skip                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000123   0b1a     GOTO      0x11a            goto  SPIWriteIODIR                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           CheckToggleSwitch                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000124   0004     TRIS      0x4              clrwdt                  ; Clear the watchdog timer                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set CS = Input (will pull to switch value) (0 = SPI, 1 = I2C)             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000125   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000126   0d02     IORLW     0x2              iorlw	CS_IN             ; make an input                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000127   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000128   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000129   0000     NOP                        nop                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00012a   0000     NOP                        nop                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00012b   0000     NOP                        nop                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00012c   0000     NOP                        nop                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00012d   0210     MOVF      0x10,0x0         movf  NewSwitch,w       ; Move to OldSwitch                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00012e   002f     MOVWF     0xf              movwf OldSwitch                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00012f   0726     BTFSS     0x6,0x1          btfss nCS               ; I2C mode if SET, SPI mode if CLEAR                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000130   0b32     GOTO      0x132            goto  SetSwitchSPI                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000131   0b3e     GOTO      0x13e            goto  SetSwitchI2C                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SetSwitchSPI                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set CS = HIGH                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000132   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000133   0efd     ANDLW     0xfd             andlw	CS_OUT            ; make an output                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000134   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000135   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000136   0c02     MOVLW     0x2              movlw 0x02              ; Need to drive nCS high                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000137   0026     MOVWF     0x6              movwf GPIO              ;                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000138   0c00     MOVLW     0x0              movlw 0x00                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000139   0030     MOVWF     0x10             movwf NewSwitch                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00013a   018f     XORWF     0xf,0x0          xorwf OldSwitch,w       ;                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00013b   0743     BTFSS     0x3,0x2          btfss STATUS,Z          ; Skip if switches differ                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00013c   0b68     GOTO      0x168            goto  SetSPIMode        ; Need to make I2C device all inputs first             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00013d   0b72     GOTO      0x172            goto  SPILoop           ; Can jump straight to SPI routines                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SetSwitchI2C                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set CS = HIGH so SPI device is not disturbed if switch is flipped         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;    during I2C operation                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00013e   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00013f   0efd     ANDLW     0xfd             andlw	CS_OUT            ; make an output                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000140   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000141   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000142   0c02     MOVLW     0x2              movlw 0x02              ; Need to drive nCS high                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000143   0026     MOVWF     0x6              movwf GPIO              ;                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000144   0c01     MOVLW     0x1              movlw 0x01                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000145   0030     MOVWF     0x10             movwf NewSwitch                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000146   018f     XORWF     0xf,0x0          xorwf OldSwitch,w       ;                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000147   0743     BTFSS     0x3,0x2          btfss STATUS,Z          ; Skip if switches differ                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000148   0b4a     GOTO      0x14a            goto  SetI2CMode        ; Need to make SPI device all inputs first             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000149   0b54     GOTO      0x154            goto  I2CLoop           ; Can jump straight to I2C routines                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;*** IF SWITCHED TO I2C MODE ***                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;*******************************                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SetI2CMode                                                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** First make the other device all inputs                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SPIWriteIODIR_1                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00014a   0c00     MOVLW     0x0              movlw IODIR             ; Load Addr                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00014b   0028     MOVWF     0x8              movwf Addr                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00014c   0cff     MOVLW     0xff             movlw 0xFF              ; Make all inputs                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00014d   0029     MOVWF     0x9              movwf DataByte                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00014e   09a7     CALL      0xa7             call  SPIByteWrite      ; Write byte                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Now verify that the register was correctly written                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00014f   09be     CALL      0xbe             call  SPIByteRead       ; Read byte                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000150   0209     MOVF      0x9,0x0          movf  DataByte,w        ; Load data written to be                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000151   018d     XORWF     0xd,0x0          xorwf ReadData,w        ; compared to data read                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000152   0743     BTFSS     0x3,0x2          btfss STATUS,Z          ; If the same, skip                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000153   0b4a     GOTO      0x14a            goto  SPIWriteIODIR_1                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;***Now configure the I/O                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           I2CLoop                                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           I2CWriteIODIR_2                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000154   0c00     MOVLW     0x0              movlw IODIR             ; Load Addr                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000155   0028     MOVWF     0x8              movwf Addr                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000156   0cf0     MOVLW     0xf0             movlw 0xF0              ; GP7:4 = Inputs; GP3:0 = Outputs                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000157   0029     MOVWF     0x9              movwf DataByte                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000158   0902     CALL      0x2              call  I2CByteWrite      ; Call I2C Byte Write                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Now verify that the register was correctly written                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000159   0914     CALL      0x14             call  I2CByteRead                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00015a   0209     MOVF      0x9,0x0          movf  DataByte,w        ; Load data written to be                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00015b   018d     XORWF     0xd,0x0          xorwf ReadData,w        ; compared to data read                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00015c   0743     BTFSS     0x3,0x2          btfss STATUS,Z          ; If the same, skip                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00015d   0b54     GOTO      0x154            goto  I2CWriteIODIR_2   ; Otherwise, try again                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Read Inputs (I2C)                                                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00015e   0c09     MOVLW     0x9              movlw MCPGPIO           ; Load Addr                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00015f   0028     MOVWF     0x8              movwf Addr                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000160   0914     CALL      0x14             call  I2CByteRead       ; Data will be stored in "ReadData"                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000161   020d     MOVF      0xd,0x0          movf  ReadData,w        ; Move Read data...                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000162   0029     MOVWF     0x9              movwf DataByte          ; into the write data                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set outputs to match inputs                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000163   03a9     SWAPF     0x9,0x1          swapf DataByte,f        ; Swap nibbles so switch data can be written to LEDs   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000164   0c0a     MOVLW     0xa              movlw OLAT              ; Load Addr                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000165   0028     MOVWF     0x8              movwf Addr                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000166   0902     CALL      0x2              call  I2CByteWrite      ; Call I2C Byte Write ("DataByte" is already loaded);  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Start Over                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000167   0b24     GOTO      0x124            goto  CheckToggleSwitch ; Start over                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;*** ELSE IF SWITCHED TO SPI MODE ***                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;************************************                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SetSPIMode                                                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;*** First make the other device all inputs                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           I2CWriteIODIR_1                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000168   0c00     MOVLW     0x0              movlw IODIR             ; Load Addr                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000169   0028     MOVWF     0x8              movwf Addr                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00016a   0cff     MOVLW     0xff             movlw 0xFF              ; Initially make all inputs (which is default anyway)  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00016b   0029     MOVWF     0x9              movwf DataByte                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00016c   0902     CALL      0x2              call  I2CByteWrite      ; Call I2C Byte Write                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00016d   0914     CALL      0x14             call  I2CByteRead                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00016e   0209     MOVF      0x9,0x0          movf  DataByte,w        ; Load data written to be                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00016f   018d     XORWF     0xd,0x0          xorwf ReadData,w        ; compared to data read                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000170   0743     BTFSS     0x3,0x2          btfss STATUS,Z          ; If the same, skip                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000171   0b68     GOTO      0x168            goto  I2CWriteIODIR_1   ; Otherwise, try again                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SPILoop                                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Now configure the I/O                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SPIWriteIODIR_2                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000172   0c00     MOVLW     0x0              movlw IODIR             ; Load Addr                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000173   0028     MOVWF     0x8              movwf Addr                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000174   0cf0     MOVLW     0xf0             movlw 0xF0              ; GP7:4 = Inputs; GP3:0 = Outputs                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000175   0029     MOVWF     0x9              movwf DataByte                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000176   09a7     CALL      0xa7             call  SPIByteWrite      ; Write byte                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000177   09be     CALL      0xbe             call  SPIByteRead       ; Read byte                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000178   0209     MOVF      0x9,0x0          movf  DataByte,w        ; Load data written to be                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000179   018d     XORWF     0xd,0x0          xorwf ReadData,w        ; compared to data read                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00017a   0743     BTFSS     0x3,0x2          btfss STATUS,Z          ; If the same, skip                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00017b   0b72     GOTO      0x172            goto  SPIWriteIODIR_2                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Read Inputs (SPI)                                                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00017c   0c09     MOVLW     0x9              movlw MCPGPIO           ; Load Addr                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00017d   0028     MOVWF     0x8              movwf Addr                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00017e   09be     CALL      0xbe             call  SPIByteRead       ; Data will be stored in "ReadData"                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00017f   020d     MOVF      0xd,0x0          movf  ReadData,w        ; Move Read data...                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000180   0029     MOVWF     0x9              movwf DataByte          ; into the write data                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000181   03a9     SWAPF     0x9,0x1          swapf DataByte,f        ; Swap nibbles so switch data can be written to LEDs   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set outputs to match inputs                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000182   0c0a     MOVLW     0xa              movlw OLAT              ; Load Addr                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000183   0028     MOVWF     0x8              movwf Addr                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000184   09a7     CALL      0xa7             call  SPIByteWrite      ; Call I2C Byte Write ("DataByte" is already loaded);  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Start Over                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000185   0b24     GOTO      0x124            goto  CheckToggleSwitch ; Start over                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;***************************** SUBROUTINES CODE *******************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SUBROUTINES CODE                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;****************************** I2C Routines **********************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; I2CByteWrite - Writes an I2C byte                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; OPCODE w/ An pins (R/W = 0)                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; ADDR                                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Write Data                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           I2CByteWrite                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000002   0950     CALL      0x50             call  I2CStart                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** OPCODE                                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000003   0c40     MOVLW     0x40             movlw OPCODE          ; Load Opcode                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000004   0d00     IORLW     0x0              iorlw AnPINS          ; IOR An pins                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000005   002b     MOVWF     0xb              movwf TempData        ; Place in data byte                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000006   0c00     MOVLW     0x0              movlw WRITECMD        ; Write command                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000007   012b     IORWF     0xb,0x1          iorwf TempData, 1     ; IOR write command and place results in TempData        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000008   092f     CALL      0x2f             call  I2CClockByte                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000009   0994     CALL      0x94             call  IsACK?                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Address                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00000a   0208     MOVF      0x8,0x0          movf  Addr,w          ; Load Address                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00000b   002b     MOVWF     0xb              movwf TempData        ; Place in data byte                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00000c   092f     CALL      0x2f             call  I2CClockByte                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00000d   0994     CALL      0x94             call  IsACK?                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Data                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00000e   0209     MOVF      0x9,0x0          movf  DataByte,w      ; Load Data (was configured outside of subroutine)       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00000f   002b     MOVWF     0xb              movwf TempData        ; Place in data byte                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000010   092f     CALL      0x2f             call  I2CClockByte                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000011   0994     CALL      0x94             call  IsACK?                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000012   0965     CALL      0x65             call  I2CStop                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000013   0800     RETLW     0x0              retlw 0                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; I2CByteRead - Reads an I2C byte                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; S                                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; OPCODE w/ An pins (R/W = 0)                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; ADDR                                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; ReStart                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; OPCODE w/ An pins (R/W = 1)                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Read Data                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           I2CByteRead                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000014   0950     CALL      0x50             call  I2CStart                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** OPCODE (R/W = 0)                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000015   0c40     MOVLW     0x40             movlw OPCODE          ; Load Opcode                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000016   0d00     IORLW     0x0              iorlw AnPINS          ; IOR An pins                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000017   002b     MOVWF     0xb              movwf TempData        ; Place in data byte                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000018   0c00     MOVLW     0x0              movlw WRITECMD        ; WRITE command                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000019   012b     IORWF     0xb,0x1          iorwf TempData, 1     ;IOR write command and place results in TempData         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00001a   092f     CALL      0x2f             call  I2CClockByte                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00001b   0994     CALL      0x94             call  IsACK?                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Address                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00001c   0208     MOVF      0x8,0x0          movf  Addr,w          ; Load Address                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00001d   002b     MOVWF     0xb              movwf TempData        ; Place in data byte                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00001e   092f     CALL      0x2f             call  I2CClockByte                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00001f   0994     CALL      0x94             call  IsACK?                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000020   0950     CALL      0x50             call  I2CStart        ; ReStart                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** OPCODE (R/W = 1)                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000021   0c40     MOVLW     0x40             movlw OPCODE          ; Load Opcode                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000022   0d00     IORLW     0x0              iorlw AnPINS          ; IOR An pins                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000023   002b     MOVWF     0xb              movwf TempData        ; Place in data byte                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000024   0c01     MOVLW     0x1              movlw READCMD         ; READ command                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000025   012b     IORWF     0xb,0x1          iorwf TempData, 1     ; IOR write command and place results in TempData        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000026   092f     CALL      0x2f             call  I2CClockByte                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000027   0994     CALL      0x94             call  IsACK?                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Read data                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000028   006d     CLRF      0xd              clrf  ReadData                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000029   0cff     MOVLW     0xff             movlw 0xFF            ; Set TempData all '1's to make SDA an input             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00002a   002b     MOVWF     0xb              movwf TempData        ; so can read the data                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00002b   092f     CALL      0x2f             call  I2CClockByte    ; Data is now in ReadData variable                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00002c   0987     CALL      0x87             call  NoACK                                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00002d   0965     CALL      0x65             call  I2CStop                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00002e   0800     RETLW     0x0              retlw 0                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; I2CClockByte - Clocks a byte.                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           I2CClockByte                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00002f   0c08     MOVLW     0x8              movlw	  0x08          ; For looping on 1 byte                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000030   002a     MOVWF     0xa              movwf   BitCount                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           NextBit                 ; Loop through data                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000031   036b     RLF       0xb,0x1          rlf     TempData,f	  ; Else, shift bits through C bit. MSB first, Note TempData is lost K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000032   0a36     GOTO      0x36             goto    I2CClockBit                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ContinueI2C                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000033   02ea     DECFSZ    0xa,0x1          decfsz  BitCount,f                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000034   0a31     GOTO      0x31             goto    NextBit       ; END of loop                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000035   0800     RETLW     0x0              retlw 0                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; I2CClockBit - Clock a bit MCP23008 (I2C)                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; W reg contains data bit level                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Set SDA level                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SCL = HIGH                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SCL = LOW                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; This is not actually a subroutine, however, it was split from the              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; I2CClockByte routing for clarity.                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           I2CClockBit                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000036   0603     BTFSC     0x3,0x0          btfsc	STATUS,C        ; Check if a '1' or '0'                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000037   0a3d     GOTO      0x3d             goto  SDAHigh                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SDALow                                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Either Set SDA = LOW                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000038   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000039   0efb     ANDLW     0xfb             andlw	SDA_L		        ; make SDA an output (drive LOW)                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00003a   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00003b   0006     TRIS      0x6              tris	GPIO			                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00003c   0a41     GOTO      0x41             goto  PulseSCL                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SDAHigh                                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** OR Set SDA = HIGH                                                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00003d   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00003e   0d04     IORLW     0x4              iorlw	SDA_H		        ; make SDA an input (float HIGH)                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00003f   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000040   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           PulseSCL                                                                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set clock = HIGH                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000041   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000042   0d01     IORLW     0x1              iorlw	SCL_H		        ; make SCL an input (float HIGH)                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000043   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000044   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           	;*** First check SDA value (this is for I2C reads)                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000045   0c00     MOVLW     0x0              movlw 0               ; Check status of SDA pin                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000046   0646     BTFSC     0x6,0x2          btfsc SDA             ; Make sure SDAbit is cleared by the calling routine first K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000047   0c01     MOVLW     0x1              movlw 1                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000048   0403     BCF       0x3,0x0          bcf   STATUS,C                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000049   036d     RLF       0xd,0x1          rlf   ReadData,f      ; Shift left by one bit (for next time through)          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00004a   01ed     ADDWF     0xd,0x1          addwf ReadData,f      ; Place value into variable                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set clock = LOW                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00004b   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00004c   0efe     ANDLW     0xfe             andlw	SCL_L		        ; make SCL an output (drive LOW)                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00004d   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00004e   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00004f   0a33     GOTO      0x33             goto  ContinueI2C                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; I2CStart - Send a START bit MCP23008 (I2C)                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SCL = LOW                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SDA = HIGH                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SCL = HIGH                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SDA = LOW                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           I2CStart                                                                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SCL = LOW ...Just in case it is not already                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000050   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000051   0efe     ANDLW     0xfe             andlw	SCL_L		      ; make SCL an output (drive LOW)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000052   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000053   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SDA = HIGH                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000054   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000055   0d04     IORLW     0x4              iorlw	SDA_H		      ; make SDA an input (float HIGH)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000056   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000057   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SCL = HIGH                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000058   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000059   0d01     IORLW     0x1              iorlw	SCL_H		      ; make SCL an input (float HIGH)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00005a   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00005b   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SDA = LOW                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00005c   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00005d   0efb     ANDLW     0xfb             andlw	SDA_L		      ; make SDA an output (drive LOW)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00005e   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00005f   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           			                                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SCL = LOW before exiting                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000060   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000061   0efe     ANDLW     0xfe             andlw	SCL_L		      ; make SCL an output (drive LOW)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000062   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000063   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000064   0800     RETLW     0x0              retlw 0	                                                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; I2CStop - Send a STOP bit MCP23008 (I2C)                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SCL = LOW                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SDA = LOW                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SCL = HIGH                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SDA = HIGH                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           I2CStop                                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SCL = LOW ...Just in case it is not already                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000065   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000066   0efe     ANDLW     0xfe             andlw	SCL_L		      ; make SCL an output (drive LOW)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000067   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000068   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SDA = LOW                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000069   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00006a   0efb     ANDLW     0xfb             andlw	SDA_L		      ; make SDA an output (drive LOW)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00006b   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00006c   0006     TRIS      0x6              tris	GPIO			                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           	;*** Set SCL = HIGH                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00006d   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00006e   0d01     IORLW     0x1              iorlw	SCL_H		      ; make SCL an input (float HIGH)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00006f   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000070   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SDA = HIGH                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000071   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000072   0d04     IORLW     0x4              iorlw	SDA_H		      ; make SDA an input (float HIGH)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000073   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000074   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000075   0800     RETLW     0x0              retlw 0                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; I2CACK - Send an ACK bit to the MCP23008 (I2C)                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           I2CACK                                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SDA = LOW                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000076   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000077   0efb     ANDLW     0xfb             andlw	SDA_L		      ; make SDA an output (drive LOW)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000078   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000079   0006     TRIS      0x6              tris	GPIO			                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SCL = HIGH                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00007a   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00007b   0d01     IORLW     0x1              iorlw	SCL_H		      ; make SCL an input (float HIGH)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00007c   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00007d   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SCL = LOW ...Just in case it is not already                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00007e   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00007f   0efe     ANDLW     0xfe             andlw	SCL_L		      ; make SCL an output (drive LOW)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000080   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000081   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SDA = HIGH                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000082   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000083   0d04     IORLW     0x4              iorlw	SDA_H		      ; make SDA an input (float HIGH)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000084   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000085   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000086   0800     RETLW     0x0              retlw 0                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; NoACK - Send a NACK (no ACK) bit to the MCP23008 (I2C)                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           NoACK                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SDA = HIGH                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000087   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000088   0d04     IORLW     0x4              iorlw	SDA_H		      ; make SDA an input (float HIGH)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000089   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00008a   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set clock = HIGH                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00008b   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00008c   0d01     IORLW     0x1              iorlw	SCL_H		      ; make SCL an input (float HIGH)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00008d   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00008e   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           	                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set clock = LOW                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00008f   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000090   0efe     ANDLW     0xfe             andlw	SCL_L		      ; make SCL an output (drive LOW)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000091   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000092   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000093   0800     RETLW     0x0              retlw 0                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; IsACK? - Check if device ACKed                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           IsACK?                                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SDA = HIGH                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000094   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000095   0d04     IORLW     0x4              iorlw	SDA_H		      ; make SDA an input (float HIGH)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000096   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000097   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000098   0206     MOVF      0x6,0x0          movfw GPIO          ; Will check SDA pin level later                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+000099   002e     MOVWF     0xe              movwf ACKStat       ; Place in variable                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Pulse SCL to clear ACK slot                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set clock = HIGH                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00009a   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00009b   0d01     IORLW     0x1              iorlw	SCL_H		      ; make SCL an input (float HIGH)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00009c   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00009d   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set clock = LOW                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00009e   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+00009f   0efe     ANDLW     0xfe             andlw	SCL_L		      ; make SCL an output (drive LOW)                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000a0   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000a1   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000a2   064e     BTFSC     0xe,0x2          btfsc ACKStat,2     ; Test ACK status (on GP2)                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000a3   0aa5     GOTO      0xa5             goto  ACK_F                                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000a4   0aa6     GOTO      0xa6             goto  ACK_T                                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ACK_F                 ; No ACK                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000a5   0800     RETLW     0x0              retlw 0                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ACK_T                 ; ACK                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000a6   0801     RETLW     0x1              retlw 1                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;END*END*END******************* I2C Routines ***********************END*END*END  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;END*END*END******************* I2C Routines ***********************END*END*END  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;****************************** SPI Routines **********************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SPIByteWrite - Writes an SPI byte                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Load "DataByte" defore calling this routine                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; OPCODE w/ An pins (R/W = 0)                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; ADDR                                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Write Data                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SPIByteWrite                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set clock = LOW for MODE 00                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000a7   09f8     CALL      0xf8             call  ClockMode00                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set CS = LOW                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000a8   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000a9   0efd     ANDLW     0xfd             andlw	CS_OUT        ; make an output                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000aa   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000ab   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000ac   0c00     MOVLW     0x0              movlw 0x00          ; Drive nCS low                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000ad   0026     MOVWF     0x6              movwf GPIO          ;                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Send OPCODE                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000ae   0c40     MOVLW     0x40             movlw OPCODE        ; Load Opcode                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000af   0d00     IORLW     0x0              iorlw AnPINS        ; IOR An pins                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000b0   002b     MOVWF     0xb              movwf TempData      ; Place in data byte                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000b1   0c00     MOVLW     0x0              movlw WRITECMD      ; WRITE command                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000b2   012b     IORWF     0xb,0x1          iorwf TempData, 1   ; IOR write command and place results in TempData          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000b3   09d6     CALL      0xd6             call  SPIClockByte                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Send Address                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000b4   0208     MOVF      0x8,0x0          movf  Addr,w        ; Load Address                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000b5   002b     MOVWF     0xb              movwf TempData      ; Place in data byte                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000b6   09d6     CALL      0xd6             call  SPIClockByte                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Send Data                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000b7   0209     MOVF      0x9,0x0          movf  DataByte,w    ; Load Data (was configured outside of subroutine)         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000b8   002b     MOVWF     0xb              movwf TempData      ; Place in data byte                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000b9   09d6     CALL      0xd6             call  SPIClockByte                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set clock = LOW for MODE 00                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000ba   09f8     CALL      0xf8             call  ClockMode00                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           	;*** Set CS = HIGH                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000bb   0c02     MOVLW     0x2              movlw 0x02          ; Drive nCS high                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000bc   0026     MOVWF     0x6              movwf GPIO          ;                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000bd   0800     RETLW     0x0              retlw 0                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SPIByteRead - Reads an SPI byte                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; OPCODE w/ An pins (R/W = 0)                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; ADDR                                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Read Data                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SPIByteRead                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set clock = LOW for MODE 00                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000be   09f8     CALL      0xf8             call  ClockMode00                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set CS = LOW                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000bf   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000c0   0efd     ANDLW     0xfd             andlw	CS_OUT        ; make an output                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000c1   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000c2   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000c3   0c00     MOVLW     0x0              movlw 0x00          ; Drive nCS low                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000c4   0026     MOVWF     0x6              movwf GPIO          ;                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Send OPCODE                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000c5   0c40     MOVLW     0x40           	movlw OPCODE        ; Load Opcode                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000c6   0d00     IORLW     0x0              iorlw AnPINS        ; IOR An pins                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000c7   002b     MOVWF     0xb              movwf TempData      ; Place in data byte                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000c8   0c01     MOVLW     0x1              movlw READCMD       ; READ command                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000c9   012b     IORWF     0xb,0x1          iorwf TempData, 1   ; IOR write command and place results in TempData          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000ca   09d6     CALL      0xd6             call  SPIClockByte                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Send Address                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000cb   0208     MOVF      0x8,0x0          movf Addr,w         ; Load Address                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000cc   002b     MOVWF     0xb              movwf TempData      ; Place in data byte                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000cd   09d6     CALL      0xd6             call  SPIClockByte                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Read Data                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000ce   006d     CLRF      0xd              clrf  ReadData      ; Clear byte that holds data                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000cf   0cff     MOVLW     0xff             movlw 0xFF          ; Make TempData all ones so SI stays high                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000d0   022b     MOVF      0xb,0x1          movf  TempData,f    ; during the read of SO                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000d1   09d6     CALL      0xd6             call  SPIClockByte  ; Data is now in ReadData variable                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set clock = LOW for MODE 00                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000d2   09f8     CALL      0xf8             call  ClockMode00                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           	;*** Set CS = HIGH                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000d3   0c02     MOVLW     0x2              movlw 0x02          ; Drive nCS High                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000d4   0026     MOVWF     0x6              movwf GPIO          ;                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000d5   0800     RETLW     0x0              retlw 0                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SPIClockByte - Clocks a byte                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SPIClockByte                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000d6   0c08     MOVLW     0x8              movlw	0x08            ; For looping on 1 byte                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000d7   002a     MOVWF     0xa              movwf BitCount                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           NextSPIBit              ; Loop through data                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000d8   036b     RLF       0xb,0x1          rlf     TempData,f	  ; MSB first, Note TempData is lost                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000d9   0add     GOTO      0xdd             goto    SPIClockBit   ;                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ContinueSPI                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000da   02ea     DECFSZ    0xa,0x1          decfsz  BitCount,f                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000db   0ad8     GOTO      0xd8             goto    NextSPIBit    ; END of loop                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000dc   0800     RETLW     0x0              retlw 0                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SPIClockBit - Clocks a bit                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; This is not actually a subroutine, however, it was split from the              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; SPIClockByte routing for clarity.                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SPIClockBit                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000dd   0603     BTFSC     0x3,0x0          btfsc	STATUS,C        ; Check if a '1' or '0'                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000de   0ae4     GOTO      0xe4             goto  SIHigh                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SI = LOW                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SILow                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000df   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000e0   0efb     ANDLW     0xfb             andlw	SI_L	  	      ; make an output (drive LOW)                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000e1   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000e2   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000e3   0ae9     GOTO      0xe9             goto  PulseSCK			                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           SIHigh                                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set SI = HIGH                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000e4   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000e5   0d04     IORLW     0x4              iorlw	SI_H  		      ; make an input (float HIGH)                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000e6   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000e7   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000e8   0ae9     GOTO      0xe9             goto  PulseSCK                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           PulseSCK                                                                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set clock = HIGH                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000e9   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000ea   0d01     IORLW     0x1              iorlw	SCK_H  		      ; make an input (float HIGH)                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000eb   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000ec   0006     TRIS      0x6              tris	GPIO                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           	                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** First check SDA value                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000ed   0c00     MOVLW     0x0              movlw 0x00            ; Check status of SO pin                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000ee   0666     BTFSC     0x6,0x3          btfsc SO              ; Test pin state, skip if LOW                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000ef   0c01     MOVLW     0x1              movlw 0x01                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000f0   0403     BCF       0x3,0x0          bcf   STATUS,C                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000f1   036d     RLF       0xd,0x1          rlf   ReadData,1      ; Shift left by one bit (for next time through)          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000f2   012d     IORWF     0xd,0x1          iorwf ReadData,1      ; Place value into variable                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             ;*** Set clock = LOW                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000f3   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000f4   0efe     ANDLW     0xfe             andlw	SCK_L	  	      ; make an output (drive LOW)                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000f5   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000f6   0006     TRIS      0x6              tris	GPIO			                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000f7   0ada     GOTO      0xda             goto  ContinueSPI                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;END*END*END******************* SPI Routines ***********************END*END*END  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;END*END*END******************* SPI Routines ***********************END*END*END  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;*************************** Low Level Pin Control ***************************   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;*************************** Low Level Pin Control ***************************   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; ClockMode00 - Sets SCK LOW                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ; Note: Cannot call from Byte level or Bit level routines due to stack           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;       limitation.                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;******************************************************************************  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ClockMode00                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000f8   0212     MOVF      0x12,0x0         movf	RAMTRIS,w                                                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000f9   0efe     ANDLW     0xfe             andlw	SCK_L	  	      ; make an output (drive LOW)                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000fa   0032     MOVWF     0x12             movwf	RAMTRIS                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000fb   0006     TRIS      0x6              tris	GPIO			                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           	                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+0000fc   0800     RETLW     0x0              retlw 0                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;END*END*END**************** Low Level Pin Control ****************END*END*END   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                           ;END*END*END**************** Low Level Pin Control ****************END*END*END   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm
+                                             END                       	; directive 'end of program'                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN972\00010R1.asm

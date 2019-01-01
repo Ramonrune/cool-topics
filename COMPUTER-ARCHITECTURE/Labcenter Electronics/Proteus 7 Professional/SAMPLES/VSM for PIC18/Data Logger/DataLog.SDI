@@ -1,0 +1,749 @@
+,,,LIST p=18F458 ;PIC18F458 is the target processor
+,,,
+,,,#include "P18f458.INC" ;Include header file
+,,,
+,,,;====================================================================
+,,,; Macros
+,,,;--------------------------------------------------------------------
+,,,
+,,,#define CLK_FREQ        D'20000000'
+,,,#define BAUD(x) ((CLK_FREQ/x)/D'64')-1
+,,,
+,,,#define BRG_VAL BAUD(D'9600')   ;Baud rate configuration value
+,,,
+,,,;====================================================================
+,,,; Uninitialised data
+,,,;--------------------------------------------------------------------
+,,,
+,,,; General temps
+,,,TMP1            equ     0x000000
+,,,TMP2            equ     0x000001
+,,,
+,,,; Current LBA sector address for reading/wring
+,,,ATA_A0          equ     0x000002
+,,,ATA_A1          equ     0x000003
+,,,ATA_A2          equ     0x000004
+,,,ATA_A3          equ     0x000005
+,,,
+,,,; Counter used to track data words read/written to/from ATA
+,,,ATA_CNT         equ     0x000006
+,,,
+,,,; High priority interrupt temps
+,,,STATUS_TEMP_H   equ     0x000007
+,,,WREG_TEMP_H     equ     0x000008
+,,,BSR_TEMP_H      equ     0x000009
+,,,
+,,,; Low priority interrupt temps
+,,,STATUS_TEMP_L   equ     0x00000A
+,,,WREG_TEMP_L     equ     0x00000B
+,,,BSR_TEMP_L      equ     0x00000C
+,,,
+,,,; Countdown number of timer 0 overflows
+,,,T0COUNT         equ     0x00000D
+,,,
+,,,; End of logged data
+,,,END_POSL        equ     0x00000E
+,,,END_POSH        equ     0x00000F
+,,,END_ATA_A0      equ     0x000010
+,,,END_ATA_A1      equ     0x000011
+,,,END_ATA_A2      equ     0x000012
+,,,END_ATA_A3      equ     0x000013
+,,,
+,,,; Temp for log data to be displayed
+,,,INPDATA_L       equ     0x000014
+,,,INPDATA_H       equ     0x000015
+,,,
+,,,; Countdoen the number of log entries on a display line
+,,,OUT_COUNT       equ     0x000016
+,,,
+,,,; ATA data transfer buffer
+,,,ATA_BUF         equ     0x000400
+,,,ATA_BUF_END     equ     0x000600
+,,,
+,,,;====================================================================
+,,,; Interrupt vectors
+,,,;--------------------------------------------------------------------
+00000000,,,        org     0x000000        ;Reset vector
+00000000,D00C,,        bra     START
+,,,
+00000008,,,        org     0x000008        ;High priority interrupt vector
+00000008,D052,,        bra     INT_HIGH
+,,,
+00000018,,,        org     0x000018        ;Low priority interrupt vector
+00000018,D05B,,        bra     INT_LOW
+,,,
+,,,;====================================================================
+,,,; Main program
+,,,;--------------------------------------------------------------------
+0000001A,,START,START
+0000001A,D82F,,        rcall   INIT            ; Program initialisation
+0000001C,D909,,        rcall   OUT_VERSION     ; Version message
+0000001E,,REHELP,REHELP
+0000001E,D910,,        rcall   OUT_HELP        ; Help message
+00000020,,MLOOP,MLOOP
+00000020,D917,,        rcall   OUT_COMMAND     ; Command prompt
+,,,
+00000022,D870,,        rcall   UART_Getch      ; Get user input
+00000024,6E00,,        movwf   TMP1            ; and store
+,,,
+00000026,D91C,,        rcall   OUT_CRLF        ; Newline
+00000028,0E68,,        movlw   'h'             ; Check for help
+0000002A,1800,,        xorwf   TMP1, W
+0000002C,E0F8,,        bz      REHELP
+0000002E,0E48,,        movlw   'H'
+00000030,1800,,        xorwf   TMP1, W
+00000032,E0F5,,        bz      REHELP
+00000034,0E76,,        movlw   'v'             ; Check for version
+00000036,1800,,        xorwf   TMP1, W
+00000038,E012,,        bz      VERSION
+0000003A,0E56,,        movlw   'V'
+0000003C,1800,,        xorwf   TMP1, W
+0000003E,E00F,,        bz      VERSION
+00000040,0E6C,,        movlw   'l'             ; Check for log start
+00000042,1800,,        xorwf   TMP1, W
+00000044,E00F,,        bz      LOG
+00000046,0E4C,,        movlw   'L'
+00000048,1800,,        xorwf   TMP1, W
+0000004A,E00C,,        bz      LOG
+0000004C,0E64,,        movlw   'd'             ; Check for log dump
+0000004E,1800,,        xorwf   TMP1, W
+00000050,E010,,        bz      DUMP
+00000052,0E44,,        movlw   'D'
+00000054,1800,,        xorwf   TMP1, W
+00000056,E00D,,        bz      DUMP
+00000058,D90B,,        rcall   OUT_UNKNOWN     ; Command is unknown
+0000005A,EF10 F000,,        goto    MLOOP
+,,,
+0000005E,D8E8,VERSION,VERSION rcall   OUT_VERSION     ; Version message
+00000060,EF10 F000,,        goto    MLOOP
+,,,
+00000064,D90D,LOG,LOG     rcall   OUT_LOG         ; Log start message
+00000066,D926,,        rcall   LOG_START       ; Enable logging under interrupt
+00000068,D84D,,        rcall   UART_Getch      ; Wait for any user input
+0000006A,D92C,,        rcall   LOG_STOP        ; Terminate logging
+0000006C,D8F9,,        rcall   OUT_CRLF
+0000006E,EF10 F000,,        goto    MLOOP
+,,,
+00000072,D90E,DUMP,DUMP    rcall   OUT_DUMP        ; Dump start message
+00000074,D955,,        rcall   DUMP_ALL        ; Dump data
+00000076,EF10 F000,,        goto    MLOOP
+,,,
+,,,;====================================================================
+,,,; Program initialisation
+,,,;--------------------------------------------------------------------
+0000007A,,INIT,INIT
+,,,        ;Setup serial comms
+0000007A,0E90,,        movlw   b'10010000'     ;Enable USART in continous receive mode
+0000007C,6EAB,,        movwf   RCSTA
+0000007E,0E22,,        movlw   b'00100010'     ;Async, TX enabled, low baud rate
+00000080,6EAC,,        movwf   TXSTA
+00000082,0E1F,,        movlw   BRG_VAL         ;Set baud rate
+00000084,6EAF,,        movwf   SPBRG
+00000086,50AE,,        movf    RCREG, W        ;Flush out RX buffer
+00000088,50AE,,        movf    RCREG, W
+,,,
+,,,        ;Setup I/O ports
+0000008A,6A80,,        clrf    PORTA
+0000008C,6892,,        setf    TRISA           ; Port A all input
+0000008E,6A81,,        clrf    PORTB
+00000090,6893,,        setf    TRISB           ; Port B all input, ATA D0-7
+00000092,6A82,,        clrf    PORTC
+00000094,0EE0,,        movlw   B'11100000'     ; Port C lower bits for ATA adressing
+00000096,6E94,,        movwf   TRISC
+00000098,0E07,,        movlw   B'00000111'     ; Turn off comparitor
+0000009A,6EB4,,        movwf   CMCON           ; On PORTD bits 0-3
+0000009C,6A83,,        clrf    PORTD
+0000009E,6895,,        setf    TRISD           ; Port D all input, ATA D8-15
+000000A0,0E03,,        movlw   B'00000011'
+000000A2,6E84,,        movwf   PORTE
+000000A4,0E04,,        movlw   B'00000100'     ; Port E lower two bits output for ATA
+000000A6,6E96,,        movwf   TRISE           ; read and write
+000000A8,D91E,,        rcall   LOG_RESET       ; Reset log pointers
+000000AA,D910,,        rcall   LOG_UPDATE
+000000AC,0012,,        return
+,,,
+,,,;====================================================================
+,,,; High priority intrrupt handler
+,,,;--------------------------------------------------------------------
+000000AE,,INT_HIGH,INT_HIGH
+000000AE,CFD8 F007,,        movff   STATUS, STATUS_TEMP_H
+000000B2,CFE0 F009,,        movff   BSR, BSR_TEMP_H
+000000B6,6E08,,        movwf   WREG_TEMP_H
+,,,
+000000B8,94F2,,        bcf     INTCON, TMR0IF  ;Clear timer 0 overflow interrupt flag
+000000BA,2E0D,,        decfsz  T0COUNT
+000000BC,D003,,        bra     INT_HIGH_EXIT1
+000000BE,0E14,,        movlw   D'20'           ;Only start conversion every 20 timer 0 timeouts
+000000C0,6E0D,,        movwf   T0COUNT
+000000C2,84C2,,        bsf     ADCON0, GO      ;Start ADC conversion
+,,,
+000000C4,,INT_HIGH_EXIT1,INT_HIGH_EXIT1
+000000C4,5008,,        movf    WREG_TEMP_H, W
+000000C6,C009 FFE0,,        movff   BSR_TEMP_H, BSR
+000000CA,C007 FFD8,,        movff   STATUS_TEMP_H, STATUS
+000000CE,0010,,        retfie
+,,,
+,,,;====================================================================
+,,,; Low prority interrupt handler
+,,,;--------------------------------------------------------------------
+000000D0,,INT_LOW,INT_LOW
+000000D0,CFD8 F00A,,        movff   STATUS, STATUS_TEMP_L
+000000D4,CFE0 F00C,,        movff   BSR, BSR_TEMP_L
+000000D8,6E0B,,        movwf   WREG_TEMP_L
+,,,
+000000DA,50C3,,        movf    ADRESL, W       ;Copy ADC result to buffer
+000000DC,6EDE,,        movwf   POSTINC2
+000000DE,50C4,,        movf    ADRESH, W       ;Copy ADC result to buffer
+000000E0,6EDE,,        movwf   POSTINC2
+,,,
+000000E2,9C9E,,        bcf     PIR1, ADIF      ;Clear ADC interrupt flag
+,,,
+000000E4,0E06,,        movlw   HIGH(ATA_BUF_END)       ; Check if at end of buffer
+000000E6,62DA,,        cpfseq  FSR2H
+000000E8,D007,,        bra     INT_LOW_EXIT1
+000000EA,0E00,,        movlw   LOW(ATA_BUF_END)
+000000EC,62D9,,        cpfseq  FSR2L
+000000EE,D004,,        bra     INT_LOW_EXIT1
+,,,
+000000F0,D82A,,        rcall   ATA_Block_Write
+000000F2,D84B,,        rcall   ATA_A_INC
+000000F4,EE24 F000,,        lfsr    FSR2, ATA_BUF   ; Point to start of data capture buffer
+,,,
+000000F8,,INT_LOW_EXIT1,INT_LOW_EXIT1
+000000F8,500B,,        movf    WREG_TEMP_L, W
+000000FA,C00C FFE0,,        movff   BSR_TEMP_L, BSR
+000000FE,C00A FFD8,,        movff   STATUS_TEMP_L, STATUS
+00000102,0010,,        retfie
+,,,
+,,,;====================================================================
+,,,; Read a byte from the serial port
+,,,;--------------------------------------------------------------------
+,,,; W contains the byte that was received
+,,,;--------------------------------------------------------------------
+00000104,,UART_Getch,UART_Getch
+00000104,0004,,        clrwdt
+00000106,AA9E,,        btfss   PIR1, RCIF      ; Wait for RX buffer full
+00000108,D7FD,,        bra     UART_Getch
+0000010A,50AE,,        movf    RCREG, W
+0000010C,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Write a byte to the serial port
+,,,;--------------------------------------------------------------------
+,,,; W contains the byte to be sent
+,,,;--------------------------------------------------------------------
+0000010E,,UART_Putch,UART_Putch
+0000010E,A89E,,        btfss   PIR1, TXIF      ; Wait for TX buffer empty
+00000110,D7FE,,        bra     UART_Putch
+00000112,6EAD,,        movwf   TXREG
+00000114,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Write null terminated string to serial port from
+,,,; program memory
+,,,;--------------------------------------------------------------------
+,,,; TBLPTR Points to the start of the string
+,,,;--------------------------------------------------------------------
+00000116,,UART_Puts_loop,UART_Puts_loop
+00000116,DFFB,,        rcall   UART_Putch
+00000118,,UART_Puts,UART_Puts
+00000118,0009,,        tblrd*+
+0000011A,50F5,,        movf    TABLAT, W
+0000011C,E1FC,,        bnz     UART_Puts_loop
+0000011E,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Read a sector from the ATA drive
+,,,;--------------------------------------------------------------------
+00000120,,ATA_Block_Read,ATA_Block_Read
+00000120,D82A,,        rcall   ATA_BSY_Wait    ; Drive ready for command
+00000122,D83A,,        rcall   ATA_Send_LBA
+00000124,0E20,,        movlw   0x20            ; Read sectors command
+00000126,6E00,,        movwf   TMP1
+00000128,0E17,,        movlw   0x17            ; ATA Command regsiter
+0000012A,D857,,        rcall   ATA_Reg8_Write
+0000012C,6A06,,        clrf    ATA_CNT
+0000012E,EE04 F000,,        lfsr    FSR0, ATA_BUF
+00000132,,ATA_Block_Read_Lp1,ATA_Block_Read_Lp1
+00000132,D81C,,        rcall   ATA_DRQ_Wait    ; Drive data waiting
+00000134,0E10,,        movlw   0x10
+00000136,D85E,,        rcall   ATA_Reg16_Read
+00000138,5000,,        movf    TMP1, W
+0000013A,6EEE,,        movwf   POSTINC0
+0000013C,5001,,        movf    TMP2, W
+0000013E,6EEE,,        movwf   POSTINC0
+00000140,3E06,,        incfsz  ATA_CNT
+00000142,D7F7,,        bra     ATA_Block_Read_Lp1
+00000144,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Write a sector too the ATA drive
+,,,;--------------------------------------------------------------------
+00000146,,ATA_Block_Write,ATA_Block_Write
+00000146,D817,,        rcall   ATA_BSY_Wait    ; Drive ready for command
+00000148,D827,,        rcall   ATA_Send_LBA
+0000014A,0E30,,        movlw   0x30            ; Write sectors command
+0000014C,6E00,,        movwf   TMP1
+0000014E,0E17,,        movlw   0x17            ; ATA Command regsiter
+00000150,D844,,        rcall   ATA_Reg8_Write
+00000152,6A06,,        clrf    ATA_CNT
+00000154,EE04 F000,,        lfsr    FSR0, ATA_BUF
+,,,
+00000158,,ATA_Block_Write_Lp1,ATA_Block_Write_Lp1
+00000158,D809,,        rcall   ATA_DRQ_Wait    ; Drive ready for data
+0000015A,50EE,,        movf    POSTINC0, W
+0000015C,6E00,,        movwf   TMP1
+0000015E,50EE,,        movf    POSTINC0, W
+00000160,6E01,,        movwf   TMP2
+00000162,0E10,,        movlw   0x10
+00000164,D854,,        rcall   ATA_Reg16_Write
+00000166,3E06,,        incfsz  ATA_CNT
+00000168,D7F7,,        bra     ATA_Block_Write_Lp1
+,,,
+0000016A,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Wait for DRQ to indicate drive is ready for data
+,,,;--------------------------------------------------------------------
+0000016C,,ATA_DRQ_Wait,ATA_DRQ_Wait
+0000016C,0E17,,        movlw   0x17            ; Drive status register
+0000016E,D82A,,        rcall   ATA_Reg8_Read
+00000170,A600,,        btfss   TMP1, 3         ; DRQ bit (data request)
+00000172,D7FC,,        bra     ATA_DRQ_Wait
+00000174,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Wait for BSY to indicate drive is ready for a command
+,,,;--------------------------------------------------------------------
+00000176,,ATA_BSY_Wait,ATA_BSY_Wait
+00000176,0E17,,        movlw   0x17            ; Drive status register
+00000178,D825,,        rcall   ATA_Reg8_Read
+0000017A,BE00,,        btfsc   TMP1, 7         ; BSY bit (busy)
+0000017C,D7FC,,        bra     ATA_BSY_Wait
+0000017E,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Zero out LBA address
+,,,;--------------------------------------------------------------------
+00000180,,ATA_A_RESET,ATA_A_RESET
+00000180,6A02,,        clrf    ATA_A0          ; Point to first sector
+00000182,6A03,,        clrf    ATA_A1
+00000184,6A04,,        clrf    ATA_A2
+00000186,6A05,,        clrf    ATA_A3
+00000188,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Increment LBA address by one
+,,,;--------------------------------------------------------------------
+0000018A,,ATA_A_INC,ATA_A_INC
+0000018A,3E02,,        incfsz  ATA_A0          ; Point to next sector
+0000018C,D004,,        bra     ATA_A_INC_EXIT
+0000018E,3E03,,        incfsz  ATA_A1
+00000190,D002,,        bra     ATA_A_INC_EXIT
+00000192,4A04,,        infsnz  ATA_A2
+00000194,2A05,,        incf    ATA_A3
+00000196,,ATA_A_INC_EXIT,ATA_A_INC_EXIT
+00000196,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Transfer LBA address to drive
+,,,;--------------------------------------------------------------------
+00000198,,ATA_Send_LBA,ATA_Send_LBA
+00000198,0E01,,        movlw   0x01            ; Sector count
+0000019A,6E00,,        movwf   TMP1
+0000019C,0E12,,        movlw   0x12            ; ATA Sector count
+0000019E,D81D,,        rcall   ATA_Reg8_Write
+000001A0,C002 F000,,        movff   ATA_A0, TMP1
+000001A4,0E13,,        movlw   0x13            ; ATA LBA 0-7 register
+000001A6,D819,,        rcall   ATA_Reg8_Write
+000001A8,C003 F000,,        movff   ATA_A1, TMP1
+000001AC,0E14,,        movlw   0x14            ; ATA LBA 8-15 register
+000001AE,D815,,        rcall   ATA_Reg8_Write
+000001B0,C004 F000,,        movff   ATA_A2, TMP1
+000001B4,0E15,,        movlw   0x15            ; ATA LBA 16-23 register
+000001B6,D811,,        rcall   ATA_Reg8_Write
+000001B8,5005,,        movf    ATA_A3, W
+000001BA,0940,,        iorlw   B'01000000'     ; Indicate address is LBA not CHS
+000001BC,6E00,,        movwf   TMP1
+000001BE,0E16,,        movlw   0x16            ; ATA LBA 24-27 register
+000001C0,D80C,,        rcall   ATA_Reg8_Write
+000001C2,0012,,        return
+,,,;====================================================================
+,,,; Read a register from the ATA drive (8 bit)
+,,,;--------------------------------------------------------------------
+,,,; W    contains address
+,,,; TMP1 contains data
+,,,;--------------------------------------------------------------------
+000001C4,,ATA_Reg8_Read,ATA_Reg8_Read
+000001C4,AA82,,        btfss   PORTC, 5        ; Wait until ready
+000001C6,D7FE,,        bra     ATA_Reg8_Read
+000001C8,0B1F,,        andlw   B'00011111'     ; Set address
+000001CA,6E82,,        movwf   PORTC
+000001CC,908D,,        bcf     LATE, 0         ; DIOR low
+000001CE,0000,,        nop                     ; Wait
+000001D0,0000,,        nop
+000001D2,5081,,        movf    PORTB, W        ; Get data
+000001D4,6E00,,        movwf   TMP1
+000001D6,808D,,        bsf     LATE, 0         ; DIOR high
+000001D8,0012,,        return
+,,,
+,,,; +-----------------------------------+
+,,,; | PORTC 4-0 to ATA register - Read  |
+,,,; +------+----------------------------+
+,,,; | Addr | Register                   |
+,,,; +------+----------------------------+
+,,,; | 0x0E | Alternate status           |
+,,,; | 0x0F | Drive address              |
+,,,; | 0x10 | Data (16 bit reg)          |
+,,,; | 0x11 | Features                   |
+,,,; | 0x12 | Sector count               |
+,,,; | 0x13 | LBA 0-7                    |
+,,,; | 0x14 | LBA 8-15                   |
+,,,; | 0x15 | LBA 16-23                  |
+,,,; | 0x16 | LBA 24-27                  |
+,,,; | 0x17 | Status                     |
+,,,; +------+----------------------------+
+,,,
+,,,;====================================================================
+,,,; Write a register to the ATA drive (8 bit)
+,,,;--------------------------------------------------------------------
+,,,; W    contains address
+,,,; TMP1 contains data
+,,,;--------------------------------------------------------------------
+000001DA,,ATA_Reg8_Write,ATA_Reg8_Write
+000001DA,AA82,,        btfss   PORTC, 5        ; Wait until ready
+000001DC,D7FE,,        bra     ATA_Reg8_Write
+000001DE,0B1F,,        andlw   B'00011111'     ; Set address
+000001E0,6E82,,        movwf   PORTC
+000001E2,5000,,        movf    TMP1, W         ; Set data
+000001E4,6E81,,        movwf   PORTB
+000001E6,6A93,,        clrf    TRISB           ; Port for output
+000001E8,928D,,        bcf     LATE, 1         ; DIOW low
+000001EA,0000,,        nop                     ; Wait
+000001EC,0000,,        nop
+000001EE,828D,,        bsf     LATE, 1         ; DIOW high
+000001F0,6893,,        setf    TRISB           ; Port for input
+000001F2,0012,,        return
+,,,
+,,,; +-----------------------------------+
+,,,; | PORTC 4-0 to ATA register - Write |
+,,,; +------+----------------------------+
+,,,; | Addr | Register                   |
+,,,; +------+----------------------------+
+,,,; | 0x0E | Device control             |
+,,,; | 0x10 | Data (16 bit reg)          |
+,,,; | 0x11 | Features                   |
+,,,; | 0x12 | Sector count               |
+,,,; | 0x13 | LBA 0-7                    |
+,,,; | 0x14 | LBA 8-15                   |
+,,,; | 0x15 | LBA 16-23                  |
+,,,; | 0x16 | LBA 24-27                  |
+,,,; | 0x17 | Command                    |
+,,,; +------+----------------------------+
+,,,
+,,,;====================================================================
+,,,; Read a register from the ATA drive (16 bit)
+,,,;--------------------------------------------------------------------
+,,,; W    contains address
+,,,; TMP1 contains data low
+,,,; TMP2 contains data high
+,,,;--------------------------------------------------------------------
+000001F4,,ATA_Reg16_Read,ATA_Reg16_Read
+000001F4,AA82,,        btfss   PORTC, 5        ; Wait until ready
+000001F6,D7FE,,        bra     ATA_Reg16_Read
+000001F8,0B1F,,        andlw   B'00011111'     ; Set address
+000001FA,6E82,,        movwf   PORTC
+000001FC,908D,,        bcf     LATE, 0         ; DIOR low
+000001FE,0000,,        nop                     ; Wait
+00000200,0000,,        nop
+00000202,5081,,        movf    PORTB, W        ; Get data
+00000204,6E00,,        movwf   TMP1
+00000206,5083,,        movf    PORTD, W
+00000208,6E01,,        movwf   TMP2
+0000020A,808D,,        bsf     LATE, 0         ; DIOR high
+0000020C,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Write a register to the ATA drive (16 bit)
+,,,;--------------------------------------------------------------------
+,,,; W    contains address
+,,,; TMP1 contains data low
+,,,; TMP2 contains data high
+,,,;--------------------------------------------------------------------
+0000020E,,ATA_Reg16_Write,ATA_Reg16_Write
+0000020E,AA82,,        btfss   PORTC, 5        ; Wait until ready
+00000210,D7FE,,        bra     ATA_Reg16_Write
+00000212,0B1F,,        andlw   B'00011111'     ; Set address
+00000214,6E82,,        movwf   PORTC
+00000216,5000,,        movf    TMP1, W         ; Set data
+00000218,6E81,,        movwf   PORTB
+0000021A,5001,,        movf    TMP2, W
+0000021C,6E83,,        movwf   PORTD
+0000021E,6A93,,        clrf    TRISB           ; Port for output
+00000220,6A95,,        clrf    TRISD
+00000222,928D,,        bcf     LATE, 1         ; DIOW low
+00000224,0000,,        nop                     ; Wait
+00000226,0000,,        nop
+00000228,828D,,        bsf     LATE, 1         ; DIOW high
+0000022A,6893,,        setf    TRISB           ; Ports for input
+0000022C,6895,,        setf    TRISD
+0000022E,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Output string routines
+,,,;--------------------------------------------------------------------
+00000230,,OUT_VERSION,OUT_VERSION
+00000230,0E00,,        movlw   UPPER(MSG_VERSION)
+00000232,6EF8,,        movwf   TBLPTRU
+00000234,0E03,,        movlw   HIGH(MSG_VERSION)
+00000236,6EF7,,        movwf   TBLPTRH
+00000238,0E98,,        movlw   LOW(MSG_VERSION)
+0000023A,6EF6,,        movwf   TBLPTRL
+0000023C,EF8C F000,,        goto    UART_Puts
+00000240,,OUT_HELP,OUT_HELP
+00000240,0E00,,        movlw   UPPER(MSG_HELP)
+00000242,6EF8,,        movwf   TBLPTRU
+00000244,0E03,,        movlw   HIGH(MSG_HELP)
+00000246,6EF7,,        movwf   TBLPTRH
+00000248,0EC8,,        movlw   LOW(MSG_HELP)
+0000024A,6EF6,,        movwf   TBLPTRL
+0000024C,EF8C F000,,        goto    UART_Puts
+00000250,,OUT_COMMAND,OUT_COMMAND
+00000250,0E00,,        movlw   UPPER(MSG_COMMAND)
+00000252,6EF8,,        movwf   TBLPTRU
+00000254,0E03,,        movlw   HIGH(MSG_COMMAND)
+00000256,6EF7,,        movwf   TBLPTRH
+00000258,0EB6,,        movlw   LOW(MSG_COMMAND)
+0000025A,6EF6,,        movwf   TBLPTRL
+0000025C,EF8C F000,,        goto    UART_Puts
+00000260,,OUT_CRLF,OUT_CRLF
+00000260,0E00,,        movlw   UPPER(MSG_CRLF)
+00000262,6EF8,,        movwf   TBLPTRU
+00000264,0E03,,        movlw   HIGH(MSG_CRLF)
+00000266,6EF7,,        movwf   TBLPTRH
+00000268,0EC4,,        movlw   LOW(MSG_CRLF)
+0000026A,6EF6,,        movwf   TBLPTRL
+0000026C,EF8C F000,,        goto    UART_Puts
+00000270,,OUT_UNKNOWN,OUT_UNKNOWN
+00000270,0E00,,        movlw   UPPER(MSG_UNKNOWN)
+00000272,6EF8,,        movwf   TBLPTRU
+00000274,0E04,,        movlw   HIGH(MSG_UNKNOWN)
+00000276,6EF7,,        movwf   TBLPTRH
+00000278,0E0E,,        movlw   LOW(MSG_UNKNOWN)
+0000027A,6EF6,,        movwf   TBLPTRL
+0000027C,EF8C F000,,        goto    UART_Puts
+00000280,,OUT_LOG,OUT_LOG
+00000280,0E00,,        movlw   UPPER(MSG_LOG)
+00000282,6EF8,,        movwf   TBLPTRU
+00000284,0E04,,        movlw   HIGH(MSG_LOG)
+00000286,6EF7,,        movwf   TBLPTRH
+00000288,0E22,,        movlw   LOW(MSG_LOG)
+0000028A,6EF6,,        movwf   TBLPTRL
+0000028C,EF8C F000,,        goto    UART_Puts
+00000290,,OUT_DUMP,OUT_DUMP
+00000290,0E00,,        movlw   UPPER(MSG_DUMP)
+00000292,6EF8,,        movwf   TBLPTRU
+00000294,0E04,,        movlw   HIGH(MSG_DUMP)
+00000296,6EF7,,        movwf   TBLPTRH
+00000298,0E46,,        movlw   LOW(MSG_DUMP)
+0000029A,6EF6,,        movwf   TBLPTRL
+0000029C,EF8C F000,,        goto    UART_Puts
+,,,
+,,,;====================================================================
+,,,; Output value to USART as two hexadecimal digits
+,,,;--------------------------------------------------------------------
+,,,; W contains value to be output
+,,,;--------------------------------------------------------------------
+000002A0,,OUT_HEX,OUT_HEX
+000002A0,6E00,,        movwf   TMP1
+000002A2,3800,,        swapf   TMP1, W
+000002A4,D801,,        rcall   OUT_HEX_SUB1
+000002A6,5000,,        movf    TMP1, W
+000002A8,,OUT_HEX_SUB1,OUT_HEX_SUB1
+000002A8,0B0F,,        andlw   0x0F
+000002AA,0FF6,,        addlw   0xF6
+000002AC,B0D8,,        btfsc   STATUS, C
+000002AE,0F07,,        addlw   0x07
+000002B0,0F3A,,        addlw   0x3A
+000002B2,D72D,,        bra     UART_Putch
+,,,
+,,,;====================================================================
+,,,; Start logging
+,,,;--------------------------------------------------------------------
+000002B4,,LOG_START,LOG_START
+000002B4,D818,,        rcall   LOG_RESET
+000002B6,D81B,,        rcall   INIT_ADC
+000002B8,D822,,        rcall   INIT_TIMER
+000002BA,D828,,        rcall   START_TIMER
+000002BC,8ED0,,        bsf     RCON, IPEN      ; Enable interrupt priority
+000002BE,8EF2,,        bsf     INTCON, GIEH    ; Enable high prority interrupts
+000002C0,8CF2,,        bsf     INTCON, GIEL    ; Enable low prority interrupts
+000002C2,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Stop logging
+,,,;--------------------------------------------------------------------
+000002C4,,LOG_STOP,LOG_STOP
+000002C4,9EF2,,        bcf     INTCON, 7       ; Disable interrupts
+000002C6,D824,,        rcall   STOP_TIMER
+000002C8,D827,,        rcall   STOP_ADC
+000002CA,DF3D,,        rcall   ATA_Block_Write ; Flush buffer to disk
+000002CC,,LOG_UPDATE,LOG_UPDATE
+000002CC,CFD9 F00E,,        movff   FSR2L, END_POSL ; Copy over to end log pointers
+000002D0,CFDA F00F,,        movff   FSR2H, END_POSH
+000002D4,C002 F010,,        movff   ATA_A0, END_ATA_A0
+000002D8,C003 F011,,        movff   ATA_A1, END_ATA_A1
+000002DC,C004 F012,,        movff   ATA_A2, END_ATA_A2
+000002E0,C005 F013,,        movff   ATA_A3, END_ATA_A3
+000002E4,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Reset log ready for start of logging
+,,,;--------------------------------------------------------------------
+000002E6,,LOG_RESET,LOG_RESET
+000002E6,EE24 F000,,        lfsr    FSR2, ATA_BUF   ; Point to start of data capture buffer
+000002EA,DF4A,,        rcall   ATA_A_RESET
+000002EC,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Initialise ADC converter
+,,,;--------------------------------------------------------------------
+000002EE,,INIT_ADC,INIT_ADC
+000002EE,0E0E,,        movlw   B'00001110'
+000002F0,6EC1,,        movwf   ADCON1
+000002F2,0EC1,,        movlw   B'11000001'
+000002F4,6EC2,,        movwf   ADCON0
+000002F6,9C9F,,        bcf     IPR1, ADIP      ; Low priority
+000002F8,9C9E,,        bcf     PIR1, ADIF      ; Clear any pending interrupt
+000002FA,8C9D,,        bsf     PIE1, ADIE      ; Enable ADC conversion interrupt
+,,,
+000002FC,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Initialise timer 0
+,,,;--------------------------------------------------------------------
+000002FE,,INIT_TIMER,INIT_TIMER
+000002FE,0E46,,        movlw   B'01000110'
+00000300,6ED5,,        movwf   T0CON
+00000302,0E01,,        movlw   D'1'            ; Setup countdown on TMR0 for ADC trigger
+00000304,6E0D,,        movwf   T0COUNT
+00000306,94F2,,        bcf     INTCON, TMR0IF  ; Clear any pending TMR0 overflow interrupt
+00000308,8AF2,,        bsf     INTCON, TMR0IE  ; Enable timer 0 overflow interrupt
+0000030A,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Start timer 0
+,,,;--------------------------------------------------------------------
+0000030C,,START_TIMER,START_TIMER
+0000030C,8ED5,,        bsf     T0CON, 7        ; Start timer 0
+0000030E,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Stop timer 0
+,,,;--------------------------------------------------------------------
+00000310,,STOP_TIMER,STOP_TIMER
+00000310,9AF2,,        bcf     INTCON, TMR0IE  ; Disable timer 0 overflow interrupt
+00000312,94F2,,        bcf     INTCON, TMR0IF  ; Clear any pending TMR0 overflow interrupt
+00000314,9ED5,,        bcf     T0CON, 7        ; Stop timer 0
+00000316,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Stop ADC conversion
+,,,;--------------------------------------------------------------------
+00000318,,STOP_ADC,STOP_ADC
+00000318,9C9D,,        bcf     PIE1, ADIE      ; Diasable ADC conversion interrupt
+0000031A,9C9E,,        bcf     PIR1, ADIF      ; Clear any pending interrupt
+0000031C,90C2,,        bcf     ADCON0, ADON    ; Turn off ADC module
+0000031E,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Dump data from ATA to USART in hex
+,,,;--------------------------------------------------------------------
+00000320,,DUMP_ALL,DUMP_ALL
+00000320,DF2F,,        rcall   ATA_A_RESET
+00000322,EE26 F000,,        lfsr    FSR2, ATA_BUF_END
+00000326,0E10,,        movlw   0x10
+00000328,6E16,,        movwf   OUT_COUNT
+,,,
+0000032A,5005,,        movf    ATA_A3, W       ; Exit if no data to display
+0000032C,1004,,        iorwf   ATA_A2, W
+0000032E,1003,,        iorwf   ATA_A1, W
+00000330,1002,,        iorwf   ATA_A0, W
+00000332,A4D8,,        btfss   STATUS, Z
+00000334,D00E,,        bra     DUMP_ALL_JP1
+00000336,0E04,,        movlw   HIGH(ATA_BUF)
+00000338,620F,,        cpfseq  END_POSH
+0000033A,D00B,,        bra     DUMP_ALL_JP1
+0000033C,0E00,,        movlw   LOW(ATA_BUF)
+0000033E,620E,,        cpfseq  END_POSL
+00000340,D008,,        bra     DUMP_ALL_JP1
+00000342,D029,,        bra     DUMP_ALL_EXIT
+,,,
+00000344,,DUMP_ALL_LP1,DUMP_ALL_LP1
+00000344,0E06,,        movlw   HIGH(ATA_BUF_END)       ; Check if next sector required
+00000346,62DA,,        cpfseq  FSR2H
+00000348,D007,,        bra     DUMP_ALL_JP2
+0000034A,0E00,,        movlw   LOW(ATA_BUF_END)
+0000034C,62D9,,        cpfseq  FSR2L
+0000034E,D004,,        bra     DUMP_ALL_JP2
+00000350,DF1C,,        rcall   ATA_A_INC
+00000352,,DUMP_ALL_JP1,DUMP_ALL_JP1
+00000352,DEE6,,        rcall   ATA_Block_Read          ; Get a new sector
+00000354,EE24 F000,,        lfsr    FSR2, ATA_BUF           ; Point buffer to start of sector
+00000358,,DUMP_ALL_JP2,DUMP_ALL_JP2
+,,,
+00000358,0E20,,        movlw   0x20
+0000035A,DED9,,        rcall   UART_Putch
+,,,
+0000035C,CFDE F001,,        movff   POSTINC2, TMP2
+00000360,50DE,,        movf    POSTINC2, W
+00000362,DF9E,,        rcall   OUT_HEX
+00000364,5001,,        movf    TMP2, W
+00000366,DF9C,,        rcall   OUT_HEX
+,,,
+00000368,2E16,,        decfsz  OUT_COUNT
+0000036A,D003,,        bra     DUMP_ALL_JP3
+0000036C,0E10,,        movlw   0x10
+0000036E,6E16,,        movwf   OUT_COUNT
+00000370,DF77,,        rcall   OUT_CRLF
+00000372,,DUMP_ALL_JP3,DUMP_ALL_JP3
+00000372,500F,,        movf    END_POSH, W             ; Check not at the end of data
+00000374,62DA,,        cpfseq  FSR2H
+00000376,D7E6,,        bra     DUMP_ALL_LP1
+00000378,500E,,        movf    END_POSL, W
+0000037A,62D9,,        cpfseq  FSR2L
+0000037C,D7E3,,        bra     DUMP_ALL_LP1
+0000037E,5013,,        movf    END_ATA_A3, W
+00000380,6205,,        cpfseq  ATA_A3
+00000382,D7E0,,        bra     DUMP_ALL_LP1
+00000384,5012,,        movf    END_ATA_A2, W
+00000386,6204,,        cpfseq  ATA_A2
+00000388,D7DD,,        bra     DUMP_ALL_LP1
+0000038A,5011,,        movf    END_ATA_A1, W
+0000038C,6203,,        cpfseq  ATA_A1
+0000038E,D7DA,,        bra     DUMP_ALL_LP1
+00000390,5010,,        movf    END_ATA_A0, W
+00000392,6202,,        cpfseq  ATA_A0
+00000394,D7D7,,        bra     DUMP_ALL_LP1
+00000396,,DUMP_ALL_EXIT,DUMP_ALL_EXIT
+00000396,0012,,        return
+,,,
+,,,;====================================================================
+,,,; Program messages
+,,,;--------------------------------------------------------------------
+00000398,,MSG_VERSION,MSG_VERSION
+00000398,614C 6362 6E65,,        DATA    "Labcenter Data Logger v1.0\r\n", 0
+000003B6,,MSG_COMMAND,MSG_COMMAND
+000003B6,0A0D 6F43 6D6D,,        DATA    "\r\nCommand? ", 0
+000003C4,,MSG_CRLF,MSG_CRLF
+000003C4,0A0D 0000,,        DATA    "\r\n", 0
+000003C8,,MSG_HELP,MSG_HELP
+000003C8,6548 706C 0D3A,,        DATA    "Help:\r\nH - This help\r\nV - Version\r\nL - Start logging\r\nD - Dump log\r\n", 0
+0000040E,,MSG_UNKNOWN,MSG_UNKNOWN
+0000040E,6E55 6E6B 776F,,        DATA    "Unknown command.\r\n", 0
+00000422,,MSG_LOG,MSG_LOG
+00000422,6F4C 6767 6E69,,        DATA    "Logging...\r\nPress any key to stop.", 0
+00000446,,MSG_DUMP,MSG_DUMP
+00000446,7453 7261 2074,,        DATA    "Start of dump.\r\n", 0
+,,,;====================================================================
+,,,END

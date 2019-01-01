@@ -1,0 +1,45 @@
+'{$STAMP BS2sx,GETPUT2.bs2sx}
+
+'-----------------------------------------------------------------------------
+' 
+' GETPUT1
+'
+'
+'
+'
+'
+'
+'
+'
+'		
+'                                                                                                                                                                                                      
+'=============================================================================
+'
+'
+'-----------------------------------------------------------------------------
+' 
+'                                                                                                                                                                                                      
+'=============================================================================
+
+DATA    "Program Slot 0"
+
+Value       var     byte
+Index       var     byte
+
+    DIRS = $0F
+
+    GET     63,Value
+    OUTS = Value
+
+bypass:
+    DEBUG   "Program #",DEC Value,CR
+
+    
+    FOR Index = 0 TO 9
+        Value = (Index + 3) * 8
+        PUT     Index,Value
+        DEBUG " Writing: ",DEC2 Value," to location: ",DEC2 Index,CR
+    NEXT
+
+    RUN     1                
+    END

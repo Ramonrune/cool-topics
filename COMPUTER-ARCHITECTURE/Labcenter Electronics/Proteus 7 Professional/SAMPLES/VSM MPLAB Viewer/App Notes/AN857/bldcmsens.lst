@@ -1,0 +1,240 @@
+MP2COD 4.04, COFF to COD File Converter
+Copyright (c) 2006 Microchip Technology Inc.
+Listing File Generated: Wed Oct 11 10:42:52 2006
+
+
+Address  Value    Disassembly              Source                                                                           File
+-------  -------  -----------------------  -------------------------------------------------------------------------------  -----
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                    *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* Software License Agreement                                         *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                    *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* The software supplied herewith by Microchip Technology             *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* Incorporated (the "Company") is intended and supplied to you, the  *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* Company’s customer, for use solely and exclusively on Microchip    *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* products. The software is owned by the Company and/or its supplier,*          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* and is protected under applicable copyright laws. All rights are   *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* reserved. Any use in violation of the foregoing restrictions may   *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* subject the user to criminal sanctions under applicable laws, as   *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* well as to civil liability for the breach of the terms and         *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* conditions of this license.                                        *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                    *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* THIS SOFTWARE IS PROVIDED IN AN "AS IS" CONDITION. NO WARRANTIES,  *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT NOT LIMITED  *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A        *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. THE COMPANY SHALL NOT,  *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL OR         *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.                  *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                    *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;                                                                     *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;    Filename:	    SensBLDC.asm                                      *           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;    Date:          11 Feb 2002                                       *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;    File Version:  1.0                                               *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;                                                                     *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;    Author:        W.R.Brown                                         *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;    Company:       Microchip Technolgy Incorporated                  *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;                                                                     *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;                                                                     *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;                                                                     *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;    Files required: p16f877.inc                                      *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;                                                                     *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;                                                                     *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;                                                                     *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;                                                                     *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;    Notes: Sensored brushless motor control                          *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;                                                                     *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;                                                                     *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;                                                                     *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;                                                                     *          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           	list      p=16f877            ; list directive to define processor              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           	#include <p16f877.inc>        ; processor specific variable definitions         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                   LIST                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\p16f877.inc
+                                           ; P16F877.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\p16f877.inc
+                                                   LIST                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\p16f877.inc
+                                           	                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+002007   3df2     SUBLW     0xf2           	__CONFIG _CP_OFF & _WDT_OFF & _BODEN_ON & _PWRTE_ON & _HS_OSC & _WRT_ENABLE_OFF & _LVP_ON & _DEBUG_OFF & _CPD_OFF  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* Define variable storage                                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           	CBLOCK 0x20                                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           	ADC		; PWM threshold is ADC result                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           	LastSensor	; last read motor sensor data                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           	DriveWord	; six bit motor drive data                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           	ENDC                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* Define I/O                                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           #define	OffMask		B'11010101'                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           #define	DrivePort	PORTC                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           #define DrivePortTris	TRISC                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           #define	SensorMask	B'00000111'                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           #define	SensorPort	PORTE                                                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           #define DirectionBit	PORTA,1                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           	org	0x000		; startup vector                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000000   0000     NOP                      	nop			; required for ICD operation                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000001   018a     CLRF      0xa            	clrf    PCLATH          ; ensure page bits are cleared                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000002   2810     GOTO      0x10             	goto    Initialize      ; go to beginning of program                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           	ORG     0x004           ; interrupt vector location                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000004   0009     RETFIE                   	retfie                  ; return from interrupt                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* Initialize I/O ports and peripherals                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           org 0x10                                                                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           Initialize                                                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000010   0187     CLRF      0x7            	clrf	DrivePort	; all drivers off                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000011   1683     BSF       0x3,0x5        	banksel TRISA                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000012   1303     BCF       0x3,0x6                                                                                         
+                                           ; setup I/O                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000013   0187     CLRF      0x7            	clrf	DrivePortTris	; set motor drivers as outputs                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000014   3003     MOVLW     0x3            	movlw	B'00000011'	; A/D on RA0, Direction on RA1, Motor sensors on RE<2:0>      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000015   0085     MOVWF     0x5            	movwf	TRISA		;                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ; setup Timer0                                                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;	movlw	B'11010000'	; Timer0: Fosc, 1:2                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000016   30d7     MOVLW     0xd7           	movlw	B'11010111'	; Timer0: Fosc, 1:2                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000017   0081     MOVWF     0x1            	movwf	OPTION_REG                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ; Setup ADC (bank1)                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000018   300e     MOVLW     0xe            	movlw	B'00001110'	; ADC left justified, AN0 only                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000019   009f     MOVWF     0x1f           	movwf	ADCON1                                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00001a   1283     BCF       0x3,0x5        	banksel	ADCON0                                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00001b   1303     BCF       0x3,0x6                                                                                         
+                                           ; setup ADC (bank0)                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00001c   30c1     MOVLW     0xc1           	movlw	B'11000001'	; ADC clock from int RC, AN0, ADC on                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00001d   009f     MOVWF     0x1f           	movwf	ADCON0                                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00001e   151f     BSF       0x1f,0x2       	bsf	ADCON0,GO	; start ADC                                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00001f   01a1     CLRF      0x21           	clrf	LastSensor	; initialize last sensor reading                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000020   2035     CALL      0x35           	call 	Commutate	; determine present motor positon                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000021   01a0     CLRF      0x20           	clrf	ADC		; start speed control threshold at zero until first ADC reading       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* Main control loop                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           Loop                                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000022   202f     CALL      0x2f           	call	ReadADC		; get the speed control from the ADC                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000023   0f20     INCFSZ    0x20,0x0       	incfsz	ADC,w		; if ADC is 0xFF we're at full speed - skip timer add             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000024   2827     GOTO      0x27           	goto	PWM		; add timer 0 to ADC for PWM                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000025   0822     MOVF      0x22,0x0       	movf	DriveWord,w	; force on condition                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000026   282c     GOTO      0x2c           	goto	Drive		; continue                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           PWM                                                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000027   0820     MOVF      0x20,0x0       	movf	ADC,w		; restore ADC reading                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000028   0701     ADDWF     0x1,0x0        	addwf	TMR0,w		; add it to current timer0                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000029   0822     MOVF      0x22,0x0       	movf	DriveWord,w	; restore commutation drive data                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00002a   1c03     BTFSS     0x3,0x0        	btfss	STATUS,C	; test if ADC + timer0 resulted in carry                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00002b   39d5     ANDLW     0xd5           	andlw	OffMask		; no carry - supress high drivers                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           Drive	                                                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00002c   0087     MOVWF     0x7            	movwf	DrivePort	; enable motor drivers                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00002d   2035     CALL      0x35           	call	Commutate	; test for commutation change                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00002e   2822     GOTO      0x22           	goto	Loop		; repeat loop                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           	                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ReadADC                                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* If the ADC is ready then read the speed control potentiometer                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* and start the next reading                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00002f   191f     BTFSC     0x1f,0x2       	btfsc	ADCON0,NOT_DONE	; is ADC ready?                                           K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000030   0008     RETURN                   	return			; no - return                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000031   081e     MOVF      0x1e,0x0       	movf	ADRESH,w	; get ADC result                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000032   151f     BSF       0x1f,0x2       	bsf	ADCON0,GO	; restart ADC                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000033   00a0     MOVWF     0x20           	movwf	ADC		; save result in speed control threshold                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000034   0008     RETURN                   	return			;                                                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* Read the sensor inputs and if a change is sensed then get the                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* corresponding drive word from the drive table                                 K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           Commutate                                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000035   3007     MOVLW     0x7            	movlw	SensorMask	; retain only the sensor bits                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000036   0509     ANDWF     0x9,0x0        	andwf	SensorPort,w	; get sensor data                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000037   0621     XORWF     0x21,0x0       	xorwf	LastSensor,w	; test if motion sensed                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000038   1903     BTFSC     0x3,0x2        	btfsc	STATUS,Z	; zero if no change                                              K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000039   0008     RETURN                   	return			; no change - back to the PWM loop                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           	                                                                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00003a   06a1     XORWF     0x21,0x1       	xorwf	LastSensor,f	; replace last sensor data with current                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00003b   1c85     BTFSS     0x5,0x1        	btfss	DirectionBit	; test direction bit                                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00003c   2841     GOTO      0x41           	goto	FwdCom		; bit is zero - do forward commutation                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           				; reverse commutation                                                        K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00003d   3000     MOVLW     0x0            	movlw	HIGH RevTable	; get MS byte of table                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00003e   008a     MOVWF     0xa            	movwf	PCLATH		; prepare for computed GOTO                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00003f   3053     MOVLW     0x53           	movlw	LOW RevTable	; get LS byte of table                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000040   2844     GOTO      0x44           	goto	Com2                                                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           FwdCom				; forward commutation                                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000041   3000     MOVLW     0x0            	movlw	HIGH FwdTable	; get MS byte of table                                      K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000042   008a     MOVWF     0xa            	movwf	PCLATH		; prepare for computed GOTO                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000043   304b     MOVLW     0x4b           	movlw	LOW FwdTable	; get LS byte of table                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           Com2                                                                             K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000044   0721     ADDWF     0x21,0x0       	addwf	LastSensor,w	; add sensor offset                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000045   1803     BTFSC     0x3,0x0        	btfsc	STATUS,C	; page change in table?                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000046   0a8a     INCF      0xa,0x1        	incf	PCLATH,f	; yes - adjust MS byte                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000047   204a     CALL      0x4a           	call	GetDrive	; get drive word from table                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000048   00a2     MOVWF     0x22           	movwf	DriveWord	; save as current drive word                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000049   0008     RETURN                   	return                                                                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           GetDrive                                                                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00004a   0082     MOVWF     0x2            	movwf	PCL                                                                       K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;**********************************************************************          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* The drive tables are built based on the following assumptions:                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* 1) There are six drivers in three pairs of two                                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* 2) Each driver pair consists of a high side (+V to motor) and low side (motor to ground) drive K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* 3) A 1 in the drive word will turn the corresponding driver on                K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* 4) The three driver pairs correspond to the three motor windings: A, B and C  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* 5) Winding A is driven by bits <1> and <0> where <1> is A's high side drive   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* 6) Winding B is driven by bits <3> and <2> where <3> is B's high side drive   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* 7) Winding C is driven by bits <5> and <4> where <5> is C's high side drive   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* 8) Three sensor bits consitute the address offset to the drive table          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* 9) A sensor bit transitions from a 0 to 1 at the moment that the corresponding  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*    winding's high side forward drive begins.                                  K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* 10) Sensor bit <0> corresponds to winding A                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* 11) Sensor bit <1> corresponds to winding B                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;* 12) Sensor bit <2> corresponds to winding C                                   K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           ;*                                                                               K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           FwdTable                                                                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00004b   3400     RETLW     0x0            	retlw	B'00000000'	; invalid                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00004c   3412     RETLW     0x12           	retlw	B'00010010'	; phase 6                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00004d   3409     RETLW     0x9            	retlw	B'00001001'	; phase 4                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00004e   3418     RETLW     0x18           	retlw	B'00011000'	; phase 5                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00004f   3424     RETLW     0x24           	retlw	B'00100100'	; phase 2                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000050   3406     RETLW     0x6            	retlw	B'00000110'	; phase 1                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000051   3421     RETLW     0x21           	retlw	B'00100001'	; phase 3                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000052   3400     RETLW     0x0            	retlw	B'00000000'	; invalid                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           RevTable                                                                         K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000053   3400     RETLW     0x0            	retlw	B'00000000'	; invalid                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000054   3421     RETLW     0x21           	retlw	B'00100001'	; phase /6                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000055   3406     RETLW     0x6            	retlw	B'00000110'	; phase /4                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000056   3424     RETLW     0x24           	retlw	B'00100100'	; phase /5                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000057   3418     RETLW     0x18           	retlw	B'00011000'	; phase /2                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000058   3409     RETLW     0x9            	retlw	B'00001001'	; phase /1                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+000059   3412     RETLW     0x12           	retlw	B'00010010'	; phase /3                                                    K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+00005a   3400     RETLW     0x0            	retlw	B'00000000'	; invalid                                                     K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                           	END                       ; directive 'end of program'                          K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm
+                                                                                                                            K:\PRODEV\IMAGE\Samples\Microchip\App Notes\AN857\sensbldc.asm

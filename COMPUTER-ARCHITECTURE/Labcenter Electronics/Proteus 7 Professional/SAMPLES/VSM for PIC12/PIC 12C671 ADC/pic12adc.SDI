@@ -1,0 +1,96 @@
+,,,        LIST    p=12C671 ;
+,,,        #include "P12C671.INC" ; Include header file
+,,,
+,,,; Macro to generate a MOVLW instruction that also causes a model break:
+,,,break   MACRO arg
+,,,        DW    0x3100 | (arg & H'FF')
+,,,        ENDM
+,,,
+,,,bank0   MACRO
+,,,        bcf STATUS,RP0
+,,,        ENDM
+,,,
+,,,bank1   MACRO
+,,,        bsf STATUS,RP0
+,,,        ENDM
+,,,
+,,,        cblock 0x20
+,,,        result
+,,,        count
+,,,        endc
+,,,
+,,,        ; Vector for normal start up.
+,,,        org     0
+00000000,2805,,        goto    start
+,,,
+,,,        org     4
+00000004,2831,,        goto intvec
+,,,
+,,,; Main program starts here:
+00000005,0103,start,start   clrw                    ; Clear W.
+00000006,0085,,        movwf   GPIO            ; Ensure PORTA is zero before we enable it.
+00000007,30C1,,        movlw   0xC1
+00000008,009F,,        movwf   ADCON0          ; Turn on the ADC
+00000009,130C,,        bcf PIR1,ADIF           ; Clear any pending interrupt
+,,,        bank1
+0000000A,1683,,        - bsf STATUS,RP0
+0000000B,1285,,        bcf TRISIO,5            ; GP5 is an output
+0000000C,1205,,        bcf TRISIO,4            ; GP4 is an output
+0000000D,1701,,        bsf OPTION_REG,INTEDG   ; Interrupt on rising edge of INT
+0000000E,3005,,        movlw 0x05
+0000000F,009F,,        movwf ADCON1            ; GP0/GP1 analog inputs
+,,,
+00000010,108B,,        bcf INTCON,INTF
+00000011,160B,,        bsf INTCON,INTE
+00000012,170B,,        bsf INTCON,PEIE         ; Enable peripheral interrupt
+00000013,170C,,        bsf PIE1,ADIE           ; Enable ADC interrupt
+00000014,178B,,        bsf INTCON,GIE
+,,,
+,,,;Select voltage reference mode:
+00000015,0063,loop,loop    sleep                   ; Wait for external interrupt
+,,,
+,,,        bank0
+00000016,1283,,        - bcf STATUS,RP0
+00000017,3004,,        movlw   0x04            ; VREF=VDD pin
+00000018,1985,,        btfsc GPIO,3
+00000019,3005,,        movlw   0x05            ; VREF=VREF pin
+,,,        bank1
+0000001A,1683,,        - bsf STATUS,RP0
+0000001B,009F,,        movwf   ADCON1
+,,,        bank0
+0000001C,1283,,        - bcf STATUS,RP0
+,,,
+,,,;Wait out the acquisition time
+0000001D,3010,,        movlw 10
+0000001E,0821,,        movfw count
+0000001F,0BA1,wtacc,wtacc   decfsz count,F
+00000020,281F,,        goto wtacc
+,,,
+,,,;Do the conversion
+00000021,151F,,        bsf ADCON0,GO           ; Start the ADC
+00000022,0063,,        sleep                   ; Wait for ADC completion
+00000023,081E,,        movfw ADRES             ; Catch the result
+00000024,00A0,,        movwf result
+,,,
+,,,;Serial output of result
+00000025,3008,,        movlw 8                 ;Loop for 8 bits
+00000026,00A1,,        movwf count
+00000027,0103,loop1,loop1   clrw                    ;Start with a zero
+00000028,1BA0,,        btfsc result,7          ;Test result bit
+00000029,3820,,        iorlw 0x20
+0000002A,0085,,        movwf TRISIO            ;Output data bit to port on GP5
+0000002B,1605,,        bsf TRISIO,4            ;Generate Clock pulse on GP4
+0000002C,1205,,        bcf TRISIO,4
+0000002D,0DA0,,        rlf result,F            ;Get next result bit
+0000002E,0BA1,,        decfsz count,F          ;Loop for next bit
+0000002F,2827,,        goto loop1
+,,,
+00000030,2815,,        goto loop
+,,,
+,,,
+,,,;Interrupt Vector
+00000031,108B,intvec,intvec  bcf INTCON,INTF
+00000032,130C,,        bcf PIR1,ADIF
+00000033,0009,,        retfie
+,,,
+,,,        END

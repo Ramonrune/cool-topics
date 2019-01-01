@@ -1,0 +1,490 @@
+MPASM 03.00 Released         PIC12I2C.ASM   4-19-2002  17:00:20         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001         LIST    p=12CE518 ; 
+                      00002         #include "P12CE518.INC" ; Include header file
+                      00001         LIST
+                      00002 ; P12CE518.INC  Standard Header File, Version 1.00    Microchip Technology, Inc.
+                      00103         LIST
+                      00003 
+                      00004 
+                      00005         cblock 0x10   
+  00000010            00006         result           
+  00000011            00007         count   
+                      00008         endc
+                      00009 
+                      00010         ; Vector for normal start up.
+0000                  00011         org     0
+0000   0A01           00012         goto    start
+                      00013 
+                      00014         
+                      00015 ; Main program starts here:
+0001   0C3C           00016 start   movlw 0x3C
+0002   0006           00017         tris  GPIO
+                      00018 
+                      00019                                               
+                      00020 ; Write a byte
+0003   0C00           00021         movlw 0
+0004   003B           00022         movwf EEADDR
+0005   0C85           00023 loop    movlw 0x85
+0006   003C           00024         movwf EEDATA
+0007   0925           00025         call WRITE_BYTE
+0008   0030           00026         movwf result
+                      00027 
+0009   0916           00028         call serout
+                      00029         
+                      00030 ; Wait for INT high     
+000A   0746           00031 wait1   btfss GPIO,2
+000B   0A0A           00032         goto wait1
+                      00033 
+                      00034 ;Read it back
+                      00035                      
+000C   0CFF           00036         movlw 0xFF
+000D   003C           00037         movwf EEDATA
+                      00038         
+000E   0922           00039         call READ_CURRENT
+000F   021C           00040         movfw EEDATA
+0010   0030           00041         movwf result
+0011   0916           00042         call serout
+                      00043 
+                      00044 ; Wait for INT low      
+0012   0646           00045 wait2   btfsc GPIO,2
+0013   0A12           00046         goto wait2
+                      00047         
+0014   02BB           00048         incf EEADDR,F
+0015   0A05           00049         goto loop       
+                      00050         
+MPASM 03.00 Released         PIC12I2C.ASM   4-19-2002  17:00:20         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00051 ;Serial output of result
+0016   0C08           00052 serout  movlw 8                 ;Loop for 8 bits
+0017   0031           00053         movwf count          
+0018   0CC0           00054 loop1   movlw 0xC0              ;Start with a zero except for SDA/SCL                   
+0019   06F0           00055         btfsc result,7          ;Test result bit    
+001A   0D01           00056         iorlw 0x01
+001B   0026           00057         movwf GPIO              ;Output data bit to port on GP0
+001C   0526           00058         bsf GPIO,1              ;Generate Clock pulse on GP1
+001D   0426           00059         bcf GPIO,1                            
+001E   0370           00060         rlf result,F            ;Get next result bit
+001F   02F1           00061         decfsz count,F          ;Loop for next bit
+0020   0A18           00062         goto loop1
+Warning[227]: Substituting RETLW 0 for RETURN pseudo-op
+0021   0800           00063         return
+                      00064                         
+                      00065                         
+                      00066 
+                      00067         #include fl51xinc.asm
+                      00001         TITLE "PIC with Flash EE data memory Interface"
+                      00002 ;
+                      00003 ;       Program:          FL51XINC.ASM  V1.10
+                      00004 ;       Revision Date:   
+                      00005 ;                         09-09-97      Adapted to 12C51x parts
+                      00006 ;                         01-Apr-1999   Added emulation hooks
+                      00007 ;
+                      00008 
+                      00009 ; #define EMULATED    ; comment this line out for use on real part
+                      00010 
+                      00011 ; PIC12C51X EEPROM communication code.  This code should be included in
+                      00012 ; with the application.  These routines provide the following functionality:
+                      00013 ; write a byte to a specified address.
+                      00014 ; read a byte from a specified address.
+                      00015 ; read a byte from the next address.
+                      00016 ;
+                      00017 ; Emulation Requires:
+                      00018 ;     MPLAB-ICE
+                      00019 ;     PCM16XA0 processor module
+                      00020 ;     DVA12XP80 Device Adapter.
+                      00021 ; Define EMULATOR at the top of this file  (#define EMULATOR)
+                      00022 ;     This will set the I2C_PORT, SDA and SCL lines to communicate over 
+                      00023 ;     Port A, pins 0 and 1.  It also assembles in the necessary TRIS 
+                      00024 ;     instructions to allow reading from the SDA line.
+                      00025 ;
+                      00026 ; To convert the code for the actual part, simply comment out the #define EMULATOR
+                      00027 ; line and reassemble. 
+                      00028 ;
+                      00029 ; FL51XTST.ASM is also provided for linker users.
+                      00030 ;
+                      00031 ; INTRODUCTION:
+                      00032 ; The Microchip 12c51x family of microntrollers are multichip modules 
+                      00033 ; which contain a PIC12C508 microcontroller and a 24LC00 EEPROM.
+                      00034 ; This application note is intended to provide users with highly compressed
+                      00035 ; assembly code for communication between the EEPROM and the Microcontroller,
+MPASM 03.00 Released         PIC12I2C.ASM   4-19-2002  17:00:20         PAGE  3
+PIC with Flash EE data memory Interface
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00036 ; which will leave the user a maximum amount of code space for the core 
+                      00037 ; application.
+                      00038 ;
+                      00039 ;***************************************************************************
+                      00040 ;***************************  EEPROM Subroutines  **************************
+                      00041 ;***************************************************************************
+                      00042 ; Communication for EEPROM based on I2C protocall, with Acknowledge.
+                      00043 ;
+                      00044 ; Byte_Write: Byte write routine
+                      00045 ;       Inputs:  EEPROM Address   EEADDR
+                      00046 ;                EEPROM Data      EEDATA
+                      00047 ;       Outputs: Return 01 in W if OK, else return 00 in W
+                      00048 ;
+                      00049 ; Read_Current: Read EEPROM at address currently held by EE device. 
+                      00050 ;       Inputs:  NONE
+                      00051 ;       Outputs: EEPROM Data       EEDATA
+                      00052 ;                Return 01 in W if OK, else return 00 in W
+                      00053 ;
+                      00054 ; Read_Random: Read EEPROM byte at supplied address
+                      00055 ;       Inputs:  EEPROM Address    EEADDR
+                      00056 ;       Outputs: EEPROM Data       EEDATA
+                      00057 ;                Return 01 in W if OK, else return 00 in W
+                      00058 ;
+                      00059 ; Note: EEPROM subroutines will set bit 7 in PC_OFFSET register if the
+                      00060 ;       EEPROM acknowledged OK, else that bit will be cleared.  This bit 
+                      00061 ;       can be checked instead of refering to the value returned in W
+                      00062 ;***************************************************************************
+                      00063 
+                      00064 ; OPERATION:
+                      00065 ; For detailed operating information and other important information about 
+                      00066 ; this code, see AN571.  This code was derived from AN571, with changes
+                      00067 ; as appropriate for the specific hardware in the PIC12C51x parts.
+                      00068 ;********************************************************************** 
+                      00069 
+                      00070 
+                      00071 ;***************************************************************************
+                      00072 ;***************************  Variable Listing  ****************************
+                      00073 ;***************************************************************************
+  00000001            00074 OK          EQU     01H
+  00000000            00075 NO          EQU     00H
+                      00076 
+                      00077 #ifdef  EMULATED
+                      00078 I2C_PORT    EQU     5           ; Port A control register, used for I2C
+                      00079 SCL         EQU     01H         ; EEPROM Clock, SCL (I/O bit 7)
+                      00080 SDA         EQU     00H         ; EEPROM Data,  SDA (I/O bit 6)
+                      00081 #else
+  00000006            00082 I2C_PORT    EQU     GPIO        ; Port B control register, used for I2C
+  00000007            00083 SCL         EQU     07H         ; EEPROM Clock, SCL (I/O bit 7)
+  00000006            00084 SDA         EQU     06H         ; EEPROM Data,  SDA (I/O bit 6)
+                      00085 #endif
+                      00086 
+  00000007            00087 EE_OK       EQU     07H         ; Bit 7 in PC_OFFSET used as OK flag for EE
+                      00088 
+MPASM 03.00 Released         PIC12I2C.ASM   4-19-2002  17:00:20         PAGE  4
+PIC with Flash EE data memory Interface
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00089         cblock 0x1A
+  0000001A            00090 PC_OFFSET                       ; PC offset register (low order 4 bits), 
+                      00091                                 ;  value based on operating mode of EEPROM.
+                      00092                                 ;  Also, bit 7 used for EE_OK flag
+  0000001B            00093 EEADDR                          ; EEPROM Address
+  0000001C            00094 EEDATA                          ; EEPROM Data
+  0000001D            00095 EEBYTE                          ; Byte sent to or received from
+                      00096                                 ; EEPROM (control, address, or data)
+  0000001E            00097 COUNTER                         ; Bit counter for serial transfer
+                      00098         endc
+                      00099         
+                      00100 
+                      00101 ;***************************************************************************
+                      00102 ;***************************  EEPROM Subroutines  **************************
+                      00103 ;***************************************************************************
+                      00104 ; Communication for EEPROM based on I2C protocall, with Acknowledge.
+                      00105 ;
+                      00106 ; WRITE_BYTE: Byte write routine
+                      00107 ;       Inputs:  EEPROM Address   EEADDR
+                      00108 ;                EEPROM Data      EEDATA
+                      00109 ;       Outputs: Return 01 in W if OK, else return 00 in W
+                      00110 ;
+                      00111 ; READ_CURRENT: Read EEPROM at address currently held by EE device. 
+                      00112 ;       Inputs:  NONE
+                      00113 ;       Outputs: EEPROM Data       EEDATA
+                      00114 ;                Return 01 in W if OK, else return 00 in W
+                      00115 ;
+                      00116 ; READ_RANDOM: Read EEPROM byte at supplied address
+                      00117 ;       Inputs:  EEPROM Address    EEADDR
+                      00118 ;       Outputs: EEPROM Data       EEDATA
+                      00119 ;                Return 01 in W if OK, else return 00 in W
+                      00120 ;
+                      00121 ; Note: EEPROM subroutines will set bit 7 in PC_OFFSET register if the
+                      00122 ;       EEPROM acknowledged OK, else that bit will be cleared.  This bit 
+                      00123 ;       can be checked instead of refering to the value returned in W
+                      00124 ;***************************************************************************
+                      00125 ;********************** Set up EEPROM control bytes ************************
+                      00126 ;***************************************************************************
+0022                  00127 READ_CURRENT
+0022   0C84           00128         MOVLW   B'10000100'   ; PC offset for read current addr.  EE_OK bit7='1'
+0023   003A           00129         MOVWF   PC_OFFSET     ; Load PC offset
+0024   0A52           00130         GOTO    INIT_READ_CONTROL
+                      00131 
+0025                  00132 WRITE_BYTE
+0025   0C80           00133         MOVLW   B'10000000'   ; PC offset for write byte.  EE_OK: bit7 = '1'
+0026   0A28           00134         GOTO    INIT_WRITE_CONTROL
+                      00135 
+0027                  00136 READ_RANDOM
+0027   0C83           00137         MOVLW   B'10000011'   ; PC offset for read random.  EE_OK: bit7 = '1'
+                      00138 
+0028                  00139 INIT_WRITE_CONTROL
+0028   003A           00140         MOVWF   PC_OFFSET     ; Load PC offset register, value preset in W
+0029   0CA0           00141         MOVLW   B'10100000'   ; Control byte with write bit, bit 0 = '0'
+MPASM 03.00 Released         PIC12I2C.ASM   4-19-2002  17:00:20         PAGE  5
+PIC with Flash EE data memory Interface
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00142   
+002A                  00143 START_BIT
+002A   04C6           00144         BCF     I2C_PORT,SDA  ; Start bit, SDA and SCL preset to '1'
+                      00145 
+                      00146 
+                      00147 ;******* Set up output data (control, address, or data) and counter ********
+                      00148 ;***************************************************************************
+002B                  00149 PREP_TRANSFER_BYTE
+002B   003D           00150         MOVWF   EEBYTE        ; Byte to transfer to EEPROM already in W
+002C   0C08           00151         MOVLW   .8            ; Counter to transfer 8 bits
+002D   003E           00152         MOVWF   COUNTER
+                      00153 #ifdef  EMULATED
+                      00154         movlw   0x00            ; make sure both are outputs
+                      00155         tris    I2C_PORT
+                      00156 #endif
+                      00157 
+                      00158 
+                      00159 ;************  Clock out data (control, address, or data) byte  ************
+                      00160 ;***************************************************************************
+002E                  00161 OUTPUT_BYTE
+002E   04E6           00162         BCF     I2C_PORT,SCL  ; Set clock low during data set-up
+002F   037D           00163         RLF     EEBYTE, F     ; Rotate left, high order bit into carry bit
+0030   04C6           00164         BCF     I2C_PORT,SDA  ; Set data low, if rotated carry bit is
+0031   0603           00165         SKPNC                 ;   a '1', then:
+0032   05C6           00166         BSF     I2C_PORT,SDA  ; reset data pin to a one, otherwise leave low
+0033   0000           00167         NOP
+0034   05E6           00168         BSF     I2C_PORT,SCL  ; clock data into EEPROM
+0035   02FE           00169         DECFSZ  COUNTER, F    ; Repeat until entire byte is sent
+0036   0A2E           00170         GOTO    OUTPUT_BYTE
+0037   0000           00171         NOP
+                      00172 
+                      00173 ;**************************  Acknowledge Check *****************************
+                      00174 ;***************************************************************************
+0038   04E6           00175         BCF     I2C_PORT,SCL  ; Set SCL low, 0.5us < ack valid < 3us
+0039   0000           00176         NOP
+003A   05C6           00177         BSF     I2C_PORT,SDA
+                      00178 #ifdef  EMULATED
+                      00179         movlw   (0x01 << SDA)   ; make SDA an input
+                      00180         tris    I2C_PORT
+                      00181 #endif
+003B   0A3C           00182         GOTO    $+1             ; May be necessary for SCL Tlow  at low voltage,
+003C   05E6           00183         BSF     I2C_PORT,SCL  ; Raise SCL, EEPROM acknowledge still valid
+003D   06C6           00184         BTFSC   I2C_PORT,SDA  ; Check SDA for acknowledge (low)
+003E   04FA           00185         BCF     PC_OFFSET,EE_OK ; If SDA not low (no ack), set error flag
+003F   04E6           00186         BCF     I2C_PORT,SCL    ; Lower SCL, EEPROM release bus
+0040   07FA           00187         BTFSS   PC_OFFSET,EE_OK ; If no error continue, else stop bit
+0041   0A69           00188         GOTO    STOP_BIT
+                      00189 #ifdef  EMULATED
+                      00190         movlw   0x00            ; SDA back to an output
+                      00191         tris    I2C_PORT
+                      00192 #endif
+                      00193 
+                      00194 
+MPASM 03.00 Released         PIC12I2C.ASM   4-19-2002  17:00:20         PAGE  6
+PIC with Flash EE data memory Interface
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00195 ;*****  Set up program counter offset, based on EEPROM operating mode  *****
+                      00196 ;***************************************************************************
+0042   021A           00197         MOVF    PC_OFFSET,W
+0043   0E0F           00198         ANDLW   B'00001111'
+0044   01E2           00199         ADDWF   PCL, F
+0045   0A4C           00200         GOTO    INIT_ADDRESS      ;PC offset=0, write control done, send address
+0046   0A4F           00201         GOTO    INIT_WRITE_DATA   ;PC offset=1, write address done, send data
+0047   0A69           00202         GOTO    STOP_BIT          ;PC offset=2, write done, send stop bit
+0048   0A4C           00203         GOTO    INIT_ADDRESS      ;PC offset=3, write control done, send address
+0049   0A52           00204         GOTO    INIT_READ_CONTROL ;PC offset=4, send read control
+004A   0A58           00205         GOTO    READ_BIT_COUNTER  ;PC offset=5, set counter and read byte
+004B   0A69           00206         GOTO    STOP_BIT          ;PC offset=6, random read done, send stop
+                      00207 
+                      00208 
+                      00209 ;**********  Initalize EEPROM data (address, data, or control) bytes  ******
+                      00210 ;***************************************************************************
+004C                  00211 INIT_ADDRESS
+004C   02BA           00212         INCF    PC_OFFSET, F ; Increment PC offset to 2 (write) or to 4 (read)
+004D   021B           00213         MOVF    EEADDR,W     ; Put EEPROM address in W, ready to send to EEPROM
+004E   0A2B           00214         GOTO    PREP_TRANSFER_BYTE
+                      00215 
+                      00216 
+004F                  00217 INIT_WRITE_DATA
+004F   02BA           00218         INCF    PC_OFFSET, F ; Increment PC offset to go to STOP_BIT next
+0050   021C           00219         MOVF    EEDATA,W     ; Put EEPROM data in W, ready to send to EEPROM
+0051   0A2B           00220         GOTO    PREP_TRANSFER_BYTE
+                      00221 
+0052                  00222 INIT_READ_CONTROL
+0052   05E6           00223         BSF     I2C_PORT,SCL ; Raise SCL
+0053   0000           00224         nop
+0054   05C6           00225         BSF     I2C_PORT,SDA ; raise SDA
+0055   02BA           00226         INCF    PC_OFFSET, F ; Increment PC offset to go to READ_BIT_COUNTER next
+0056   0CA1           00227         MOVLW   B'10100001'  ; Set up read control byte, ready to send to EEPROM
+0057   0A2A           00228         GOTO    START_BIT    ;   bit 0 = '1' for read operation
+                      00229 
+                      00230 
+                      00231 ;**************************  Read EEPROM data  *****************************
+                      00232 ;***************************************************************************
+0058                  00233 READ_BIT_COUNTER
+0058   05C6           00234         BSF     I2C_PORT,SDA
+0059   0000           00235         NOP
+005A   05E6           00236         BSF     I2C_PORT,SCL ; set data bit to 1 so we're not pulling bus down.
+005B   0C08           00237         MOVLW   .8           ; Set counter so 8 bits will be read into EEDATA
+005C   003E           00238         MOVWF   COUNTER
+                      00239 #ifdef  EMULATED
+                      00240         movlw   (0x01 << SDA)
+                      00241         tris    I2C_PORT
+                      00242 #endif
+                      00243 
+005D                  00244 READ_BYTE
+005D   05E6           00245         BSF     I2C_PORT,SCL ; Raise SCL, SDA valid.  SDA still input from ack
+005E   0503           00246         SETC                 ; Assume bit to be read = 1
+005F   07C6           00247         BTFSS   I2C_PORT,SDA ; Check if SDA = 1
+MPASM 03.00 Released         PIC12I2C.ASM   4-19-2002  17:00:20         PAGE  7
+PIC with Flash EE data memory Interface
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0060   0403           00248         CLRC                 ; if SDA not = 1 then clear carry bit
+0061   037C           00249         RLF     EEDATA, F    ; rotate carry bit (=SDA) into EEDATA;
+0062   04E6           00250         BCF     I2C_PORT,SCL ; Lower SCL
+0063   05C6           00251         BSF     I2C_PORT,SDA ; reset SDA
+0064   02FE           00252         DECFSZ  COUNTER, F   ; Decrement counter
+0065   0A5D           00253         GOTO    READ_BYTE    ; Read next bit if not finished reading byte
+                      00254 
+0066   05E6           00255         BSF     I2C_PORT,SCL
+0067   0000           00256         NOP
+0068   04E6           00257         BCF     I2C_PORT,SCL
+                      00258 ;******************  Generate a STOP bit and RETURN  ***********************
+                      00259 ;***************************************************************************
+0069                  00260 STOP_BIT
+                      00261 #ifdef  EMULATED
+                      00262         movlw   0x00    ; set SDA as output
+                      00263         tris    I2C_PORT
+                      00264 #endif
+0069   04C6           00265         BCF     I2C_PORT,SDA ; SDA=0, on TRIS, to prepare for transition to '1' 
+006A   05E6           00266         BSF     I2C_PORT,SCL ; SCL = 1 to prepare for STOP bit
+006B   0A6C           00267         GOTO    $+1          ; 4 NOPs neccessary for I2C spec Tsu:sto = 4.7us                  
+006C   0A6D           00268         GOTO    $+1
+006D   05C6           00269         BSF     I2C_PORT,SDA ; Stop bit, SDA transition to '1' while SCL high
+                      00270     
+006E   07FA           00271         BTFSS   PC_OFFSET,EE_OK ; Check for error
+006F   0800           00272         RETLW   NO              ; if error, send back NO 
+0070   0801           00273         RETLW   OK              ; if no error, send back OK
+                      00274 
+                      00275 ;Note: SDA and SCL still being driven by master, both set to outputs.
+                      00276 ;****************************************************************************
+                      00277 ;************************  End EEPROM Subroutines  **************************
+                      00278 
+                      00068         
+                      00069         END
+MPASM 03.00 Released         PIC12I2C.ASM   4-19-2002  17:00:20         PAGE  8
+PIC with Flash EE data memory Interface
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+COUNTER                           0000001E
+DC                                00000001
+EEADDR                            0000001B
+EEBYTE                            0000001D
+EEDATA                            0000001C
+EE_OK                             00000007
+F                                 00000001
+FSR                               00000004
+GPIO                              00000006
+GPWUF                             00000007
+I2C_PORT                          00000006
+INDF                              00000000
+INIT_ADDRESS                      0000004C
+INIT_READ_CONTROL                 00000052
+INIT_WRITE_CONTROL                00000028
+INIT_WRITE_DATA                   0000004F
+NO                                00000000
+NOT_GPPU                          00000006
+NOT_GPWU                          00000007
+NOT_PD                            00000003
+NOT_TO                            00000004
+OK                                00000001
+OSCCAL                            00000005
+OUTPUT_BYTE                       0000002E
+PA0                               00000005
+PCL                               00000002
+PC_OFFSET                         0000001A
+PREP_TRANSFER_BYTE                0000002B
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+READ_BIT_COUNTER                  00000058
+READ_BYTE                         0000005D
+READ_CURRENT                      00000022
+READ_RANDOM                       00000027
+SCL                               00000007
+SDA                               00000006
+START_BIT                         0000002A
+STATUS                            00000003
+STOP_BIT                          00000069
+T0CS                              00000005
+T0SE                              00000004
+TMR0                              00000001
+W                                 00000000
+WRITE_BYTE                        00000025
+Z                                 00000002
+_CP_OFF                           00000FFF
+_CP_ON                            00000FF7
+_ExtRC_OSC                        00000FFF
+_IntRC_OSC                        00000FFE
+_LP_OSC                           00000FFC
+MPASM 03.00 Released         PIC12I2C.ASM   4-19-2002  17:00:20         PAGE  9
+PIC with Flash EE data memory Interface
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_MCLRE_OFF                        00000FEF
+_MCLRE_ON                         00000FFF
+_WDT_OFF                          00000FFB
+_WDT_ON                           00000FFF
+_XT_OSC                           00000FFD
+__12CE518                         00000001
+count                             00000011
+loop                              00000005
+loop1                             00000018
+result                            00000010
+serout                            00000016
+start                             00000001
+wait1                             0000000A
+wait2                             00000012
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX X---------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   113
+Program Memory Words Free:   399
+
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+
